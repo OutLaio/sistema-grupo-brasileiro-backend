@@ -19,6 +19,5 @@ CREATE TABLE IF NOT EXISTS public.user
     role character varying(255) COLLATE pg_catalog."default",
     token text COLLATE pg_catalog."default",
     CONSTRAINT user_pkey PRIMARY KEY (id),
-    CONSTRAINT uk_471i15k6vbj1lfsfb19getcdi UNIQUE (email),
-    CONSTRAINT uk_4tdehxj7dh8ghfc68kbwbsbll UNIQUE (email)
+    CONSTRAINT uk_471i15k6vbj1lfsfb19getcdi UNIQUE (email)
 )

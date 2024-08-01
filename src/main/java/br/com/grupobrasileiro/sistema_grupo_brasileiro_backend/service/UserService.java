@@ -1,8 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.AbstractPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
@@ -25,14 +24,14 @@ public class UserService {
 	@Autowired
 	private UserViewMapper userViewMapper;
 	
-	@Autowired
-    private PasswordEncoder passwordEncoder;
+//	@Autowired
+//    private PasswordEncoder passwordEncoder;
 	
 	@Transactional
     public UserView save(UserForm dto) throws Exception {
         try {
             User entity = userFormMapper.map(dto);
-            entity.setPassword(passwordEncoder.encode(dto.password()));
+            //entity.setPassword(passwordEncoder.encode(dto.password()));
             userRepository.save(entity);
             return userViewMapper.map(entity);
 
