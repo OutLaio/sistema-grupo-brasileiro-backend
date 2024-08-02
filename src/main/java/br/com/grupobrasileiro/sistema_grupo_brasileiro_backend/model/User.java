@@ -55,7 +55,7 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false, length = 25)
     private RoleEnum role = RoleEnum.CLIENT;
 
-    public User(String name, String lastname, String phonenumber, String sector, String function, String nop, String email, String password) {
+    public User(String name, String lastname, String phonenumber, String sector, String function, String nop, String email, String password, RoleEnum role) {
         this.name = name;
         this.lastname = lastname;
         this.phonenumber = phonenumber;
@@ -64,7 +64,7 @@ public class User implements UserDetails {
         this.nop = nop;
         this.email = email;
         this.password = password;
-        
+        this.role = (role != null) ? role : RoleEnum.CLIENT;  
     }
 
     @Override

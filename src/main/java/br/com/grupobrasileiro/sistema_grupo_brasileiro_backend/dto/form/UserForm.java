@@ -1,5 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -37,7 +38,10 @@ public record UserForm(
         @Pattern(regexp = "^(?=.*[A-Z]).*$", message = "Password must contain at least one uppercase letter!")
         @Pattern(regexp = "^(?=.*\\d).*$", message = "Password must contain at least one digit!")
         @Pattern(regexp = "^(?=.*[@$!%*?&]).*$", message = "Password must contain at least one special character!")
-        String password
+        String password, 
+        
+        RoleEnum role
+           
 ) {
 
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.LoginRequestForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ResponseForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.*;
@@ -59,6 +60,8 @@ public class AuthController {
 
         try {
             String encryptedPassword = new BCryptPasswordEncoder().encode(body.password());
+            RoleEnum role = (body.role() != null) ? body.role() : RoleEnum.CLIENT; 
+
             User newUser = new User(
                     body.name(),
                     body.lastname(),
@@ -67,8 +70,9 @@ public class AuthController {
                     body.function(),
                     body.nop(),
                     body.email(),
-                    encryptedPassword
-                );
+                    encryptedPassword,
+                    role);
+                    
             this.userRepository.save(newUser);
             LOGGER.info("User successfully registered: email={}", body.email());
             return ResponseEntity.ok("User registered successfully");
