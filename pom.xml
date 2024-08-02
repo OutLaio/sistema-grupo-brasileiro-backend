@@ -28,6 +28,8 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<flyway.user>postgres</flyway.user>
+		<flyway.password>1234</flyway.password>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -56,6 +58,16 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency> 
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-database-postgresql</artifactId>
+			<version>10.11.1</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -150,7 +162,19 @@
 						<outputDirectory>${project.build.directory}/jacoco-report</outputDirectory>
 					</configuration>
 				</plugin>
+		
+				<!-- Plugin Flyway para migração de banco de dados -->
+				<plugin>
+					<groupId>org.flywaydb</groupId>
+					<artifactId>flyway-maven-plugin</artifactId>
+					<version>10.11.1</version>
+					<configuration>
+						<url>jdbc:postgresql://localhost:5432/grupobrasileiro</url>
+						<user>${database.username}</user>
+						<password>${database.password}</password>
+						<locations>classpath:db/migration</locations>
+					</configuration>
+				</plugin>
 			</plugins>
 		</build>
-</project>
 		
