@@ -39,8 +39,8 @@ public class User implements UserDetails {
     @Column(name = "sector", nullable = false)
     private String sector;
 
-    @Column(name = "function", nullable = false)
-    private String function;
+    @Column(name = "occupation", nullable = false)
+    private String occupation;
 
     @Column(name = "nop", nullable = false)
     private String nop;
@@ -55,12 +55,12 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false, length = 25)
     private RoleEnum role = RoleEnum.CLIENT;
 
-    public User(String name, String lastname, String phonenumber, String sector, String function, String nop, String email, String password, RoleEnum role) {
+    public User(String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, RoleEnum role) {
         this.name = name;
         this.lastname = lastname;
         this.phonenumber = phonenumber;
         this.sector = sector;
-        this.function = function;
+        this.occupation = occupation;
         this.nop = nop;
         this.email = email;
         this.password = password;

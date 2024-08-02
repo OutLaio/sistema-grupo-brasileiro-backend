@@ -17,7 +17,7 @@ public class UserFormMapper implements Mapper<UserForm, User> {
 				i.lastname(), 
 				i.phonenumber(),
 				i.sector(), 
-				i.function(), 
+				i.occupation(), 
 				i.nop(),
 				i.email(), 
 				i.password(),

@@ -21,8 +21,8 @@ public record UserForm(
 		@NotBlank(message = "Sector is required!")
 		String sector,
 		
-		@NotBlank(message = "Function is required!")
-		String function,
+		@NotBlank(message = "Occupation is required!")
+		String occupation,
 		
 		@NotBlank(message = "Nop is required!")
 		String nop,

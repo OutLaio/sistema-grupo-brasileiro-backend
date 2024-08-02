@@ -16,7 +16,7 @@ public class UserViewMapper implements Mapper<User, UserView> {
                 i.getLastname(),
                 i.getPhonenumber(),
                 i.getSector(),
-                i.getFunction(),
+                i.getOccupation(),
                 i.getNop(),
                 i.getEmail(),
                 i.getRole());

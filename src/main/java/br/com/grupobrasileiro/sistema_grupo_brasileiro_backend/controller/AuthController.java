@@ -67,7 +67,7 @@ public class AuthController {
                     body.lastname(),
                     body.phonenumber(),
                     body.sector(),
-                    body.function(),
+                    body.occupation(),
                     body.nop(),
                     body.email(),
                     encryptedPassword,

@@ -8,7 +8,7 @@ public record UserView(
 	String lastname,
 	String phonenumber,
 	String sector,
-	String function,
+	String occupation,
 	String nop,
 	String email,
 	RoleEnum role	
