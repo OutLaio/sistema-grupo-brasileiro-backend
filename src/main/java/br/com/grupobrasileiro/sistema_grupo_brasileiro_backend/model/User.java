@@ -4,8 +4,13 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
+
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
@@ -14,7 +19,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "Users")
-public class User implements Serializable {
+public class User implements UserDetails {
   private static final long serialVersionUID = 1L;
 
     @Id
@@ -48,7 +53,25 @@ public class User implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 25)
-    private RoleEnum role = RoleEnum.ROLE_CLIENT;
+    private RoleEnum role = RoleEnum.CLIENT;
+
+    public User(String name, String lastname, String phonenumber, String sector, String function, String nop, String email, String password) {
+        this.name = name;
+        this.lastname = lastname;
+        this.phonenumber = phonenumber;
+        this.sector = sector;
+        this.function = function;
+        this.nop = nop;
+        this.email = email;
+        this.password = password;
+        
+    }
+
+    @Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		if(this.role == RoleEnum.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_CLIENT"));
+		else return List.of(new SimpleGrantedAuthority("ROLE_CLIENT"));
+	}
 
     @Override
     public boolean equals(Object o) {
@@ -69,5 +92,11 @@ public class User implements Serializable {
     public String toString() {
         return "Usuario{" + "id=" + id + '}';
     }
+
+	@Override
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return email;
+	}
 
 }

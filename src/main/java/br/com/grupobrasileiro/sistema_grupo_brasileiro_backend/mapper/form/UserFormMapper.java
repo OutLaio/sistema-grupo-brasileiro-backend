@@ -21,7 +21,7 @@ public class UserFormMapper implements Mapper<UserForm, User> {
 				i.nop(),
 				i.email(), 
 				i.password(),
-				RoleEnum.ROLE_CLIENT
+				RoleEnum.CLIENT
 		);
 	}
 }
