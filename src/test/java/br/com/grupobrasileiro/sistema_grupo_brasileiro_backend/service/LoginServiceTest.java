@@ -1,13 +1,11 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.LoginForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.security.JwtTokenProvider;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,9 +18,6 @@ class LoginServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private JwtTokenProvider tokenProvider;
-
     @InjectMocks
     private LoginService loginService;
 
@@ -33,28 +28,38 @@ class LoginServiceTest {
 
     @Test
     void testLoginSucesso() {
-        String email = "renata@example.com";
-        String password = "password123";
+        LoginForm loginForm = new LoginForm("joao.silva@example.com", "password123");
 
-        when(userRepository.findByEmail(email)).thenReturn(new User());
-        when(tokenProvider.createToken(any(User.class))).thenReturn("token123");
+        // Simulate an existing user with the correct password
+        User user = new User();
+        user.setEmail("joao.silva@example.com");
+        user.setPassword("password123"); // The password must be the password encoded in practice
 
-        String token = loginService.login(email, password);
+        when(userRepository.findByEmail(loginForm.getEmail())).thenReturn(user);
+        // Simulate correct authentication
+        when(loginService.authenticate(loginForm.getEmail(), loginForm.getPassword())).thenReturn("token123");
 
+        String token = loginService.authenticate(loginForm.getEmail(), loginForm.getPassword());
+
+        assertNotNull(token);
         assertEquals("token123", token);
     }
 
     @Test
     void testLoginFalha() {
-        String email = "renata@example.com";
-        String password = "wrongpassword";
+        LoginForm loginForm = new LoginForm("joao.silva@example.com", "wrongpassword");
 
-        when(userRepository.findByEmail(email)).thenReturn(null);
+        // Simulate an existing user with incorrect password
+        User user = new User();
+        user.setEmail("joao.silva@example.com");
+        user.setPassword("correctpassword"); // The password must be the password encoded in practice
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            loginService.login(email, password);
+        when(userRepository.findByEmail(loginForm.getEmail())).thenReturn(user);
+
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+            loginService.authenticate(loginForm.getEmail(), loginForm.getPassword());
         });
 
-        assertEquals("Authentication failed", exception.getMessage());
+        assertEquals("Autenticação falhou", thrown.getMessage());
     }
 }
