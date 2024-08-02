@@ -32,8 +32,11 @@ class PasswordRecoveryServiceTest {
     @Test
     void testGeracaoToken() {
         String email = "john.doe@example.com";
+        User user = new User();
+        user.setEmail(email);
 
-        when(userRepository.findByEmail(email)).thenReturn(new User());
+        // Simulates finding user and generating token
+        when(userRepository.findByEmail(email)).thenReturn(user);
         when(tokenProvider.createRecoveryToken(any(User.class))).thenReturn("recoveryToken123");
 
         String token = recoveryService.generateRecoveryToken(email);
@@ -44,14 +47,17 @@ class PasswordRecoveryServiceTest {
     @Test
     void testEnvioEmail() {
         String email = "john.doe@example.com";
+        User user = new User();
+        user.setEmail(email);
 
-        // Simulates sending e-mail
+        // Simulates finding user and generating token
+        when(userRepository.findByEmail(email)).thenReturn(user);
         when(tokenProvider.createRecoveryToken(any(User.class))).thenReturn("recoveryToken123");
 
         recoveryService.sendRecoveryEmail(email);
 
-        // Check that the email was sent correctly
-        // This depends on how you have implemented sending email
+        // Verify that the email sending method was called (this depends on your implementation)
+        // For example, if you have a mail service, you could use verify(mailService).sendEmail(...)
     }
 
     @Test
@@ -59,12 +65,16 @@ class PasswordRecoveryServiceTest {
         String email = "renata@example.com";
         String token = "recoveryToken123";
         String newPassword = "newPassword123";
+        User user = new User();
+        user.setEmail(email);
 
-        when(userRepository.findByEmail(email)).thenReturn(new User());
+        // Simulates finding user and generating token
+        when(userRepository.findByEmail(email)).thenReturn(user);
         when(tokenProvider.createRecoveryToken(any(User.class))).thenReturn(token);
 
         recoveryService.resetPassword(token, newPassword);
 
-        // Check if the password has been reset correctly
+        // Verify if the password has been updated (you might need to check if the userRepository's save method was called)
+        // For example: verify(userRepository).save(user);
     }
 }
