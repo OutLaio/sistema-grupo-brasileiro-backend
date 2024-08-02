@@ -4,7 +4,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doNothing;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
@@ -42,9 +41,9 @@ public class UserControllerTest {
 
     @Test
     void testCadastroCompleto() throws Exception {
-        UserForm userForm = new UserForm("Renata", "Moreno", "renata@example.com", "123456789", "TI", "Developer", "NOP", "USER", "password123");
+        UserForm userForm = new UserForm("João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor", "123456", "joao.silva@example.com", "ROLE_CLIENT", "password123");
 
-        //Simulate the call to service
+        // Simulate the call to service
         when(userService.registerUser(userForm)).thenReturn(new User());
 
         mockMvc.perform(post("/users/register")
@@ -56,7 +55,7 @@ public class UserControllerTest {
 
     @Test
     void testFalhaNoCadastro() throws Exception {
-        UserForm userForm = new UserForm("", "", "invalid-email", "", "TI", "Developer", "NOP", "USER", "short");
+        UserForm userForm = new UserForm("", "", "invalid-email", "", "Tecnologia", "Desenvolvedor", "123456", "ROLE_CLIENT", "short");
 
         // Simulate a service failure
         when(userService.registerUser(userForm)).thenThrow(new RuntimeException("Dados inválidos"));
@@ -70,7 +69,7 @@ public class UserControllerTest {
 
     @Test
     void testLoginSucesso() throws Exception {
-        LoginForm loginForm = new LoginForm("renata@example.com", "password123");
+        LoginForm loginForm = new LoginForm("joao.silva@example.com", "password123");
 
         // Simulate the call to service
         when(userService.login(loginForm.getEmail(), loginForm.getPassword())).thenReturn("token123");
@@ -84,9 +83,9 @@ public class UserControllerTest {
 
     @Test
     void testLoginFalha() throws Exception {
-        LoginForm loginForm = new LoginForm("renata@example.com", "wrongpassword");
+        LoginForm loginForm = new LoginForm("joao.silva@example.com", "wrongpassword");
 
-        // Simulate the call to servicek
+        // Simulate the call to service
         when(userService.login(loginForm.getEmail(), loginForm.getPassword())).thenThrow(new RuntimeException("Autenticação falhou"));
 
         mockMvc.perform(post("/users/login")
