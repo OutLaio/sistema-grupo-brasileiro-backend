@@ -1,6 +1,5 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
