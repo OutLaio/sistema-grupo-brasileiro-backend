@@ -1,4 +1,4 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
 
 import static org.junit.jupiter.api.Assertions.*;
