@@ -45,20 +45,18 @@ public class UserServiceTest {
     void saveUser_success() throws Exception {
         // Arrange
         UserForm userForm = new UserForm(
-            "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor", 
-            "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT
-        );
+                "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor",
+                "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT);
         User user = new User(
-            "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor", 
-            "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT
-        );
+                "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor",
+                "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT);
         UserView userView = new UserView(
-            null, "João", "Silva", "joao.silva@example.com", null, null, null, null, null
-        );
+                null, "João", "Silva", "joao.silva@example.com", null, null, null, null, null);
 
         // Configuração dos mocks
         when(userFormMapper.map(userForm)).thenReturn(user);
         when(userViewMapper.map(user)).thenReturn(userView);
+        when(userRepository.save(user)).thenReturn(user); // Adicionado
 
         // Act
         UserView result = userService.save(userForm);
@@ -73,13 +71,11 @@ public class UserServiceTest {
     void saveUser_emailAlreadyRegistered() throws Exception {
         // Arrange
         UserForm userForm = new UserForm(
-            "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor", 
-            "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT
-        );
+                "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor",
+                "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT);
         User user = new User(
-            "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor", 
-            "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT
-        );
+                "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor",
+                "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT);
 
         // Configuração dos mocks
         when(userFormMapper.map(userForm)).thenReturn(user);
