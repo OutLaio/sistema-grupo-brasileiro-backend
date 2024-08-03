@@ -9,8 +9,11 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 
 @Component
 public class UserFormMapper implements Mapper<UserForm, User> {
+    
     @Override
     public User map(UserForm i) {
+        Integer role = (i.role() != null) ? i.role() : RoleEnum.ROLE_CLIENT.getCode(); 
+
         return new User(
             null,
             i.name(),
@@ -21,7 +24,7 @@ public class UserFormMapper implements Mapper<UserForm, User> {
             i.nop(),
             i.email(),
             i.password(),
-            RoleEnum.fromCode(i.role()).getCode()
+            RoleEnum.fromCode(role).getCode()
         );
     }
 }

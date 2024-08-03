@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +31,10 @@ public class UserService {
 	@Transactional
     public UserView save(UserForm dto) throws Exception {
         try {
+            String encryptedPassword = new BCryptPasswordEncoder().encode(dto.password());
             User entity = userFormMapper.map(dto);
-            //entity.setPassword(passwordEncoder.encode(dto.password()));
+            entity.setPassword(encryptedPassword);
+            
             userRepository.save(entity);
             return userViewMapper.map(entity);
 
