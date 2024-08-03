@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.Objects;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,8 +32,8 @@ public class User implements Serializable {
     @Column(name = "sector", nullable = false)
     private String sector;
 
-    @Column(name = "function", nullable = false)
-    private String function;
+    @Column(name = "occupation", nullable = false)
+    private String occupation;
 
     @Column(name = "nop", nullable = false)
     private String nop;
@@ -46,9 +44,8 @@ public class User implements Serializable {
     @Column(name = "password")
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, length = 25)
-    private RoleEnum role = RoleEnum.ROLE_CLIENT;
+    @Column(name = "role", nullable = false)
+    private Integer role;
 
     @Override
     public boolean equals(Object o) {
@@ -67,7 +64,6 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "Usuario{" + "id=" + id + '}';
+        return "User{" + "id=" + id + '}';
     }
-
 }

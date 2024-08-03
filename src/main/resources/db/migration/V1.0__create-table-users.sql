@@ -14,9 +14,9 @@ CREATE TABLE IF NOT EXISTS public.users
     phonenumber character varying(255) COLLATE pg_catalog."default" NOT NULL,
     password character varying(255) COLLATE pg_catalog."default" NOT NULL,
     sector character varying(255) COLLATE pg_catalog."default" NOT NULL,
-    function character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    occupation character varying(255) COLLATE pg_catalog."default" NOT NULL,
     nop character varying(255) COLLATE pg_catalog."default" NOT NULL,
-    role character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    role bigint NOT NULL,
     token text COLLATE pg_catalog."default",
     CONSTRAINT users_pkey PRIMARY KEY (id),
     CONSTRAINT uk_471i15k6vbj1lfsfb19getcdi UNIQUE (email)

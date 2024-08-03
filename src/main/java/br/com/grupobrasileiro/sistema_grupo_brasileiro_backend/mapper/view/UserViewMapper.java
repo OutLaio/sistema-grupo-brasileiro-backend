@@ -11,14 +11,15 @@ public class UserViewMapper implements Mapper<User, UserView> {
     @Override
     public UserView map(User i) {
         return new UserView(
-                i.getId(),
-                i.getName(),
-                i.getLastname(),
-                i.getPhonenumber(),
-                i.getSector(),
-                i.getFunction(),
-                i.getNop(),
-                i.getEmail(),
-                i.getRole());
+            i.getId(),
+            i.getName(),
+            i.getLastname(),
+            i.getPhonenumber(),
+            i.getSector(),
+            i.getOccupation(),
+            i.getNop(),
+            i.getEmail(),
+            i.getRole()
+        );
     }
 }

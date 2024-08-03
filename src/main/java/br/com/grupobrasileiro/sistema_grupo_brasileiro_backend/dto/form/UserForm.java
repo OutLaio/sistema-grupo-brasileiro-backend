@@ -1,6 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -20,8 +22,8 @@ public record UserForm(
 		@NotBlank(message = "Sector is required!")
 		String sector,
 		
-		@NotBlank(message = "Function is required!")
-		String function,
+		@NotBlank(message = "Occupation is required!")
+		String occupation,
 		
 		@NotBlank(message = "Nop is required!")
 		String nop,
@@ -37,7 +39,16 @@ public record UserForm(
         @Pattern(regexp = "^(?=.*[A-Z]).*$", message = "Password must contain at least one uppercase letter!")
         @Pattern(regexp = "^(?=.*\\d).*$", message = "Password must contain at least one digit!")
         @Pattern(regexp = "^(?=.*[@$!%*?&]).*$", message = "Password must contain at least one special character!")
-        String password
+        String password,
+        
+        @NotNull(message = "Role is required!")
+        Integer role
 ) {
+	
+	public UserForm {
+        if (role == null) {
+            role = RoleEnum.ROLE_CLIENT.getCode();
+        }
+    }
 
 }
