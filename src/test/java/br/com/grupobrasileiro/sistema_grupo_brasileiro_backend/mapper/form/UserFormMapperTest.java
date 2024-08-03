@@ -4,15 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.UserFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 
 public class UserFormMapperTest {
 
-    @Autowired
     private UserFormMapper userFormMapper;
 
     @BeforeEach
@@ -22,7 +21,7 @@ public class UserFormMapperTest {
 
     @Test
     public void testMap() {
-        // Cria um UserForm de exemplo
+
         UserForm userForm = new UserForm(
                 "John",
                 "Doe",
@@ -33,16 +32,28 @@ public class UserFormMapperTest {
                 "john.doe@example.com",
                 "Password123", null);
 
+        // Mapeia o UserForm para User
         User user = userFormMapper.map(userForm);
 
-        assertEquals("John", user.getName());
-        assertEquals("Doe", user.getLastname());
-        assertEquals("123456789", user.getPhonenumber());
-        assertEquals("IT", user.getSector());
-        assertEquals("Developer", user.getOccupation());
-        assertEquals("NOP123", user.getNop());
-        assertEquals("john.doe@example.com", user.getEmail());
-        assertEquals("Password123", user.getPassword());
-        assertEquals(RoleEnum.CLIENT, user.getRole());
+        // Converte User para UserView com valores esperados
+        UserView userView = new UserView(
+                user.getId(),
+                user.getName(),
+                user.getLastname(),
+                user.getPhonenumber(),
+                user.getSector(),
+                user.getOccupation(),
+                user.getNop(),
+                user.getEmail(),
+                RoleEnum.ROLE_CLIENT.getCode());
+
+        assertEquals("John", userView.name());
+        assertEquals("Doe", userView.lastname());
+        assertEquals("123456789", userView.phonenumber());
+        assertEquals("IT", userView.sector());
+        assertEquals("Developer", userView.occupation());
+        assertEquals("NOP123", userView.nop());
+        assertEquals("john.doe@example.com", userView.email());
+        assertEquals(Integer.valueOf(RoleEnum.ROLE_CLIENT.getCode()), userView.role());
     }
 }

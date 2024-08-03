@@ -27,7 +27,7 @@ public enum RoleEnum {
                 return role;
             }
         }
-        
+
         throw new IllegalArgumentException("Invalid code: " + code);
     }
 }

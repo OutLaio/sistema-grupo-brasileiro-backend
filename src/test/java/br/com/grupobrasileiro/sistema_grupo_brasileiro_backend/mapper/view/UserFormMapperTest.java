@@ -20,7 +20,7 @@ public class UserFormMapperTest {
 
     @Test
     public void testMap() {
-
+        // Criação do UserForm com dados de teste
         UserForm userForm = new UserForm(
                 "John",
                 "Doe",
@@ -31,18 +31,16 @@ public class UserFormMapperTest {
                 "john.doe@example.com",
                 "Password123", null);
 
-        // Mapeia o UserForm para User
         User user = userFormMapper.map(userForm);
 
-        // Verifica se os valores mapeados estão corretos
-        assertEquals("John", user.getName());
-        assertEquals("Doe", user.getLastname());
-        assertEquals("123456789", user.getPhonenumber());
-        assertEquals("IT", user.getSector());
-        assertEquals("Developer", user.getOccupation());
-        assertEquals("NOP123", user.getNop());
-        assertEquals("john.doe@example.com", user.getEmail());
-        assertEquals("Password123", user.getPassword());
-        assertEquals(RoleEnum.CLIENT, user.getRole());
+        assertEquals("John", user.getName(), "O nome deve ser mapeado corretamente");
+        assertEquals("Doe", user.getLastname(), "O sobrenome deve ser mapeado corretamente");
+        assertEquals("123456789", user.getPhonenumber(), "O número de telefone deve ser mapeado corretamente");
+        assertEquals("IT", user.getSector(), "O setor deve ser mapeado corretamente");
+        assertEquals("Developer", user.getOccupation(), "A ocupação deve ser mapeada corretamente");
+        assertEquals("NOP123", user.getNop(), "O NOP deve ser mapeado corretamente");
+        assertEquals("john.doe@example.com", user.getEmail(), "O e-mail deve ser mapeado corretamente");
+        assertEquals("Password123", user.getPassword(), "A senha deve ser mapeada corretamente");
+        assertEquals(RoleEnum.ROLE_CLIENT, user.getRole(), "O papel deve ser mapeado corretamente");
     }
 }

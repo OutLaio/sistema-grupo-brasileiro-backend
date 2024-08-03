@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 
 public class UserTest {
-
     @Test
     public void testUserGettersAndSetters() {
         User user = new User();
@@ -19,7 +18,7 @@ public class UserTest {
         user.setOccupation("Desenvolvedor");
         user.setNop("123456");
         user.setEmail("joao.silva@example.com");
-        user.setRole(RoleEnum.CLIENT);
+        user.setRole(RoleEnum.ROLE_CLIENT.getCode()); // Atualize aqui
 
         assertEquals(1L, user.getId());
         assertEquals("João", user.getName());
@@ -29,6 +28,6 @@ public class UserTest {
         assertEquals("Desenvolvedor", user.getOccupation());
         assertEquals("123456", user.getNop());
         assertEquals("joao.silva@example.com", user.getEmail());
-        assertEquals(RoleEnum.CLIENT, user.getRole());
+        assertEquals(RoleEnum.ROLE_CLIENT.getCode(), user.getRole());
     }
 }

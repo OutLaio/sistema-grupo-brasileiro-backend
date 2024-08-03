@@ -18,7 +18,7 @@ public class UserViewTest {
         String occupation = "Developer";
         String nop = "NOP123";
         String email = "john.doe@example.com";
-        RoleEnum role = RoleEnum.CLIENT;
+        Integer role = RoleEnum.ROLE_CLIENT.getCode();
 
         // Act
         UserView userView = new UserView(id, name, lastname, phonenumber, sector, occupation, nop, email, role);
@@ -46,7 +46,7 @@ public class UserViewTest {
         String occupation = "";
         String nop = "";
         String email = "";
-        RoleEnum role = RoleEnum.CLIENT;
+        Integer role = RoleEnum.ROLE_CLIENT.getCode();
 
         // Act
         UserView userView = new UserView(id, name, lastname, phonenumber, sector, occupation, nop, email, role);

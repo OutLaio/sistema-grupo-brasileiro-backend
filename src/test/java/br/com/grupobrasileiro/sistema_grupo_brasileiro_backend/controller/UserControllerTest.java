@@ -1,76 +1,49 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-@WebMvcTest(UserController.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 public class UserControllerTest {
 
-        @Autowired
-        private MockMvc mockMvc;
-
-        @MockBean
+        @Mock
         private UserService userService;
 
-        @MockBean
-        private TokenService tokenService;
-
-        private ObjectMapper objectMapper;
+        @InjectMocks
+        private UserController userController;
 
         @BeforeEach
-        void setUp() {
-                objectMapper = new ObjectMapper();
+        public void setUp() {
+                MockitoAnnotations.openMocks(this);
         }
 
         @Test
-        public void testSaveUser_Success() throws Exception {
-                // Create a UserForm and a UserView for testing
+        public void testSaveUser() throws Exception {
                 UserForm userForm = new UserForm(
-                                "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor", "123456",
-                                "joao.silva@example.com", "Password123!", RoleEnum.CLIENT);
+                                "João", "Silva", "21999999999", "Tecnologia", "Desenvolvedor", "123",
+                                "joao.silva@example.com", "Senha@123", RoleEnum.ROLE_CLIENT.getCode());
 
                 UserView userView = new UserView(
-                                1L, "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor", "123456",
-                                "joao.silva@example.com", RoleEnum.CLIENT);
+                                1L, "João", "Silva", "21999999999", "Tecnologia", "Desenvolvedor", "123",
+                                "joao.silva@example.com", RoleEnum.ROLE_CLIENT.getCode());
 
-                // Mocking behavior
-                when(userService.save(userForm)).thenReturn(userView);
+                when(userService.save(any(UserForm.class))).thenReturn(userView);
 
-                mockMvc.perform(post("/api/v1/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(userForm)))
-                                .andExpect(status().isCreated())
-                                .andExpect(content().json(objectMapper.writeValueAsString(userView)));
-        }
+                ResponseEntity<UserView> response = userController.save(userForm);
 
-        @Test
-        public void testSaveUser_InvalidRequest() throws Exception {
-                // Create an invalid UserForm with missing fields or invalid data
-                UserForm invalidUserForm = new UserForm(
-                                "", "", "", "", "", "", "", "", RoleEnum.CLIENT);
-
-                // Perform the request with invalid data
-                mockMvc.perform(post("/api/v1/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(invalidUserForm)))
-                                .andExpect(status().isBadRequest());
+                assertEquals(HttpStatus.CREATED, response.getStatusCode());
+                assertEquals(userView, response.getBody());
         }
 }

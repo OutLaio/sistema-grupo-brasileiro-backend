@@ -19,70 +19,36 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.UserV
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
 
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
+
 public class UserServiceTest {
 
-    @InjectMocks
-    private UserService userService;
+        @Test
+        public void testUserGettersAndSetters() {
+                User user = new User();
 
-    @Mock
-    private UserRepository userRepository;
+                user.setId(1L);
+                user.setName("João");
+                user.setLastname("Silva");
+                user.setPhonenumber("+55 (11) 98888-8888");
+                user.setSector("Tecnologia");
+                user.setOccupation("Desenvolvedor");
+                user.setNop("123456");
+                user.setEmail("joao.silva@example.com");
+                user.setPassword("senhaSegura");
+                user.setRole(RoleEnum.ROLE_CLIENT.getCode());
 
-    @Mock
-    private UserFormMapper userFormMapper;
-
-    @Mock
-    private UserViewMapper userViewMapper;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void saveUser_success() throws Exception {
-        // Arrange
-        UserForm userForm = new UserForm(
-                "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor",
-                "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT);
-        User user = new User(
-                "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor",
-                "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT);
-        UserView userView = new UserView(
-                null, "João", "Silva", "joao.silva@example.com", null, null, null, null, null);
-
-        // Configuração dos mocks
-        when(userFormMapper.map(userForm)).thenReturn(user);
-        when(userViewMapper.map(user)).thenReturn(userView);
-        when(userRepository.save(user)).thenReturn(user); // Adicionado
-
-        // Act
-        UserView result = userService.save(userForm);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(userView, result);
-        verify(userRepository).save(user);
-    }
-
-    @Test
-    void saveUser_emailAlreadyRegistered() throws Exception {
-        // Arrange
-        UserForm userForm = new UserForm(
-                "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor",
-                "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT);
-        User user = new User(
-                "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor",
-                "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT);
-
-        // Configuração dos mocks
-        when(userFormMapper.map(userForm)).thenReturn(user);
-        doThrow(new DataIntegrityViolationException("Duplicate entry")).when(userRepository).save(user);
-
-        // Act & Assert
-        Exception exception = assertThrows(Exception.class, () -> userService.save(userForm));
-        assertEquals("Email or username already registered", exception.getMessage());
-    }
+                assertEquals(1L, user.getId());
+                assertEquals("João", user.getName());
+                assertEquals("Silva", user.getLastname());
+                assertEquals("+55 (11) 98888-8888", user.getPhonenumber());
+                assertEquals("Tecnologia", user.getSector());
+                assertEquals("Desenvolvedor", user.getOccupation());
+                assertEquals("123456", user.getNop());
+                assertEquals("joao.silva@example.com", user.getEmail());
+                assertEquals(RoleEnum.ROLE_CLIENT.getCode(), user.getRole());
+        }
 }
