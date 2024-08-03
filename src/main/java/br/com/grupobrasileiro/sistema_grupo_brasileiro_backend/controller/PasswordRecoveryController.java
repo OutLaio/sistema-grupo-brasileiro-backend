@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.EmailRequestForm;
@@ -16,6 +17,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.EmailServ
 import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class PasswordRecoveryController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PasswordRecoveryController.class);
@@ -25,8 +27,8 @@ public class PasswordRecoveryController {
     private final EmailService emailService;
     
     
-    @PostMapping("/solicitaReset")
-    public ResponseEntity<String> resetPassword(@RequestBody EmailRequestForm data) {
+    @PostMapping("/requestReset")
+    public ResponseEntity<String> requestReset(@RequestBody EmailRequestForm data) {
         LOGGER.info("Starting password reset request for: {}", data.email());
 
         try {
@@ -37,7 +39,8 @@ public class PasswordRecoveryController {
             }
 
             String token = tokenService.generateToken(user);
-            String resetUrl = "http://localhost:8080/resetPassword?token=" + token;
+            String resetUrl = "http://localhost:4200/resetPassword?token=" + token;
+
 
             String body = String.format(
                     "Hello!<br><br>" +

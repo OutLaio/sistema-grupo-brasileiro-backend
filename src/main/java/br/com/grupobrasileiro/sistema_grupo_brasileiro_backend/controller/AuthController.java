@@ -21,7 +21,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.*;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
