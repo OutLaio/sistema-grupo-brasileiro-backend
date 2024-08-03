@@ -99,35 +99,101 @@
 			<artifactId>java-jwt</artifactId>
 			<version>4.4.0</version>
 		</dependency>
-	</dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+				<!-- Adicional para JUnit 5 -->
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-api</artifactId>
+				<version>5.9.3</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-engine</artifactId>
+				<version>5.9.3</version>
+				<scope>test</scope>
+			</dependency>
+			<!-- Adicional para AssertJ -->
+			<dependency>
+				<groupId>org.assertj</groupId>
+				<artifactId>assertj-core</artifactId>
+				<version>3.21.0</version>
+				<scope>test</scope>
+			</dependency>
+			<!-- Adicional para Mockito -->
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>4.8.0</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
+		<build>
 			
-			<plugin> <!-- flyway.database.config -->
-				<groupId>org.flywaydb</groupId>
-				<artifactId>flyway-maven-plugin</artifactId>
-				<version>10.11.1</version>
-				<configuration>
-					<url>jdbc:postgresql://localhost:5432/grupobrasileiro</url>
-					<user>${database.username}</user>
-					<password>${database.password}</password>
-					<locations>classpath:db/migration</locations>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+			<plugins>
+				<!-- Plugin para o Spring Boot -->
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<configuration>
+						<excludes>
+							<exclude>
+								<groupId>org.projectlombok</groupId>
+								<artifactId>lombok</artifactId>
+							</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+		
+				   <!-- Plugin Maven Surefire -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.0.0-M5</version> <!-- Atualize para a versão mais recente -->
+				</plugin>
 
-</project>
+				<!-- Plugin Jacoco para Cobertura de Código -->
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>0.8.8</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>prepare-agent</goal>
+								<goal>report</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<dataFile>${project.build.directory}/jacoco.exec</dataFile>
+						<outputDirectory>${project.build.directory}/jacoco-report</outputDirectory>
+					</configuration>
+				</plugin>
+		
+				<!-- Plugin Flyway para migração de banco de dados -->
+				<plugin>
+					<groupId>org.flywaydb</groupId>
+					<artifactId>flyway-maven-plugin</artifactId>
+					<version>10.11.1</version>
+					<configuration>
+						<url>jdbc:postgresql://localhost:5432/grupobrasileiro</url>
+						<user>${database.username}</user>
+						<password>${database.password}</password>
+						<locations>classpath:db/migration</locations>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
