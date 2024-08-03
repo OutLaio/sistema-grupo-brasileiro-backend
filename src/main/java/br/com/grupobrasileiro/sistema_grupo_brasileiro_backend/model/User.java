@@ -4,15 +4,21 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
+
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "Users")
-public class User implements Serializable {
+public class User implements UserDetails {
   private static final long serialVersionUID = 1L;
 
     @Id
@@ -47,6 +53,24 @@ public class User implements Serializable {
     @Column(name = "role", nullable = false)
     private Integer role;
 
+    public User(String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, Integer role) {
+        this.name = name;
+        this.lastname = lastname;
+        this.phonenumber = phonenumber;
+        this.sector = sector;
+        this.occupation = occupation;
+        this.nop = nop;
+        this.email = email;
+        this.password = password;
+        this.role = (role != null) ? role : RoleEnum.ROLE_CLIENT.getCode();  
+    }
+
+    @Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		if(this.role == RoleEnum.ROLE_SUPERVISOR.getCode()) return List.of(new SimpleGrantedAuthority("ROLE_SUPERVISOR"), new SimpleGrantedAuthority("ROLE_CLIENT"));
+		else return List.of(new SimpleGrantedAuthority("ROLE_CLIENT"));
+	}
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -66,4 +90,10 @@ public class User implements Serializable {
     public String toString() {
         return "User{" + "id=" + id + '}';
     }
+
+	@Override
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return email;
+	}
 }
