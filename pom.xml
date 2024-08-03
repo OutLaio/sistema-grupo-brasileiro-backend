@@ -99,17 +99,28 @@
 			<artifactId>java-jwt</artifactId>
 			<version>4.4.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
 				<!-- Adicional para JUnit 5 -->
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-api</artifactId>
-				<version>5.8.1</version>
+				<version>5.9.3</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-engine</artifactId>
-				<version>5.8.1</version>
+				<version>5.9.3</version>
 				<scope>test</scope>
 			</dependency>
 			<!-- Adicional para AssertJ -->
@@ -129,6 +140,7 @@
 		</dependencies>
 
 		<build>
+			
 			<plugins>
 				<!-- Plugin para o Spring Boot -->
 				<plugin>
@@ -144,6 +156,13 @@
 					</configuration>
 				</plugin>
 		
+				   <!-- Plugin Maven Surefire -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.0.0-M5</version> <!-- Atualize para a versão mais recente -->
+				</plugin>
+
 				<!-- Plugin Jacoco para Cobertura de Código -->
 				<plugin>
 					<groupId>org.jacoco</groupId>
@@ -177,4 +196,4 @@
 				</plugin>
 			</plugins>
 		</build>
-		
+	</project>

@@ -1,25 +1,40 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-class UserServiceTest {
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.UserFormMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.UserViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
+
+public class UserServiceTest {
+
+    @InjectMocks
+    private UserService userService;
 
     @Mock
     private UserRepository userRepository;
 
-    @InjectMocks
-    private UserService userService;
+    @Mock
+    private UserFormMapper userFormMapper;
+
+    @Mock
+    private UserViewMapper userViewMapper;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
@@ -27,29 +42,51 @@ class UserServiceTest {
     }
 
     @Test
-    void testCadastroCompleto() {
-        UserForm userForm = new UserForm("João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor", "123456", "joao.silva@example.com", "ROLE_CLIENT", "password123");
+    void saveUser_success() throws Exception {
+        // Arrange
+        UserForm userForm = new UserForm(
+            "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor", 
+            "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT
+        );
+        User user = new User(
+            "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor", 
+            "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT
+        );
+        UserView userView = new UserView(
+            null, "João", "Silva", "joao.silva@example.com", null, null, null, null, null
+        );
 
-        // Simulate the save operation
-        when(userRepository.save(any(User.class))).thenReturn(new User());
+        // Configuração dos mocks
+        when(userFormMapper.map(userForm)).thenReturn(user);
+        when(userViewMapper.map(user)).thenReturn(userView);
 
-        User user = userService.registerUser(userForm);
+        // Act
+        UserView result = userService.save(userForm);
 
-        assertNotNull(user);
-        verify(userRepository, times(1)).save(any(User.class));
+        // Assert
+        assertNotNull(result);
+        assertEquals(userView, result);
+        verify(userRepository).save(user);
     }
 
     @Test
-    void testFalhaNoCadastro() {
-        UserForm userForm = new UserForm("", "", "invalid-email", "", "TI", "Developer", "NOP", "USER", "short");
+    void saveUser_emailAlreadyRegistered() throws Exception {
+        // Arrange
+        UserForm userForm = new UserForm(
+            "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor", 
+            "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT
+        );
+        User user = new User(
+            "João", "Silva", "+55 (11) 98888-8888", "Tecnologia", "Desenvolvedor", 
+            "123456", "joao.silva@example.com", "Password123!", RoleEnum.CLIENT
+        );
 
-        // Simulate a failure in the save operation
-        when(userRepository.save(any(User.class))).thenThrow(new RuntimeException("Dados inválidos"));
+        // Configuração dos mocks
+        when(userFormMapper.map(userForm)).thenReturn(user);
+        doThrow(new DataIntegrityViolationException("Duplicate entry")).when(userRepository).save(user);
 
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-            userService.registerUser(userForm);
-        });
-
-        assertEquals("Dados inválidos", thrown.getMessage());
+        // Act & Assert
+        Exception exception = assertThrows(Exception.class, () -> userService.save(userForm));
+        assertEquals("Email or username already registered", exception.getMessage());
     }
 }
