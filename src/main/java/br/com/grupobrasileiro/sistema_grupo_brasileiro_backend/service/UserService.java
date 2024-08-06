@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.UserFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.UserViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
@@ -29,18 +30,23 @@ public class UserService {
 //    private PasswordEncoder passwordEncoder;
 	
 	@Transactional
-    public UserView save(UserForm dto) throws Exception {
-        try {
-            String encryptedPassword = new BCryptPasswordEncoder().encode(dto.password());
-            User entity = userFormMapper.map(dto);
-            entity.setPassword(encryptedPassword);
-            
-            userRepository.save(entity);
-            return userViewMapper.map(entity);
+	public UserView save(UserForm dto) throws EmailUniqueViolationException {
 
-        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
-            throw new Exception("Email or username already registered");
-        }
-    }
+	    if (userRepository.findByEmail(dto.email()) != null) {
+	        throw new EmailUniqueViolationException("Email já em uso: " + dto.email());
+	    }
+	  
+	    String encryptedPassword = new BCryptPasswordEncoder().encode(dto.password());
+	    User entity = userFormMapper.map(dto);
+	    entity.setPassword(encryptedPassword);
+
+	    try {
+	        userRepository.save(entity);
+	    } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+	        throw new EmailUniqueViolationException("Email ou nome de usuário já registrado");
+	    }
+
+	    return userViewMapper.map(entity);
+	}
 
 }

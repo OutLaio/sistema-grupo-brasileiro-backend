@@ -5,8 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,12 +17,15 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.LoginReq
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ResponseForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
+
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
 import jakarta.validation.Valid;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.*;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -41,7 +45,12 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequestForm body) {
         LOGGER.info("Starting login request for: email={}", body.email());
 
-        try {
+	    	User user = (User) userRepository.findByEmail(body.email());
+	        if (user == null) {
+	            LOGGER.warn("User not found with email: {}", body.email());
+	            throw new EntityNotFoundException("Usuário não encontrado com e-mail: " + body.email());     
+	        }
+
             var usernamePassword = new UsernamePasswordAuthenticationToken(body.email(), body.password());
             var auth = this.authenticationManager.authenticate(usernamePassword);
 
@@ -49,28 +58,23 @@ public class AuthController {
 
             LOGGER.info("Successful authentication for: email={}", body.email());
             return ResponseEntity.ok(new ResponseForm(token));
+
+	}
+    @PostMapping("/register")
+	public ResponseEntity<?> save(@Valid @RequestBody UserForm body) {
+        LOGGER.info("Starting login request for: email={}", body.email());
+        	
+        try {
+            UserView view = userService.save(body);
+            return ResponseEntity.status(HttpStatus.CREATED).body(view);
+        } catch (EmailUniqueViolationException e) {
+            LOGGER.error("Email unique violation for email={}: {}", body.email(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
-            LOGGER.error("Authentication error for email={}: {}", body.email(), e.getMessage());
-            return ResponseEntity.status(401).body("Invalid credentials");
+            LOGGER.error("Unexpected error during registration for email={}: {}", body.email(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
         }
     }
-
-    @PostMapping("/register")
-	public ResponseEntity<?> save(@Valid @RequestBody UserForm body) throws Exception {
-        LOGGER.info("Starting login request for: email={}", body.email());
-        
-        try {
-            if (this.userRepository.findByEmail(body.email()) != null) {
-                LOGGER.warn("Email already in use: {}", body.email());
-                return ResponseEntity.status(400).body("Email already in use");
-            }
-			UserView view = userService.save(body);
-		    return ResponseEntity.status(HttpStatus.CREATED).body(view);
-        } catch (Exception e) {
-            LOGGER.error("Authentication error for email={}: {}", body.email(), e.getMessage());
-            return ResponseEntity.status(400).body("Email already in use");
-        }
-	}
 	
 
 }
