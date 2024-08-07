@@ -9,7 +9,8 @@ public record UserView(
 	String occupation,
 	String nop,
 	String email,
-	Integer role	
+	Integer role,
+	Boolean status
 ) {
 
 }

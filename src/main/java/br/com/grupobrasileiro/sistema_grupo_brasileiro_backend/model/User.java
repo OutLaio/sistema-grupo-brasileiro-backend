@@ -52,8 +52,11 @@ public class User implements UserDetails {
 
     @Column(name = "role", nullable = false)
     private Integer role;
+    
+    @Column(name = "status", nullable = false)
+    private Boolean status;
 
-    public User(String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, Integer role) {
+    public User(String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, Integer role, Boolean status) {
         this.name = name;
         this.lastname = lastname;
         this.phonenumber = phonenumber;
@@ -62,8 +65,11 @@ public class User implements UserDetails {
         this.nop = nop;
         this.email = email;
         this.password = password;
-        this.role = (role != null) ? role : RoleEnum.ROLE_CLIENT.getCode();  
+        this.role = role;
+        this.status = status;
     }
+    
+
 
     @Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
