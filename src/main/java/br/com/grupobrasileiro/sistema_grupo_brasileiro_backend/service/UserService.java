@@ -5,10 +5,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UpdateUserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserProfileView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.UserFormMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.UserProfileViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.UserViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
@@ -26,8 +29,8 @@ public class UserService {
 	@Autowired
 	private UserViewMapper userViewMapper;
 	
-//	@Autowired
-//    private PasswordEncoder passwordEncoder;
+	@Autowired
+    private UserProfileViewMapper userProfileViewMapper;
 	
 	@Transactional
 	public UserView save(UserForm dto) throws EmailUniqueViolationException {
@@ -48,5 +51,24 @@ public class UserService {
 
 	    return userViewMapper.map(entity);
 	}
+	
+	public UserProfileView getUserProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return userProfileViewMapper.map(user);
+    }
+	
+	@Transactional
+    public User updateUser(Long userId, UpdateUserForm form) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setName(form.name());
+        user.setLastname(form.lastname());
+        user.setPhonenumber(form.phonenumber());
+        user.setOccupation(form.occupation());
+        user.setNop(form.nop());
+        user.setSector(form.sector());
+        return userRepository.save(user);
+    }
 
 }
