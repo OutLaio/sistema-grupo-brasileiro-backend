@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS public.users
     nop character varying(255) COLLATE pg_catalog."default" NOT NULL,
     role bigint NOT NULL,
     token text COLLATE pg_catalog."default",
+    status boolean NOT NULL DEFAULT true,
     CONSTRAINT users_pkey PRIMARY KEY (id),
     CONSTRAINT uk_471i15k6vbj1lfsfb19getcdi UNIQUE (email)
 )
