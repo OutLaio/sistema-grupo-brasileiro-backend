@@ -70,5 +70,14 @@ public class UserService {
         user.setSector(form.sector());
         return userRepository.save(user);
     }
+	
+	@Transactional
+    public void deactivateUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setActive(false);
+        userRepository.save(user);
+    }
 
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,6 +48,14 @@ public class UserController {
     public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserForm form, @AuthenticationPrincipal UserDetails userDetails) {
         User updatedUser = userService.updateUser(id, form);
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
+    }
+	
+	@PutMapping("/deactivate")
+    @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> deactivateUser(Authentication authentication) {
+        Long userId = ((User) authentication.getPrincipal()).getId();
+        userService.deactivateUser(userId);
+        return ResponseEntity.noContent().build();
     }
 
 }
