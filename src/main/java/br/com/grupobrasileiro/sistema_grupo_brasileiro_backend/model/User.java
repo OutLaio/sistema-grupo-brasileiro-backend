@@ -1,7 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -84,7 +84,7 @@ public class User implements UserDetails {
     this.password = password;
     this.role = (role != null) ? role : RoleEnum.ROLE_CLIENT.getCode();
     this.active = true;  
-    this.projects = new LinkedHashSet<>();
+    this.projects = new HashSet<>();
   }
 
   @Override

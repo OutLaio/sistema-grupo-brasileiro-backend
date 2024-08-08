@@ -34,7 +34,7 @@ public class Project {
     @Column
     private String details;
 
-    @Column
+    @Column(nullable = false)
     private Integer progress;
 
     @Column(nullable = false)
