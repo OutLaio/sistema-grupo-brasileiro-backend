@@ -25,11 +25,17 @@ public record UserForm(
 
         @NotBlank(message = "Password is required!") @Size(min = 8, message = "Password must be at least 8 characters long!") @Pattern(regexp = "^(?=.*[a-z]).*$", message = "Password must contain at least one lowercase letter!") @Pattern(regexp = "^(?=.*[A-Z]).*$", message = "Password must contain at least one uppercase letter!") @Pattern(regexp = "^(?=.*\\d).*$", message = "Password must contain at least one digit!") @Pattern(regexp = "^(?=.*[@$!%*?&]).*$", message = "Password must contain at least one special character!") String password,
 
-        @NotNull(message = "Role is required!") Integer role) {
+        @NotNull(message = "Role is required!") Integer role,
+        
+        @NotNull(message = "Status is required!") Boolean status
+		) {
 
     public UserForm {
         if (role == null) {
             role = RoleEnum.ROLE_CLIENT.getCode();
+        }
+        if (status == null) {
+            status = true; 
         }
     }
 

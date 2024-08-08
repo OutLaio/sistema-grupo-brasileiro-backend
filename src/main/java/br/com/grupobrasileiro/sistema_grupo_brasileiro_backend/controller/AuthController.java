@@ -20,6 +20,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.UserIsNotActiveException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
@@ -49,6 +50,11 @@ public class AuthController {
 	        if (user == null) {
 	            LOGGER.warn("User not found with email: {}", body.email());
 	            throw new EntityNotFoundException("Usuário não encontrado com e-mail: " + body.email());     
+	        }
+	        
+	        if (user.getActive() == false) {
+	        	 LOGGER.warn("User is not active: {}", body.email());
+		         throw new UserIsNotActiveException("Acesso negado.");  
 	        }
 
             var usernamePassword = new UsernamePasswordAuthenticationToken(body.email(), body.password());
