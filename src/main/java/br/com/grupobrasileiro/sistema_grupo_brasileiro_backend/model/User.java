@@ -21,85 +21,102 @@ import java.util.Objects;
 public class User implements UserDetails {
   private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
-    
-    @Column(name = "name", nullable = false)
-    private String name;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "lastname", nullable = false)
-    private String lastname;
+  @Column(name = "name", nullable = false)
+  private String name;
 
-    @Column(name = "phonenumber", nullable = false)
-    private String phonenumber;
+  @Column(name = "lastname", nullable = false)
+  private String lastname;
 
-    @Column(name = "sector", nullable = false)
-    private String sector;
+  @Column(name = "phonenumber", nullable = false)
+  private String phonenumber;
 
-    @Column(name = "occupation", nullable = false)
-    private String occupation;
+  @Column(name = "sector", nullable = false)
+  private String sector;
 
-    @Column(name = "nop", nullable = false)
-    private String nop;
+  @Column(name = "occupation", nullable = false)
+  private String occupation;
 
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
-    
-    @Column(name = "password")
-    private String password;
+  @Column(name = "nop", nullable = false)
+  private String nop;
 
-    @Column(name = "role", nullable = false)
-    private Integer role;
-    
-    @Column(name = "status", nullable = false)
-    private Boolean status;
+  @Column(name = "email", nullable = false, unique = true)
+  private String email;
 
-    public User(String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, Integer role, Boolean status) {
-        this.name = name;
-        this.lastname = lastname;
-        this.phonenumber = phonenumber;
-        this.sector = sector;
-        this.occupation = occupation;
-        this.nop = nop;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.status = status;
-    }
-    
+  @Column(name = "password")
+  private String password;
 
+  @Column(name = "role", nullable = false)
+  private Integer role;
+  
+  @Column(name = "active", nullable = false)
+  private Boolean active = true;
 
-    @Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		if(this.role == RoleEnum.ROLE_SUPERVISOR.getCode()) return List.of(new SimpleGrantedAuthority("ROLE_SUPERVISOR"), new SimpleGrantedAuthority("ROLE_CLIENT"));
-		else return List.of(new SimpleGrantedAuthority("ROLE_CLIENT"));
-	}
+  public User(String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, Integer role) {
+    this.name = name;
+    this.lastname = lastname;
+    this.phonenumber = phonenumber;
+    this.sector = sector;
+    this.occupation = occupation;
+    this.nop = nop;
+    this.email = email;
+    this.password = password;
+    this.role = (role != null) ? role : RoleEnum.ROLE_CLIENT.getCode();
+    this.active = true;  
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        User usuario = (User) o;
-        return Objects.equals(id, usuario.id);
-    }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    if(this.role == RoleEnum.ROLE_SUPERVISOR.getCode()) return List.of(new SimpleGrantedAuthority("ROLE_SUPERVISOR"), new SimpleGrantedAuthority("ROLE_CLIENT"));
+    else return List.of(new SimpleGrantedAuthority("ROLE_CLIENT"));
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    User usuario = (User) o;
+    return Objects.equals(id, usuario.id);
+  }
 
-    @Override
-    public String toString() {
-        return "User{" + "id=" + id + '}';
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
+  }
 
-	@Override
-	public String getUsername() {
-		// TODO Auto-generated method stub
-		return email;
-	}
+  @Override
+  public String toString() {
+    return "User{" + "id=" + id + '}';
+  }
+
+  @Override
+  public String getUsername() {
+    return email;
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return active;
+  }
 }

@@ -25,7 +25,7 @@ public class UserFormMapper implements Mapper<UserForm, User> {
             i.email(),
             i.password(),
             RoleEnum.fromCode(role).getCode(),
-            i.status()
+            true
         );
     }
 }
