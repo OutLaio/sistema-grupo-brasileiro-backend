@@ -1,18 +1,27 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
@@ -55,6 +64,14 @@ public class User implements UserDetails {
   
   @Column(name = "active", nullable = false)
   private Boolean active = true;
+  
+  @ManyToMany
+  @JoinTable(
+          name = "project_users",
+          joinColumns = @JoinColumn(name = "user_id"),
+          inverseJoinColumns = @JoinColumn(name = "project_id")
+  )
+  private Set<Project> projects;
 
   public User(String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, Integer role) {
     this.name = name;
@@ -67,6 +84,7 @@ public class User implements UserDetails {
     this.password = password;
     this.role = (role != null) ? role : RoleEnum.ROLE_CLIENT.getCode();
     this.active = true;  
+    this.projects = new LinkedHashSet<>();
   }
 
   @Override
@@ -81,8 +99,8 @@ public class User implements UserDetails {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    User usuario = (User) o;
-    return Objects.equals(id, usuario.id);
+    User user = (User) o;
+    return Objects.equals(id, user.id);
   }
 
   @Override
