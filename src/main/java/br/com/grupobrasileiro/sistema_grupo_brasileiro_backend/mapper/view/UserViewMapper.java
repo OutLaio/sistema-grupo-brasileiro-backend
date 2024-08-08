@@ -20,7 +20,7 @@ public class UserViewMapper implements Mapper<User, UserView> {
             i.getNop(),
             i.getEmail(),
             i.getRole(),
-            i.getStatus()
+            i.getActive()
         );
     }
 }

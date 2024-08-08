@@ -52,7 +52,7 @@ public class AuthController {
 	            throw new EntityNotFoundException("Usuário não encontrado com e-mail: " + body.email());     
 	        }
 	        
-	        if (user.getStatus() == false) {
+	        if (user.getActive() == false) {
 	        	 LOGGER.warn("User is not active: {}", body.email());
 		         throw new UserIsNotActiveException("Acesso negado.");  
 	        }
