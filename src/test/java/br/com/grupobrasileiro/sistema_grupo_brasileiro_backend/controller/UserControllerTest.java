@@ -4,6 +4,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,32 +19,55 @@ import static org.mockito.Mockito.when;
 
 public class UserControllerTest {
 
-        @Mock
-        private UserService userService;
+    @Mock
+    private UserService userService;
 
-        @InjectMocks
-        private UserController userController;
+    @InjectMocks
+    private UserController userController;
 
-        @BeforeEach
-        public void setUp() {
-                MockitoAnnotations.openMocks(this);
-        }
+    private Faker faker;
 
-        @Test
-        public void testSaveUser() throws Exception {
-                UserForm userForm = new UserForm(
-                                "João", "Silva", "21999999999", "Tecnologia", "Desenvolvedor", "123",
-                                "joao.silva@example.com", "Senha@123", RoleEnum.ROLE_CLIENT.getCode());
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+        faker = new Faker();
+    }
 
-                UserView userView = new UserView(
-                                1L, "João", "Silva", "21999999999", "Tecnologia", "Desenvolvedor", "123",
-                                "joao.silva@example.com", RoleEnum.ROLE_CLIENT.getCode());
+    @Test
+    public void testSaveUser() throws Exception {
+        UserForm userForm = new UserForm(
+                faker.name().firstName(),
+                faker.name().lastName(),
+                faker.phoneNumber().phoneNumber(),
+                faker.company().industry(),
+                faker.job().title(),
+                faker.idNumber().valid(),
+                faker.internet().emailAddress(),
+                faker.internet().password(8, 16, true, true, true),
+                RoleEnum.ROLE_CLIENT.getCode(),
+                true
+        );
 
-                when(userService.save(any(UserForm.class))).thenReturn(userView);
+        UserView userView = new UserView(
+                1L,
+                userForm.name(),
+                userForm.lastname(),
+                userForm.phonenumber(),
+                userForm.sector(),
+                userForm.occupation(),
+                userForm.nop(),
+                userForm.email(),
+                userForm.role(),
+                userForm.status()
+        );
 
-                ResponseEntity<UserView> response = userController.save(userForm);
+        when(userService.save(any(UserForm.class))).thenReturn(userView);
 
-                assertEquals(HttpStatus.CREATED, response.getStatusCode());
-                assertEquals(userView, response.getBody());
-        }
+        ResponseEntity<UserView> response = userController.save(userForm);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(userView, response.getBody());
+    }
 }
+
+
