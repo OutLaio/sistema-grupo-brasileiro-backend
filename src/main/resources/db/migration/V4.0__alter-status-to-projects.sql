@@ -1,3 +1,8 @@
 ALTER TABLE public.projects
-ALTER COLUMN status TYPE character varying(50) USING status::character varying,
-ALTER COLUMN status SET CHECK (status IN ('AF', 'EA', 'AA', 'AP', 'EC', 'CO'));
+DROP COLUMN status;
+
+ALTER TABLE public.projects
+ADD COLUMN status character varying(50) NOT NULL;
+
+ALTER TABLE public.projects
+ADD CONSTRAINT status_check CHECK (status IN ('AF', 'EA', 'AA', 'AP', 'EC', 'CO'));
