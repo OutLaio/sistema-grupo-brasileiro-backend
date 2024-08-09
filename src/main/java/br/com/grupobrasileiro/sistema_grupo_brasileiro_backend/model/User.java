@@ -16,8 +16,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -65,12 +63,7 @@ public class User implements UserDetails {
   @Column(name = "active", nullable = false)
   private Boolean active = true;
   
-  @ManyToMany
-  @JoinTable(
-          name = "project_users",
-          joinColumns = @JoinColumn(name = "user_id"),
-          inverseJoinColumns = @JoinColumn(name = "project_id")
-  )
+  @ManyToMany(mappedBy = "users")
   private Set<Project> projects;
 
   public User(String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, Integer role) {
