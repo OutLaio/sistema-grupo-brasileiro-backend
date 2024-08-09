@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UpdateUserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserProfileView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
@@ -169,6 +170,92 @@ class UserServiceTest {
         assertEquals(userProfileView.email(), result.email());
     }
 
+    @Test
+    void testGetUserProfile_UserNotFound() {
+        Long userId = faker.number().randomNumber();
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> userService.getUserProfile(userId));
+    }
+
+    @Test
+    void testUpdateUser_Success() {
+        Long userId = faker.number().randomNumber();
+        UpdateUserForm form = new UpdateUserForm(
+                faker.name().firstName(),
+                faker.name().lastName(),
+                faker.phoneNumber().phoneNumber(),
+                faker.job().title(),
+                faker.bothify("??###"),
+                faker.company().industry()
+        );
+
+        User existingUser = new User();
+        existingUser.setId(userId);
+        existingUser.setName("Old Name");
+
+        User updatedUser = new User();
+        updatedUser.setId(userId);
+        updatedUser.setName(form.name());
+        updatedUser.setLastname(form.lastname());
+        updatedUser.setPhonenumber(form.phonenumber());
+        updatedUser.setOccupation(form.occupation());
+        updatedUser.setNop(form.nop());
+        updatedUser.setSector(form.sector());
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(existingUser)).thenReturn(updatedUser);
+
+        User result = userService.updateUser(userId, form);
+
+        assertNotNull(result);
+        assertEquals(form.name(), result.getName());
+        assertEquals(form.lastname(), result.getLastname());
+        assertEquals(form.phonenumber(), result.getPhonenumber());
+        assertEquals(form.occupation(), result.getOccupation());
+        assertEquals(form.nop(), result.getNop());
+        assertEquals(form.sector(), result.getSector());
+    }
+
+    @Test
+    void testUpdateUser_UserNotFound() {
+        Long userId = faker.number().randomNumber();
+        UpdateUserForm form = new UpdateUserForm(
+                faker.name().firstName(),
+                faker.name().lastName(),
+                faker.phoneNumber().phoneNumber(),
+                faker.job().title(),
+                faker.bothify("??###"),
+                faker.company().industry()
+        );
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> userService.updateUser(userId, form));
+    }
+
+    @Test
+    void testDeactivateUser_Success() {
+        Long userId = faker.number().randomNumber();
+        User user = new User();
+        user.setId(userId);
+        user.setActive(true); 
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        userService.deactivateUser(userId);
+
+        assertFalse(user.getActive()); 
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void testDeactivateUser_UserNotFound() {
+        Long userId = faker.number().randomNumber();
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> userService.deactivateUser(userId));
+    }
 
     @Test
     void testGetUsersByRole() {
@@ -202,4 +289,5 @@ class UserServiceTest {
         assertEquals(userView.id(), result.getContent().get(0).id());
     }
 }
+
 

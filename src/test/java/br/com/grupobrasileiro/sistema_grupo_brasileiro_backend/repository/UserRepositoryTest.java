@@ -1,10 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
 
-import com.github.javafaker.Faker;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
@@ -52,14 +52,16 @@ public class UserRepositoryTest {
         entityManager.flush();
 
         // Act
-        UserDetails foundUser = userRepository.findByEmail(email);
+        UserDetails foundUserDetails = userRepository.findByEmail(email);
 
         // Assert
-        assertThat(foundUser).isNotNull();
-        assertThat(foundUser.getUsername()).isEqualTo(email);
-        assertThat(foundUser).isInstanceOf(User.class);
-    }
+        assertThat(foundUserDetails).isNotNull();
+        assertThat(foundUserDetails).isInstanceOf(User.class);
 
+        User foundUser = (User) foundUserDetails;
+        assertThat(foundUser.getUsername()).isEqualTo(email);
+        assertThat(foundUser.getName()).isEqualTo(user.getName());
+    }
 
     @Test
     public void testFindByRole() {
@@ -87,8 +89,10 @@ public class UserRepositoryTest {
         // Assert
         assertThat(usersPage).isNotNull();
         assertThat(usersPage.getTotalElements()).isGreaterThan(0);
-        usersPage.getContent().forEach(u -> {
-            assertThat(u.getRole()).isEqualTo(role);
-        });
+
+        for (User user : usersPage.getContent()) {
+            assertThat(user.getRole()).isEqualTo(role);
+        }
     }
 }
+

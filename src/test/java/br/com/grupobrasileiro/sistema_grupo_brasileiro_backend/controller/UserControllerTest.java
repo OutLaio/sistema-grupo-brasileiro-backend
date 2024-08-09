@@ -217,7 +217,7 @@ public class UserControllerTest {
     @Test
     void testInvalidPassword() {
         UserForm userForm = new UserForm("John", "Doe", "+55 (11) 98888-8888", "Tech", "Engineer", "12345", "john.doe@example.com", "invalidpassword", 1, true);
-     // Check if validation fails with the expected messageda
+     // Check if validation fails with the expected message
     }
 
 

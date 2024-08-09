@@ -1,12 +1,13 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -42,13 +43,14 @@ public class EmailServiceTest {
         emailService.send(emailForm);
 
         // Then
-        SimpleMailMessage expectedMessage = new SimpleMailMessage();
-        expectedMessage.setFrom("from@example.com");
-        expectedMessage.setTo("to@example.com");
-        expectedMessage.setSubject("Subject");
-        expectedMessage.setText("Email body text");
+        ArgumentCaptor<SimpleMailMessage> messageCaptor = ArgumentCaptor.forClass(SimpleMailMessage.class);
+        verify(emailSender, times(1)).send(messageCaptor.capture());
 
-        verify(emailSender, times(1)).send(expectedMessage);
+        SimpleMailMessage capturedMessage = messageCaptor.getValue();
+        assertEquals("from@example.com", capturedMessage.getFrom());
+        assertArrayEquals(new String[]{"to@example.com"}, capturedMessage.getTo());
+        assertEquals("Subject", capturedMessage.getSubject());
+        assertEquals("Email body text", capturedMessage.getText());
     }
 
     @Test
@@ -60,15 +62,13 @@ public class EmailServiceTest {
                 "Subject",
                 "Email body text");
 
-        doThrow(new MailException("Error sending email") {
-        }).when(emailSender).send(any(SimpleMailMessage.class));
+        doThrow(new MailException("Error sending email") {}).when(emailSender).send(any(SimpleMailMessage.class));
 
         // When
         emailService.send(emailForm);
 
         // Then
         verify(emailSender, times(1)).send(any(SimpleMailMessage.class));
-        // You can also verify logs if you have a logging framework configured for
-        // testing
+        // Optionally verify logs if you have a logging framework configured for testing
     }
 }
