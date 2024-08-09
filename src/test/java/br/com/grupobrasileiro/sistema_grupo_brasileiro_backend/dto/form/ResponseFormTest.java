@@ -1,29 +1,36 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form;
 
-import com.github.javafaker.Faker;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import com.github.javafaker.Faker;
 
 public class ResponseFormTest {
 
-    private Faker faker;
+    private final Faker faker = new Faker();
 
-    @BeforeEach
-    void setUp() {
-        faker = new Faker();
+    @Test
+    public void testValidToken() {
+        String fakeToken = faker.internet().uuid();
+        ResponseForm form = new ResponseForm(fakeToken);
+        assertEquals(fakeToken, form.token());
     }
 
     @Test
-    void testResponseFormCreation() {
-        
-        String token = faker.lorem().characters(20);
+    public void testNullToken() {
+        ResponseForm form = new ResponseForm(null);
+        assertNull(form.token());
+    }
 
-        
-        ResponseForm responseForm = new ResponseForm(token);
+    @Test
+    public void testEmptyToken() {
+        ResponseForm form = new ResponseForm("");
+        assertEquals("", form.token());
+    }
 
-        
-        assertEquals(token, responseForm.token());
+    @Test
+    public void testTokenWithSpaces() {
+        String tokenWithSpaces = "  token  with  spaces  ";
+        ResponseForm form = new ResponseForm(tokenWithSpaces);
+        assertEquals(tokenWithSpaces, form.token());
     }
 }

@@ -1,54 +1,205 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
+
+import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserProfileView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.UserFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.UserViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.UserProfileViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
+import java.util.Collections;
+import java.util.Optional;
 
-public class UserServiceTest {
+class UserServiceTest {
 
-        @Test
-        public void testUserGettersAndSetters() {
-                User user = new User();
+    @Mock
+    private UserRepository userRepository;
 
-                user.setId(1L);
-                user.setName("João");
-                user.setLastname("Silva");
-                user.setPhonenumber("+55 (11) 98888-8888");
-                user.setSector("Tecnologia");
-                user.setOccupation("Desenvolvedor");
-                user.setNop("123456");
-                user.setEmail("joao.silva@example.com");
-                user.setPassword("senhaSegura");
-                user.setRole(RoleEnum.ROLE_CLIENT.getCode());
+    @Mock
+    private UserFormMapper userFormMapper;
 
-                assertEquals(1L, user.getId());
-                assertEquals("João", user.getName());
-                assertEquals("Silva", user.getLastname());
-                assertEquals("+55 (11) 98888-8888", user.getPhonenumber());
-                assertEquals("Tecnologia", user.getSector());
-                assertEquals("Desenvolvedor", user.getOccupation());
-                assertEquals("123456", user.getNop());
-                assertEquals("joao.silva@example.com", user.getEmail());
-                assertEquals(RoleEnum.ROLE_CLIENT.getCode(), user.getRole());
-        }
+    @Mock
+    private UserViewMapper userViewMapper;
+
+    @Mock
+    private UserProfileViewMapper userProfileViewMapper;
+
+    @InjectMocks
+    private UserService userService;
+
+    private Faker faker;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        faker = new Faker();
+    }
+
+    @Test
+    void testSaveUser_Success() throws EmailUniqueViolationException {
+        UserForm userForm = new UserForm(
+                faker.name().firstName(),
+                faker.name().lastName(),
+                faker.phoneNumber().phoneNumber(),
+                faker.company().industry(),
+                faker.job().title(),
+                faker.bothify("??###"),
+                faker.internet().emailAddress(),
+                "Password123!",
+                1,
+                true
+        );
+
+        User user = new User();
+        user.setEmail(userForm.email());
+
+        when(userRepository.findByEmail(userForm.email())).thenReturn(null);
+        when(userFormMapper.map(userForm)).thenReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        UserView userView = new UserView(
+            user.getId(), 
+            user.getName(), 
+            user.getLastname(), 
+            user.getPhonenumber(), 
+            user.getSector(), 
+            user.getOccupation(), 
+            user.getNop(), 
+            user.getEmail(), 
+            user.getRole(), 
+            user.isEnabled()
+        );
+        when(userViewMapper.map(user)).thenReturn(userView);
+
+        UserView result = userService.save(userForm);
+
+        assertNotNull(result);
+        assertEquals(userView.id(), result.id());
+        assertEquals(userView.name(), result.name());
+        assertEquals(userView.lastname(), result.lastname());
+        assertEquals(userView.phonenumber(), result.phonenumber());
+        assertEquals(userView.sector(), result.sector());
+        assertEquals(userView.occupation(), result.occupation());
+        assertEquals(userView.nop(), result.nop());
+        assertEquals(userView.email(), result.email());
+        assertEquals(userView.role(), result.role());
+        assertEquals(userView.status(), result.status());
+    }
+
+    @Test
+    void testSaveUser_EmailAlreadyExists() {
+        UserForm userForm = new UserForm(
+                faker.name().firstName(),
+                faker.name().lastName(),
+                faker.phoneNumber().phoneNumber(),
+                faker.company().industry(),
+                faker.job().title(),
+                faker.bothify("??###"),
+                faker.internet().emailAddress(),
+                "Password123!",
+                1,
+                true
+        );
+
+        when(userRepository.findByEmail(userForm.email())).thenReturn(new User());
+
+        assertThrows(EmailUniqueViolationException.class, () -> {
+            userService.save(userForm);
+        });
+
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void testGetUserProfile_Success() {
+        Long userId = faker.number().randomNumber();
+        User user = new User();
+        user.setId(userId);
+        user.setName(faker.name().firstName());
+        user.setLastname(faker.name().lastName());
+        user.setEmail(faker.internet().emailAddress());
+        user.setPhonenumber(faker.phoneNumber().phoneNumber());
+        user.setSector(faker.company().industry());
+        user.setOccupation(faker.job().title());
+        user.setNop(faker.bothify("??###"));
+        user.setRole(1);
+        user.setActive(true);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        UserProfileView userProfileView = new UserProfileView(
+            user.getId(), 
+            user.getName(), 
+            user.getLastname(), 
+            user.getPhonenumber(), 
+            user.getSector(), 
+            user.getOccupation(), 
+            user.getNop(), 
+            user.getEmail()
+        );
+        when(userProfileViewMapper.map(user)).thenReturn(userProfileView);
+
+        UserProfileView result = userService.getUserProfile(userId);
+
+        assertNotNull(result);
+        assertEquals(userProfileView.id(), result.id());
+        assertEquals(userProfileView.name(), result.name());
+        assertEquals(userProfileView.lastname(), result.lastname());
+        assertEquals(userProfileView.phonenumber(), result.phonenumber());
+        assertEquals(userProfileView.sector(), result.sector());
+        assertEquals(userProfileView.occupation(), result.occupation());
+        assertEquals(userProfileView.nop(), result.nop());
+        assertEquals(userProfileView.email(), result.email());
+    }
+
+
+    @Test
+    void testGetUsersByRole() {
+        int role = 1;
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        User user = new User();
+        user.setRole(role);
+
+        Page<User> usersPage = new PageImpl<>(Collections.singletonList(user));
+        when(userRepository.findByRole(role, pageRequest)).thenReturn(usersPage);
+
+        UserView userView = new UserView(
+            user.getId(), 
+            user.getName(), 
+            user.getLastname(), 
+            user.getPhonenumber(), 
+            user.getSector(), 
+            user.getOccupation(), 
+            user.getNop(), 
+            user.getEmail(), 
+            user.getRole(), 
+            user.isEnabled()
+        );
+        Page<UserView> userViewsPage = new PageImpl<>(Collections.singletonList(userView));
+        when(userViewMapper.map(user)).thenReturn(userView);
+
+        Page<UserView> result = userService.getUsersByRole(role, pageRequest);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(userView.id(), result.getContent().get(0).id());
+    }
 }
+

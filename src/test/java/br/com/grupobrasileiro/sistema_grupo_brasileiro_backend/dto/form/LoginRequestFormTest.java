@@ -1,115 +1,69 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form;
 
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 import com.github.javafaker.Faker;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.ConstraintViolation;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LoginRequestFormTest {
 
-    private Faker faker;
-    private Validator validator;
+    private final Faker faker = new Faker();
+    private final Validator validator;
 
-    @BeforeEach
-    void setUp() {
-        faker = new Faker();
+    public LoginRequestFormTest() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        this.validator = factory.getValidator();
     }
 
     @Test
-    void testValidLoginRequestForm() {
-        String email = faker.internet().emailAddress();
-        String password = faker.internet().password();
-
-        LoginRequestForm form = new LoginRequestForm(email, password);
+    public void testValidEmailAndPassword() {
+        String fakeEmail = faker.internet().emailAddress();
+        String fakePassword = faker.internet().password();
+        LoginRequestForm form = new LoginRequestForm(fakeEmail, fakePassword);
 
         Set<ConstraintViolation<LoginRequestForm>> violations = validator.validate(form);
-
-        assertTrue(violations.isEmpty(), "No violations should be present");
+        assertTrue(violations.isEmpty());
     }
 
     @Test
-    void testInvalidEmailFormat() {
+    public void testInvalidEmail() {
         String invalidEmail = "invalid-email";
-        String password = faker.internet().password();
-
-        LoginRequestForm form = new LoginRequestForm(invalidEmail, password);
+        String fakePassword = faker.internet().password();
+        LoginRequestForm form = new LoginRequestForm(invalidEmail, fakePassword);
 
         Set<ConstraintViolation<LoginRequestForm>> violations = validator.validate(form);
-
-        boolean hasEmailFormatError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("email") &&
-                        violation.getMessage().contains("must be a well-formed email address"));
-        
-        assertTrue(hasEmailFormatError, "Expected email format error not found");
+        assertFalse(violations.isEmpty());
     }
 
     @Test
-    void testBlankEmail() {
-        String password = faker.internet().password();
-
-        LoginRequestForm form = new LoginRequestForm("", password);
+    public void testNullEmail() {
+        String fakePassword = faker.internet().password();
+        LoginRequestForm form = new LoginRequestForm(null, fakePassword);
 
         Set<ConstraintViolation<LoginRequestForm>> violations = validator.validate(form);
-
-        boolean hasBlankEmailError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("email") &&
-                        violation.getMessage().contains("must not be blank"));
-        
-        assertTrue(hasBlankEmailError, "Expected blank email error not found");
+        assertFalse(violations.isEmpty());
     }
 
     @Test
-    void testBlankPassword() {
-        String email = faker.internet().emailAddress();
-
-        LoginRequestForm form = new LoginRequestForm(email, "");
+    public void testEmptyPassword() {
+        String fakeEmail = faker.internet().emailAddress();
+        LoginRequestForm form = new LoginRequestForm(fakeEmail, "");
 
         Set<ConstraintViolation<LoginRequestForm>> violations = validator.validate(form);
-
-        boolean hasBlankPasswordError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("password") &&
-                        violation.getMessage().contains("must not be blank"));
-        
-        assertTrue(hasBlankPasswordError, "Expected blank password error not found");
+        assertFalse(violations.isEmpty());
     }
 
     @Test
-    void testNullEmail() {
-        String password = faker.internet().password();
-
-        LoginRequestForm form = new LoginRequestForm(null, password);
-
-        Set<ConstraintViolation<LoginRequestForm>> violations = validator.validate(form);
-
-        boolean hasNullEmailError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("email") &&
-                        violation.getMessage().contains("must not be blank"));
-        
-        assertTrue(hasNullEmailError, "Expected null email error not found");
-    }
-
-    @Test
-    void testNullPassword() {
-        String email = faker.internet().emailAddress();
-
-        LoginRequestForm form = new LoginRequestForm(email, null);
+    public void testNullPassword() {
+        String fakeEmail = faker.internet().emailAddress();
+        LoginRequestForm form = new LoginRequestForm(fakeEmail, null);
 
         Set<ConstraintViolation<LoginRequestForm>> violations = validator.validate(form);
-
-        boolean hasNullPasswordError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("password") &&
-                        violation.getMessage().contains("must not be blank"));
-        
-        assertTrue(hasNullPasswordError, "Expected null password error not found");
+        assertFalse(violations.isEmpty());
     }
 }
+

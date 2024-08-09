@@ -1,100 +1,130 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form;
 
-import com.github.javafaker.Faker;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import com.github.javafaker.Faker;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.ConstraintViolation;
+import java.util.Set;
 
 public class SendEmailFormTest {
 
-    private Faker faker;
+    private final Faker faker = new Faker();
+    private final Validator validator;
 
-    @BeforeEach
-    void setUp() {
-        faker = new Faker();
+    public SendEmailFormTest() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        this.validator = factory.getValidator();
     }
 
     @Test
-    void testValidSendEmailForm() {
+    public void testValidForm() {
         String emailFrom = faker.internet().emailAddress();
         String emailTo = faker.internet().emailAddress();
-        String subject = faker.lorem().sentence(5);
+        String subject = faker.lorem().sentence(3);
         String text = faker.lorem().paragraph();
 
-        SendEmailForm sendEmailForm = new SendEmailForm(emailFrom, emailTo, subject, text);
+        SendEmailForm form = new SendEmailForm(emailFrom, emailTo, subject, text);
 
-        assertEquals(emailFrom, sendEmailForm.emailFrom());
-        assertEquals(emailTo, sendEmailForm.emailTo());
-        assertEquals(subject, sendEmailForm.subject());
-        assertEquals(text, sendEmailForm.text());
+        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        assertTrue(violations.isEmpty());
     }
 
     @Test
-    void testEmailFromCannotBeBlank() {
+    public void testInvalidEmailFrom() {
+        String invalidEmailFrom = "invalid-email";
         String emailTo = faker.internet().emailAddress();
-        String subject = faker.lorem().sentence(5);
+        String subject = faker.lorem().sentence(3);
         String text = faker.lorem().paragraph();
 
-        SendEmailForm sendEmailForm = new SendEmailForm("", emailTo, subject, text);
+        SendEmailForm form = new SendEmailForm(invalidEmailFrom, emailTo, subject, text);
 
-        // Add validation logic to check that emailFrom is not blank
-        // For example, if you are using a validation framework, you would check for constraint violations here
-        // Since we are not using validation in this example, this test is just an illustration
-        assertThrows(IllegalArgumentException.class, () -> {
-            if (sendEmailForm.emailFrom().isBlank()) {
-                throw new IllegalArgumentException("Sender email cannot be empty");
-            }
-        });
+        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        assertFalse(violations.isEmpty());
     }
 
     @Test
-    void testEmailToCannotBeBlank() {
+    public void testInvalidEmailTo() {
         String emailFrom = faker.internet().emailAddress();
-        String subject = faker.lorem().sentence(5);
+        String invalidEmailTo = "invalid-email";
+        String subject = faker.lorem().sentence(3);
         String text = faker.lorem().paragraph();
 
-        SendEmailForm sendEmailForm = new SendEmailForm(emailFrom, "", subject, text);
+        SendEmailForm form = new SendEmailForm(emailFrom, invalidEmailTo, subject, text);
 
-        // Add validation logic to check that emailTo is not blank
-        // Similar to above, you would add appropriate validation checks
-        assertThrows(IllegalArgumentException.class, () -> {
-            if (sendEmailForm.emailTo().isBlank()) {
-                throw new IllegalArgumentException("Recipient email cannot be empty");
-            }
-        });
+        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        assertFalse(violations.isEmpty());
     }
 
     @Test
-    void testSubjectCannotBeBlank() {
-        String emailFrom = faker.internet().emailAddress();
+    public void testNullEmailFrom() {
         String emailTo = faker.internet().emailAddress();
+        String subject = faker.lorem().sentence(3);
         String text = faker.lorem().paragraph();
 
-        SendEmailForm sendEmailForm = new SendEmailForm(emailFrom, emailTo, "", text);
+        SendEmailForm form = new SendEmailForm(null, emailTo, subject, text);
 
-        // Add validation logic to check that subject is not blank
-        assertThrows(IllegalArgumentException.class, () -> {
-            if (sendEmailForm.subject().isBlank()) {
-                throw new IllegalArgumentException("Subject cannot be empty");
-            }
-        });
+        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        assertFalse(violations.isEmpty());
     }
 
     @Test
-    void testTextCannotBeBlank() {
+    public void testNullEmailTo() {
+        String emailFrom = faker.internet().emailAddress();
+        String subject = faker.lorem().sentence(3);
+        String text = faker.lorem().paragraph();
+
+        SendEmailForm form = new SendEmailForm(emailFrom, null, subject, text);
+
+        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    public void testEmptySubject() {
         String emailFrom = faker.internet().emailAddress();
         String emailTo = faker.internet().emailAddress();
-        String subject = faker.lorem().sentence(5);
+        String text = faker.lorem().paragraph();
 
-        SendEmailForm sendEmailForm = new SendEmailForm(emailFrom, emailTo, subject, "");
+        SendEmailForm form = new SendEmailForm(emailFrom, emailTo, "", text);
 
-        // Add validation logic to check that text is not blank
-        assertThrows(IllegalArgumentException.class, () -> {
-            if (sendEmailForm.text().isBlank()) {
-                throw new IllegalArgumentException("Email body cannot be empty");
-            }
-        });
+        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    public void testSubjectTooLong() {
+        String emailFrom = faker.internet().emailAddress();
+        String emailTo = faker.internet().emailAddress();
+        String longSubject = faker.lorem().characters(101);
+        String text = faker.lorem().paragraph();
+
+        SendEmailForm form = new SendEmailForm(emailFrom, emailTo, longSubject, text);
+
+        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    public void testEmptyText() {
+        String emailFrom = faker.internet().emailAddress();
+        String emailTo = faker.internet().emailAddress();
+        String subject = faker.lorem().sentence(3);
+
+        SendEmailForm form = new SendEmailForm(emailFrom, emailTo, subject, "");
+
+        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    public void testAllFieldsNull() {
+        SendEmailForm form = new SendEmailForm(null, null, null, null);
+
+        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        assertFalse(violations.isEmpty());
     }
 }
 

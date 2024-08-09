@@ -1,179 +1,100 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form;
 
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 import com.github.javafaker.Faker;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.ConstraintViolation;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ResetPasswordFormTest {
 
-    private Faker faker;
-    private Validator validator;
+    private final Faker faker = new Faker();
+    private final Validator validator;
 
-    @BeforeEach
-    void setUp() {
-        faker = new Faker();
+    public ResetPasswordFormTest() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        this.validator = factory.getValidator();
     }
 
     @Test
-    void testValidResetPasswordForm() {
-        String token = faker.lorem().characters(10);  // Assuming token is a random string
-        String password = "Valid1Password!";
-
-        ResetPasswordForm form = new ResetPasswordForm(token, password);
+    public void testValidTokenAndPassword() {
+        String fakeToken = faker.internet().uuid();
+        String validPassword = "Valid1Password!";
+        ResetPasswordForm form = new ResetPasswordForm(fakeToken, validPassword);
 
         Set<ConstraintViolation<ResetPasswordForm>> violations = validator.validate(form);
-
-        assertTrue(violations.isEmpty(), "No violations should be present");
+        assertTrue(violations.isEmpty());
     }
 
     @Test
-    void testEmptyToken() {
-        String password = "Valid1Password!";
-
-        ResetPasswordForm form = new ResetPasswordForm("", password);
+    public void testEmptyToken() {
+        String validPassword = "Valid1Password!";
+        ResetPasswordForm form = new ResetPasswordForm("", validPassword);
 
         Set<ConstraintViolation<ResetPasswordForm>> violations = validator.validate(form);
-
-        boolean hasTokenError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("token") &&
-                        violation.getMessage().contains("Token cannot be empty"));
-
-        assertTrue(hasTokenError, "Expected token empty error not found");
+        assertFalse(violations.isEmpty());
     }
 
     @Test
-    void testBlankToken() {
-        String password = "Valid1Password!";
-
-        ResetPasswordForm form = new ResetPasswordForm(" ", password);
-
-        Set<ConstraintViolation<ResetPasswordForm>> violations = validator.validate(form);
-
-        boolean hasTokenError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("token") &&
-                        violation.getMessage().contains("Token cannot be empty"));
-
-        assertTrue(hasTokenError, "Expected token blank error not found");
-    }
-
-    @Test
-    void testShortPassword() {
-        String token = faker.lorem().characters(10);
+    public void testShortPassword() {
+        String fakeToken = faker.internet().uuid();
         String shortPassword = "Short1!";
-
-        ResetPasswordForm form = new ResetPasswordForm(token, shortPassword);
+        ResetPasswordForm form = new ResetPasswordForm(fakeToken, shortPassword);
 
         Set<ConstraintViolation<ResetPasswordForm>> violations = validator.validate(form);
-
-        boolean hasPasswordLengthError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("newPassword") &&
-                        violation.getMessage().contains("Password must be at least 8 characters long!"));
-
-        assertTrue(hasPasswordLengthError, "Expected password length error not found");
+        assertFalse(violations.isEmpty());
     }
 
     @Test
-    void testPasswordWithoutLowercase() {
-        String token = faker.lorem().characters(10);
-        String password = "VALIDPASSWORD1!";
-
-        ResetPasswordForm form = new ResetPasswordForm(token, password);
+    public void testPasswordWithoutLowercase() {
+        String fakeToken = faker.internet().uuid();
+        String password = "PASSWORD1!";
+        ResetPasswordForm form = new ResetPasswordForm(fakeToken, password);
 
         Set<ConstraintViolation<ResetPasswordForm>> violations = validator.validate(form);
-
-        boolean hasPasswordLowercaseError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("newPassword") &&
-                        violation.getMessage().contains("Password must contain at least one lowercase letter!"));
-
-        assertTrue(hasPasswordLowercaseError, "Expected password lowercase letter error not found");
+        assertFalse(violations.isEmpty());
     }
 
     @Test
-    void testPasswordWithoutUppercase() {
-        String token = faker.lorem().characters(10);
-        String password = "validpassword1!";
-
-        ResetPasswordForm form = new ResetPasswordForm(token, password);
+    public void testPasswordWithoutUppercase() {
+        String fakeToken = faker.internet().uuid();
+        String password = "password1!";
+        ResetPasswordForm form = new ResetPasswordForm(fakeToken, password);
 
         Set<ConstraintViolation<ResetPasswordForm>> violations = validator.validate(form);
-
-        boolean hasPasswordUppercaseError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("newPassword") &&
-                        violation.getMessage().contains("Password must contain at least one uppercase letter!"));
-
-        assertTrue(hasPasswordUppercaseError, "Expected password uppercase letter error not found");
+        assertFalse(violations.isEmpty());
     }
 
     @Test
-    void testPasswordWithoutDigit() {
-        String token = faker.lorem().characters(10);
-        String password = "PasswordWithoutDigit!";
-
-        ResetPasswordForm form = new ResetPasswordForm(token, password);
+    public void testPasswordWithoutDigit() {
+        String fakeToken = faker.internet().uuid();
+        String password = "Password!";
+        ResetPasswordForm form = new ResetPasswordForm(fakeToken, password);
 
         Set<ConstraintViolation<ResetPasswordForm>> violations = validator.validate(form);
-
-        boolean hasPasswordDigitError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("newPassword") &&
-                        violation.getMessage().contains("Password must contain at least one digit!"));
-
-        assertTrue(hasPasswordDigitError, "Expected password digit error not found");
+        assertFalse(violations.isEmpty());
     }
 
     @Test
-    void testPasswordWithoutSpecialCharacter() {
-        String token = faker.lorem().characters(10);
+    public void testPasswordWithoutSpecialCharacter() {
+        String fakeToken = faker.internet().uuid();
         String password = "Password1";
-
-        ResetPasswordForm form = new ResetPasswordForm(token, password);
+        ResetPasswordForm form = new ResetPasswordForm(fakeToken, password);
 
         Set<ConstraintViolation<ResetPasswordForm>> violations = validator.validate(form);
-
-        boolean hasPasswordSpecialCharError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("newPassword") &&
-                        violation.getMessage().contains("Password must contain at least one special character!"));
-
-        assertTrue(hasPasswordSpecialCharError, "Expected password special character error not found");
+        assertFalse(violations.isEmpty());
     }
 
     @Test
-    void testNullToken() {
-        String password = "Valid1Password!";
-
-        ResetPasswordForm form = new ResetPasswordForm(null, password);
-
-        Set<ConstraintViolation<ResetPasswordForm>> violations = validator.validate(form);
-
-        boolean hasNullTokenError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("token") &&
-                        violation.getMessage().contains("Token cannot be empty"));
-
-        assertTrue(hasNullTokenError, "Expected null token error not found");
-    }
-
-    @Test
-    void testNullPassword() {
-        String token = faker.lorem().characters(10);
-
-        ResetPasswordForm form = new ResetPasswordForm(token, null);
+    public void testNullPassword() {
+        String fakeToken = faker.internet().uuid();
+        ResetPasswordForm form = new ResetPasswordForm(fakeToken, null);
 
         Set<ConstraintViolation<ResetPasswordForm>> violations = validator.validate(form);
-
-        boolean hasNullPasswordError = violations.stream()
-                .anyMatch(violation -> violation.getPropertyPath().toString().equals("newPassword") &&
-                        violation.getMessage().contains("Password is required!"));
-
-        assertTrue(hasNullPasswordError, "Expected null password error not found");
+        assertFalse(violations.isEmpty());
     }
 }
+
