@@ -4,13 +4,17 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.ProjectController;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectUserAdderForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
@@ -23,7 +27,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRe
 
 @Service
 public class ProjectService {
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProjectService.class);
 	@Autowired
 	private ProjectRepository projectRepository;
 	
@@ -40,25 +44,28 @@ public class ProjectService {
 	public ProjectView save(ProjectForm dto) {
 	    Project entity = projectFormMapper.map(dto);
 
+	
 	    if (!isValidStatus(entity.getStatus())) {
 	        throw new IllegalArgumentException("Invalid status value: " + entity.getStatus());
 	    }
 
+	  
 	    Set<User> users = new HashSet<>();
-	    for (UserForm userForm : dto.users()) {
-	        User user = (User)userRepository.findByEmail(userForm.email());
-	        if (user == null) {
-	            throw new EntityNotFoundException("Usuário não encontrado.");     
-	        }
-	       
+	    for (ProjectUserAdderForm userForm : dto.users()) {
+	    	 User user = (User)userRepository.findByEmail(userForm.email());
+		     if (user == null) {
+		          throw new EntityNotFoundException("Usuário não encontrado."); 
+		     }
 	        users.add(user);
 	    }
 	    entity.setUsers(users);
 	    
 	    projectRepository.save(entity);
 
+	   
 	    return projectViewMapper.map(entity);
 	}
+
 
 	@Transactional(readOnly = true)
 	public ProjectView getProjectById(Long id) {

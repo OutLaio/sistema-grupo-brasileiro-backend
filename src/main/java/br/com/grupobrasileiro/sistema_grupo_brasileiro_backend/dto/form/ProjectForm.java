@@ -21,7 +21,7 @@ public record ProjectForm(
 
         @NotBlank(message = "Status is required!") String status,
         
-        Set<UserForm> users) {
+        Set<ProjectUserAdderForm> users) {
 
     public ProjectForm {
         if (users == null) {

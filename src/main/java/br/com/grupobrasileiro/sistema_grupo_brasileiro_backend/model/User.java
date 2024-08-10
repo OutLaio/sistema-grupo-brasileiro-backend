@@ -17,6 +17,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -79,6 +83,19 @@ public class User implements UserDetails {
     this.active = true;  
     this.projects = new HashSet<>();
   }
+  
+  public User(Long id, String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, Integer role) {
+	    this.id = id;
+	  	this.name = name;
+	    this.lastname = lastname;
+	    this.phonenumber = phonenumber;
+	    this.sector = sector;
+	    this.occupation = occupation;
+	    this.nop = nop;
+	    this.email = email;
+	    this.password = password;
+	    this.role = role;
+	  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -130,4 +147,5 @@ public class User implements UserDetails {
   public boolean isEnabled() {
     return active;
   }
+
 }
