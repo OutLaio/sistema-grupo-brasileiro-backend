@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.LoginRequestForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ResponseForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.TokenView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
@@ -63,7 +63,7 @@ public class AuthController {
             var token = tokenService.generateToken((User) auth.getPrincipal());
 
             LOGGER.info("Successful authentication for: email={}", body.email());
-            return ResponseEntity.ok(new ResponseForm(token));
+            return ResponseEntity.ok(new TokenView(token));
 
 	}
     @PostMapping("/register")

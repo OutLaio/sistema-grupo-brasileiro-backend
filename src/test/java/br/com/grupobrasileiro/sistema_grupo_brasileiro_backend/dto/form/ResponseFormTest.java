@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import com.github.javafaker.Faker;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.TokenView;
+
 public class ResponseFormTest {
 
     private final Faker faker = new Faker();
@@ -11,26 +13,26 @@ public class ResponseFormTest {
     @Test
     public void testValidToken() {
         String fakeToken = faker.internet().uuid();
-        ResponseForm form = new ResponseForm(fakeToken);
+        TokenView form = new TokenView(fakeToken);
         assertEquals(fakeToken, form.token());
     }
 
     @Test
     public void testNullToken() {
-        ResponseForm form = new ResponseForm(null);
+        TokenView form = new TokenView(null);
         assertNull(form.token());
     }
 
     @Test
     public void testEmptyToken() {
-        ResponseForm form = new ResponseForm("");
+        TokenView form = new TokenView("");
         assertEquals("", form.token());
     }
 
     @Test
     public void testTokenWithSpaces() {
         String tokenWithSpaces = "  token  with  spaces  ";
-        ResponseForm form = new ResponseForm(tokenWithSpaces);
+        TokenView form = new TokenView(tokenWithSpaces);
         assertEquals(tokenWithSpaces, form.token());
     }
 }

@@ -15,7 +15,7 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.SendEmailForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.email.PasswordRequest;
 
 public class EmailServiceTest {
 
@@ -33,7 +33,7 @@ public class EmailServiceTest {
     @Test
     public void testSendEmail_Success() {
         // Given
-        SendEmailForm emailForm = new SendEmailForm(
+        PasswordRequest emailForm = new PasswordRequest(
                 "from@example.com",
                 "to@example.com",
                 "Subject",
@@ -56,7 +56,7 @@ public class EmailServiceTest {
     @Test
     public void testSendEmail_Failure() {
         // Given
-        SendEmailForm emailForm = new SendEmailForm(
+        PasswordRequest emailForm = new PasswordRequest(
                 "from@example.com",
                 "to@example.com",
                 "Subject",

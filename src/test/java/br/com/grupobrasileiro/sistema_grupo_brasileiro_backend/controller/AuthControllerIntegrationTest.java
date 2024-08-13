@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.LoginRequestForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ResponseForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
@@ -16,6 +15,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.E
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.UserIsNotActiveException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.TokenView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;

@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.SendEmailForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.email.PasswordRequest;
 
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -19,7 +19,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender emailSender;
 
-    public void send(SendEmailForm email) {
+    public void send(PasswordRequest email) {
 
         try {
             LOGGER.info("Preparing email to send: from={}, to={}, subject={}", email.emailFrom(), email.emailTo(), email.subject());

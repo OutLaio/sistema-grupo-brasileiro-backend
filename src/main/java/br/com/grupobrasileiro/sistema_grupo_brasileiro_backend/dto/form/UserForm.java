@@ -1,10 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -37,27 +34,9 @@ public record UserForm(
     	public UserForm {
 	        if (role == null) {
 	            role = RoleEnum.ROLE_CLIENT.getCode();
+            }
+            if (status == null) {
+                status = true; 
+            }
         }
-        if (status == null) {
-            status = true; 
-        }
-    }
-
-	// Método estático para conversão de Set<UserForm> em Set<User>
-    public static Set<User> converter(Set<UserForm> users) {
-        return users.stream()
-                    .map(userForm -> new User(
-                        userForm.name(),
-                        userForm.lastname(),
-                        userForm.phonenumber(),
-                        userForm.sector(),
-                        userForm.occupation(),
-                        userForm.nop(),
-                        userForm.email(),
-                        userForm.password(),
-                        RoleEnum.fromCode(userForm.role()).getCode()
-                    ))
-                    .collect(Collectors.toSet());
-    }
-	
 }

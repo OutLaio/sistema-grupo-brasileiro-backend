@@ -10,12 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.EmailRequestForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.SendEmailForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.email.PasswordRequest;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.EmailService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -32,7 +33,7 @@ public class PasswordRecoveryController {
     
     
     @PostMapping("/requestReset")
-    public ResponseEntity<String> requestReset(@RequestBody EmailRequestForm data) {
+    public ResponseEntity<String> requestReset(@Valid @RequestBody EmailRequestForm data) {
         LOGGER.info("Starting password reset request for: {}", data.email());
 
 
@@ -56,7 +57,7 @@ public class PasswordRecoveryController {
                 resetUrl
         );
 
-        SendEmailForm sendEmailForm = new SendEmailForm(
+        PasswordRequest sendEmailForm = new PasswordRequest(
                 "no-reply@everdev.com", 
                 data.email(), 
                 "Password Reset",

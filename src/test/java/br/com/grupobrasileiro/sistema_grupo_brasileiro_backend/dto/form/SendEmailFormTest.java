@@ -3,6 +3,8 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import com.github.javafaker.Faker;
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.email.PasswordRequest;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -26,9 +28,9 @@ public class SendEmailFormTest {
         String subject = faker.lorem().sentence(3);
         String text = faker.lorem().paragraph();
 
-        SendEmailForm form = new SendEmailForm(emailFrom, emailTo, subject, text);
+        PasswordRequest form = new PasswordRequest(emailFrom, emailTo, subject, text);
 
-        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        Set<ConstraintViolation<PasswordRequest>> violations = validator.validate(form);
         assertTrue(violations.isEmpty());
     }
 
@@ -39,9 +41,9 @@ public class SendEmailFormTest {
         String subject = faker.lorem().sentence(3);
         String text = faker.lorem().paragraph();
 
-        SendEmailForm form = new SendEmailForm(invalidEmailFrom, emailTo, subject, text);
+        PasswordRequest form = new PasswordRequest(invalidEmailFrom, emailTo, subject, text);
 
-        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        Set<ConstraintViolation<PasswordRequest>> violations = validator.validate(form);
         assertFalse(violations.isEmpty());
     }
 
@@ -52,9 +54,9 @@ public class SendEmailFormTest {
         String subject = faker.lorem().sentence(3);
         String text = faker.lorem().paragraph();
 
-        SendEmailForm form = new SendEmailForm(emailFrom, invalidEmailTo, subject, text);
+        PasswordRequest form = new PasswordRequest(emailFrom, invalidEmailTo, subject, text);
 
-        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        Set<ConstraintViolation<PasswordRequest>> violations = validator.validate(form);
         assertFalse(violations.isEmpty());
     }
 
@@ -64,9 +66,9 @@ public class SendEmailFormTest {
         String subject = faker.lorem().sentence(3);
         String text = faker.lorem().paragraph();
 
-        SendEmailForm form = new SendEmailForm(null, emailTo, subject, text);
+        PasswordRequest form = new PasswordRequest(null, emailTo, subject, text);
 
-        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        Set<ConstraintViolation<PasswordRequest>> violations = validator.validate(form);
         assertFalse(violations.isEmpty());
     }
 
@@ -76,9 +78,9 @@ public class SendEmailFormTest {
         String subject = faker.lorem().sentence(3);
         String text = faker.lorem().paragraph();
 
-        SendEmailForm form = new SendEmailForm(emailFrom, null, subject, text);
+        PasswordRequest form = new PasswordRequest(emailFrom, null, subject, text);
 
-        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        Set<ConstraintViolation<PasswordRequest>> violations = validator.validate(form);
         assertFalse(violations.isEmpty());
     }
 
@@ -88,9 +90,9 @@ public class SendEmailFormTest {
         String emailTo = faker.internet().emailAddress();
         String text = faker.lorem().paragraph();
 
-        SendEmailForm form = new SendEmailForm(emailFrom, emailTo, "", text);
+        PasswordRequest form = new PasswordRequest(emailFrom, emailTo, "", text);
 
-        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        Set<ConstraintViolation<PasswordRequest>> violations = validator.validate(form);
         assertFalse(violations.isEmpty());
     }
 
@@ -101,9 +103,9 @@ public class SendEmailFormTest {
         String longSubject = faker.lorem().characters(101);
         String text = faker.lorem().paragraph();
 
-        SendEmailForm form = new SendEmailForm(emailFrom, emailTo, longSubject, text);
+        PasswordRequest form = new PasswordRequest(emailFrom, emailTo, longSubject, text);
 
-        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        Set<ConstraintViolation<PasswordRequest>> violations = validator.validate(form);
         assertFalse(violations.isEmpty());
     }
 
@@ -113,17 +115,17 @@ public class SendEmailFormTest {
         String emailTo = faker.internet().emailAddress();
         String subject = faker.lorem().sentence(3);
 
-        SendEmailForm form = new SendEmailForm(emailFrom, emailTo, subject, "");
+        PasswordRequest form = new PasswordRequest(emailFrom, emailTo, subject, "");
 
-        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        Set<ConstraintViolation<PasswordRequest>> violations = validator.validate(form);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void testAllFieldsNull() {
-        SendEmailForm form = new SendEmailForm(null, null, null, null);
+        PasswordRequest form = new PasswordRequest(null, null, null, null);
 
-        Set<ConstraintViolation<SendEmailForm>> violations = validator.validate(form);
+        Set<ConstraintViolation<PasswordRequest>> violations = validator.validate(form);
         assertFalse(violations.isEmpty());
     }
 }

@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.EmailRequestForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ResetPasswordForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.SendEmailForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.email.PasswordRequest;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
@@ -157,7 +157,7 @@ public class PasswordRecoveryControllerTest {
         when(tokenService.generateToken(user)).thenReturn("sample-token");
 
         // Mock the email service to simulate sending the email
-        doNothing().when(emailService).send(any(SendEmailForm.class));
+        doNothing().when(emailService).send(any(PasswordRequest.class));
 
         EmailRequestForm emailRequest = new EmailRequestForm(email);
 

@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ResetPasswordForm;
@@ -30,29 +31,31 @@ public class PasswordResetController {
     private final TokenService tokenService;
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@RequestBody @Valid ResetPasswordForm data) {
+    public ResponseEntity<String> resetPassword(
+            @RequestParam("token") String token,
+            @RequestBody @Valid ResetPasswordForm data) {
+        
         LOGGER.info("Starting password reset operation");
 
-        String emailFromToken = tokenService.validateToken(data.token());
+        String emailFromToken = tokenService.validateToken(token);
         if (emailFromToken == null) {
             LOGGER.warn("Invalid or expired token.");
-            throw new InvalidTokenException("Invalid or expired token");
+            throw new InvalidTokenException("Token inválido ou expirado");
         }
         
-        User user = (User) userRepository.findByEmail(emailFromToken);
+        User user = (User)userRepository.findByEmail(emailFromToken);
         if (user == null) {
             LOGGER.warn("User not found.");
-            throw new EntityNotFoundException("Usuário não encontrado com e-mail: " + user.getEmail());   
+            throw new EntityNotFoundException("Usuário não encontrado com e-mail: " + emailFromToken);   
         }
 
         user.setPassword(passwordEncoder.encode(data.newPassword()));
         userRepository.save(user);
         
-        tokenService.invalidateToken(data.token());
+        tokenService.invalidateToken(token);
         
         LOGGER.info("Password successfully reset");
         return ResponseEntity.ok("Password successfully changed!");
-
     }
 
 }

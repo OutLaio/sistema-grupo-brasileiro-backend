@@ -2,6 +2,8 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.ProjectStatusEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Min;
@@ -21,9 +23,18 @@ public record ProjectForm(
 
         @NotBlank(message = "Status is required!") String status,
         
-        Set<ProjectUserAdderForm> users) {
+        Set<Integer> users) {
 
     public ProjectForm {
+        if (details == null) {
+        	details = "Teste";
+        }
+        if (progress == null) {
+            progress = 0;  
+        }
+        if (status == null) {
+            status = ProjectStatusEnum.A_FAZER.getCode(); 
+        }
         if (users == null) {
             users = new HashSet<>();
         }
