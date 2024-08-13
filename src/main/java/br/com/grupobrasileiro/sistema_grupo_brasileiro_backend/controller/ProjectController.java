@@ -3,6 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -25,7 +26,7 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
     
-    
+    @Cacheable("all")
     @GetMapping("/all")
     public ResponseEntity<Page<ProjectView>> projectAll(
         @RequestParam(defaultValue = "0") Integer page,
@@ -38,6 +39,7 @@ public class ProjectController {
         return ResponseEntity.ok(projectViews);
     }
 	
+    @Cacheable("getId")
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('SUPERVISOR') OR (hasRole('COLLABORATOR') AND #id == authentication.principal.id)")
     public ResponseEntity<ProjectView> getProjectById(@PathVariable Long id) {
@@ -49,6 +51,7 @@ public class ProjectController {
         }
     }
 
+
     @PutMapping("/{id}/status")
     @PreAuthorize("hasRole('SUPERVISOR') OR (hasRole('COLLABORATOR') AND #id == authentication.principal.id)")
     public ResponseEntity<ProjectView> updateProjectStatus(@PathVariable Long id, @RequestParam String status) {
@@ -59,6 +62,7 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+    
     
     @PostMapping("/create-project")
     public ResponseEntity<ProjectView> save(@Valid @RequestBody ProjectForm body) {

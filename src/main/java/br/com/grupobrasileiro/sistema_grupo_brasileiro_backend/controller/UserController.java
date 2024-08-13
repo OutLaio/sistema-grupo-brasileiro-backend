@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -42,6 +43,7 @@ public class UserController {
 //	    return ResponseEntity.status(HttpStatus.CREATED).body(view);
 //	}
 	
+    @Cacheable("byRole")
     @GetMapping("/byRole")
     public ResponseEntity<Page<UserView>> getUsersByRole(
             @RequestParam Integer role,
@@ -55,12 +57,14 @@ public class UserController {
         
         return ResponseEntity.ok(usersPage);
     }
+
 	@PostMapping
 	public ResponseEntity<UserView> save(@Valid @RequestBody UserForm dto) throws Exception {
 		UserView view = userService.save(dto);
 	    return ResponseEntity.status(HttpStatus.CREATED).body(view);
 	}
 	
+	@Cacheable(value = "idUser", key = "#id")
 	@GetMapping("/{id}")
     @PreAuthorize("hasRole('SUPERVISOR') OR (hasRole('CLIENT') AND #id == authentication.principal.id)")
     public ResponseEntity<UserProfileView> getUserProfile(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
@@ -74,7 +78,7 @@ public class UserController {
         User updatedUser = userService.updateUser(id, form);
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
-	
+    
 	@PutMapping("/deactivate")
     @PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deactivateUser(Authentication authentication) {
