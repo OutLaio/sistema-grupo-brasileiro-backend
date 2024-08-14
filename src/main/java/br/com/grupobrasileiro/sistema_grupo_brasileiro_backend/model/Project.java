@@ -38,7 +38,7 @@ public class Project {
     @Column(nullable = false)
     private String status;
 
-    @OneToMany(mappedBy = "projectId")
+    @OneToMany(mappedBy = "project")
     private Set<ProjectUser> users = new HashSet<>();
     
     @Override

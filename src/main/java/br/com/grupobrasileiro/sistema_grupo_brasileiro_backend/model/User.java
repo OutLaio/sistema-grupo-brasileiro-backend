@@ -63,10 +63,10 @@ public class User implements UserDetails {
   @Column(name = "active", nullable = false)
   private Boolean active = true;
   
-  @OneToMany(mappedBy = "ClientId")
+  @OneToMany(mappedBy = "client")
   private Set<ProjectUser> clientProjects = new HashSet<>();
 
-  @OneToMany(mappedBy = "CollaboratorId")
+  @OneToMany(mappedBy = "collaborator")
   private Set<ProjectUser> collaboratorProjects = new HashSet<>();
 
   public User(String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, Integer role) {
