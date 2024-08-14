@@ -32,8 +32,7 @@ public class UserFormMapperTest {
                 faker.bothify("NOP###"),
                 faker.internet().emailAddress(),
                 faker.internet().password(),
-                RoleEnum.ROLE_CLIENT.getCode(),
-                true
+                RoleEnum.ROLE_CLIENT.getCode()
         );
 
         // Map UserForm to User
@@ -61,6 +60,5 @@ public class UserFormMapperTest {
         assertEquals(userForm.nop(), userView.nop());
         assertEquals(userForm.email(), userView.email());
         assertEquals(userForm.role(), userView.role());
-        assertEquals(userForm.status(), userView.status()); // Ajustado para usar isEnabled()
     }
 }

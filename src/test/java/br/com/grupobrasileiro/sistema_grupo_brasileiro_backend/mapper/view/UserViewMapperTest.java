@@ -37,6 +37,7 @@ public class UserViewMapperTest {
 
         // Create a User object with fake data
         User user = new User(
+			id,
             name,
             lastname,
             phonenumber,
@@ -45,8 +46,9 @@ public class UserViewMapperTest {
             nop,
             email,
             password,
-            role
+			role
         );
+        
         user.setActive(status); // Set the active status
 
         // Map User to UserView

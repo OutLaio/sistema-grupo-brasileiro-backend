@@ -15,6 +15,10 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.E
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.UserIsNotActiveException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.TokenView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
@@ -124,7 +128,6 @@ public class AuthControllerIntegrationTest {
                 .andExpect(MockMvcResultMatchers.content().string("Unauthorized"));
     }
 
-
     @Test
     public void testSuccessfulRegistration() throws Exception {
         Faker faker = new Faker();
@@ -137,8 +140,7 @@ public class AuthControllerIntegrationTest {
                 faker.number().digits(5), 
                 faker.internet().emailAddress(), 
                 faker.internet().password(), 
-                RoleEnum.ROLE_CLIENT.getCode(), 
-                true
+                RoleEnum.ROLE_CLIENT.getCode()
         );
         UserView userView = new UserView(
                 1L, 
@@ -150,13 +152,13 @@ public class AuthControllerIntegrationTest {
                 userForm.nop(), 
                 userForm.email(), 
                 userForm.role(), 
-                userForm.status()
+                true
         ); 
         when(userService.save(userForm)).thenReturn(userView);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/register")
                 .contentType("application/json")
-                .content("{\"name\":\"" + userForm.name() + "\",\"lastname\":\"" + userForm.lastname() + "\",\"phonenumber\":\"" + userForm.phonenumber() + "\",\"sector\":\"" + userForm.sector() + "\",\"occupation\":\"" + userForm.occupation() + "\",\"nop\":\"" + userForm.nop() + "\",\"email\":\"" + userForm.email() + "\",\"password\":\"" + userForm.password() + "\",\"role\":\"" + userForm.role() + "\",\"status\":\"" + userForm.status() + "\"}"))
+                .content("{\"name\":\"" + userForm.name() + "\",\"lastname\":\"" + userForm.lastname() + "\",\"phonenumber\":\"" + userForm.phonenumber() + "\",\"sector\":\"" + userForm.sector() + "\",\"occupation\":\"" + userForm.occupation() + "\",\"nop\":\"" + userForm.nop() + "\",\"email\":\"" + userForm.email() + "\",\"password\":\"" + userForm.password() + "\",\"role\":\"" + userForm.role() + "\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(userForm.name()))
@@ -166,8 +168,7 @@ public class AuthControllerIntegrationTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.occupation").value(userForm.occupation()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.nop").value(userForm.nop()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(userForm.email()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.role").value(userForm.role()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.status").value(userForm.status()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.role").value(userForm.role()));
     }
 
     @Test
@@ -182,14 +183,13 @@ public class AuthControllerIntegrationTest {
                 faker.number().digits(5), 
                 faker.internet().emailAddress(), 
                 faker.internet().password(), 
-                RoleEnum.ROLE_CLIENT.getCode(), 
-                true
+                RoleEnum.ROLE_CLIENT.getCode()
         );
         when(userService.save(userForm)).thenThrow(new EmailUniqueViolationException("Email já em uso"));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/register")
                 .contentType("application/json")
-                .content("{\"name\":\"" + userForm.name() + "\",\"lastname\":\"" + userForm.lastname() + "\",\"phonenumber\":\"" + userForm.phonenumber() + "\",\"sector\":\"" + userForm.sector() + "\",\"occupation\":\"" + userForm.occupation() + "\",\"nop\":\"" + userForm.nop() + "\",\"email\":\"" + userForm.email() + "\",\"password\":\"" + userForm.password() + "\",\"role\":\"" + userForm.role() + "\",\"status\":\"" + userForm.status() + "\"}"))
+                .content("{\"name\":\"" + userForm.name() + "\",\"lastname\":\"" + userForm.lastname() + "\",\"phonenumber\":\"" + userForm.phonenumber() + "\",\"sector\":\"" + userForm.sector() + "\",\"occupation\":\"" + userForm.occupation() + "\",\"nop\":\"" + userForm.nop() + "\",\"email\":\"" + userForm.email() + "\",\"password\":\"" + userForm.password() + "\",\"role\":\"" + userForm.role() + "\"}"))
                 .andExpect(status().isConflict())
                 .andExpect(MockMvcResultMatchers.content().string("Email já em uso"));
     }
@@ -206,14 +206,13 @@ public class AuthControllerIntegrationTest {
                 faker.number().digits(5), 
                 faker.internet().emailAddress(), 
                 faker.internet().password(), 
-                RoleEnum.ROLE_CLIENT.getCode(), 
-                true
+                RoleEnum.ROLE_CLIENT.getCode()
         );
         when(userService.save(userForm)).thenThrow(new RuntimeException("Erro inesperado"));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/register")
                 .contentType("application/json")
-                .content("{\"name\":\"" + userForm.name() + "\",\"lastname\":\"" + userForm.lastname() + "\",\"phonenumber\":\"" + userForm.phonenumber() + "\",\"sector\":\"" + userForm.sector() + "\",\"occupation\":\"" + userForm.occupation() + "\",\"nop\":\"" + userForm.nop() + "\",\"email\":\"" + userForm.email() + "\",\"password\":\"" + userForm.password() + "\",\"role\":\"" + userForm.role() + "\",\"status\":\"" + userForm.status() + "\"}"))
+                .content("{\"name\":\"" + userForm.name() + "\",\"lastname\":\"" + userForm.lastname() + "\",\"phonenumber\":\"" + userForm.phonenumber() + "\",\"sector\":\"" + userForm.sector() + "\",\"occupation\":\"" + userForm.occupation() + "\",\"nop\":\"" + userForm.nop() + "\",\"email\":\"" + userForm.email() + "\",\"password\":\"" + userForm.password() + "\",\"role\":\"" + userForm.role() +  "\"}"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(MockMvcResultMatchers.content().string("Erro inesperado"));
     }

@@ -69,7 +69,8 @@ public class User implements UserDetails {
   @OneToMany(mappedBy = "collaborator")
   private Set<ProjectUser> collaboratorProjects = new HashSet<>();
 
-  public User(String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, Integer role) {
+  public User(Long id, String name, String lastname, String phonenumber, String sector, 
+		  String occupation, String nop, String email, String password, Integer role) {
     this.name = name;
     this.lastname = lastname;
     this.phonenumber = phonenumber;
@@ -78,24 +79,11 @@ public class User implements UserDetails {
     this.nop = nop;
     this.email = email;
     this.password = password;
-    this.role = (role != null) ? role : RoleEnum.ROLE_CLIENT.getCode();
+    this.role = role != null ? role : RoleEnum.ROLE_CLIENT.getCode();
     this.active = true;  
     this.clientProjects = new HashSet<>();
     this.collaboratorProjects = new HashSet<>();
   }
-  
-  public User(Long id, String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, Integer role) {
-	    this.id = id;
-	  	this.name = name;
-	    this.lastname = lastname;
-	    this.phonenumber = phonenumber;
-	    this.sector = sector;
-	    this.occupation = occupation;
-	    this.nop = nop;
-	    this.email = email;
-	    this.password = password;
-	    this.role = role;
-	  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

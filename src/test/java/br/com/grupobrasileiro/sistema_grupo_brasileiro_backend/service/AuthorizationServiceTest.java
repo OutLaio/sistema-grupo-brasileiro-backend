@@ -43,7 +43,7 @@ public class AuthorizationServiceTest {
         String email = "test@example.com";
         String password = "password";
         User user = new User(
-            "John", "Doe", "123456789", "IT", "Developer", "1234567890", email, password, 1
+            1l, "John", "Doe", "123456789", "IT", "Developer", "1234567890", email, password, 1
         );
         user.setActive(true);
 

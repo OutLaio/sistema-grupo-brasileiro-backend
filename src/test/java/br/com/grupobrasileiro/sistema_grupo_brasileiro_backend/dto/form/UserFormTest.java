@@ -21,9 +21,8 @@ public class UserFormTest {
         String email = faker.internet().emailAddress();
         String password = "Password123!";
         Integer role = RoleEnum.ROLE_CLIENT.getCode();  // Usando RoleEnum existente
-        Boolean status = true;
 
-        UserForm form = new UserForm(name, lastname, phonenumber, sector, occupation, nop, email, password, role, status);
+        UserForm form = new UserForm(name, lastname, phonenumber, sector, occupation, nop, email, password, role);
 
         assertEquals(name, form.name());
         assertEquals(lastname, form.lastname());
@@ -34,7 +33,6 @@ public class UserFormTest {
         assertEquals(email, form.email());
         assertEquals(password, form.password());
         assertEquals(role, form.role());
-        assertEquals(status, form.status());
     }
 
     @Test
@@ -43,19 +41,18 @@ public class UserFormTest {
         UserForm form = new UserForm(faker.name().firstName(), faker.name().lastName(),
             faker.phoneNumber().phoneNumber(), faker.company().industry(),
             faker.job().title(), faker.bothify("??###"), invalidEmail,
-            "Password123!", RoleEnum.ROLE_CLIENT.getCode(), true);
+            "Password123!", RoleEnum.ROLE_CLIENT.getCode());
 
            
         assertEquals(invalidEmail, form.email());
     }
 
     @Test
-    public void testDefaultRoleAndStatus() {
+    public void testDefaultRole() {
         UserForm form = new UserForm("John", "Doe", "123456789", "IT", "Developer",
-            "NOP123", "john.doe@example.com", "Password123!", null, null);
+            "NOP123", "john.doe@example.com", "Password123!", null);
 
         assertEquals(RoleEnum.ROLE_CLIENT.getCode(), form.role());
-        assertTrue(form.status());
     }
 
    

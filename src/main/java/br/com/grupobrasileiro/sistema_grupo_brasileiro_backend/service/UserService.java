@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UpdateUserForm;
@@ -37,7 +36,6 @@ public class UserService {
 	
 	@Transactional
 	public UserView save(UserForm dto) throws EmailUniqueViolationException {
-
 	    if (userRepository.findByEmail(dto.email()) != null) {
 	        throw new EmailUniqueViolationException("Email já em uso: " + dto.email());
 	    }

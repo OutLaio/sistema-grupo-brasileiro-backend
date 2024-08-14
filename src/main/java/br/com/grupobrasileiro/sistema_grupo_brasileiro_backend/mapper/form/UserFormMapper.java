@@ -3,17 +3,19 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form;
 import org.springframework.stereotype.Component;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 
 @Component
 public class UserFormMapper implements Mapper<UserForm, User> {
     
+	/**
+	 * Converte os objetos UserForm num conjunto de User
+	 * @param i - UserForm
+	 * @return User (id, name, lastname, phonenumber, sector, occupation, nop, email, password, role)
+	 * */
     @Override
     public User map(UserForm i) {
-        Integer role = (i.role() != null) ? i.role() : RoleEnum.ROLE_CLIENT.getCode(); 
-
         return new User(
             null,
             i.name(),
@@ -23,7 +25,8 @@ public class UserFormMapper implements Mapper<UserForm, User> {
             i.occupation(),
             i.nop(),
             i.email(),
-            role
+			i.password(),
+			i.role()
         );
     }
 }

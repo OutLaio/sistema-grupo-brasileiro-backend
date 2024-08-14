@@ -72,8 +72,7 @@ public class UserControllerTest {
             faker.bothify("??###"),
             faker.internet().emailAddress(),
             faker.internet().password(),
-            RoleEnum.ROLE_CLIENT.getCode(),
-            true
+            RoleEnum.ROLE_CLIENT.getCode()
         );
 
         UserView userView = new UserView(
@@ -86,14 +85,14 @@ public class UserControllerTest {
             userForm.nop(),
             userForm.email(),
             userForm.role(),
-            userForm.status()
+            true
         );
 
         when(userService.save(any(UserForm.class))).thenReturn(userView);
 
         mockMvc.perform(post("/api/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\": \"" + userForm.name() + "\", \"lastname\": \"" + userForm.lastname() + "\", \"phonenumber\": \"" + userForm.phonenumber() + "\", \"sector\": \"" + userForm.sector() + "\", \"occupation\": \"" + userForm.occupation() + "\", \"nop\": \"" + userForm.nop() + "\", \"email\": \"" + userForm.email() + "\", \"password\": \"" + userForm.password() + "\", \"role\": " + userForm.role() + ", \"status\": " + userForm.status() + "}"))
+                .content("{\"name\": \"" + userForm.name() + "\", \"lastname\": \"" + userForm.lastname() + "\", \"phonenumber\": \"" + userForm.phonenumber() + "\", \"sector\": \"" + userForm.sector() + "\", \"occupation\": \"" + userForm.occupation() + "\", \"nop\": \"" + userForm.nop() + "\", \"email\": \"" + userForm.email() + "\", \"password\": \"" + userForm.password() + "\", \"role\": " + userForm.role() + ", \"status\": " + "}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value(userView.name()))
                 .andExpect(jsonPath("$.lastname").value(userView.lastname()));
@@ -198,25 +197,25 @@ public class UserControllerTest {
     
     @Test
     void testValidPhonenumber() {
-        UserForm userForm = new UserForm("John", "Doe", "+55 (11) 98888-8888", "Tech", "Engineer", "12345", "john.doe@example.com", "Valid1Password@", 1, true);
+        UserForm userForm = new UserForm("John", "Doe", "+55 (11) 98888-8888", "Tech", "Engineer", "12345", "john.doe@example.com", "Valid1Password@", 1);
      // Check for validation errors
     }
 
     @Test
     void testInvalidPhonenumber() {
-        UserForm userForm = new UserForm("John", "Doe", "1234", "Tech", "Engineer", "12345", "john.doe@example.com", "Valid1Password@", 1, true);
+        UserForm userForm = new UserForm("John", "Doe", "1234", "Tech", "Engineer", "12345", "john.doe@example.com", "Valid1Password@", 1);
      // Check if validation fails with the expected messageda
     }
     
     @Test
     void testValidPassword() {
-        UserForm userForm = new UserForm("John", "Doe", "+55 (11) 98888-8888", "Tech", "Engineer", "12345", "john.doe@example.com", "Valid1Password@", 1, true);
+        UserForm userForm = new UserForm("John", "Doe", "+55 (11) 98888-8888", "Tech", "Engineer", "12345", "john.doe@example.com", "Valid1Password@", 1);
         // Check for validation errors
     }
 
     @Test
     void testInvalidPassword() {
-        UserForm userForm = new UserForm("John", "Doe", "+55 (11) 98888-8888", "Tech", "Engineer", "12345", "john.doe@example.com", "invalidpassword", 1, true);
+        UserForm userForm = new UserForm("John", "Doe", "+55 (11) 98888-8888", "Tech", "Engineer", "12345", "john.doe@example.com", "invalidpassword", 1);
      // Check if validation fails with the expected message
     }
 

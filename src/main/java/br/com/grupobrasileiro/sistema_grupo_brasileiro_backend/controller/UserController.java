@@ -37,12 +37,6 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
-//	@PostMapping
-//	public ResponseEntity<UserView> save(@Valid @RequestBody UserForm dto) throws Exception {
-//		UserView view = userService.save(dto);
-//	    return ResponseEntity.status(HttpStatus.CREATED).body(view);
-//	}
-	
     @Cacheable("byRole")
     @GetMapping("/byRole")
     public ResponseEntity<Page<UserView>> getUsersByRole(
@@ -57,12 +51,6 @@ public class UserController {
         
         return ResponseEntity.ok(usersPage);
     }
-
-	@PostMapping
-	public ResponseEntity<UserView> save(@Valid @RequestBody UserForm dto) throws Exception {
-		UserView view = userService.save(dto);
-	    return ResponseEntity.status(HttpStatus.CREATED).body(view);
-	}
 	
 	@Cacheable(value = "idUser", key = "#id")
 	@GetMapping("/{id}")

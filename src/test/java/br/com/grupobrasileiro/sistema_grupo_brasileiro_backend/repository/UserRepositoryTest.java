@@ -38,6 +38,7 @@ public class UserRepositoryTest {
         // Arrange
         String email = faker.internet().emailAddress();
         User user = new User(
+    		faker.number().randomNumber(),
             faker.name().firstName(),
             faker.name().lastName(),
             faker.phoneNumber().phoneNumber(),
@@ -69,6 +70,7 @@ public class UserRepositoryTest {
         int role = faker.number().numberBetween(1, 3);
         for (int i = 0; i < 5; i++) {
             User user = new User(
+        		faker.number().randomNumber(),
                 faker.name().firstName(),
                 faker.name().lastName(),
                 faker.phoneNumber().phoneNumber(),

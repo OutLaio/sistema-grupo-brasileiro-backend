@@ -64,8 +64,7 @@ class UserServiceTest {
                 faker.bothify("??###"),
                 faker.internet().emailAddress(),
                 "Password123!",
-                1,
-                true
+                1
         );
 
         User user = new User();
@@ -115,8 +114,7 @@ class UserServiceTest {
                 faker.bothify("??###"),
                 faker.internet().emailAddress(),
                 "Password123!",
-                1,
-                true
+                1
         );
 
         when(userRepository.findByEmail(userForm.email())).thenReturn(new User());
