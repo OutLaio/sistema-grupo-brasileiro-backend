@@ -16,8 +16,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -64,8 +63,11 @@ public class User implements UserDetails {
   @Column(name = "active", nullable = false)
   private Boolean active = true;
   
-  @ManyToMany(mappedBy = "users")
-  private Set<Project> projects;
+  @OneToMany(mappedBy = "ClientId")
+  private Set<ProjectUser> clientProjects = new HashSet<>();
+
+  @OneToMany(mappedBy = "CollaboratorId")
+  private Set<ProjectUser> collaboratorProjects = new HashSet<>();
 
   public User(String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, Integer role) {
     this.name = name;
@@ -78,7 +80,8 @@ public class User implements UserDetails {
     this.password = password;
     this.role = (role != null) ? role : RoleEnum.ROLE_CLIENT.getCode();
     this.active = true;  
-    this.projects = new HashSet<>();
+    this.clientProjects = new HashSet<>();
+    this.collaboratorProjects = new HashSet<>();
   }
   
   public User(Long id, String name, String lastname, String phonenumber, String sector, String occupation, String nop, String email, String password, Integer role) {

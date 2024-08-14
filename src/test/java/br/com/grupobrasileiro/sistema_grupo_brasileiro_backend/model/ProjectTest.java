@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashSet;
-import java.util.Set;
 
 public class ProjectTest {
 
@@ -23,7 +22,6 @@ public class ProjectTest {
         Long id = faker.number().randomNumber();
         String title = faker.lorem().word();
         String description = faker.lorem().sentence();
-        String details = faker.lorem().paragraph();
         Integer progress = faker.number().numberBetween(0, 100);
         String status = faker.lorem().word();
 
@@ -32,7 +30,6 @@ public class ProjectTest {
             id,
             title,
             description,
-            details,
             progress,
             status,
             new HashSet<>()
@@ -42,7 +39,6 @@ public class ProjectTest {
         assertEquals(id, project.getId(), "ID should match.");
         assertEquals(title, project.getTitle(), "Title should match.");
         assertEquals(description, project.getDescription(), "Description should match.");
-        assertEquals(details, project.getDetails(), "Details should match.");
         assertEquals(progress, project.getProgress(), "Progress should match.");
         assertEquals(status, project.getStatus(), "Status should match.");
     }
@@ -53,13 +49,12 @@ public class ProjectTest {
         Long id = faker.number().randomNumber();
         String title = faker.lorem().word();
         String description = faker.lorem().sentence();
-        String details = faker.lorem().paragraph();
         Integer progress = faker.number().numberBetween(0, 100);
         String status = faker.lorem().word();
 
         // Create two Project objects with the same id
-        Project project1 = new Project(id, title, description, details, progress, status, new HashSet<>());
-        Project project2 = new Project(id, title, description, details, progress, status, new HashSet<>());
+        Project project1 = new Project(id, title, description, progress, status, new HashSet<>());
+        Project project2 = new Project(id, title, description, progress, status, new HashSet<>());
 
         // Test equals method
         assertEquals(project1, project2, "Projects with the same ID should be equal.");
@@ -74,12 +69,11 @@ public class ProjectTest {
         Long id = faker.number().randomNumber();
         String title = faker.lorem().word();
         String description = faker.lorem().sentence();
-        String details = faker.lorem().paragraph();
         Integer progress = faker.number().numberBetween(0, 100);
         String status = faker.lorem().word();
 
         // Create a Project object
-        Project project = new Project(id, title, description, details, progress, status, new HashSet<>());
+        Project project = new Project(id, title, description, progress, status, new HashSet<>());
 
         // Test toString method
         String expectedString = "Project{id=" + id + "}";

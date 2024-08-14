@@ -9,10 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.JoinColumn;
-
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,22 +32,14 @@ public class Project {
     @Column(nullable = false)
     private String description;
 
-    @Column
-    private String details;
-
     @Column(nullable = false)
     private Integer progress;
 
     @Column(nullable = false)
     private String status;
 
-    @ManyToMany
-    @JoinTable(
-            name = "project_users",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<User> users= new HashSet<>();
+    @OneToMany(mappedBy = "projectId")
+    private Set<ProjectUser> users = new HashSet<>();
     
     @Override
     public boolean equals(Object o) {
