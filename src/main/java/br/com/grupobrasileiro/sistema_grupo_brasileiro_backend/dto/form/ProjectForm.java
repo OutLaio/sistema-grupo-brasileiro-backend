@@ -14,8 +14,6 @@ public record ProjectForm(
 
         @NotBlank(message = "Description is required!") String description,
 
-        @NotBlank(message = "Details is required!") String details,
-
         @NotNull(message = "Progress is required!") 
         @Min(value = 0, message = "Progress must be at least 0")
         @Max(value = 100, message = "Progress must be at most 100") 
