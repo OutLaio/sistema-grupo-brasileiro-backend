@@ -3,7 +3,6 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
@@ -19,15 +18,20 @@ public class ProjectFormMapper implements Mapper<ProjectForm, Project> {
 
     private final UserConverter userConverter;
 
-    @Autowired
     public ProjectFormMapper(UserConverter userConverter) {
         this.userConverter = userConverter;
     }
-
+    
+    /**
+	 * Converte os objetos ProjectForm num conjunto de Project
+	 * @param i - ProjectForm
+	 * @return Project (id, title, description, progress, status, projectUsers)
+	 * */
     @Override
     public Project map(ProjectForm projectForm) {
         // Converte os objetos users no conjunto de ProjectUser
         Set<User> users = userConverter.converter(projectForm.users()); 
+        
         Set<ProjectUser> projectUsers = users.stream()
             .map(userForm -> {
                 User user = new User();
