@@ -34,7 +34,7 @@ public class ProjectUser {
     private User client;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "collaborator_id", nullable = false)
+    @JoinColumn(name = "collaborator_id", nullable = true)
     private User collaborator;
     
     @Override

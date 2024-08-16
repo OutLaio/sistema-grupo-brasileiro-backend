@@ -16,38 +16,38 @@ public class ProjectViewMapper implements Mapper<Project, ProjectView> {
     @Override
     public ProjectView map(Project project) {
         // Converte o conjunto de ProjectUser para UserView
-        Set<UserView> userViews = project.getUsers().stream()
-            .flatMap(projectUser -> {
-                // Mapear tanto o cliente quanto o colaborador para UserView
-                UserView clientView = new UserView(
-                    projectUser.getClient().getId(),
-                    projectUser.getClient().getName(),
-                    projectUser.getClient().getLastname(),
-                    projectUser.getClient().getPhonenumber(),
-					projectUser.getClient().getSector(),
-					projectUser.getClient().getOccupation(),
-					projectUser.getClient().getNop(),
-                    projectUser.getClient().getEmail(),
-                    projectUser.getClient().getRole(),
-					projectUser.getClient().getActive()
-                );
+        // Set<UserView> userViews = project.getUsers().stream()
+        //     .flatMap(projectUser -> {
+        //         // Mapear tanto o cliente quanto o colaborador para UserView
+        //         UserView clientView = new UserView(
+        //             projectUser.getClient().getId(),
+        //             projectUser.getClient().getName(),
+        //             projectUser.getClient().getLastname(),
+        //             projectUser.getClient().getPhonenumber(),
+		// 			projectUser.getClient().getSector(),
+		// 			projectUser.getClient().getOccupation(),
+		// 			projectUser.getClient().getNop(),
+        //             projectUser.getClient().getEmail(),
+        //             projectUser.getClient().getRole(),
+		// 			projectUser.getClient().getActive()
+        //         );
 
-                UserView collaboratorView = new UserView(
-                		projectUser.getCollaborator().getId(),
-                        projectUser.getCollaborator().getName(),
-                        projectUser.getCollaborator().getLastname(),
-                        projectUser.getCollaborator().getPhonenumber(),
-    					projectUser.getCollaborator().getSector(),
-    					projectUser.getCollaborator().getOccupation(),
-    					projectUser.getCollaborator().getNop(),
-                        projectUser.getCollaborator().getEmail(),
-                        projectUser.getCollaborator().getRole(),
-    					projectUser.getCollaborator().getActive()
-                );
+        //         UserView collaboratorView = new UserView(
+        //         		projectUser.getCollaborator().getId(),
+        //                 projectUser.getCollaborator().getName(),
+        //                 projectUser.getCollaborator().getLastname(),
+        //                 projectUser.getCollaborator().getPhonenumber(),
+    	// 				projectUser.getCollaborator().getSector(),
+    	// 				projectUser.getCollaborator().getOccupation(),
+    	// 				projectUser.getCollaborator().getNop(),
+        //                 projectUser.getCollaborator().getEmail(),
+        //                 projectUser.getCollaborator().getRole(),
+    	// 				projectUser.getCollaborator().getActive()
+        //         );
 
-                return Set.of(clientView, collaboratorView).stream();
-            })
-            .collect(Collectors.toSet());
+        //         return Set.of(clientView, collaboratorView).stream();
+        //     })
+        //     .collect(Collectors.toSet());
 
         // Cria e retorna o ProjectView
         return new ProjectView(
@@ -55,8 +55,7 @@ public class ProjectViewMapper implements Mapper<Project, ProjectView> {
             project.getTitle(),
             project.getDescription(),
             project.getProgress(),
-            project.getStatus(),
-            userViews
+            project.getStatus()
         );
     }
 }

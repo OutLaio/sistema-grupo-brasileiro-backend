@@ -121,4 +121,14 @@ public class ApiExceptionHandler {
                         .body(new ErrorMessage(request, HttpStatus.INTERNAL_SERVER_ERROR,
                                         "Internal server error"));
         }
+        
+        @ExceptionHandler(InvalidRoleException.class)
+        public ResponseEntity<ErrorMessage> handleNullPointerException(InvalidRoleException ex,
+                        HttpServletRequest request) {
+                return ResponseEntity
+                                .status(HttpStatus.BAD_REQUEST)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST,
+                                                "Role do usuário inválida para o projeto"));
+        }
 }

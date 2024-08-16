@@ -26,24 +26,25 @@ public class ProjectFormMapper implements Mapper<ProjectForm, Project> {
 
     @Override
     public Project map(ProjectForm projectForm) {
-        // Converte os objetos UserForm no conjunto de ProjectUser
-        Set<ProjectUser> projectUsers = projectForm.users().stream()
+        // Converte os objetos users no conjunto de ProjectUser
+        Set<User> users = userConverter.converter(projectForm.users()); 
+        Set<ProjectUser> projectUsers = users.stream()
             .map(userForm -> {
                 User user = new User();
-                user.setName(userForm.name());
-                user.setLastname(userForm.lastname());
-                user.setPhonenumber(userForm.phonenumber());
-                user.setSector(userForm.sector());
-                user.setOccupation(userForm.occupation());
-                user.setNop(userForm.nop());
-                user.setEmail(userForm.email());
-                user.setRole(userForm.role());
+                user.setName(userForm.getName());
+                user.setLastname(userForm.getLastname());
+                user.setPhonenumber(userForm.getPhonenumber());
+                user.setSector(userForm.getSector());
+                user.setOccupation(userForm.getOccupation());
+                user.setNop(userForm.getNop());
+                user.setEmail(userForm.getEmail());
+                user.setRole(userForm.getRole());
 
                 ProjectUser projectUser = new ProjectUser();
-                if (userForm.role() == RoleEnum.ROLE_COLLABORATOR.getCode()) {
+                if (userForm.getRole() == RoleEnum.ROLE_COLLABORATOR.getCode()) {
 	                projectUser.setCollaborator(user);
                 }
-                else if (userForm.role() == RoleEnum.ROLE_CLIENT.getCode()) {
+                else if (userForm.getRole() == RoleEnum.ROLE_CLIENT.getCode()) {
 	                projectUser.setClient(user);
 				}
                 
