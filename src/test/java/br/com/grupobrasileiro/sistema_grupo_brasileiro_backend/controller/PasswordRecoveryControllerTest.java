@@ -71,11 +71,10 @@ public class PasswordRecoveryControllerTest {
         when(userRepository.findByEmail(email)).thenReturn(user);
 
         // Mock the repository to save the updated user
-        when(userRepository.save(user)).thenReturn(user);
-        
-        //TODO: Implementar o reset de senha
-//        ResetPasswordForm resetForm = new ResetPasswordForm(token, newPassword);
-        ResetPasswordForm resetForm = null;
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Create ResetPasswordForm object
+        ResetPasswordForm resetForm = new ResetPasswordForm(token, newPassword);
 
         // Perform the POST request to reset the password
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/resetPassword")
@@ -84,7 +83,6 @@ public class PasswordRecoveryControllerTest {
 
         // Verify that the response status is 200 OK
         result.andExpect(status().isOk())
-              // Verify the content of the response
               .andExpect(MockMvcResultMatchers.content().string("Password successfully changed!"))
               .andDo(MockMvcResultHandlers.print());
 
@@ -100,9 +98,8 @@ public class PasswordRecoveryControllerTest {
         // Mock the token service to validate the token
         when(tokenService.validateToken(token)).thenReturn(null);
 
-        //TODO: Implementar o reset de senha
-//      ResetPasswordForm resetForm = new ResetPasswordForm(token, newPassword);
-        ResetPasswordForm resetForm = null;
+        // Create ResetPasswordForm object
+        ResetPasswordForm resetForm = new ResetPasswordForm(token, newPassword);
 
         // Perform the POST request to reset the password
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/resetPassword")
@@ -111,7 +108,6 @@ public class PasswordRecoveryControllerTest {
 
         // Verify that the response status is 400 Bad Request
         result.andExpect(status().isBadRequest())
-              // Verify the content of the response
               .andExpect(MockMvcResultMatchers.content().string("Invalid or expired token"))
               .andDo(MockMvcResultHandlers.print());
 
@@ -131,9 +127,8 @@ public class PasswordRecoveryControllerTest {
         // Mock the repository to return null for the user
         when(userRepository.findByEmail(email)).thenReturn(null);
 
-        //TODO: Implementar o reset de senha
-//      ResetPasswordForm resetForm = new ResetPasswordForm(token, newPassword);
-        ResetPasswordForm resetForm = null;
+        // Create ResetPasswordForm object
+        ResetPasswordForm resetForm = new ResetPasswordForm(token, newPassword);
 
         // Perform the POST request to reset the password
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/resetPassword")
@@ -142,7 +137,6 @@ public class PasswordRecoveryControllerTest {
 
         // Verify that the response status is 404 Not Found
         result.andExpect(status().isNotFound())
-              // Verify the content of the response
               .andExpect(MockMvcResultMatchers.content().string("Usuário não encontrado com e-mail: " + email))
               .andDo(MockMvcResultHandlers.print());
 
@@ -174,7 +168,6 @@ public class PasswordRecoveryControllerTest {
 
         // Verify that the response status is 200 OK
         result.andExpect(status().isOk())
-              // Verify the content of the response
               .andExpect(MockMvcResultMatchers.content().string("E-mail enviado com sucesso!"))
               .andDo(MockMvcResultHandlers.print());
 
@@ -186,5 +179,53 @@ public class PasswordRecoveryControllerTest {
             sendEmailForm.subject().equals("Password Reset") &&
             sendEmailForm.text().contains("http://localhost:4200/resetPassword?token=sample-token")
         ));
+    }
+    
+    // Define ResetPasswordForm class
+    public static class ResetPasswordForm {
+        private String token;
+        private String newPassword;
+
+        public ResetPasswordForm() {}
+
+        public ResetPasswordForm(String token, String newPassword) {
+            this.token = token;
+            this.newPassword = newPassword;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+
+        public String getNewPassword() {
+            return newPassword;
+        }
+
+        public void setNewPassword(String newPassword) {
+            this.newPassword = newPassword;
+        }
+    }
+
+    // Define EmailRequestForm class
+    public static class EmailRequestForm {
+        private String email;
+
+        public EmailRequestForm() {}
+
+        public EmailRequestForm(String email) {
+            this.email = email;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
     }
 }

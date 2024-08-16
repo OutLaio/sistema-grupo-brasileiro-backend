@@ -28,6 +28,22 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRe
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
+import java.util.Collections;
+import java.util.Optional;
+
 class UserServiceTest {
 
     @Mock
@@ -75,15 +91,15 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         UserView userView = new UserView(
-            user.getId(), 
-            user.getName(), 
-            user.getLastname(), 
-            user.getPhonenumber(), 
-            user.getSector(), 
-            user.getOccupation(), 
-            user.getNop(), 
-            user.getEmail(), 
-            user.getRole(), 
+            user.getId(),
+            user.getName(),
+            user.getLastname(),
+            user.getPhonenumber(),
+            user.getSector(),
+            user.getOccupation(),
+            user.getNop(),
+            user.getEmail(),
+            user.getRole(),
             user.isEnabled()
         );
         when(userViewMapper.map(user)).thenReturn(userView);
@@ -101,6 +117,8 @@ class UserServiceTest {
         assertEquals(userView.email(), result.email());
         assertEquals(userView.role(), result.role());
         assertEquals(userView.status(), result.status());
+
+        verify(userRepository).save(user); // Check that the save method was called
     }
 
     @Test
@@ -123,7 +141,7 @@ class UserServiceTest {
             userService.save(userForm);
         });
 
-        verify(userRepository, never()).save(any(User.class));
+        verify(userRepository, never()).save(any(User.class)); // Check that save was not called
     }
 
     @Test
@@ -144,13 +162,13 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         UserProfileView userProfileView = new UserProfileView(
-            user.getId(), 
-            user.getName(), 
-            user.getLastname(), 
-            user.getPhonenumber(), 
-            user.getSector(), 
-            user.getOccupation(), 
-            user.getNop(), 
+            user.getId(),
+            user.getName(),
+            user.getLastname(),
+            user.getPhonenumber(),
+            user.getSector(),
+            user.getOccupation(),
+            user.getNop(),
             user.getEmail()
         );
         when(userProfileViewMapper.map(user)).thenReturn(userProfileView);
@@ -166,6 +184,8 @@ class UserServiceTest {
         assertEquals(userProfileView.occupation(), result.occupation());
         assertEquals(userProfileView.nop(), result.nop());
         assertEquals(userProfileView.email(), result.email());
+
+        verify(userRepository).findById(userId); // Verify that findById was called
     }
 
     @Test
@@ -174,6 +194,8 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> userService.getUserProfile(userId));
+        
+        verify(userRepository).findById(userId); // Verify that findById was called
     }
 
     @Test
@@ -213,6 +235,9 @@ class UserServiceTest {
         assertEquals(form.occupation(), result.getOccupation());
         assertEquals(form.nop(), result.getNop());
         assertEquals(form.sector(), result.getSector());
+
+        verify(userRepository).findById(userId); // Verify that findById was called
+        verify(userRepository).save(existingUser); // Check that save was called
     }
 
     @Test
@@ -230,6 +255,9 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> userService.updateUser(userId, form));
+        
+        verify(userRepository).findById(userId); 
+        verify(userRepository, never()).save(any(User.class)); 
     }
 
     @Test
@@ -237,15 +265,18 @@ class UserServiceTest {
         Long userId = faker.number().randomNumber();
         User user = new User();
         user.setId(userId);
-        user.setActive(true); 
+        user.setActive(true);  
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         userService.deactivateUser(userId);
 
-        assertFalse(user.getActive()); 
-        verify(userRepository).save(user);
+        // Verifica se o usuário foi desativado
+        assertFalse(user.getActive()); // Ajuste para a propriedade correta
+        
+        verify(userRepository).save(user); // Verifica que save foi chamado
     }
+
 
     @Test
     void testDeactivateUser_UserNotFound() {
@@ -253,6 +284,9 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> userService.deactivateUser(userId));
+        
+        verify(userRepository).findById(userId); // Verifica que findById foi chamado
+        verify(userRepository, never()).save(any(User.class)); // Verifica que save não foi chamado
     }
 
     @Test
@@ -266,15 +300,15 @@ class UserServiceTest {
         when(userRepository.findByRole(role, pageRequest)).thenReturn(usersPage);
 
         UserView userView = new UserView(
-            user.getId(), 
-            user.getName(), 
-            user.getLastname(), 
-            user.getPhonenumber(), 
-            user.getSector(), 
-            user.getOccupation(), 
-            user.getNop(), 
-            user.getEmail(), 
-            user.getRole(), 
+            user.getId(),
+            user.getName(),
+            user.getLastname(),
+            user.getPhonenumber(),
+            user.getSector(),
+            user.getOccupation(),
+            user.getNop(),
+            user.getEmail(),
+            user.getRole(),
             user.isEnabled()
         );
         Page<UserView> userViewsPage = new PageImpl<>(Collections.singletonList(userView));
@@ -284,7 +318,9 @@ class UserServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
-        assertEquals(userView.id(), result.getContent().get(0).id());
+        assertEquals(userView, result.getContent().get(0));
+
+        verify(userRepository).findByRole(role, pageRequest); // Verifica que findByRole foi chamado
     }
 }
 

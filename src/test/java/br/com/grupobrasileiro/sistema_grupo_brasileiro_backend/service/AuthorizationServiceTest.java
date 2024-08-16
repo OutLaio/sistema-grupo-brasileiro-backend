@@ -6,24 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
-
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class AuthorizationServiceTest {
 
@@ -42,12 +34,13 @@ public class AuthorizationServiceTest {
         // Arrange
         String email = "test@example.com";
         String password = "password";
-        User user = new User(
-            1l, "John", "Doe", "123456789", "IT", "Developer", "1234567890", email, password, 1
+        UserDetails userDetails = new User(
+            email, 
+            password, 
+            List.of(new SimpleGrantedAuthority("ROLE_USER"))
         );
-        user.setActive(true);
 
-        when(userRepository.findByEmail(email)).thenReturn(user);
+        when(userRepository.findByEmail(email)).thenReturn(userDetails);
 
         // Act
         UserDetails result = authorizationService.loadUserByUsername(email);

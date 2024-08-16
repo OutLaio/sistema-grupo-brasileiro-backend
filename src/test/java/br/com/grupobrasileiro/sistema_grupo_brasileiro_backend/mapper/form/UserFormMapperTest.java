@@ -1,6 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,7 @@ public class UserFormMapperTest {
     }
 
     @Test
-    public void testMap() {
+    public void testMap_WithValidData() {
         UserForm userForm = new UserForm(
                 faker.name().firstName(),
                 faker.name().lastName(),
@@ -38,27 +40,93 @@ public class UserFormMapperTest {
         // Map UserForm to User
         User user = userFormMapper.map(userForm);
 
-        // Convert User to UserView with expected values
-        UserView userView = new UserView(
-                user.getId(),
-                user.getName(),
-                user.getLastname(),
-                user.getPhonenumber(),
-                user.getSector(),
-                user.getOccupation(),
-                user.getNop(),
-                user.getEmail(),
-                user.getRole(),
-                user.isEnabled() // Ajustado para isEnabled()
+        // Assert that all fields are correctly mapped
+        assertEquals(userForm.name(), user.getName());
+        assertEquals(userForm.lastname(), user.getLastname());
+        assertEquals(userForm.phonenumber(), user.getPhonenumber());
+        assertEquals(userForm.sector(), user.getSector());
+        assertEquals(userForm.occupation(), user.getOccupation());
+        assertEquals(userForm.nop(), user.getNop());
+        assertEquals(userForm.email(), user.getEmail());
+        assertEquals(userForm.role(), user.getRole());
+    }
+
+    @Test
+    public void testMap_WithNullValues() {
+        UserForm userForm = new UserForm(
+                null,   // Nome nulo
+                null,   // Sobrenome nulo
+                null,   // Telefone nulo
+                null,   // Setor nulo
+                null,   // Ocupação nula
+                null,   // NOP nulo
+                null,   // Email nulo
+                null,   // Senha nula
+                null    // Role nula
         );
 
-        assertEquals(userForm.name(), userView.name());
-        assertEquals(userForm.lastname(), userView.lastname());
-        assertEquals(userForm.phonenumber(), userView.phonenumber());
-        assertEquals(userForm.sector(), userView.sector());
-        assertEquals(userForm.occupation(), userView.occupation());
-        assertEquals(userForm.nop(), userView.nop());
-        assertEquals(userForm.email(), userView.email());
-        assertEquals(userForm.role(), userView.role());
+        // Map UserForm to User
+        User user = userFormMapper.map(userForm);
+
+        // Assert that the mapped User handles null values as expected
+        assertNull(user.getName());
+        assertNull(user.getLastname());
+        assertNull(user.getPhonenumber());
+        assertNull(user.getSector());
+        assertNull(user.getOccupation());
+        assertNull(user.getNop());
+        assertNull(user.getEmail());
+        assertNull(user.getPassword());
+        assertNull(user.getRole());
+    }
+
+    @Test
+    public void testMap_WithInvalidEmail() {
+        UserForm userForm = new UserForm(
+                faker.name().firstName(),
+                faker.name().lastName(),
+                faker.phoneNumber().phoneNumber(),
+                faker.company().industry(),
+                faker.job().title(),
+                faker.bothify("NOP###"),
+                "invalid-email", // Email inválido
+                faker.internet().password(),
+                RoleEnum.ROLE_CLIENT.getCode()
+        );
+
+        // Map UserForm to User
+        User user = userFormMapper.map(userForm);
+
+        // Assert that the email is mapped as is (assuming no validation in mapper)
+        assertEquals("invalid-email", user.getEmail());
+    }
+
+    @Test
+    public void testMap_WithEmptyFields() {
+        UserForm userForm = new UserForm(
+                "", // Nome vazio
+                "", // Sobrenome vazio
+                "", // Telefone vazio
+                "", // Setor vazio
+                "", // Ocupação vazia
+                "", // NOP vazio
+                "", // Email vazio
+                "", // Senha vazia
+                RoleEnum.ROLE_CLIENT.getCode()
+        );
+
+        // Map UserForm to User
+        User user = userFormMapper.map(userForm);
+
+        // Assert that empty fields are mapped as empty strings
+        assertEquals("", user.getName());
+        assertEquals("", user.getLastname());
+        assertEquals("", user.getPhonenumber());
+        assertEquals("", user.getSector());
+        assertEquals("", user.getOccupation());
+        assertEquals("", user.getNop());
+        assertEquals("", user.getEmail());
+        assertEquals("", user.getPassword());
+        assertEquals(RoleEnum.ROLE_CLIENT.getCode(), user.getRole());
     }
 }

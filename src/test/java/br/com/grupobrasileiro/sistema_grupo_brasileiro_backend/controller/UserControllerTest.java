@@ -1,5 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +50,6 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
-
     @InjectMocks
     private UserController userController;
 
@@ -92,7 +92,7 @@ public class UserControllerTest {
 
         mockMvc.perform(post("/api/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\": \"" + userForm.name() + "\", \"lastname\": \"" + userForm.lastname() + "\", \"phonenumber\": \"" + userForm.phonenumber() + "\", \"sector\": \"" + userForm.sector() + "\", \"occupation\": \"" + userForm.occupation() + "\", \"nop\": \"" + userForm.nop() + "\", \"email\": \"" + userForm.email() + "\", \"password\": \"" + userForm.password() + "\", \"role\": " + userForm.role() + ", \"status\": " + "}"))
+                .content("{\"name\": \"" + userForm.name() + "\", \"lastname\": \"" + userForm.lastname() + "\", \"phonenumber\": \"" + userForm.phonenumber() + "\", \"sector\": \"" + userForm.sector() + "\", \"occupation\": \"" + userForm.occupation() + "\", \"nop\": \"" + userForm.nop() + "\", \"email\": \"" + userForm.email() + "\", \"password\": \"" + userForm.password() + "\", \"role\": " + userForm.role() + ", \"status\": true}")) // corrigido o campo "status"
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value(userView.name()))
                 .andExpect(jsonPath("$.lastname").value(userView.lastname()));
@@ -196,29 +196,44 @@ public class UserControllerTest {
     }
     
     @Test
-    void testValidPhonenumber() {
+    void testValidPhonenumber() throws Exception {
         UserForm userForm = new UserForm("John", "Doe", "+55 (11) 98888-8888", "Tech", "Engineer", "12345", "john.doe@example.com", "Valid1Password@", 1);
-     // Check for validation errors
+        // Check for validation errors for valid phone numbers
+        mockMvc.perform(post("/api/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(userForm)))
+                .andExpect(status().isCreated());
     }
 
     @Test
-    void testInvalidPhonenumber() {
+    void testInvalidPhonenumber() throws Exception {
         UserForm userForm = new UserForm("John", "Doe", "1234", "Tech", "Engineer", "12345", "john.doe@example.com", "Valid1Password@", 1);
-     // Check if validation fails with the expected messageda
+        // Check for validation error for invalid phone numbers
+        mockMvc.perform(post("/api/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(userForm)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0]").value("Invalid phone number"));
     }
     
     @Test
-    void testValidPassword() {
+    void testValidPassword() throws Exception {
         UserForm userForm = new UserForm("John", "Doe", "+55 (11) 98888-8888", "Tech", "Engineer", "12345", "john.doe@example.com", "Valid1Password@", 1);
-        // Check for validation errors
+        // Check for validation errors for valid passwords
+        mockMvc.perform(post("/api/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(userForm)))
+                .andExpect(status().isCreated());
     }
 
     @Test
-    void testInvalidPassword() {
+    void testInvalidPassword() throws Exception {
         UserForm userForm = new UserForm("John", "Doe", "+55 (11) 98888-8888", "Tech", "Engineer", "12345", "john.doe@example.com", "invalidpassword", 1);
-     // Check if validation fails with the expected message
+        //Check for validation error for invalid passwords
+        mockMvc.perform(post("/api/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(userForm)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0]").value("Password does not meet the required criteria"));
     }
-
-
 }
-

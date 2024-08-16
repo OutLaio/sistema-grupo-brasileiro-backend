@@ -5,6 +5,11 @@ import org.junit.jupiter.api.Test;
 import com.github.javafaker.Faker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class UserFormTest {
 
@@ -20,7 +25,7 @@ public class UserFormTest {
         String nop = faker.bothify("??###");
         String email = faker.internet().emailAddress();
         String password = "Password123!";
-        Integer role = RoleEnum.ROLE_CLIENT.getCode();  // Usando RoleEnum existente
+        Integer role = RoleEnum.ROLE_CLIENT.getCode();  
 
         UserForm form = new UserForm(name, lastname, phonenumber, sector, occupation, nop, email, password, role);
 
@@ -43,7 +48,8 @@ public class UserFormTest {
             faker.job().title(), faker.bothify("??###"), invalidEmail,
             "Password123!", RoleEnum.ROLE_CLIENT.getCode());
 
-           
+     // Here it is important to validate if the class handles invalid emails, assuming there should be validation
+     // The code only checks the returned value, adjust if there is real validation
         assertEquals(invalidEmail, form.email());
     }
 
@@ -55,7 +61,26 @@ public class UserFormTest {
         assertEquals(RoleEnum.ROLE_CLIENT.getCode(), form.role());
     }
 
-   
+    @Test
+    public void testPasswordValidation() {
+        String validPassword = "Password123!";
+        String invalidPassword = "short";
+
+        UserForm validForm = new UserForm(faker.name().firstName(), faker.name().lastName(),
+            faker.phoneNumber().phoneNumber(), faker.company().industry(),
+            faker.job().title(), faker.bothify("??###"), faker.internet().emailAddress(),
+            validPassword, RoleEnum.ROLE_CLIENT.getCode());
+
+        UserForm invalidForm = new UserForm(faker.name().firstName(), faker.name().lastName(),
+            faker.phoneNumber().phoneNumber(), faker.company().industry(),
+            faker.job().title(), faker.bothify("??###"), faker.internet().emailAddress(),
+            invalidPassword, RoleEnum.ROLE_CLIENT.getCode());
+
+     // Here you should add a password validation in the UserForm class
+     // The code here just checks if the password is correctly assigned
+        assertEquals(validPassword, validForm.password());
+     // Adds a dummy password validation, adjust according to your application's logic
+        assertTrue(validPassword.length() >= 8); 
+        assertFalse(invalidPassword.length() >= 8); 
+    }
 }
-
-

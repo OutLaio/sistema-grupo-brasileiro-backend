@@ -1,7 +1,28 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.github.javafaker.Faker;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.AuthController;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
@@ -9,31 +30,6 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.E
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType; 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
 
 @WebMvcTest(AuthController.class)
 public class AuthControllerIntegrationTest {
@@ -125,7 +121,7 @@ public class AuthControllerIntegrationTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\":\"" + email + "\",\"password\":\"wrongpassword\"}"))
+                .content("{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(MockMvcResultMatchers.content().string("Unauthorized"));
     }
@@ -220,3 +216,4 @@ public class AuthControllerIntegrationTest {
                 .andExpect(MockMvcResultMatchers.content().string("Erro inesperado"));
     }
 }
+
