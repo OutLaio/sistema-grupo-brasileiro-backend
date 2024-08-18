@@ -6,8 +6,8 @@ public record ProjectView(
     String title,
     String description,
     Integer progress,
-    String status
-
+    String status,
+    Long projectUserId
 ) {
 
 }

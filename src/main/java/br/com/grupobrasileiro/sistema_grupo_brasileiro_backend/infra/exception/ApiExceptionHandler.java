@@ -131,4 +131,14 @@ public class ApiExceptionHandler {
                                 .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST,
                                                 "Role do usuário inválida para o projeto"));
         }
+        
+        @ExceptionHandler(UnauthorizedException.class)
+        public ResponseEntity<ErrorMessage> handleNullPointerException(UnauthorizedException ex,
+        		HttpServletRequest request) {
+        	return ResponseEntity
+        			.status(HttpStatus.BAD_REQUEST)
+        			.contentType(MediaType.APPLICATION_JSON)
+        			.body(new ErrorMessage(request, HttpStatus.BAD_REQUEST,
+        					"Colaborador atribuído ao projeto com sucesso."));
+        }
 }
