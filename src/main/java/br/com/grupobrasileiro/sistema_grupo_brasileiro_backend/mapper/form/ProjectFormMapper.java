@@ -1,68 +1,53 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserConverter;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.ProjectUser;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
 
 @Component
 public class ProjectFormMapper implements Mapper<ProjectForm, Project> {
 
-    private final UserConverter userConverter;
+    private final UserRepository userRepository;
 
-    public ProjectFormMapper(UserConverter userConverter) {
-        this.userConverter = userConverter;
+    public ProjectFormMapper(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
-    
+
     /**
-	 * Converte os objetos ProjectForm num conjunto de Project
-	 * @param i - ProjectForm
+	 * Converte o ProjectForm em um objeto Project, associando o cliente ao projeto.
+	 * @param projectForm - ProjectForm
 	 * @return Project (id, title, description, progress, status, projectUsers)
 	 * */
     @Override
     public Project map(ProjectForm projectForm) {
-        // Converte os objetos users no conjunto de ProjectUser
-        Set<User> users = userConverter.converter(projectForm.users()); 
-        
-        Set<ProjectUser> projectUsers = users.stream()
-            .map(userForm -> {
-                User user = new User();
-                user.setName(userForm.getName());
-                user.setLastname(userForm.getLastname());
-                user.setPhonenumber(userForm.getPhonenumber());
-                user.setSector(userForm.getSector());
-                user.setOccupation(userForm.getOccupation());
-                user.setNop(userForm.getNop());
-                user.setEmail(userForm.getEmail());
-                user.setRole(userForm.getRole());
+        // Busca o cliente pelo ID fornecido no formulário
+        User client = userRepository.findById(projectForm.clientId())
+            .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado com o ID: " + projectForm.clientId()));
 
-                ProjectUser projectUser = new ProjectUser();
-                if (userForm.getRole() == RoleEnum.ROLE_COLLABORATOR.getCode()) {
-	                projectUser.setCollaborator(user);
-                }
-                else if (userForm.getRole() == RoleEnum.ROLE_CLIENT.getCode()) {
-	                projectUser.setClient(user);
-				}
-                
-                return projectUser;
-            })
-            .collect(Collectors.toSet());
+        // Cria a relação ProjectUser para o cliente
+        ProjectUser projectUser = new ProjectUser();
+        projectUser.setClient(client);
 
-        return new Project(
+        // Cria o projeto com o cliente associado
+        Project project = new Project(
             null,
             projectForm.title(),
             projectForm.description(),
             projectForm.progress(),
             projectForm.status(),
-            projectUsers
+            Set.of(projectUser)
         );
+
+        // Associa o projeto ao ProjectUser
+        projectUser.setProject(project);
+
+        return project;
     }
 }
