@@ -8,7 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.ProjectView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.CollaboratorAlreadyAssignedException;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.ProjectNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.ProjectFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.ProjectViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.Project;
@@ -90,11 +91,11 @@ public class ProjectService {
 	public void assignCollaboratorToProject(Long projectId, Long collaboratorId) {
 	    // Verifica se o projeto existe
 	    Project project = projectRepository.findById(projectId)
-	        .orElseThrow(() -> new RuntimeException("Projeto não encontrado"));
+	        .orElseThrow(() -> new ProjectNotFoundException("Projeto não encontrado."));
 
 	    // Verifica se o colaborador existe
 	    User collaborator = userRepository.findById(collaboratorId)
-	        .orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
+	        .orElseThrow(() -> new RuntimeException("Colaborador não encontrado."));
 
 	    // Verifica se há algum cliente associado ao projeto
 	    ProjectUser projectUser = projectUserRepository.findByProjectAndClientIsNotNull(project)
@@ -103,7 +104,7 @@ public class ProjectService {
 	    // Verifica se o colaborador já está associado ao projeto
 	    boolean exists = projectUserRepository.existsByProjectAndCollaborator(project, collaborator);
 	    if (exists) {
-	        throw new RuntimeException("O colaborador já está atribuído a este projeto.");
+	        throw new CollaboratorAlreadyAssignedException("O colaborador já está atribuído a este projeto.");
 	    }
 
 	    // Atribui o colaborador ao projeto
