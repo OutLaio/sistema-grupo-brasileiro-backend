@@ -57,12 +57,12 @@ public class ProjectFormMapperTest {
 
         // Create a ProjectForm instance with dummy data
         ProjectForm projectForm = new ProjectForm(
-            "New Project",        // title
-            "Project Description", // description
-            50,                   // progress
-            "In Progress",        // status
-            userForms             // projectUsers
-        );
+        	    "New Project",        // title
+        	    "Project Description", // description
+        	    50,                   // progress
+        	    "In Progress",        // status
+        	    123L                  // clientId
+        	);
 
         // Map ProjectForm to Project
         Project project = projectFormMapper.map(projectForm);

@@ -91,7 +91,8 @@ public class ProjectViewMapperTest {
         assertEquals(project.getDescription(), projectView.description(), "Descriptions should match");
         assertEquals(project.getProgress(), projectView.progress(), "Progress should match");
         assertEquals(project.getStatus(), projectView.status(), "Status should match");
-        assertEquals(1, projectView.users().size(), "UserViews size should match the number of users");
+        // Assuming that ProjectView maps to a single projectUserId field and not a collection
+        assertEquals(projectUsers.iterator().next().getClient().getId(), projectView.projectUserId(), "ProjectUserId should match");
     }
 
     @Test
@@ -116,9 +117,8 @@ public class ProjectViewMapperTest {
         assertEquals(project.getProgress(), projectView.progress(), "Progress should match");
         assertEquals(project.getStatus(), projectView.status(), "Status should match");
 
-        // If the method map() should handle null users, assert that the users view is empty
-        assertNotNull(projectView.users(), "UserViews should not be null");
-        assertTrue(projectView.users().isEmpty(), "UserViews should be empty when no users are present");
+        // Validate that projectUserId is handled correctly even if there are no users
+        assertNull(projectView.projectUserId(), "ProjectUserId should be null when no users are present");
     }
 
     @Test
@@ -175,7 +175,9 @@ public class ProjectViewMapperTest {
 
         // Validations (simplified for this example)
         assertNotNull(projectView, "ProjectView should not be null");
-        assertEquals(1000, projectView.users().size(), "UserViews size should match the number of users");
+        
+        assertNotNull(projectView.projectUserId(), "ProjectUserId should not be null");
     }
 }
+
 

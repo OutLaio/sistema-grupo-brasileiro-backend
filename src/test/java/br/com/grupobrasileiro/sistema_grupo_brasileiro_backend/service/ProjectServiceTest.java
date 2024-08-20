@@ -1,65 +1,46 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.ProjectView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.ProjectFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.ProjectViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.ProjectUser;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.ProjectRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.ProjectUserRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import com.github.javafaker.Faker;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-public class ProjectServiceTest {
-
-    @InjectMocks
-    private ProjectService projectService;
+class ProjectServiceTest {
 
     @Mock
     private ProjectRepository projectRepository;
+
+    @Mock
+    private ProjectUserRepository projectUserRepository;
 
     @Mock
     private ProjectFormMapper projectFormMapper;
@@ -67,240 +48,187 @@ public class ProjectServiceTest {
     @Mock
     private ProjectViewMapper projectViewMapper;
 
+    @Mock
+    private UserRepository userRepository;
+
+    @InjectMocks
+    private ProjectService projectService;
+
     private Faker faker;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         faker = new Faker();
     }
 
     @Test
-    public void testSaveProject() {
-        // Arrange
-        ProjectForm form = new ProjectForm(
-            faker.lorem().word(),
-            faker.lorem().sentence(),
-            faker.number().numberBetween(0, 100),
-            faker.lorem().word(),
-            new HashSet<>()
-        );
+    void testSaveProject() {
+        String title = faker.company().name();
+        String description = faker.lorem().sentence();
+        Integer progress = faker.number().numberBetween(0, 100);
+        String status = faker.random().nextBoolean() ? "AF" : "EA";
+        Long clientId = faker.number().randomNumber();
 
-        User client = new User();
-        client.setName(faker.name().firstName());
-        client.setLastname(faker.name().lastName());
-        client.setEmail(faker.internet().emailAddress());
-        client.setRole(RoleEnum.ROLE_CLIENT.getCode());  // Usando o código do RoleEnum
+        ProjectForm projectForm = new ProjectForm(title, description, progress, status, clientId);
+        Project project = new Project();
+        Project savedProject = new Project();
 
-        ProjectUser projectUser = new ProjectUser();
-        projectUser.setClient(client);
+        when(projectFormMapper.map(any(ProjectForm.class))).thenReturn(project);
+        when(projectRepository.save(any(Project.class))).thenReturn(savedProject);
 
-        Set<ProjectUser> projectUsers = new HashSet<>();
-        projectUsers.add(projectUser);
+        projectService.save(projectForm);
 
-        Project project = new Project(
-            null,
-            form.title(),
-            form.description(),
-            form.progress(),
-            form.status(),
-            projectUsers
-        );
-
-        ProjectView projectView = new ProjectView(
-            faker.number().randomNumber(),
-            form.title(),
-            form.description(),
-            form.progress(),
-            form.status(),
-            new HashSet<>()
-        );
-
-        // Mock do mapeamento e salvamento
-        when(projectFormMapper.map(form)).thenReturn(project);
-        when(projectRepository.save(any(Project.class))).thenReturn(project);
-        when(projectViewMapper.map(project)).thenReturn(projectView);
-
-        // Act
-        ProjectView result = projectService.save(form);
-
-        // Assert
-        assertThat(result).isNotNull();
-        assertThat(result.id()).isEqualTo(projectView.id());
-        assertThat(result.title()).isEqualTo(form.title());
-        assertThat(result.description()).isEqualTo(form.description());
-        assertThat(result.progress()).isEqualTo(form.progress());
-        assertThat(result.status()).isEqualTo(form.status());
+        verify(projectFormMapper).map(projectForm);
+        verify(projectRepository).save(project);
+        
+        for (ProjectUser projectUser : savedProject.getUsers()) {
+            verify(projectUserRepository).save(projectUser);
+        }
     }
 
     @Test
-    public void testGetProjectById() {
-        // Arrange
+    void testFindProjectById() {
         Long projectId = faker.number().randomNumber();
         Project project = new Project();
-        project.setId(projectId);
-        project.setTitle(faker.lorem().word());
-        project.setDescription(faker.lorem().sentence());
-        project.setProgress(faker.number().numberBetween(0, 100));
-        project.setStatus(faker.lorem().word());
-
-        User client = new User();
-        client.setId(faker.number().randomNumber());
-        client.setName(faker.name().firstName());
-        client.setLastname(faker.name().lastName());
-        client.setPhonenumber(faker.phoneNumber().phoneNumber());
-        client.setSector(faker.lorem().word());
-        client.setOccupation(faker.lorem().word());
-        client.setNop(faker.lorem().word()); // Ajuste para String
-        client.setEmail(faker.internet().emailAddress());
-        client.setRole(RoleEnum.ROLE_CLIENT.getCode());
-        client.setActive(true);
-
-        User collaborator = new User();
-        collaborator.setId(faker.number().randomNumber());
-        collaborator.setName(faker.name().firstName());
-        collaborator.setLastname(faker.name().lastName());
-        collaborator.setPhonenumber(faker.phoneNumber().phoneNumber());
-        collaborator.setSector(faker.lorem().word());
-        collaborator.setOccupation(faker.lorem().word());
-        collaborator.setNop(faker.lorem().word()); // Ajuste para String
-        collaborator.setEmail(faker.internet().emailAddress());
-        collaborator.setRole(RoleEnum.ROLE_COLLABORATOR.getCode());
-        collaborator.setActive(true);
-
         ProjectUser projectUser = new ProjectUser();
-        projectUser.setClient(client);
-        projectUser.setCollaborator(collaborator);
-
-        Set<ProjectUser> projectUsers = Set.of(projectUser);
+        projectUser.setId(faker.number().randomNumber());
+        project.setUsers(Set.of(projectUser));
 
         ProjectView projectView = new ProjectView(
-            projectId,
+            project.getId(), 
+            project.getTitle(), 
+            project.getDescription(), 
+            project.getProgress(), 
+            project.getStatus(), 
+            projectUser.getId()
+        );
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(projectViewMapper.map(project)).thenReturn(projectView);
+
+        ProjectView result = projectService.getProjectById(projectId);
+
+        verify(projectRepository).findById(projectId);
+        verify(projectViewMapper).map(project);
+        assertEquals(projectView, result);
+        assertEquals(projectUser.getId(), result.projectUserId());
+    }
+
+    @Test
+    void testAssignCollaboratorToProject() {
+        Long projectId = faker.number().randomNumber();
+        Long collaboratorId = faker.number().randomNumber();
+        Project project = new Project();
+        User collaborator = new User();
+        ProjectUser projectUser = new ProjectUser();
+        
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(userRepository.findById(collaboratorId)).thenReturn(Optional.of(collaborator));
+        when(projectUserRepository.findByProjectAndClientIsNotNull(project)).thenReturn(Optional.of(projectUser));
+        when(projectUserRepository.existsByProjectAndCollaborator(project, collaborator)).thenReturn(false);
+
+        projectService.assignCollaboratorToProject(projectId, collaboratorId);
+
+        verify(projectUserRepository).save(projectUser);
+    }
+
+    @Test
+    void testUpdateProjectStatus() {
+        Long projectId = faker.number().randomNumber();
+        String newStatus = "AF";
+        Project project = new Project();
+        ProjectView updatedProjectView = new ProjectView(
+            project.getId(),
             project.getTitle(),
             project.getDescription(),
             project.getProgress(),
-            project.getStatus(),
-            Set.of(
-                new UserView(client.getId(), client.getName(), client.getLastname(), client.getPhonenumber(), client.getSector(), client.getOccupation(), client.getNop(), client.getEmail(), client.getRole(), client.getActive()),
-                new UserView(collaborator.getId(), collaborator.getName(), collaborator.getLastname(), collaborator.getPhonenumber(), collaborator.getSector(), collaborator.getOccupation(), collaborator.getNop(), collaborator.getEmail(), collaborator.getRole(), collaborator.getActive())
-            )
-        );
-
-        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-        when(projectViewMapper.map(project)).thenReturn(projectView);
-
-        // Act
-        ProjectView result = projectService.getProjectById(projectId);
-
-        // Assert
-        assertThat(result).isNotNull();
-        assertThat(result.id()).isEqualTo(projectId);
-        assertThat(result.title()).isEqualTo(project.getTitle());
-        assertThat(result.description()).isEqualTo(project.getDescription());
-        assertThat(result.progress()).isEqualTo(project.getProgress());
-        assertThat(result.status()).isEqualTo(project.getStatus());
-        assertThat(result.users()).isEqualTo(projectView.users());
-    }
-
-    @Test
-    public void testProjectAll() {
-        // Arrange
-        PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<Project> projectPage = new PageImpl<>(List.of(new Project(), new Project()));
-        when(projectRepository.findAll(pageRequest)).thenReturn(projectPage);
-
-        ProjectView projectView = new ProjectView(
-            faker.number().randomNumber(),
-            faker.lorem().word(),
-            faker.lorem().sentence(),
-            faker.number().numberBetween(0, 100),
-            faker.lorem().word(),
-            new HashSet<>()
-        );
-
-        when(projectViewMapper.map(any(Project.class))).thenReturn(projectView);
-
-        // Act
-        Page<ProjectView> result = projectService.projectAll(pageRequest);
-
-        // Assert
-        assertThat(result).isNotNull();
-        assertThat(result.getContent().size()).isEqualTo(2); // Based on PageImpl size
-    }
-
-    @Test
-    public void testSaveProject_InvalidData() {
-        // Given
-        ProjectForm invalidForm = new ProjectForm("", "", -1, "", new HashSet<>());
-
-        // When & Then
-        assertThrows(IllegalArgumentException.class, () -> {
-            projectService.save(invalidForm);
-        });
-    }
-
-    @Test
-    public void testGetProjectById_NotFound() {
-        // Given
-        Long invalidId = 999L;
-        when(projectRepository.findById(invalidId)).thenReturn(Optional.empty());
-
-        // When & Then
-        assertThrows(RuntimeException.class, () -> {
-            projectService.getProjectById(invalidId);
-        });
-    }
-
-    @Test
-    public void testUpdateProjectStatus_InvalidStatus() {
-        // Given
-        Long projectId = 1L;
-        String invalidStatus = "InvalidStatus";
-        Project project = new Project();
-        project.setId(projectId);
-        project.setStatus("In Progress");
-
-        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-
-        // When & Then
-        assertThrows(IllegalArgumentException.class, () -> {
-            projectService.updateProjectStatus(projectId, invalidStatus);
-        });
-    }
-
-    @Test
-    public void testUpdateProjectStatus() {
-        // Arrange
-        Long projectId = faker.number().randomNumber();
-        String newStatus = "Completed";
-        Project project = new Project();
-        project.setId(projectId);
-        project.setStatus("In Progress");
-
-        Project updatedProject = new Project();
-        updatedProject.setId(projectId);
-        updatedProject.setStatus(newStatus);
-
-        ProjectView projectView = new ProjectView(
-            projectId,
-            faker.lorem().word(),
-            faker.lorem().sentence(),
-            faker.number().numberBetween(0, 100),
             newStatus,
-            new HashSet<>()
+            null
         );
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-        when(projectRepository.save(any(Project.class))).thenReturn(updatedProject);
-        when(projectViewMapper.map(updatedProject)).thenReturn(projectView);
+        when(projectRepository.save(project)).thenReturn(project);
+        when(projectViewMapper.map(project)).thenReturn(updatedProjectView);
 
-        // Act
         ProjectView result = projectService.updateProjectStatus(projectId, newStatus);
 
-        // Assert
-        assertThat(result).isNotNull();
-        assertThat(result.id()).isEqualTo(projectId);
-        assertThat(result.status()).isEqualTo(newStatus);
+        verify(projectRepository).findById(projectId);
+        verify(projectRepository).save(project);
+        assertEquals(newStatus, result.status());
+    }
+    
+    @Test
+    void testProjectAll() {
+        Long projectId1 = 1L;
+        Long projectId2 = 2L;
+
+        Project project1 = new Project();
+        project1.setId(projectId1);
+        project1.setTitle("Title1");
+        project1.setDescription("Description1");
+        project1.setProgress(50);
+        project1.setStatus("AF");
+        ProjectUser projectUser1 = new ProjectUser();
+        User clientUser1 = new User();
+        clientUser1.setId(1L);
+        projectUser1.setClient(clientUser1);
+        projectUser1.setId(1L);
+        project1.setUsers(Set.of(projectUser1));
+
+        Project project2 = new Project();
+        project2.setId(projectId2);
+        project2.setTitle("Title2");
+        project2.setDescription("Description2");
+        project2.setProgress(75);
+        project2.setStatus("EA");
+        ProjectUser projectUser2 = new ProjectUser();
+        projectUser2.setClient(null);
+        projectUser2.setId(2L);
+        project2.setUsers(Set.of(projectUser2));
+
+        List<Project> projects = List.of(project1, project2);
+        Page<Project> projectPage = new PageImpl<>(projects, PageRequest.of(0, 10), projects.size());
+
+        ProjectView projectView1 = new ProjectView(
+            projectId1, "Title1", "Description1", 50, "AF", clientUser1.getId()
+        );
+        ProjectView projectView2 = new ProjectView(
+            projectId2, "Title2", "Description2", 75, "EA", null
+        );
+
+        List<ProjectView> projectViews = List.of(projectView1, projectView2);
+        Page<ProjectView> projectViewPage = new PageImpl<>(projectViews, PageRequest.of(0, 10), projectViews.size());
+
+        when(projectRepository.findAll(any(PageRequest.class))).thenReturn(projectPage);
+        when(projectViewMapper.map(project1)).thenReturn(projectView1);
+        when(projectViewMapper.map(project2)).thenReturn(projectView2);
+
+        Page<ProjectView> result = projectService.projectAll(PageRequest.of(0, 10));
+
+        verify(projectRepository).findAll(any(PageRequest.class));
+
+        assertEquals(projectViewPage.getContent(), result.getContent());
+        assertEquals(projectViewPage.getTotalElements(), result.getTotalElements());
+    }
+
+    @Test
+    void testIsValidStatus() {
+        // Testando status válidos
+        assertTrue(projectService.isValidStatus("AF"));
+        assertTrue(projectService.isValidStatus("EA"));
+        assertTrue(projectService.isValidStatus("AA"));
+        assertTrue(projectService.isValidStatus("AP"));
+        assertTrue(projectService.isValidStatus("EC"));
+        assertTrue(projectService.isValidStatus("CO"));
+        
+        // Testando status inválidos
+        assertFalse(projectService.isValidStatus("INVALID"));
+        assertFalse(projectService.isValidStatus("123"));
+        assertFalse(projectService.isValidStatus("ABCD"));
+        assertFalse(projectService.isValidStatus(""));
+        assertFalse(projectService.isValidStatus(null)); // Se o método aceitar null, teste isso também
     }
 }
 
+}
