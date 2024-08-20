@@ -1,5 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -47,6 +49,7 @@ public class ProjectService {
         // Salva as associações de ProjectUser
         for (ProjectUser projectUser : savedProject.getUsers()) {
             projectUser.setProject(savedProject);
+            projectUserRepository.save(projectUser);
         }
 
         // Converte o Project salvo para ProjectView
