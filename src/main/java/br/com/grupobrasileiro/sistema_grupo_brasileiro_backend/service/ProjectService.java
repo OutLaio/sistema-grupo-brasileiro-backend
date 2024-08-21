@@ -1,14 +1,23 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.ProjectView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.CollaboratorAlreadyAssignedException;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.InvalidRoleException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.ProjectNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.ProjectFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.ProjectViewMapper;
@@ -38,21 +47,54 @@ public class ProjectService {
 	private UserRepository userRepository;
 
 	@Transactional
-    public void save(ProjectForm projectForm) {
-        Project project = projectFormMapper.map(projectForm);
+	public ProjectView save(ProjectForm dto, UserDetails userDetails) {
+	    // Mapeia o DTO para a entidade Project
+	    Project project = projectFormMapper.map(dto);
+	    
+	    // Recupera o usuário autenticado
+	    User user =(User) userRepository.findByEmail(userDetails.getUsername());
+	    if (user == null) {
+	        throw new EntityNotFoundException("Usuário não encontrado.");
+	    }
+	    
+	    // Verifica a função do usuário e associa ao projeto
+	    if (user.getRole() == RoleEnum.ROLE_CLIENT.getCode()) {
+	        projectRepository.save(project);
 
-        // Salva o projeto no repositório
-        Project savedProject = projectRepository.save(project);
-        
-        // Salva as associações de ProjectUser
-        for (ProjectUser projectUser : savedProject.getUsers()) {
-            projectUser.setProject(savedProject);
-        }
+	        ProjectUser projectUser = new ProjectUser();
+	        projectUser.setProject(project);
+	        projectUser.setClient(user);
+	        projectUser.setCollaborator(null);
 
-        // Converte o Project salvo para ProjectView
-//        return projectViewMapper.map(savedProject);
-    }
+	        projectUserRepository.save(projectUser);
+	    } else {
+	        throw new InvalidRoleException("Usuário com Função Inválida para o Projeto.");
+	    }
 
+	    // Retorna a visão do projeto salvo
+	    return projectViewMapper.map(project);
+	}
+
+	@Transactional
+	public Page<ProjectView> projectsCollaborators(PageRequest pageRequest, Integer role) {
+	    Page<ProjectUser> projectUserPage = projectUserRepository.findAll(pageRequest);
+	    List<ProjectView> projectsRoleList = new ArrayList<>();
+
+	    for (ProjectUser projectUser : projectUserPage) {
+	        User user = projectUser.getCollaborator();
+	        Project project = projectUser.getProject();
+
+	        if (user != null && user.getRole().equals(role)) {
+	            ProjectView projectView = projectViewMapper.map(project);
+	            projectsRoleList.add(projectView);
+	        }
+	    }
+
+	    return new PageImpl<>(projectsRoleList, pageRequest, projectsRoleList.size());
+	}
+
+
+            
 	@Transactional(readOnly = true)
 	public ProjectView getProjectById(Long id) {
 		Project project = projectRepository.findById(id)
@@ -87,6 +129,7 @@ public class ProjectService {
 		return projectPage.map(projectViewMapper::map);
 	}
 	
+
 	@Transactional
 	public void assignCollaboratorToProject(Long projectId, Long collaboratorId) {
 	    // Verifica se o projeto existe
