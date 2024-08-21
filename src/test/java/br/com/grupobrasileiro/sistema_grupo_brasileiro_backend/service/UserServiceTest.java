@@ -319,6 +319,7 @@ class UserServiceTest {
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(userView, result.getContent().get(0));
+        
 
         verify(userRepository).findByRole(role, pageRequest); // Verifica que findByRole foi chamado
     }

@@ -27,6 +27,27 @@ import com.github.javafaker.Faker;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import java.util.HashSet;
+import java.util.Set;
+
 public class ProjectViewMapperTest {
 
     private ProjectViewMapper projectViewMapper;
@@ -39,9 +60,10 @@ public class ProjectViewMapperTest {
     }
 
     @Test
-    void testMap() {
-        // Simulate the creation of Users for Client and Collaborator
+    void shouldMapProjectToProjectViewWithValidData() {
+        // Arrange
         User client = new User();
+        client.setId(faker.number().randomNumber());
         client.setName(faker.name().firstName());
         client.setLastname(faker.name().lastName());
         client.setPhonenumber(faker.phoneNumber().phoneNumber());
@@ -49,30 +71,15 @@ public class ProjectViewMapperTest {
         client.setOccupation(faker.job().title());
         client.setNop(faker.number().digits(5));
         client.setEmail(faker.internet().emailAddress());
-        client.setPassword("dummyPassword"); // Use a placeholder for password
-        client.setRole(RoleEnum.ROLE_CLIENT.getCode()); // Ensure the role is set
+        client.setPassword("dummyPassword");
+        client.setRole(RoleEnum.ROLE_CLIENT.getCode());
 
-        User collaborator = new User();
-        collaborator.setName(faker.name().firstName());
-        collaborator.setLastname(faker.name().lastName());
-        collaborator.setPhonenumber(faker.phoneNumber().phoneNumber());
-        collaborator.setSector(faker.job().field());
-        collaborator.setOccupation(faker.job().title());
-        collaborator.setNop(faker.number().digits(5));
-        collaborator.setEmail(faker.internet().emailAddress());
-        collaborator.setPassword("dummyPassword"); // Use a placeholder for password
-        collaborator.setRole(RoleEnum.ROLE_COLLABORATOR.getCode()); // Ensure the role is set
-
-        // Simulate a ProjectUser
         ProjectUser projectUser = new ProjectUser();
         projectUser.setClient(client);
-        projectUser.setCollaborator(collaborator);
 
-        // Add ProjectUser to the project's set of users
         Set<ProjectUser> projectUsers = new HashSet<>();
         projectUsers.add(projectUser);
 
-        // Simulate a Project for the test
         Project project = new Project();
         project.setId(faker.number().randomNumber());
         project.setTitle(faker.lorem().word());
@@ -81,81 +88,177 @@ public class ProjectViewMapperTest {
         project.setStatus(faker.lorem().word());
         project.setUsers(projectUsers);
 
-        // Map the Project to ProjectView
+        // Act
         ProjectView projectView = projectViewMapper.map(project);
 
-        // Validations
+        // Assert
         assertNotNull(projectView, "ProjectView should not be null");
-        assertEquals(project.getId(), projectView.id(), "IDs should match");
-        assertEquals(project.getTitle(), projectView.title(), "Titles should match");
-        assertEquals(project.getDescription(), projectView.description(), "Descriptions should match");
-        assertEquals(project.getProgress(), projectView.progress(), "Progress should match");
-        assertEquals(project.getStatus(), projectView.status(), "Status should match");
-        // Assuming that ProjectView maps to a single projectUserId field and not a collection
-        assertEquals(projectUsers.iterator().next().getClient().getId(), projectView.projectUserId(), "ProjectUserId should match");
+        assertEquals(project.getId(), projectView.id(), "Project ID should match");
+        assertEquals(project.getTitle(), projectView.title(), "Project Title should match");
+        assertEquals(project.getDescription(), projectView.description(), "Project Description should match");
+        assertEquals(project.getProgress(), projectView.progress(), "Project Progress should match");
+        assertEquals(project.getStatus(), projectView.status(), "Project Status should match");
+        assertNotNull(projectView.projectUserId(), "ProjectUserId should not be null");
     }
 
     @Test
-    void testMapWithNullUsers() {
-        // Simulate a Project with null Users
+    void shouldMapProjectWithNullUsers() {
+        // Arrange
         Project project = new Project();
         project.setId(faker.number().randomNumber());
         project.setTitle(faker.lorem().word());
         project.setDescription(faker.lorem().sentence());
         project.setProgress(faker.number().numberBetween(0, 100));
         project.setStatus(faker.lorem().word());
-        project.setUsers(null); // Explicitly setting users to null
+        project.setUsers(null);
 
-        // Map the Project to ProjectView
+        // Act
         ProjectView projectView = projectViewMapper.map(project);
 
-        // Validations
+        // Assert
         assertNotNull(projectView, "ProjectView should not be null");
-        assertEquals(project.getId(), projectView.id(), "IDs should match");
-        assertEquals(project.getTitle(), projectView.title(), "Titles should match");
-        assertEquals(project.getDescription(), projectView.description(), "Descriptions should match");
-        assertEquals(project.getProgress(), projectView.progress(), "Progress should match");
-        assertEquals(project.getStatus(), projectView.status(), "Status should match");
-
-        // Validate that projectUserId is handled correctly even if there are no users
-        assertNull(projectView.projectUserId(), "ProjectUserId should be null when no users are present");
+        assertEquals(project.getId(), projectView.id(), "Project ID should match");
+        assertEquals(project.getTitle(), projectView.title(), "Project Title should match");
+        assertEquals(project.getDescription(), projectView.description(), "Project Description should match");
+        assertEquals(project.getProgress(), projectView.progress(), "Project Progress should match");
+        assertEquals(project.getStatus(), projectView.status(), "Project Status should match");
+        assertNull(projectView.projectUserId(), "ProjectUserId should be null when user set is null");
     }
 
     @Test
-    void testMapWithLargeDataSet() {
-        // Create a large set of ProjectUsers
+    void shouldMapProjectWithEmptyUserSet() {
+        // Arrange
+        Project project = new Project();
+        project.setId(faker.number().randomNumber());
+        project.setTitle(faker.lorem().word());
+        project.setDescription(faker.lorem().sentence());
+        project.setProgress(faker.number().numberBetween(0, 100));
+        project.setStatus(faker.lorem().word());
+        project.setUsers(new HashSet<>()); // Empty set
+
+        // Act
+        ProjectView projectView = projectViewMapper.map(project);
+
+        // Assert
+        assertNotNull(projectView, "ProjectView should not be null");
+        assertEquals(project.getId(), projectView.id(), "Project ID should match");
+        assertEquals(project.getTitle(), projectView.title(), "Project Title should match");
+        assertEquals(project.getDescription(), projectView.description(), "Project Description should match");
+        assertEquals(project.getProgress(), projectView.progress(), "Project Progress should match");
+        assertEquals(project.getStatus(), projectView.status(), "Project Status should match");
+        assertNull(projectView.projectUserId(), "ProjectUserId should be null when user set is empty");
+    }
+
+    @Test
+    void shouldMapProjectWithProjectUserWithoutClient() {
+        // Arrange
+        ProjectUser projectUser = new ProjectUser();
+        projectUser.setClient(null); // No client
+
         Set<ProjectUser> projectUsers = new HashSet<>();
+        projectUsers.add(projectUser);
+
+        Project project = new Project();
+        project.setId(faker.number().randomNumber());
+        project.setTitle(faker.lorem().word());
+        project.setDescription(faker.lorem().sentence());
+        project.setProgress(faker.number().numberBetween(0, 100));
+        project.setStatus(faker.lorem().word());
+        project.setUsers(projectUsers);
+
+        // Act
+        ProjectView projectView = projectViewMapper.map(project);
+
+        // Assert
+        assertNotNull(projectView, "ProjectView should not be null");
+        assertEquals(project.getId(), projectView.id(), "Project ID should match");
+        assertEquals(project.getTitle(), projectView.title(), "Project Title should match");
+        assertEquals(project.getDescription(), projectView.description(), "Project Description should match");
+        assertEquals(project.getProgress(), projectView.progress(), "Project Progress should match");
+        assertEquals(project.getStatus(), projectView.status(), "Project Status should match");
+        assertNull(projectView.projectUserId(), "ProjectUserId should be null when client is not present");
+    }
+
+    @Test
+    void shouldMapProjectWithMultipleProjectUsersAndClientInTheMiddle() {
+        // Arrange
+        User client1 = new User();
+        client1.setId(faker.number().randomNumber());
+        client1.setName(faker.name().firstName());
+        client1.setLastname(faker.name().lastName());
+        client1.setPhonenumber(faker.phoneNumber().phoneNumber());
+        client1.setSector(faker.job().field());
+        client1.setOccupation(faker.job().title());
+        client1.setNop(faker.number().digits(5));
+        client1.setEmail(faker.internet().emailAddress());
+        client1.setPassword("dummyPassword");
+        client1.setRole(RoleEnum.ROLE_CLIENT.getCode());
+
+        User client2 = new User();
+        client2.setId(faker.number().randomNumber());
+        client2.setName(faker.name().firstName());
+        client2.setLastname(faker.name().lastName());
+        client2.setPhonenumber(faker.phoneNumber().phoneNumber());
+        client2.setSector(faker.job().field());
+        client2.setOccupation(faker.job().title());
+        client2.setNop(faker.number().digits(5));
+        client2.setEmail(faker.internet().emailAddress());
+        client2.setPassword("dummyPassword");
+        client2.setRole(RoleEnum.ROLE_CLIENT.getCode());
+
+        ProjectUser projectUser1 = new ProjectUser();
+        projectUser1.setClient(client1);
+
+        ProjectUser projectUser2 = new ProjectUser();
+        projectUser2.setClient(client2);
+
+        Set<ProjectUser> projectUsers = new HashSet<>();
+        projectUsers.add(projectUser1);
+        projectUsers.add(projectUser2);
+
+        Project project = new Project();
+        project.setId(faker.number().randomNumber());
+        project.setTitle(faker.lorem().word());
+        project.setDescription(faker.lorem().sentence());
+        project.setProgress(faker.number().numberBetween(0, 100));
+        project.setStatus(faker.lorem().word());
+        project.setUsers(projectUsers);
+
+        // Act
+        ProjectView projectView = projectViewMapper.map(project);
+
+        // Assert
+        assertNotNull(projectView, "ProjectView should not be null");
+        assertEquals(project.getId(), projectView.id(), "Project ID should match");
+        assertEquals(project.getTitle(), projectView.title(), "Project Title should match");
+        assertEquals(project.getDescription(), projectView.description(), "Project Description should match");
+        assertEquals(project.getProgress(), projectView.progress(), "Project Progress should match");
+        assertEquals(project.getStatus(), projectView.status(), "Project Status should match");
+        assertNotNull(projectView.projectUserId(), "ProjectUserId should not be null when there are multiple ProjectUsers");
+    }
+
+    @Test
+    void shouldHandleLargeDataSetWithoutPerformanceIssues() {
+        // Arrange
+        Set<ProjectUser> projectUsers = new HashSet<>();
+        User client = new User();
+        client.setId(faker.number().randomNumber());
+        client.setName(faker.name().firstName());
+        client.setLastname(faker.name().lastName());
+        client.setPhonenumber(faker.phoneNumber().phoneNumber());
+        client.setSector(faker.job().field());
+        client.setOccupation(faker.job().title());
+        client.setNop(faker.number().digits(5));
+        client.setEmail(faker.internet().emailAddress());
+        client.setPassword("dummyPassword");
+        client.setRole(RoleEnum.ROLE_CLIENT.getCode());
+
         for (int i = 0; i < 1000; i++) {
-            User client = new User();
-            client.setName(faker.name().firstName());
-            client.setLastname(faker.name().lastName());
-            client.setPhonenumber(faker.phoneNumber().phoneNumber());
-            client.setSector(faker.job().field());
-            client.setOccupation(faker.job().title());
-            client.setNop(faker.number().digits(5));
-            client.setEmail(faker.internet().emailAddress());
-            client.setPassword("dummyPassword"); // Use a placeholder for password
-            client.setRole(RoleEnum.ROLE_CLIENT.getCode()); // Ensure the role is set
-
-            User collaborator = new User();
-            collaborator.setName(faker.name().firstName());
-            collaborator.setLastname(faker.name().lastName());
-            collaborator.setPhonenumber(faker.phoneNumber().phoneNumber());
-            collaborator.setSector(faker.job().field());
-            collaborator.setOccupation(faker.job().title());
-            collaborator.setNop(faker.number().digits(5));
-            collaborator.setEmail(faker.internet().emailAddress());
-            collaborator.setPassword("dummyPassword"); // Use a placeholder for password
-            collaborator.setRole(RoleEnum.ROLE_COLLABORATOR.getCode()); // Ensure the role is set
-
             ProjectUser projectUser = new ProjectUser();
             projectUser.setClient(client);
-            projectUser.setCollaborator(collaborator);
-
             projectUsers.add(projectUser);
         }
 
-        // Create a Project with the large set of users
         Project project = new Project();
         project.setId(faker.number().randomNumber());
         project.setTitle(faker.lorem().word());
@@ -164,20 +267,13 @@ public class ProjectViewMapperTest {
         project.setStatus(faker.lorem().word());
         project.setUsers(projectUsers);
 
+        // Act
         long startTime = System.currentTimeMillis();
-        // Map the Project to ProjectView
         ProjectView projectView = projectViewMapper.map(project);
         long endTime = System.currentTimeMillis();
 
-        // Validate execution time
-        long duration = endTime - startTime;
-        assertTrue(duration < 2000, "Mapping should complete in less than 2 seconds");
-
-        // Validations (simplified for this example)
+        // Assert
         assertNotNull(projectView, "ProjectView should not be null");
-        
-        assertNotNull(projectView.projectUserId(), "ProjectUserId should not be null");
+        assertTrue(endTime - startTime < 2000, "Mapping should be completed within acceptable time limit"); // Example time limit
     }
 }
-
-

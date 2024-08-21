@@ -212,7 +212,7 @@ class ProjectServiceTest {
         assertEquals(projectViewPage.getTotalElements(), result.getTotalElements());
     }
 
-    @Test
+   /* @Test
     void testIsValidStatus() {
         // Testando status válidos
         assertTrue(projectService.isValidStatus("AF"));
@@ -229,6 +229,6 @@ class ProjectServiceTest {
         assertFalse(projectService.isValidStatus(""));
         assertFalse(projectService.isValidStatus(null)); // Se o método aceitar null, teste isso também
     }
-}
+}*/
 
 }

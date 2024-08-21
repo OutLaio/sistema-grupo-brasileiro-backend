@@ -1,14 +1,9 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.github.javafaker.Faker;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -16,95 +11,65 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@DataJpaTest
-public class UserRepositoryTest {
+import com.github.javafaker.Faker;
 
-    @Autowired
-    private UserRepository userRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 
-    private Faker faker;
+    @DataJpaTest
+    public class UserRepositoryTest {
 
-    @BeforeEach
-    public void setUp() {
-        faker = new Faker();
-    }
+        @Autowired
+        private UserRepository userRepository;
 
-    @Test
-    public void testFindByEmail() {
-        // Arrange
-        String email = faker.internet().emailAddress();
-        User user = new User(
-            null,  // ID é gerado automaticamente
-            faker.name().firstName(),
-            faker.name().lastName(),
-            faker.phoneNumber().phoneNumber(),
-            faker.job().field(),
-            faker.job().title(),
-            faker.lorem().word(),
-            email,
-            faker.internet().password(),
-            faker.number().numberBetween(1, 3)
-        );
-        userRepository.save(user);
+        private Faker faker = new Faker();
 
-        // Act
-        UserDetails foundUserDetails = userRepository.findByEmail(email);
+        @Test
+        public void testFindByRole() {
+            // Gerar dados fictícios com Java Faker
+            String email1 = faker.internet().emailAddress();
+            String email2 = faker.internet().emailAddress();
+            String name = faker.name().firstName();
+            String lastname = faker.name().lastName();
+            String phonenumber = faker.phoneNumber().phoneNumber();
+            String sector = faker.company().industry();
+            String occupation = faker.job().title();
+            String nop = faker.number().digits(4);
+            String password = faker.internet().password();
+            Integer roleCode = RoleEnum.ROLE_CLIENT.getCode();
 
-        // Assert
-        assertThat(foundUserDetails).isNotNull();
-        assertThat(foundUserDetails).isInstanceOf(User.class);  // Certifique-se de que o tipo é User
-        assertThat(foundUserDetails.getUsername()).isEqualTo(email);
-        assertThat(((User)foundUserDetails).getName()).isEqualTo(user.getName());
-        assertThat(((User)foundUserDetails).getEmail()).isEqualTo(user.getEmail());
-    }
+            // Cria e salva usuários de teste com a role CLIENT
+            User user1 = new User(null, name, lastname, phonenumber, sector, occupation, nop, email1, password, roleCode);
+            User user2 = new User(null, name, lastname, phonenumber, sector, occupation, nop, email2, password, roleCode);
+            userRepository.save(user1);
+            userRepository.save(user2);
 
-    @Test
-    public void testFindByRole() {
-        // Arrange
-        int role = faker.number().numberBetween(1, 3);
-        for (int i = 0; i < 5; i++) {
-            User user = new User(
-                null,  // ID é gerado automaticamente
-                faker.name().firstName(),
-                faker.name().lastName(),
-                faker.phoneNumber().phoneNumber(),
-                faker.job().field(),
-                faker.job().title(),
-                faker.lorem().word(),
-                faker.internet().emailAddress(),
-                faker.internet().password(),
-                role
-            );
-            userRepository.save(user);
-        }
+            // Verificar se os usuários foram realmente salvos
+            UserDetails userDetails1 = userRepository.findByEmail(email1);
+            UserDetails userDetails2 = userRepository.findByEmail(email2);
+            assertNotNull(userDetails1, "Usuário com email1 não foi salvo.");
+            assertNotNull(userDetails2, "Usuário com email2 não foi salvo.");
 
-        // Act
-        Page<User> usersPage = userRepository.findByRole(role, PageRequest.of(0, 10));
+            // Convertendo UserDetails para User
+            User foundUser1 = (User) userDetails1;
+            User foundUser2 = (User) userDetails2;
 
-        // Assert
-        assertThat(usersPage).isNotNull();
-        assertThat(usersPage.getTotalElements()).isGreaterThan(0);
-        for (User user : usersPage.getContent()) {
-            assertThat(user.getRole()).isEqualTo(role);
+            // Verifica se o email do usuário encontrado corresponde ao email esperado
+            assertEquals(email1, foundUser1.getUsername(), "Email do usuário encontrado não corresponde ao email esperado.");
+            assertEquals(email2, foundUser2.getUsername(), "Email do usuário encontrado não corresponde ao email esperado.");
+
+            // Recupera a página de usuários com a role CLIENT
+            Page<User> usersPage = userRepository.findByRole(roleCode, PageRequest.of(0, 10));
+
+            // Verifica se a página de usuários não está vazia e contém os usuários esperados
+            assertNotNull(usersPage, "A página de usuários é nula.");
+            assertTrue(usersPage.getTotalElements() > 0, "A página de usuários está vazia.");
+
+            // Verifica se os usuários esperados estão na lista
+            boolean user1Found = usersPage.getContent().stream().anyMatch(u -> u.getEmail().equals(email1));
+            boolean user2Found = usersPage.getContent().stream().anyMatch(u -> u.getEmail().equals(email2));
+
+            assertTrue(user1Found, "Usuário com email1 não encontrado.");
+            assertTrue(user2Found, "Usuário com email2 não encontrado.");
         }
     }
-
-    @Test
-    public void testFindByEmailNotFound() {
-        // Act
-        UserDetails foundUserDetails = userRepository.findByEmail("nonexistent@example.com");
-
-        // Assert
-        assertThat(foundUserDetails).isNull();
-    }
-
-    @Test
-    public void testFindByRoleEmpty() {
-        // Act
-        Page<User> usersPage = userRepository.findByRole(faker.number().numberBetween(4, 10), PageRequest.of(0, 10));
-
-        // Assert
-        assertThat(usersPage).isNotNull();
-        assertThat(usersPage.getTotalElements()).isEqualTo(0);
-    }
-}

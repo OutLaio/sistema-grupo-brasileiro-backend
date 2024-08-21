@@ -4,18 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.Test;
-
-public class InvalidTokenExceptionTest {
+public class InvalidRoleExceptionTest {
 
     @Test
-    public void testInvalidTokenExceptionMessage() {
+    public void testInvalidRoleExceptionMessage() {
     	//Set the expected message
-        String expectedMessage = "Token inválido";
+        String expectedMessage = "Role inválido";
         
       //Create an instance of the exception with the expected message
-        InvalidTokenException exception = new InvalidTokenException(expectedMessage);
+        InvalidRoleException exception = new InvalidRoleException(expectedMessage);
         
       //Check if the exception message is correct
         assertEquals(expectedMessage, exception.getMessage(), "The exception message should match the expected message.");

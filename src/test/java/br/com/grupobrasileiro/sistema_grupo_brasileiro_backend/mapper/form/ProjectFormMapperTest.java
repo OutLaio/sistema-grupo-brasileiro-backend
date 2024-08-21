@@ -9,6 +9,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.ProjectUser;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -35,83 +36,76 @@ import org.mockito.MockitoAnnotations;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.github.javafaker.Faker;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
+import java.util.Set;
+
 public class ProjectFormMapperTest {
+
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private ProjectFormMapper projectFormMapper;
 
-    public ProjectFormMapperTest() {
+    private Faker faker;
+
+    @BeforeEach
+    void setUp() {
         MockitoAnnotations.openMocks(this);
+        faker = new Faker();
     }
 
     @Test
-    public void testMap() {
-        // Create a set of UserForms with dummy data
-        Set<UserForm> userForms = new HashSet<>();
-        userForms.add(new UserForm(
-            "John", "Doe", "+55 (11) 98888-8888", "IT", "Developer", "1234", "john.doe@example.com", "P@ssw0rd", RoleEnum.ROLE_COLLABORATOR.getCode()
-        ));
-        userForms.add(new UserForm(
-            "Jane", "Smith", "+55 (21) 98888-8888", "HR", "Manager", "5678", "jane.smith@example.com", "P@ssw0rd123", RoleEnum.ROLE_CLIENT.getCode()
-        ));
+    void testMap() {
+        // Arrange
+        Long clientId = faker.number().randomNumber();
+        User client = new User(clientId, faker.name().firstName(), faker.name().lastName(), faker.phoneNumber().phoneNumber(), 
+            faker.company().industry(), faker.job().title(), faker.code().isbn13(), faker.internet().emailAddress(), 
+            faker.internet().password(), faker.number().randomDigitNotZero());
+        ProjectForm projectForm = new ProjectForm(faker.lorem().sentence(), faker.lorem().paragraph(), 
+            faker.number().numberBetween(0, 100), faker.lorem().word(), clientId);
 
-        // Create a ProjectForm instance with dummy data
-        ProjectForm projectForm = new ProjectForm(
-        	    "New Project",        // title
-        	    "Project Description", // description
-        	    50,                   // progress
-        	    "In Progress",        // status
-        	    123L                  // clientId
-        	);
+        when(userRepository.findById(clientId)).thenReturn(Optional.of(client));
 
-        // Map ProjectForm to Project
+        // Act
         Project project = projectFormMapper.map(projectForm);
 
-        // Verify that Project fields are mapped correctly
-        assertEquals("New Project", project.getTitle());
-        assertEquals("Project Description", project.getDescription());
-        assertEquals(50, project.getProgress());
-        assertEquals("In Progress", project.getStatus());
+        // Assert
+        assertNotNull(project);
+        assertEquals(projectForm.title(), project.getTitle());
+        assertEquals(projectForm.description(), project.getDescription());
+        assertEquals(projectForm.progress(), project.getProgress());
+        assertEquals(projectForm.status(), project.getStatus());
+        assertEquals(1, project.getUsers().size());
 
-        // Verify that users are mapped correctly
-        assertNotNull(project.getUsers()); 
-        assertEquals(2, project.getUsers().size()); 
+        ProjectUser projectUser = project.getUsers().iterator().next();
+        assertEquals(client, projectUser.getClient());
+        assertEquals(project, projectUser.getProject());
+    }
 
-        // Verify that users are mapped correctly to ProjectUser
-        for (ProjectUser projectUser : project.getUsers()) {
-            if (projectUser.getClient() != null) {
-                User client = projectUser.getClient();
-                assertNotNull(client.getName());
-                assertNotNull(client.getLastname());
-                assertNotNull(client.getPhonenumber());
-                assertNotNull(client.getSector());
-                assertNotNull(client.getOccupation());
-                assertNotNull(client.getNop());
-                assertNotNull(client.getEmail());
-                assertNotNull(client.getRole());
-            }
-            if (projectUser.getCollaborator() != null) {
-                User collaborator = projectUser.getCollaborator();
-                assertNotNull(collaborator.getName());
-                assertNotNull(collaborator.getLastname());
-                assertNotNull(collaborator.getPhonenumber());
-                assertNotNull(collaborator.getSector());
-                assertNotNull(collaborator.getOccupation());
-                assertNotNull(collaborator.getNop());
-                assertNotNull(collaborator.getEmail());
-                assertNotNull(collaborator.getRole());
-            }
-        }
+    @Test
+    void testMap_UserNotFound() {
+        // Arrange
+        Long clientId = faker.number().randomNumber();
+        ProjectForm projectForm = new ProjectForm(faker.lorem().sentence(), faker.lorem().paragraph(), 
+            faker.number().numberBetween(0, 100), faker.lorem().word(), clientId);
 
-        // Verify that roles are mapped correctly to ProjectUser
-        for (ProjectUser projectUser : project.getUsers()) {
-            if (projectUser.getClient() != null && projectUser.getClient().getRole().equals(RoleEnum.ROLE_COLLABORATOR.getCode())) {
-                assertNotNull(projectUser.getCollaborator());
-                assertNull(projectUser.getClient());
-            } else if (projectUser.getClient() != null && projectUser.getClient().getRole().equals(RoleEnum.ROLE_CLIENT.getCode())) {
-                assertNotNull(projectUser.getClient());
-                assertNull(projectUser.getCollaborator());
-            }
-        }
+        when(userRepository.findById(clientId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
+            projectFormMapper.map(projectForm);
+        });
+        assertEquals("Cliente não encontrado com o ID: " + clientId, thrown.getMessage());
     }
 }
