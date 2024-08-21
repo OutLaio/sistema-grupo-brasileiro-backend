@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UpdateUserForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserProfileView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
 import jakarta.validation.Valid;
@@ -37,17 +37,17 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
-    @Cacheable("byRole")
-    @GetMapping("/byRole")
-    public ResponseEntity<Page<UserView>> getUsersByRole(
-            @RequestParam Integer role,
+    @Cacheable("collaborators")
+    @GetMapping("/collaborators")
+    public ResponseEntity<Page<UserView>> getUsersCollaborators(
             @RequestParam(defaultValue = "0") Integer page,
       		@RequestParam(value = "direction", defaultValue = "ASC" ) String direction,
     		@RequestParam(value = "orderBy", defaultValue = "name" ) String orderBy,
             @RequestParam(defaultValue = "10") int size) {
-        
+    	
+        Integer role = RoleEnum.ROLE_COLLABORATOR.getCode();
     	PageRequest pageRequest  = PageRequest.of(page, size, Direction.valueOf(direction),  orderBy);
-        Page<UserView> usersPage = userService.getUsersByRole(role, pageRequest);
+        Page<UserView> usersPage = userService.getUsersCollaborators(role, pageRequest);
         
         return ResponseEntity.ok(usersPage);
     }

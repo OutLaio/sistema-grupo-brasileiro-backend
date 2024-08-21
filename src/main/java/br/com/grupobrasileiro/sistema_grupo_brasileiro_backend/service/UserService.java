@@ -82,7 +82,7 @@ public class UserService {
     }
 	
     @Transactional
-    public Page<UserView> getUsersByRole(Integer role, PageRequest pageRequest) {
+    public Page<UserView> getUsersCollaborators(Integer role, PageRequest pageRequest) {
         Page<User> usersPage = userRepository.findByRole(role, pageRequest);
         return usersPage.map(userViewMapper::map);
     }

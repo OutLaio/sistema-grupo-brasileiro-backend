@@ -1,12 +1,13 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,41 +45,54 @@ public class ProjectService {
 	private UserRepository userRepository;
 
 	@Transactional
-	public ProjectView save(ProjectForm dto) {
-	    // Mapeia o DTO para a entidade Project sem usuários associados
+	public ProjectView save(ProjectForm dto, UserDetails userDetails) {
+	    // Mapeia o DTO para a entidade Project
 	    Project project = projectFormMapper.map(dto);
+	    
+	    // Recupera o usuário autenticado
+	    User user =(User) userRepository.findByEmail(userDetails.getUsername());
+	    if (user == null) {
+	        throw new EntityNotFoundException("Usuário não encontrado.");
+	    }
+	    
+	    // Verifica a função do usuário e associa ao projeto
+	    if (user.getRole() == RoleEnum.ROLE_CLIENT.getCode()) {
+	        projectRepository.save(project);
 
-	    // Salva a entidade no banco de dados
-	    projectRepository.save(project);
+	        ProjectUser projectUser = new ProjectUser();
+	        projectUser.setProject(project);
+	        projectUser.setClient(user);
+	        projectUser.setCollaborator(null);
 
-		for (Integer userId : dto.users()) {
-			Long userIdLong = userId.longValue();
-			Optional<User> optionalUser = userRepository.findById(userIdLong);
+	        projectUserRepository.save(projectUser);
+	    } else {
+	        throw new InvalidRoleException("Usuário com Função Inválida para o Projeto.");
+	    }
 
-			if (optionalUser.isPresent()) {
-				User user = optionalUser.get();
-				ProjectUser projectUser = new ProjectUser();
-
-				if (user.getRole() == RoleEnum.ROLE_CLIENT.getCode()) {
-					projectUser.setProject(project);
-					projectUser.setClient(user);
-					projectUser.setCollaborator(null);
-				}
-				else {
-					throw new InvalidRoleException("Usuário com Função Inválida para o Projeto.");
-				}
-					projectUserRepository.save(projectUser);
-				
-			} else {
-				throw new EntityNotFoundException("Usuário com ID " + userId + " não encontrado.");
-			}
-		}
 	    // Retorna a visão do projeto salvo
 	    return projectViewMapper.map(project);
 	}
 
+	@Transactional
+	public Page<ProjectView> projectsCollaborators(PageRequest pageRequest, Integer role) {
+	    Page<ProjectUser> projectUserPage = projectUserRepository.findAll(pageRequest);
+	    List<ProjectView> projectsRoleList = new ArrayList<>();
+
+	    for (ProjectUser projectUser : projectUserPage) {
+	        User user = projectUser.getCollaborator();
+	        Project project = projectUser.getProject();
+
+	        if (user != null && user.getRole().equals(role)) {
+	            ProjectView projectView = projectViewMapper.map(project);
+	            projectsRoleList.add(projectView);
+	        }
+	    }
+
+	    return new PageImpl<>(projectsRoleList, pageRequest, projectsRoleList.size());
+	}
 
 
+            
 	@Transactional(readOnly = true)
 	public ProjectView getProjectById(Long id) {
 		Project project = projectRepository.findById(id)
@@ -112,5 +126,7 @@ public class ProjectService {
 		Page<Project> projectPage = projectRepository.findAll(pageRequest);
 		return projectPage.map(projectViewMapper::map);
 	}
+	
+
 
 }
