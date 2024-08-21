@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class RoleEnumTest {
 
-    private final Faker faker = new Faker();
-
     @Test
     void testGetCode() {
         // Checks if the getCode() method returns non-null and correct codes for each value of the enum
@@ -37,12 +35,27 @@ public class RoleEnumTest {
 
     @Test
     void testFromCodeInvalid() {
-        // Generates invalid code using Faker (although not common, it serves to illustrate the concept)
-        Integer invalidCode = faker.number().numberBetween(4, 100); // Code out of valid range
+    	// Test the fromCode method with an invalid code
+        Integer invalidCode = Faker.instance().number().numberBetween(4, 100); // Code out of valid range
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
             RoleEnum.fromCode(invalidCode);
         });
         assertEquals("Invalid code: " + invalidCode, thrown.getMessage(), "A mensagem de exceção deve ser correta.");
+    }
+
+    @Test
+    void testEnumValues() {
+    	// Check if the enumeration contains exactly the expected values
+        assertEquals(3, RoleEnum.values().length, "Deve haver exatamente 3 valores na enumeração RoleEnum.");
+    }
+
+    @Test
+    void testEnumCodeAndDescriptionConsistency() {
+    	// Check if the description for each code is consistent
+        for (RoleEnum role : RoleEnum.values()) {
+            assertEquals(role.getDescription(), RoleEnum.fromCode(role.getCode()).getDescription(), 
+                "A descrição para o código deve ser consistente.");
+        }
     }
 }
 

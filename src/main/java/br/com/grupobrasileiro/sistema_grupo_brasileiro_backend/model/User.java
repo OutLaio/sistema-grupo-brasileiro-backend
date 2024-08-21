@@ -90,6 +90,10 @@ public class User implements UserDetails {
     if(this.role == RoleEnum.ROLE_SUPERVISOR.getCode()) return List.of(new SimpleGrantedAuthority("ROLE_SUPERVISOR"), new SimpleGrantedAuthority("ROLE_CLIENT"));
     else return List.of(new SimpleGrantedAuthority("ROLE_CLIENT"));
   }
+  
+  public Boolean isActive() {
+	return active;
+  }
 
   @Override
   public boolean equals(Object o) {

@@ -131,4 +131,35 @@ public class ApiExceptionHandler {
                                 .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST,
                                                 "Role do usuário inválida para o projeto"));
         }
+        
+        @ExceptionHandler(UnauthorizedException.class)
+        public ResponseEntity<ErrorMessage> handleNullPointerException(UnauthorizedException ex,
+        		HttpServletRequest request) {
+        	return ResponseEntity
+        			.status(HttpStatus.BAD_REQUEST)
+        			.contentType(MediaType.APPLICATION_JSON)
+        			.body(new ErrorMessage(request, HttpStatus.BAD_REQUEST,
+        					"Colaborador atribuído ao projeto com sucesso."));
+        }
+        
+        @ExceptionHandler(ProjectNotFoundException .class)
+        public ResponseEntity<ErrorMessage> handleProjectNotFoundException(ProjectNotFoundException ex,
+                        HttpServletRequest request) {
+                log.error("Api Error - " + ex);
+                return ResponseEntity
+                                .status(HttpStatus.NOT_FOUND)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
+        }
+
+        @ExceptionHandler(CollaboratorAlreadyAssignedException.class)
+        public ResponseEntity<ErrorMessage> handleCollaboratorAlreadyAssignedException(CollaboratorAlreadyAssignedException ex,
+                        HttpServletRequest request) {
+
+                log.error("Api Error - " + ex);
+                return ResponseEntity
+                                .status(HttpStatus.CONFLICT)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
+        }
 }

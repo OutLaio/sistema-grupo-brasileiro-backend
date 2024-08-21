@@ -4,6 +4,10 @@ import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserViewTest {
 
@@ -11,7 +15,6 @@ public class UserViewTest {
 
     @Test
     public void testUserView() {
-        
         Long id = faker.number().randomNumber();
         String name = faker.name().firstName();
         String lastname = faker.name().lastName();
@@ -60,5 +63,20 @@ public class UserViewTest {
         assertEquals(email, userView.email());
         assertEquals(role, userView.role());
         assertEquals(status, userView.status());
+
+        // Additional validation
+        // Check if email follows a basic pattern
+        assertTrue(email.contains("@"), "Email should contain '@'");
+        assertTrue(email.contains("."), "Email should contain '.'");
+        
+        // Check if phone number meets a basic length requirement (e.g., at least 10 digits)
+        assertTrue(phonenumber.length() >= 10, "Phone number should be at least 10 digits long");
+
+        // Check if the role is within expected range
+        assertTrue(role >= 1 && role <= 5, "Role should be between 1 and 5");
+
+        // Check if name, email, etc., meet length constraints if applicable
+        assertTrue(userView.name().length() <= 50, "Name should not exceed 50 characters");
+        assertTrue(userView.email().length() <= 100, "Email should not exceed 100 characters");
     }
 }

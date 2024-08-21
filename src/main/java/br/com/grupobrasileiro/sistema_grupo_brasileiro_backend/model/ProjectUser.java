@@ -37,6 +37,11 @@ public class ProjectUser {
     @JoinColumn(name = "collaborator_id", nullable = true)
     private User collaborator;
     
+    public ProjectUser(Project project, User client) {
+		this.project = project;
+		this.client = client;
+	}
+    
     @Override
     public boolean equals(Object o) {
       if (this == o)

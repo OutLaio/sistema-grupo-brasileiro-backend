@@ -3,9 +3,19 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashSet;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ProjectTest {
 
@@ -78,5 +88,58 @@ public class ProjectTest {
         // Test toString method
         String expectedString = "Project{id=" + id + "}";
         assertEquals(expectedString, project.toString(), "toString() should return the expected string.");
+    }
+
+    @Test
+    void testProjectWithEmptyUsers() {
+        // Create a Project object with an empty set of users
+        Project project = new Project(
+            faker.number().randomNumber(),
+            faker.lorem().word(),
+            faker.lorem().sentence(),
+            faker.number().numberBetween(0, 100),
+            faker.lorem().word(),
+            new HashSet<>()
+        );
+
+        // Verify that the users set is empty
+        assertTrue(project.getUsers().isEmpty(), "Users set should be empty.");
+    }
+
+    @Test
+    void testProjectWithNullUsers() {
+        // Create a Project object with null users
+        Project project = new Project(
+            faker.number().randomNumber(),
+            faker.lorem().word(),
+            faker.lorem().sentence(),
+            faker.number().numberBetween(0, 100),
+            faker.lorem().word(),
+            null
+        );
+
+        // Verify that the users set is null
+        assertNull(project.getUsers(), "Users set should be null.");
+    }
+
+    @Test
+    void testProjectWithNullFields() {
+        // Create a Project object with null values ​​for optional fields
+        Project project = new Project(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+
+        // Check if fields are set to null
+        assertNull(project.getId(), "ID should be null.");
+        assertNull(project.getTitle(), "Title should be null.");
+        assertNull(project.getDescription(), "Description should be null.");
+        assertNull(project.getProgress(), "Progress should be null.");
+        assertNull(project.getStatus(), "Status should be null.");
+        assertNull(project.getUsers(), "Users set should be null.");
     }
 }

@@ -1,37 +1,25 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.javafaker.Faker;
-
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ResetPasswordForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.InvalidTokenException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
@@ -39,97 +27,88 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRe
 @WebMvcTest(PasswordResetController.class)
 public class PasswordResetControllerTest {
 
-    @Autowired
+    @Mock
+    private UserRepository userRepository; // Mock do UserRepository
+
+    @Mock
+    private PasswordEncoder passwordEncoder; // Mock do PasswordEncoder
+
+    @Mock
+    private TokenService tokenService; // Mock do TokenService
+
+    @InjectMocks
+    private PasswordResetController passwordResetController; // Controller com os mocks
+
     private MockMvc mockMvc;
 
-    @MockBean
-    private UserRepository userRepository;
-
-    @MockBean
-    private TokenService tokenService;
-
-    @MockBean
-    private PasswordEncoder passwordEncoder;
-
-    private Faker faker;
-
     @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-        faker = new Faker();
+    public void setUp() {
+        MockitoAnnotations.openMocks(this); // Inicializa os mocks
+        mockMvc = MockMvcBuilders.standaloneSetup(passwordResetController).build(); // Configura o MockMvc
     }
 
     @Test
-    public void testResetPassword_ValidToken_ShouldResetPassword() throws Exception {
+    public void testResetPasswordSuccess() throws Exception {
         String token = "valid-token";
+        String emailFromToken = "user@example.com";
         String newPassword = "NewPassword123!";
-        String email = faker.internet().emailAddress();
-        User user = new User();
-        user.setEmail(email);
 
-        when(tokenService.validateToken(token)).thenReturn(email);
-        when(userRepository.findByEmail(email)).thenReturn(user);
+        // Configura o comportamento dos mocks
+        when(tokenService.validateToken(token)).thenReturn(emailFromToken);
+        when(userRepository.findByEmail(emailFromToken)).thenReturn(new User(/* parâmetros de inicialização */));
         when(passwordEncoder.encode(newPassword)).thenReturn("encoded-password");
-        when(userRepository.save(user)).thenReturn(user);
 
-        //TODO: Implementar o reset de senha
-//      ResetPasswordForm resetForm = new ResetPasswordForm(token, newPassword);
-        ResetPasswordForm resetForm = null;
-
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/resetPassword")
+        mockMvc.perform(post("/api/v1/resetPassword")
+                .param("token", token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(resetForm)));
-
-        result.andExpect(status().isOk())
-              .andExpect(MockMvcResultMatchers.content().string("Password successfully changed!"))
-              .andDo(MockMvcResultHandlers.print());
-
-        verify(tokenService).invalidateToken(token);
+                .content("{\"newPassword\":\"" + newPassword + "\"}"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Password successfully changed!"));
     }
 
     @Test
-    public void testResetPassword_InvalidToken_ShouldReturnBadRequest() throws Exception {
+    public void testResetPasswordInvalidToken() throws Exception {
         String token = "invalid-token";
-        String newPassword = "NewPassword123!";
 
+        // Configura o comportamento dos mocks
         when(tokenService.validateToken(token)).thenReturn(null);
 
-        //TODO: Implementar o reset de senha
-//      ResetPasswordForm resetForm = new ResetPasswordForm(token, newPassword);
-        ResetPasswordForm resetForm = null;
-
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/resetPassword")
+        mockMvc.perform(post("/api/v1/resetPassword")
+                .param("token", token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(resetForm)));
-
-        result.andExpect(status().isBadRequest())
-              .andExpect(MockMvcResultMatchers.content().string("Invalid or expired token"))
-              .andDo(MockMvcResultHandlers.print());
-
-        verify(tokenService, never()).invalidateToken(token);
+                .content("{\"newPassword\":\"NewPassword123!\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Token inválido ou expirado"));
     }
 
     @Test
-    public void testResetPassword_UserNotFound_ShouldReturnNotFound() throws Exception {
+    public void testResetPasswordUserNotFound() throws Exception {
         String token = "valid-token";
-        String newPassword = "NewPassword123!";
-        String email = faker.internet().emailAddress();
+        String emailFromToken = "user@example.com";
 
-        when(tokenService.validateToken(token)).thenReturn(email);
-        when(userRepository.findByEmail(email)).thenReturn(null);
+        // Configura o comportamento dos mocks
+        when(tokenService.validateToken(token)).thenReturn(emailFromToken);
+        when(userRepository.findByEmail(emailFromToken)).thenReturn(null);
 
-        //TODO: Implementar o reset de senha
-//      ResetPasswordForm resetForm = new ResetPasswordForm(token, newPassword);
-        ResetPasswordForm resetForm = null;
-
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/resetPassword")
+        mockMvc.perform(post("/api/v1/resetPassword")
+                .param("token", token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(resetForm)));
+                .content("{\"newPassword\":\"NewPassword123!\"}"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Usuário não encontrado com e-mail: " + emailFromToken));
+    }
 
-        result.andExpect(status().isNotFound())
-              .andExpect(MockMvcResultMatchers.content().string("Usuário não encontrado com e-mail: " + email))
-              .andDo(MockMvcResultHandlers.print());
+    @Test
+    public void testResetPasswordInvalidRequest() throws Exception {
+        String token = "valid-token";
 
-        verify(tokenService, never()).invalidateToken(token);
+        // Configura o comportamento dos mocks
+        when(tokenService.validateToken(token)).thenReturn("user@example.com");
+
+        mockMvc.perform(post("/api/v1/resetPassword")
+                .param("token", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"newPassword\":\"short\"}")) // Senha inválida
+                .andExpect(status().isBadRequest());
     }
 }

@@ -14,10 +14,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.CollaboratorAssignmentForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.UnauthorizedException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.ProjectService;
 import jakarta.validation.Valid;
 
@@ -85,11 +88,29 @@ public class ProjectController {
     
     @PostMapping("/new")
     public ResponseEntity<ProjectView> save(@Valid @RequestBody ProjectForm body, @AuthenticationPrincipal UserDetails userDetails) {
-    	LOGGER.info("Starting create-project request for: title={}", body.title());
+    	LOGGER.info("Starting create-project request for: title={}", body.toString());
     	
     	ProjectView projectView = projectService.save(body, userDetails);
     	return ResponseEntity.status(HttpStatus.CREATED).body(projectView);
     	
+    }
+    
+    @PostMapping("/{projectId}/assign-collaborator")
+    @PreAuthorize("hasRole('SUPERVISOR')")
+    public ResponseEntity<String> assignCollaboratorToProject(
+            @PathVariable Long projectId,
+            @RequestBody CollaboratorAssignmentForm collaborator) {
+
+        try {
+            projectService.assignCollaboratorToProject(projectId, collaborator.collaboratorId());
+            return ResponseEntity.ok("Colaborador atribuído ao projeto com sucesso.");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autorizado.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor.");
+        }
     }
     
 }

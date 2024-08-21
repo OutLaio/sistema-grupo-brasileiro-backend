@@ -8,6 +8,8 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectF
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.ProjectStatusEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.Project;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.ProjectUser;
+
 
 @Component
 public class ProjectFormMapper implements Mapper<ProjectForm, Project> {
@@ -19,8 +21,14 @@ public class ProjectFormMapper implements Mapper<ProjectForm, Project> {
 	 * */
     @Override
     public Project map(ProjectForm projectForm) {
-      
-        return new Project(
+        // Busca o cliente pelo ID fornecido no formulário
+
+        // Cria a relação ProjectUser para o cliente
+        ProjectUser projectUser = new ProjectUser();
+
+
+        // Cria o projeto com o cliente associado
+        Project project = new Project(
             null,
             projectForm.title(),
             projectForm.description(),
@@ -28,5 +36,10 @@ public class ProjectFormMapper implements Mapper<ProjectForm, Project> {
             ProjectStatusEnum.A_FAZER.getCode(),
             new HashSet<>()
         );
+
+        // Associa o projeto ao ProjectUser
+        projectUser.setProject(project);
+
+        return project;
     }
 }
