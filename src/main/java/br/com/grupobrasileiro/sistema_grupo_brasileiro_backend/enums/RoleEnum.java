@@ -1,9 +1,9 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums;
 
 public enum RoleEnum {
-    ROLE_CLIENT(1, "Client"),
-    ROLE_COLLABORATOR(2, "Collaborator"),
-    ROLE_SUPERVISOR(3, "Supervisor");
+	ROLE_SUPERVISOR(0, "Supervisor"),
+	ROLE_COLLABORATOR(1, "Collaborator"),
+    ROLE_CLIENT(2, "Client");
 
     private Integer code;
     private String description;
