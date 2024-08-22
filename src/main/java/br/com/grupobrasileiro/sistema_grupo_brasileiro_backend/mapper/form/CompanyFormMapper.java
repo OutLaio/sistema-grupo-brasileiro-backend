@@ -15,7 +15,7 @@ public class CompanyFormMapper implements Mapper<CompanyForm, Company>{
         
         return new Company(
             null,
-            i.name()
+            i.name().toUpperCase()
         );
     }
 }
