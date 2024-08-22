@@ -20,10 +20,10 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.CompanyF
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.ProjectView;
+
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.UnauthorizedException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.CompanyService;
+
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.ProjectService;
 import jakarta.validation.Valid;
 
@@ -107,16 +107,8 @@ public class ProjectController {
             @PathVariable Long projectId,
             @RequestBody CollaboratorAssignmentForm collaborator) {
 
-        try {
-            projectService.assignCollaboratorToProject(projectId, collaborator.collaboratorId());
-            return ResponseEntity.ok("Colaborador atribuído ao projeto com sucesso.");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (UnauthorizedException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autorizado.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor.");
-        }
+    	projectService.assignCollaboratorToProject(projectId, collaborator.collaboratorId());
+    	return ResponseEntity.ok("Colaborador atribuído ao projeto com sucesso.");
     }
     
     @PostMapping("/new-company")
