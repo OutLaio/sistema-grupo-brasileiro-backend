@@ -13,7 +13,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.BAgencyB
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.BAgencyBoardService;
 
 @RestController
-@RequestMapping("/api/agency-boards")
+@RequestMapping("/api/v1/b-agency-boards")
 public class BAgencyBoardController {
 
     @Autowired
@@ -42,8 +42,10 @@ public class BAgencyBoardController {
 
     // Endpoint para listar todos os BAgencyBoards com paginação
     @GetMapping
-    public ResponseEntity<Page<BAgencyBoardView>> listBAgencyBoards(@RequestParam(defaultValue = "0") int page, 
-                                                                    @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<Page<BAgencyBoardView>> listBAgencyBoards(@RequestParam(defaultValue = "0") Integer page, 
+                                                                    @RequestParam(defaultValue = "10") Integer size,
+                                                              		@RequestParam(value = "direction", defaultValue = "ASC" ) String direction,
+                                                            		@RequestParam(value = "orderBy", defaultValue = "name" ) String orderBy) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<BAgencyBoardView> bAgencyBoardPage = bAgencyBoardService.bAgencyBoardAll(pageRequest);
         return ResponseEntity.ok(bAgencyBoardPage);
