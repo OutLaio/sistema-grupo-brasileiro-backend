@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.CompanyForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.CompanyView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.CompanyAlreadyExistsException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.CompanyFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.CompanyViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.Company;
@@ -37,11 +38,9 @@ public class CompanyService {
 		Company entity = companyFormMapper.map(form);
 		
 		if(companyRepository.findByName(form.name().toUpperCase())!= null) {
-//			throw  RunException;
+			throw new CompanyAlreadyExistsException("Uma empresa com o nome " + form.name() + " já existe.");
 		}
-		
 		companyRepository.save(entity);
-		
 		return companyViewMapper.map(entity);
 	}
 }
