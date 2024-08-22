@@ -72,8 +72,12 @@ public class ProjectFormMapperTest {
         User client = new User(clientId, faker.name().firstName(), faker.name().lastName(), faker.phoneNumber().phoneNumber(), 
             faker.company().industry(), faker.job().title(), faker.code().isbn13(), faker.internet().emailAddress(), 
             faker.internet().password(), faker.number().randomDigitNotZero());
-        ProjectForm projectForm = new ProjectForm(faker.lorem().sentence(), faker.lorem().paragraph(), 
-            faker.number().numberBetween(0, 100), faker.lorem().word(), clientId);
+        
+      
+        ProjectForm projectForm = new ProjectForm(
+            faker.lorem().sentence(), 
+            faker.lorem().paragraph()
+        );
 
         when(userRepository.findById(clientId)).thenReturn(Optional.of(client));
 
@@ -84,8 +88,6 @@ public class ProjectFormMapperTest {
         assertNotNull(project);
         assertEquals(projectForm.title(), project.getTitle());
         assertEquals(projectForm.description(), project.getDescription());
-        assertEquals(projectForm.progress(), project.getProgress());
-        assertEquals(projectForm.status(), project.getStatus());
         assertEquals(1, project.getUsers().size());
 
         ProjectUser projectUser = project.getUsers().iterator().next();
@@ -93,12 +95,19 @@ public class ProjectFormMapperTest {
         assertEquals(project, projectUser.getProject());
     }
 
+
+      
+
     @Test
     void testMap_UserNotFound() {
         // Arrange
         Long clientId = faker.number().randomNumber();
-        ProjectForm projectForm = new ProjectForm(faker.lorem().sentence(), faker.lorem().paragraph(), 
-            faker.number().numberBetween(0, 100), faker.lorem().word(), clientId);
+        
+        
+        ProjectForm projectForm = new ProjectForm(
+            faker.lorem().sentence(), 
+            faker.lorem().paragraph()
+        );
 
         when(userRepository.findById(clientId)).thenReturn(Optional.empty());
 
@@ -108,4 +117,5 @@ public class ProjectFormMapperTest {
         });
         assertEquals("Cliente não encontrado com o ID: " + clientId, thrown.getMessage());
     }
+
 }

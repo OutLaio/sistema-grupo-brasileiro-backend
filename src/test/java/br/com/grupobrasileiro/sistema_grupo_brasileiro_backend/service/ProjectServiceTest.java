@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,11 +21,16 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UserDetails;
+import javax.persistence.EntityNotFoundException;
+
+
 
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.ProjectView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.ProjectFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.ProjectViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.Project;
@@ -33,6 +39,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.ProjectRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.ProjectUserRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
+import net.bytebuddy.asm.Advice.OffsetMapping.Sort;
 
 class ProjectServiceTest {
 
@@ -64,33 +71,60 @@ class ProjectServiceTest {
 
     @Test
     void testSaveProject() {
+    	// Sample data for ProjectForm
         String title = faker.company().name();
         String description = faker.lorem().sentence();
-        Integer progress = faker.number().numberBetween(0, 100);
-        String status = faker.random().nextBoolean() ? "AF" : "EA";
-        Long clientId = faker.number().randomNumber();
+        
+        // Create ProjectForm with the data
+        ProjectForm projectForm = new ProjectForm(title, description);
 
-        ProjectForm projectForm = new ProjectForm(title, description, progress, status, clientId);
+        // Create Project and define the mapping return
         Project project = new Project();
         Project savedProject = new Project();
 
+        // Create expected ProjectView with dummy data
+        ProjectView expectedProjectView = new ProjectView(
+            1L, 
+            title, 
+            description, 
+            0, 
+            "New", 
+            null 
+        );
+
+        // Simulates behavior of mappers and repositories
         when(projectFormMapper.map(any(ProjectForm.class))).thenReturn(project);
         when(projectRepository.save(any(Project.class))).thenReturn(savedProject);
+        when(projectViewMapper.map(any(Project.class))).thenReturn(expectedProjectView);
 
-        projectService.save(projectForm);
-
-        verify(projectFormMapper).map(projectForm);
-        verify(projectRepository).save(project);
+     // Simulates UserRepository behavior
+        UserDetails userDetails = mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("user@example.com");
         
-        for (ProjectUser projectUser : savedProject.getUsers()) {
-            verify(projectUserRepository).save(projectUser);
-        }
+        User user = new User(); 
+        user.setRole(RoleEnum.ROLE_CLIENT.getCode());
+        when(userRepository.findByEmail("user@example.com")).thenReturn(user);
+
+        
+        ProjectView result = projectService.save(projectForm, userDetails);
+
+        // Check if the methods were called with the correct parameters
+        verify(projectFormMapper).map(projectForm);
+        verify(projectRepository).save(project); // Check if save was called with the correct project
+        verify(projectViewMapper).map(savedProject); // Check if projectViewMapper.map was called with savedProject
+
+        // Check if the result is as expected
+        assertEquals(expectedProjectView, result);
     }
+    
+
+   
 
     @Test
     void testFindProjectById() {
         Long projectId = faker.number().randomNumber();
         Project project = new Project();
+        project.setId(projectId);
         ProjectUser projectUser = new ProjectUser();
         projectUser.setId(faker.number().randomNumber());
         project.setUsers(Set.of(projectUser));
@@ -130,7 +164,7 @@ class ProjectServiceTest {
 
         projectService.assignCollaboratorToProject(projectId, collaboratorId);
 
-        verify(projectUserRepository).save(projectUser);
+        verify(projectUserRepository).save(any(ProjectUser.class)); // Verify that save was called
     }
 
     @Test
@@ -138,6 +172,7 @@ class ProjectServiceTest {
         Long projectId = faker.number().randomNumber();
         String newStatus = "AF";
         Project project = new Project();
+        project.setStatus(newStatus);
         ProjectView updatedProjectView = new ProjectView(
             project.getId(),
             project.getTitle(),
@@ -207,28 +242,12 @@ class ProjectServiceTest {
         Page<ProjectView> result = projectService.projectAll(PageRequest.of(0, 10));
 
         verify(projectRepository).findAll(any(PageRequest.class));
+        verify(projectViewMapper).map(project1);
+        verify(projectViewMapper).map(project2);
 
         assertEquals(projectViewPage.getContent(), result.getContent());
         assertEquals(projectViewPage.getTotalElements(), result.getTotalElements());
     }
 
-   /* @Test
-    void testIsValidStatus() {
-        // Testando status válidos
-        assertTrue(projectService.isValidStatus("AF"));
-        assertTrue(projectService.isValidStatus("EA"));
-        assertTrue(projectService.isValidStatus("AA"));
-        assertTrue(projectService.isValidStatus("AP"));
-        assertTrue(projectService.isValidStatus("EC"));
-        assertTrue(projectService.isValidStatus("CO"));
-        
-        // Testando status inválidos
-        assertFalse(projectService.isValidStatus("INVALID"));
-        assertFalse(projectService.isValidStatus("123"));
-        assertFalse(projectService.isValidStatus("ABCD"));
-        assertFalse(projectService.isValidStatus(""));
-        assertFalse(projectService.isValidStatus(null)); // Se o método aceitar null, teste isso também
-    }
-}*/
-
 }
+

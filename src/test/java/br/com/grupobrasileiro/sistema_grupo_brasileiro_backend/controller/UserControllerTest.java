@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,9 +22,20 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.mockito.ArgumentMatchers.any;
+
+
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UpdateUserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
@@ -33,6 +45,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -50,6 +63,8 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+    
     @InjectMocks
     private UserController userController;
 
@@ -61,22 +76,28 @@ public class UserControllerTest {
         faker = new Faker();
     }
 
+
     @Test
+    @WithMockUser(username = "user", roles = {"CLIENT"})
     void testSaveUser() throws Exception {
+        Faker faker = new Faker();
+
+        // Cria um objeto UserForm com dados fictícios gerados pelo Faker
         UserForm userForm = new UserForm(
-            faker.name().firstName(),
-            faker.name().lastName(),
-            faker.phoneNumber().phoneNumber(),
-            faker.company().industry(),
-            faker.job().title(),
-            faker.bothify("??###"),
-            faker.internet().emailAddress(),
-            faker.internet().password(),
-            RoleEnum.ROLE_CLIENT.getCode()
+            faker.name().firstName(), // Nome fictício
+            faker.name().lastName(), // Sobrenome fictício
+            faker.phoneNumber().phoneNumber(), // Número de telefone fictício
+            faker.company().industry(), // Setor fictício
+            faker.job().title(), // Ocupação fictícia
+            faker.bothify("#####"), // NOP fictício (exemplo)
+            faker.internet().emailAddress(), // E-mail fictício
+            faker.internet().password(), // Senha fictícia
+            RoleEnum.ROLE_CLIENT.getCode() // Código do papel (fixo para o teste)
         );
 
+        // Cria um objeto UserView com dados fictícios
         UserView userView = new UserView(
-            faker.number().randomNumber(),
+            1L, // Supondo que o ID retornado será 1
             userForm.name(),
             userForm.lastname(),
             userForm.phonenumber(),
@@ -85,19 +106,28 @@ public class UserControllerTest {
             userForm.nop(),
             userForm.email(),
             userForm.role(),
-            true
+            true // Status fictício
         );
 
+        // Configura o comportamento do mock do UserService
         when(userService.save(any(UserForm.class))).thenReturn(userView);
 
         mockMvc.perform(post("/api/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\": \"" + userForm.name() + "\", \"lastname\": \"" + userForm.lastname() + "\", \"phonenumber\": \"" + userForm.phonenumber() + "\", \"sector\": \"" + userForm.sector() + "\", \"occupation\": \"" + userForm.occupation() + "\", \"nop\": \"" + userForm.nop() + "\", \"email\": \"" + userForm.email() + "\", \"password\": \"" + userForm.password() + "\", \"role\": " + userForm.role() + ", \"status\": true}")) // corrigido o campo "status"
+                .content(objectMapper.writeValueAsString(userForm)))
+                .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value(userView.name()))
-                .andExpect(jsonPath("$.lastname").value(userView.lastname()));
+                .andExpect(jsonPath("$.lastname").value(userView.lastname()))
+                .andExpect(jsonPath("$.phonenumber").value(userView.phonenumber()))
+                .andExpect(jsonPath("$.sector").value(userView.sector()))
+                .andExpect(jsonPath("$.occupation").value(userView.occupation()))
+                .andExpect(jsonPath("$.nop").value(userView.nop()))
+                .andExpect(jsonPath("$.email").value(userView.email()))
+                .andExpect(jsonPath("$.role").value(userView.role()))
+                .andExpect(jsonPath("$.status").value(userView.status()));
     }
-
+    
     @Test
     void testGetUserProfile() throws Exception {
         Long userId = faker.number().randomNumber();
@@ -182,7 +212,8 @@ public class UserControllerTest {
             true
         )), pageRequest, 1);
 
-        when(userService.getUsersByRole(eq(role), eq(pageRequest))).thenReturn(userViewPage);
+        when(userService.getUsersCollaborators(eq(role), eq(pageRequest))).thenReturn(userViewPage);
+
 
         mockMvc.perform(get("/api/v1/users/byRole")
                 .param("role", role.toString())
@@ -236,4 +267,112 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0]").value("Password does not meet the required criteria"));
     }
+    
+    @Test
+    void testSaveUserWithDuplicateEmail() throws Exception {
+        UserForm userForm = new UserForm(
+            faker.name().firstName(),
+            faker.name().lastName(),
+            faker.phoneNumber().phoneNumber(),
+            faker.company().industry(),
+            faker.job().title(),
+            faker.bothify("??###"),
+            faker.internet().emailAddress(),
+            faker.internet().password(),
+            RoleEnum.ROLE_CLIENT.getCode()
+        );
+
+                when(userService.save(any(UserForm.class))).thenThrow(new RuntimeException("Email already exists"));
+
+        mockMvc.perform(post("/api/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(userForm)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Email already exists"));
+    }
+
+    @Test
+    void testSaveUserWithMissingRequiredFields() throws Exception {
+        UserForm userForm = new UserForm(
+            null, 
+            faker.name().lastName(),
+            faker.phoneNumber().phoneNumber(),
+            faker.company().industry(),
+            faker.job().title(),
+            faker.bothify("??###"),
+            faker.internet().emailAddress(),
+            faker.internet().password(),
+            RoleEnum.ROLE_CLIENT.getCode()
+        );
+
+        mockMvc.perform(post("/api/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(userForm)))
+                .andExpect(status().isBadRequest());
+    }
+    
+    @Test
+    void testSaveUserDatabaseError() throws Exception {
+        UserForm userForm = new UserForm(
+            faker.name().firstName(),
+            faker.name().lastName(),
+            faker.phoneNumber().phoneNumber(),
+            faker.company().industry(),
+            faker.job().title(),
+            faker.bothify("??###"),
+            faker.internet().emailAddress(),
+            faker.internet().password(),
+            RoleEnum.ROLE_CLIENT.getCode()
+        );
+
+        when(userService.save(any(UserForm.class))).thenThrow(new RuntimeException("Database error"));
+
+        mockMvc.perform(post("/api/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(userForm)))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void testSaveUserWithSQLInjection() throws Exception {
+        UserForm userForm = new UserForm(
+            faker.name().firstName(),
+            faker.name().lastName(),
+            faker.phoneNumber().phoneNumber(),
+            faker.company().industry(),
+            faker.job().title(),
+            faker.bothify("??###"),
+            "test@example.com",
+            "password' OR '1'='1", // SQL Injection attempt
+            RoleEnum.ROLE_CLIENT.getCode()
+        );
+
+        mockMvc.perform(post("/api/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(userForm)))
+                .andExpect(status().isBadRequest()); // Espera-se que falhe na validação
+    }
+
+    @Test
+    void testSaveUserWithInvalidEmailFormat() throws Exception {
+        UserForm userForm = new UserForm(
+            faker.name().firstName(),
+            faker.name().lastName(),
+            faker.phoneNumber().phoneNumber(),
+            faker.company().industry(),
+            faker.job().title(),
+            faker.bothify("??###"),
+            "invalid-email", // Email inválido
+            faker.internet().password(),
+            RoleEnum.ROLE_CLIENT.getCode()
+        );
+
+        mockMvc.perform(post("/api/v1/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(userForm)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0]").value("Invalid email format"));
+    }
+
+
 }
