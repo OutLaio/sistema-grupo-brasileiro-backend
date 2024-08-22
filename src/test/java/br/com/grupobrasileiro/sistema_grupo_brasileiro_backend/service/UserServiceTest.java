@@ -314,13 +314,15 @@ class UserServiceTest {
         Page<UserView> userViewsPage = new PageImpl<>(Collections.singletonList(userView));
         when(userViewMapper.map(user)).thenReturn(userView);
 
-        Page<UserView> result = userService.getUsersByRole(role, pageRequest);
+        Page<UserView> result = userService.getUsersCollaborators(role, pageRequest);
+
 
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(userView, result.getContent().get(0));
+        
 
-        verify(userRepository).findByRole(role, pageRequest); // Verifica que findByRole foi chamado
+        verify(userRepository).findByRole(role, pageRequest); 
     }
 }
 

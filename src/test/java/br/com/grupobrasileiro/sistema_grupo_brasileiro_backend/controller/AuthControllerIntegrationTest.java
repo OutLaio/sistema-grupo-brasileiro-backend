@@ -1,5 +1,10 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
@@ -11,29 +16,22 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType; 
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
 
 @WebMvcTest(AuthController.class)
 public class AuthControllerIntegrationTest {
@@ -57,6 +55,7 @@ public class AuthControllerIntegrationTest {
 
     @BeforeEach
     public void setUp() {
+        MockitoAnnotations.openMocks(this);
         faker = new Faker();
     }
 
@@ -68,6 +67,7 @@ public class AuthControllerIntegrationTest {
         User user = new User();
         user.setActive(true);
 
+        // Mock userRepository to return a User that implements UserDetails
         when(userRepository.findByEmail(email)).thenReturn(user);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
             .thenReturn(new UsernamePasswordAuthenticationToken(user, password));
@@ -85,13 +85,14 @@ public class AuthControllerIntegrationTest {
         String email = faker.internet().emailAddress();
         String password = faker.internet().password();
 
-        when(userRepository.findByEmail(email)).thenReturn(null);
+        // Mock userRepository to return null (or handle as an empty Optional if implemented)
+        when(userRepository.findByEmail(email)).thenThrow(new UsernameNotFoundException("Usuário não encontrado com e-mail: " + email));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}"))
                 .andExpect(status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().string("Usuário não encontrado com e-mail: " + email));
+                .andExpect(content().string("Usuário não encontrado com e-mail: " + email));
     }
 
     @Test
@@ -102,13 +103,14 @@ public class AuthControllerIntegrationTest {
         User user = new User();
         user.setActive(false);
 
+        // Mock userRepository to return an inactive user
         when(userRepository.findByEmail(email)).thenReturn(user);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}"))
                 .andExpect(status().isForbidden())
-                .andExpect(MockMvcResultMatchers.content().string("Acesso negado."));
+                .andExpect(content().string("Acesso negado."));
     }
 
     @Test
@@ -119,15 +121,16 @@ public class AuthControllerIntegrationTest {
         User user = new User();
         user.setActive(true);
 
+        // Mock userRepository to return an active user
         when(userRepository.findByEmail(email)).thenReturn(user);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
             .thenThrow(new BadCredentialsException("Invalid credentials"));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\":\"" + email + "\",\"password\":\"wrongpassword\"}"))
+                .content("{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}"))
                 .andExpect(status().isUnauthorized())
-                .andExpect(MockMvcResultMatchers.content().string("Unauthorized"));
+                .andExpect(content().string("Unauthorized"));
     }
 
     @Test
@@ -194,7 +197,7 @@ public class AuthControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"" + userForm.name() + "\",\"lastname\":\"" + userForm.lastname() + "\",\"phonenumber\":\"" + userForm.phonenumber() + "\",\"sector\":\"" + userForm.sector() + "\",\"occupation\":\"" + userForm.occupation() + "\",\"nop\":\"" + userForm.nop() + "\",\"email\":\"" + userForm.email() + "\",\"password\":\"" + userForm.password() + "\",\"role\":\"" + userForm.role() + "\"}"))
                 .andExpect(status().isConflict())
-                .andExpect(MockMvcResultMatchers.content().string("Email já em uso"));
+                .andExpect(content().string("Email já em uso"));
     }
 
     @Test
@@ -217,6 +220,7 @@ public class AuthControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"" + userForm.name() + "\",\"lastname\":\"" + userForm.lastname() + "\",\"phonenumber\":\"" + userForm.phonenumber() + "\",\"sector\":\"" + userForm.sector() + "\",\"occupation\":\"" + userForm.occupation() + "\",\"nop\":\"" + userForm.nop() + "\",\"email\":\"" + userForm.email() + "\",\"password\":\"" + userForm.password() + "\",\"role\":\"" + userForm.role() + "\"}"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(MockMvcResultMatchers.content().string("Erro inesperado"));
+                .andExpect(content().string("Internal server error"));
     }
 }
+

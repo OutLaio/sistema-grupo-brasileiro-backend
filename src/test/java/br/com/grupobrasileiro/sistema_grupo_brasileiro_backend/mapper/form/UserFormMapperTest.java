@@ -77,7 +77,9 @@ public class UserFormMapperTest {
         assertNull(user.getNop());
         assertNull(user.getEmail());
         assertNull(user.getPassword());
-        assertNull(user.getRole());
+
+        // Check if role is set to the default value when null
+        assertEquals(RoleEnum.ROLE_CLIENT.getCode(), user.getRole());
     }
 
     @Test

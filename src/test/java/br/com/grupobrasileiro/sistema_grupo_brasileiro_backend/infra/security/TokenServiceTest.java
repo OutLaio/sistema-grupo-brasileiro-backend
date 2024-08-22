@@ -42,7 +42,7 @@ public class TokenServiceTest {
 
         String token = tokenService.generateToken(user);
 
-        // Verifique se o token é gerado e contém as informações esperadas
+     // Check if the token is generated and contains the expected information
         DecodedJWT decodedJWT = JWT.decode(token);
         assertEquals("login-auth-api", decodedJWT.getIssuer());
         assertEquals("user@example.com", decodedJWT.getSubject());
@@ -60,7 +60,7 @@ public class TokenServiceTest {
 
     @Test
     public void testValidateToken_InvalidToken() {
-        // Crie um token inválido
+    	// Create an invalid token
         String invalidToken = "invalidToken";
 
         String result = tokenService.validateToken(invalidToken);
