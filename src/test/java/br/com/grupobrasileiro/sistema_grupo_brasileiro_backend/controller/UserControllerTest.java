@@ -82,22 +82,22 @@ public class UserControllerTest {
     void testSaveUser() throws Exception {
         Faker faker = new Faker();
 
-        // Cria um objeto UserForm com dados fictícios gerados pelo Faker
+   
         UserForm userForm = new UserForm(
-            faker.name().firstName(), // Nome fictício
-            faker.name().lastName(), // Sobrenome fictício
-            faker.phoneNumber().phoneNumber(), // Número de telefone fictício
-            faker.company().industry(), // Setor fictício
-            faker.job().title(), // Ocupação fictícia
-            faker.bothify("#####"), // NOP fictício (exemplo)
-            faker.internet().emailAddress(), // E-mail fictício
-            faker.internet().password(), // Senha fictícia
-            RoleEnum.ROLE_CLIENT.getCode() // Código do papel (fixo para o teste)
+            faker.name().firstName(), 
+            faker.name().lastName(), 
+            faker.phoneNumber().phoneNumber(),
+            faker.company().industry(), 
+            faker.job().title(), 
+            faker.bothify("#####"), 
+            faker.internet().emailAddress(),
+            faker.internet().password(), 
+            RoleEnum.ROLE_CLIENT.getCode() 
         );
 
-        // Cria um objeto UserView com dados fictícios
+        
         UserView userView = new UserView(
-            1L, // Supondo que o ID retornado será 1
+            1L, 
             userForm.name(),
             userForm.lastname(),
             userForm.phonenumber(),
@@ -106,10 +106,10 @@ public class UserControllerTest {
             userForm.nop(),
             userForm.email(),
             userForm.role(),
-            true // Status fictício
+            true 
         );
 
-        // Configura o comportamento do mock do UserService
+ 
         when(userService.save(any(UserForm.class))).thenReturn(userView);
 
         mockMvc.perform(post("/api/v1/users")
