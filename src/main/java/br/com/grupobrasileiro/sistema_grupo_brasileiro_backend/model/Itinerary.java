@@ -32,7 +32,7 @@ public class Itinerary {
     private String connections;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bagencyboard_id", nullable = false)
+    @JoinColumn(name = "b_agency_board_id", nullable = false)
     private BAgencyBoard bAgencyBoard;
     
     @ManyToOne(fetch = FetchType.LAZY)
