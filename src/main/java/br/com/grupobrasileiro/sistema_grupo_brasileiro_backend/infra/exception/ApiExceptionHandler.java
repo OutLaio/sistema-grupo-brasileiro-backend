@@ -68,7 +68,7 @@ public class ApiExceptionHandler {
         }
 
         @ExceptionHandler(EntityNotFoundException.class)
-        private ResponseEntity<ErrorMessage> entityNotFoundException(EntityNotFoundException ex,
+        private ResponseEntity<ErrorMessage> handleEntityNotFoundException(EntityNotFoundException ex,
                         HttpServletRequest request) {
                 log.error("Api Error - " + ex);
                 return ResponseEntity
@@ -78,7 +78,7 @@ public class ApiExceptionHandler {
         }
 
         @ExceptionHandler(EmailUniqueViolationException.class)
-        public ResponseEntity<ErrorMessage> uniqueViolationException(EmailUniqueViolationException ex,
+        public ResponseEntity<ErrorMessage> handleUniqueViolationException(EmailUniqueViolationException ex,
                         HttpServletRequest request) {
 
                 log.error("Api Error - " + ex);
@@ -89,7 +89,7 @@ public class ApiExceptionHandler {
         }
 
         @ExceptionHandler(UserIsNotActiveException.class)
-        public ResponseEntity<ErrorMessage> userIsNotActiveException(UserIsNotActiveException ex,
+        public ResponseEntity<ErrorMessage> handleUserIsNotActiveException(UserIsNotActiveException ex,
                         HttpServletRequest request) {
 
                 log.error("Api Error - " + ex);
@@ -100,7 +100,7 @@ public class ApiExceptionHandler {
         }
 
         @ExceptionHandler(MethodArgumentNotValidException.class)
-        public ResponseEntity<ErrorMessage> methodArgumentNotValidException(HttpServletRequest request,
+        public ResponseEntity<ErrorMessage> handleMethodArgumentNotValidException(HttpServletRequest request,
                         MethodArgumentNotValidException ex, BindingResult result) {
                 log.error("Api Error - " + ex);
                 return ResponseEntity
@@ -112,7 +112,7 @@ public class ApiExceptionHandler {
         }
         
         @ExceptionHandler(IllegalArgumentException.class)
-        public ResponseEntity<ErrorMessage> illegalArgumentException(HttpServletRequest request,
+        public ResponseEntity<ErrorMessage> handleIllegalArgumentException(HttpServletRequest request,
         		IllegalArgumentException ex, BindingResult result) {
                 log.error("Api Error - " + ex);
                 return ResponseEntity
@@ -162,4 +162,16 @@ public class ApiExceptionHandler {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
         }
+        
+        @ExceptionHandler(CompanyAlreadyExistsException.class)
+        public ResponseEntity<ErrorMessage> handleCompanyAlreadyExistsException(CompanyAlreadyExistsException ex,
+                        HttpServletRequest request) {
+
+                log.error("Api Error - " + ex);
+                return ResponseEntity
+                                .status(HttpStatus.CONFLICT)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
+        }
+        
 }
