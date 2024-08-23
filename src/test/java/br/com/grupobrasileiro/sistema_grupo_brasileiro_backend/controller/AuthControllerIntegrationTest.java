@@ -2,23 +2,11 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-
-import com.github.javafaker.Faker;
-
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,11 +15,23 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import com.github.javafaker.Faker;
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.LoginRequestForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.TokenView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
 
 @WebMvcTest(AuthController.class)
 public class AuthControllerIntegrationTest {
@@ -61,24 +61,30 @@ public class AuthControllerIntegrationTest {
 
     @Test
     public void testSuccessfulLogin() throws Exception {
+        // Prepare test data
         String email = faker.internet().emailAddress();
         String password = faker.internet().password();
-
-        User user = new User();
+        User user = new User(); // Populate user as needed
+        user.setEmail(email);
         user.setActive(true);
 
-        // Mock userRepository to return a User that implements UserDetails
+        // Mock behavior
         when(userRepository.findByEmail(email)).thenReturn(user);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-            .thenReturn(new UsernamePasswordAuthenticationToken(user, password));
-        when(tokenService.generateToken(user)).thenReturn("fakeToken");
+            .thenReturn(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
+        when(tokenService.generateToken(user)).thenReturn("mockedToken");
+
+       
+        String requestBody = String.format("{\"email\":\"%s\",\"password\":\"%s\"}", email, password);
+
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}"))
+                .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.token").value("fakeToken"));
+                .andExpect(content().json("{\"token\":\"mockedToken\"}"));
     }
+
 
     @Test
     public void testLoginUserNotFound() throws Exception {
@@ -223,4 +229,3 @@ public class AuthControllerIntegrationTest {
                 .andExpect(content().string("Internal server error"));
     }
 }
-

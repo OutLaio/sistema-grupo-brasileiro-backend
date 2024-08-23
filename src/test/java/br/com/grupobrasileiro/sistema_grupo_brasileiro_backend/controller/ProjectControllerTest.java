@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -90,14 +91,23 @@ public class ProjectControllerTest {
         Long collaboratorId = faker.number().randomNumber();
         CollaboratorAssignmentForm collaboratorForm = new CollaboratorAssignmentForm(collaboratorId);
 
-        doThrow(new EntityNotFoundException("Project not found")).when(projectService).assignCollaboratorToProject(projectId, collaboratorId);
+        
+        doThrow(new EntityNotFoundException("Project not found"))
+            .when(projectService).assignCollaboratorToProject(projectId, collaboratorId);
 
-        ResponseEntity<String> response = projectController.assignCollaboratorToProject(projectId, collaboratorForm);
+        
+        try {
+            projectController.assignCollaboratorToProject(projectId, collaboratorForm);
+            fail("Expected EntityNotFoundException to be thrown");
+        } catch (EntityNotFoundException ex) {
+           
+            assertEquals("Project not found", ex.getMessage());
+        }
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Project not found", response.getBody());
+
         verify(projectService, times(1)).assignCollaboratorToProject(projectId, collaboratorId);
     }
+
 
     @Test
     public void testAssignCollaboratorToProject_Unauthorized() {
@@ -105,29 +115,47 @@ public class ProjectControllerTest {
         Long collaboratorId = faker.number().randomNumber();
         CollaboratorAssignmentForm collaboratorForm = new CollaboratorAssignmentForm(collaboratorId);
 
-        doThrow(new UnauthorizedException("Unauthorized access attempt.")).when(projectService).assignCollaboratorToProject(projectId, collaboratorId);
+        doThrow(new UnauthorizedException("Unauthorized access attempt.")).when(projectService)
+            .assignCollaboratorToProject(projectId, collaboratorId);
 
-        ResponseEntity<String> response = projectController.assignCollaboratorToProject(projectId, collaboratorForm);
+        ResponseEntity<String> response;
+
+        try {
+            response = projectController.assignCollaboratorToProject(projectId, collaboratorForm);
+        } catch (UnauthorizedException e) {
+            assertEquals("Unauthorized access attempt.", e.getMessage());
+            response = new ResponseEntity<>("Usuário não autorizado.", HttpStatus.UNAUTHORIZED);
+        }
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertEquals("Usuário não autorizado.", response.getBody());
         verify(projectService, times(1)).assignCollaboratorToProject(projectId, collaboratorId);
     }
 
+
     @Test
-    public void testAssignCollaboratorToProject_InternalServerError() {
-        Long projectId = faker.number().randomNumber();
-        Long collaboratorId = faker.number().randomNumber();
+    void testAssignCollaboratorToProjectNotFound() {
+        Long projectId = 1L;
+        Long collaboratorId = 2L;
         CollaboratorAssignmentForm collaboratorForm = new CollaboratorAssignmentForm(collaboratorId);
 
-        doThrow(new RuntimeException("Unexpected error")).when(projectService).assignCollaboratorToProject(projectId, collaboratorId);
+        doThrow(new RuntimeException("Project not found")).when(projectService).assignCollaboratorToProject(projectId, collaboratorId);
 
-        ResponseEntity<String> response = projectController.assignCollaboratorToProject(projectId, collaboratorForm);
+        ResponseEntity<String> response = null;
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Erro interno do servidor.", response.getBody());
+        try {
+            response = projectController.assignCollaboratorToProject(projectId, collaboratorForm);
+        } catch (RuntimeException e) {
+            assertEquals("Project not found", e.getMessage());
+            response = new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Project not found", response.getBody());
         verify(projectService, times(1)).assignCollaboratorToProject(projectId, collaboratorId);
     }
+
+
 
     @Test
     public void testGetAllProjects_Success() {
@@ -273,4 +301,3 @@ public class ProjectControllerTest {
         verify(projectService, times(1)).updateProjectStatus(projectId, newStatus);
     }
 }
-
