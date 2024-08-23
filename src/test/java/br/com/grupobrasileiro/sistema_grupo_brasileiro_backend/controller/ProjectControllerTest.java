@@ -272,6 +272,5 @@ public class ProjectControllerTest {
         assertNull(response.getBody());
         verify(projectService, times(1)).updateProjectStatus(projectId, newStatus);
     }
-
 }
 
