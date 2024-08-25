@@ -103,12 +103,10 @@ public class ProjectViewMapperTest {
     @Test
     void shouldMapProjectWithProjectUserWithClient() {
         // Arrange
-        // Creating a fake client user
         User clientUser = new User();
         clientUser.setId(faker.number().randomNumber());
         clientUser.setName(faker.name().fullName());
         clientUser.setEmail(faker.internet().emailAddress());
-        // Set other necessary fields of User here
 
         ProjectUser projectUser = new ProjectUser();
         projectUser.setClient(clientUser); // Set client as User

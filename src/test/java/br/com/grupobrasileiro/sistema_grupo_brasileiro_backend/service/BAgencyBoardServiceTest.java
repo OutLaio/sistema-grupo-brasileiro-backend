@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
@@ -21,10 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.BAgencyBoardForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UpdateBAgencyBoardForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.BAgencyBoardView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.BAgencyBoardFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.BAgencyBoardViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.BAgencyBoardRepository;
+import jakarta.validation.ConstraintViolationException;
 
 @SpringBootTest
 public class BAgencyBoardServiceTest {
@@ -140,5 +143,44 @@ public class BAgencyBoardServiceTest {
         verify(bAgencyBoardRepository, times(1)).findAll(any(PageRequest.class));
         verify(bAgencyBoardViewMapper, times(1)).map(bAgencyBoard);
     }
-}
 
+    @Test
+    @Transactional
+    public void testSaveWithException() {
+        when(bAgencyBoardFormMapper.map(any(BAgencyBoardForm.class))).thenThrow(new RuntimeException("Mapper error"));
+
+        assertThrows(RuntimeException.class, () -> bAgencyBoardService.save(bAgencyBoardForm));
+        verify(bAgencyBoardFormMapper, times(1)).map(bAgencyBoardForm);
+        verify(bAgencyBoardRepository, times(0)).save(any(BAgencyBoard.class));
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateBAgencyBoardNotFound() {
+        when(bAgencyBoardRepository.findById(anyLong())).thenReturn(java.util.Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> bAgencyBoardService.updateBAgencyBoard(1L, updateBAgencyBoardForm));
+        verify(bAgencyBoardRepository, times(1)).findById(1L);
+        verify(bAgencyBoardRepository, times(0)).save(any(BAgencyBoard.class));
+    }
+
+    @Test
+    @Transactional
+    public void testSaveWithInvalidData() {
+        
+        BAgencyBoardForm invalidForm = new BAgencyBoardForm(
+            null, // boardLocation é nulo
+            true,
+            "Type",
+            "Material",
+            "Observations",
+            1L
+        );
+
+        when(bAgencyBoardFormMapper.map(any(BAgencyBoardForm.class))).thenReturn(bAgencyBoard);
+
+         assertThrows(ConstraintViolationException.class, () -> bAgencyBoardService.save(invalidForm));
+        verify(bAgencyBoardFormMapper, times(1)).map(invalidForm);
+        verify(bAgencyBoardRepository, times(0)).save(any(BAgencyBoard.class));
+    }
+}

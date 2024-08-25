@@ -62,15 +62,15 @@ public class ProjectTest {
         Integer progress = faker.number().numberBetween(0, 100);
         String status = faker.lorem().word();
 
-        // Create two Project objects with the same id
+        // Create two Project objects with the same attributes
         Project project1 = new Project(id, title, description, progress, status, new HashSet<>());
         Project project2 = new Project(id, title, description, progress, status, new HashSet<>());
 
         // Test equals method
-        assertEquals(project1, project2, "Projects with the same ID should be equal.");
+        assertEquals(project1, project2, "Projects with the same attributes should be equal.");
         
         // Test hashCode method
-        assertEquals(project1.hashCode(), project2.hashCode(), "Hash codes should match for projects with the same ID.");
+        assertEquals(project1.hashCode(), project2.hashCode(), "Hash codes should match for projects with the same attributes.");
     }
 
     @Test
@@ -86,7 +86,7 @@ public class ProjectTest {
         Project project = new Project(id, title, description, progress, status, new HashSet<>());
 
         // Test toString method
-        String expectedString = "Project{id=" + id + "}";
+        String expectedString = "Project{id=" + id + ", title=" + title + ", description=" + description + ", progress=" + progress + ", status=" + status + "}";
         assertEquals(expectedString, project.toString(), "toString() should return the expected string.");
     }
 
@@ -124,7 +124,7 @@ public class ProjectTest {
 
     @Test
     void testProjectWithNullFields() {
-        // Create a Project object with null values ​​for optional fields
+        // Create a Project object with null values for optional fields
         Project project = new Project(
             null,
             null,

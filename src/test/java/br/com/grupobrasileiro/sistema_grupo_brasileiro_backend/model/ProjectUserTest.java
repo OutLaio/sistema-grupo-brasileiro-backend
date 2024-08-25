@@ -1,7 +1,9 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -19,19 +21,20 @@ public class ProjectUserTest {
 
     @BeforeEach
     void setUp() {
-        // Mock objects for Project and User
-        project = mock(Project.class);
-        client = mock(User.class);
-        collaborator = mock(User.class);
-        
-        // Create a new ProjectUser instance
+        // Create real objects instead of mocks for testing
+        project = new Project();
+        client = new User();
+        collaborator = new User();
+
+        // Initialize ProjectUser instance
         projectUser = new ProjectUser(project, client);
     }
 
     @Test
     void testConstructorAndGetters() {
-        // Arrange
-        when(project.getId()).thenReturn(1L);
+        // Set IDs to ensure they are consistent
+        project.setId(1L);
+        client.setId(2L);
 
         // Act
         ProjectUser projectUser = new ProjectUser(project, client);
@@ -39,28 +42,29 @@ public class ProjectUserTest {
         // Assert
         assertEquals(project, projectUser.getProject(), "The project should be correctly assigned");
         assertEquals(client, projectUser.getClient(), "The client should be correctly assigned");
-        assertEquals(null, projectUser.getCollaborator(), "The collaborator should be null by default");
+        assertNull(projectUser.getCollaborator(), "The collaborator should be null by default");
     }
 
     @Test
     void testEqualsAndHashCode() {
         // Arrange
         ProjectUser anotherProjectUser = new ProjectUser(project, client);
-        ProjectUser differentProjectUser = new ProjectUser(mock(Project.class), mock(User.class));
+        ProjectUser differentProjectUser = new ProjectUser(new Project(), new User());
 
         // Act & Assert
-        assertEquals(projectUser, anotherProjectUser, "ProjectUser instances with the same ID should be equal");
-        assertNotEquals(projectUser, differentProjectUser, "ProjectUser instances with different IDs should not be equal");
-        assertEquals(projectUser.hashCode(), anotherProjectUser.hashCode(), "Hash codes should be equal for instances with the same ID");
+        assertEquals(projectUser, anotherProjectUser, "ProjectUser instances with the same project and client should be equal");
+        assertNotEquals(projectUser, differentProjectUser, "ProjectUser instances with different projects or clients should not be equal");
+        assertEquals(projectUser.hashCode(), anotherProjectUser.hashCode(), "Hash codes should be equal for instances with the same project and client");
     }
 
     @Test
     void testToString() {
-        // Arrange
-        when(project.getId()).thenReturn(1L);
+        // Set IDs to ensure the string representation is accurate
+        project.setId(1L);
+        client.setId(2L);
 
         // Act
-        String expectedString = "ProjectUser{id=null, project=1}";
+        String expectedString = "ProjectUser{project=1, client=2}";
         String actualString = projectUser.toString();
 
         // Assert
