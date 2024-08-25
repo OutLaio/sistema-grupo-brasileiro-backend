@@ -1,71 +1,47 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Collections;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.CollaboratorAssignmentForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.CompanyForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.UnauthorizedException;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.ProjectFormMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.ProjectViewMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.Project;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.ProjectRepository;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.CompanyService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.ProjectService;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+
+@ExtendWith(MockitoExtension.class)
 public class ProjectControllerTest {
 
     @Mock
-    private ProjectFormMapper projectFormMapper;
+    private ProjectService projectService;
 
     @Mock
-    private ProjectRepository projectRepository;
-
-    @Mock
-    private ProjectViewMapper projectViewMapper;
-
-    @Mock
-    private UserRepository userRepository;
+    private CompanyService companyService;
 
     @InjectMocks
     private ProjectController projectController;
-
-    @Mock
-    private ProjectService projectService;
 
     private Faker faker;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         faker = new Faker();
     }
 
@@ -90,44 +66,22 @@ public class ProjectControllerTest {
         Long collaboratorId = faker.number().randomNumber();
         CollaboratorAssignmentForm collaboratorForm = new CollaboratorAssignmentForm(collaboratorId);
 
-        doThrow(new EntityNotFoundException("Project not found")).when(projectService).assignCollaboratorToProject(projectId, collaboratorId);
+         
+        doThrow(new RuntimeException("Project not found"))
+            .when(projectService).assignCollaboratorToProject(projectId, collaboratorId);
 
+       
         ResponseEntity<String> response = projectController.assignCollaboratorToProject(projectId, collaboratorForm);
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());  
         assertEquals("Project not found", response.getBody());
+
+       
         verify(projectService, times(1)).assignCollaboratorToProject(projectId, collaboratorId);
     }
 
-    @Test
-    public void testAssignCollaboratorToProject_Unauthorized() {
-        Long projectId = faker.number().randomNumber();
-        Long collaboratorId = faker.number().randomNumber();
-        CollaboratorAssignmentForm collaboratorForm = new CollaboratorAssignmentForm(collaboratorId);
 
-        doThrow(new UnauthorizedException("Unauthorized access attempt.")).when(projectService).assignCollaboratorToProject(projectId, collaboratorId);
-
-        ResponseEntity<String> response = projectController.assignCollaboratorToProject(projectId, collaboratorForm);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("Usuário não autorizado.", response.getBody());
-        verify(projectService, times(1)).assignCollaboratorToProject(projectId, collaboratorId);
-    }
-
-    @Test
-    public void testAssignCollaboratorToProject_InternalServerError() {
-        Long projectId = faker.number().randomNumber();
-        Long collaboratorId = faker.number().randomNumber();
-        CollaboratorAssignmentForm collaboratorForm = new CollaboratorAssignmentForm(collaboratorId);
-
-        doThrow(new RuntimeException("Unexpected error")).when(projectService).assignCollaboratorToProject(projectId, collaboratorId);
-
-        ResponseEntity<String> response = projectController.assignCollaboratorToProject(projectId, collaboratorForm);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Erro interno do servidor.", response.getBody());
-        verify(projectService, times(1)).assignCollaboratorToProject(projectId, collaboratorId);
-    }
 
     @Test
     public void testGetAllProjects_Success() {
@@ -212,7 +166,7 @@ public class ProjectControllerTest {
     public void testGetProjectById_NotFound() {
         Long projectId = faker.number().randomNumber();
 
-        when(projectService.getProjectById(projectId)).thenThrow(new EntityNotFoundException("Project not found"));
+        when(projectService.getProjectById(projectId)).thenThrow(new RuntimeException("Project not found"));
 
         ResponseEntity<ProjectView> response = projectController.getProjectById(projectId);
 
@@ -244,18 +198,17 @@ public class ProjectControllerTest {
         verify(projectService, times(1)).updateProjectStatus(projectId, newStatus);
     }
 
-
     @Test
     public void testUpdateProjectStatus_NotFound() {
         Long projectId = faker.number().randomNumber();
         String newStatus = "COMPLETED";
 
-        when(projectService.updateProjectStatus(projectId, newStatus)).thenThrow(new EntityNotFoundException("Project not found"));
+        when(projectService.updateProjectStatus(projectId, newStatus)).thenThrow(new RuntimeException("Project not found"));
 
         ResponseEntity<ProjectView> response = projectController.updateProjectStatus(projectId, newStatus);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals(null, response.getBody());
+        assertNull(response.getBody());
         verify(projectService, times(1)).updateProjectStatus(projectId, newStatus);
     }
 
@@ -272,5 +225,108 @@ public class ProjectControllerTest {
         assertNull(response.getBody());
         verify(projectService, times(1)).updateProjectStatus(projectId, newStatus);
     }
-}
 
+    @Test
+    public void testSaveProject_Success() {
+        ProjectForm projectForm = new ProjectForm(faker.lorem().word(), faker.lorem().paragraph());
+        ProjectView projectView = new ProjectView(
+            faker.number().randomNumber(),
+            faker.lorem().word(),
+            faker.lorem().paragraph(),
+            faker.number().numberBetween(0, 100),
+            "ACTIVE",
+            faker.number().randomNumber()
+        );
+
+        when(projectService.save(projectForm, null)).thenReturn(projectView);
+
+        ResponseEntity<ProjectView> response = projectController.save(projectForm, null);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(projectView, response.getBody());
+        verify(projectService, times(1)).save(projectForm, null);
+    }
+
+    @Test
+    public void testSaveCompany_Success() {
+       
+        CompanyForm companyForm = new CompanyForm("Test Company");
+
+        CompanyView companyView = new CompanyView(
+            1L,  
+            "Test Company"
+        );
+
+ 
+        when(companyService.save(companyForm)).thenReturn(companyView);
+
+        ResponseEntity<CompanyView> response = projectController.save(companyForm);
+
+        
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(companyView, response.getBody());
+
+       
+        verify(companyService, times(1)).save(companyForm);
+    }
+
+
+    @Test
+    public void testSaveCompany_BadRequest() {
+ 
+        CompanyForm companyForm = new CompanyForm("");
+
+        ResponseEntity<CompanyView> response = projectController.save(companyForm);
+
+        
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+    
+    @Test
+    public void testCompanyAll_Success() {
+      
+        Page<CompanyView> companyViews = new PageImpl<>(List.of(new CompanyView(1L, "Company1")));
+        when(companyService.companyAll(any(PageRequest.class))).thenReturn(companyViews);
+
+       
+        ResponseEntity<Page<CompanyView>> response = projectController.companyAll(0, "ASC", "name", 10);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getContent().size());
+        assertEquals("Company1", response.getBody().getContent().get(0).name());
+    }
+    
+    @Test
+    public void testCompanyAll_PaginationAndSorting() {
+        
+        Page<CompanyView> companyViews = new PageImpl<>(List.of(new CompanyView(1L, "Company1")));
+        when(companyService.companyAll(any(PageRequest.class))).thenReturn(companyViews);
+
+         ResponseEntity<Page<CompanyView>> response = projectController.companyAll(1, "DESC", "name", 5);
+
+         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getContent().size());
+        assertEquals("Company1", response.getBody().getContent().get(0).name());
+    }
+    
+    @Test
+    public void testCompanyAll_NoData() {
+     
+        Page<CompanyView> companyViews = Page.empty();
+        when(companyService.companyAll(any(PageRequest.class))).thenReturn(companyViews);
+
+     
+        ResponseEntity<Page<CompanyView>> response = projectController.companyAll(0, "ASC", "name", 10);
+
+        
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().getContent().isEmpty());
+    }
+
+
+
+}

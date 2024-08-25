@@ -198,31 +198,34 @@
 					<version>3.0.0-M5</version> <!-- Atualize para a versão mais recente -->
 				</plugin>
 
- 				<!-- Plugin Jacoco -->
-							<plugin>
-			    <groupId>org.jacoco</groupId>
-			    <artifactId>jacoco-maven-plugin</artifactId>
-			    <version>0.8.8</version>
-			    <executions>
-			        <execution>
-			            <id>prepare-agent</id>
-			            <goals>
-			                <goal>prepare-agent</goal>
-			            </goals>
-			        </execution>
-			        <execution>
-			            <id>report</id>
-			            <phase>verify</phase>
-			            <goals>
-			                <goal>report</goal>
-			            </goals>
-			        </execution>
-			    </executions>
-			    <configuration>
-			        <dataFile>${project.build.directory}/jacoco.exec</dataFile>
-			        <outputDirectory>${project.build.directory}/jacoco-report</outputDirectory>
-			    </configuration>
-			</plugin>
+ 				<plugin>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <version>0.8.8</version>
+    <executions>
+        <execution>
+            <id>prepare-agent</id>
+            <goals>
+                <goal>prepare-agent</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>report</id>
+            <phase>verify</phase>
+            <goals>
+                <goal>report</goal>
+            </goals>
+        </execution>
+    </executions>
+    <configuration>
+        <dataFile>${project.build.directory}/jacoco.exec</dataFile>
+        <outputDirectory>${project.build.directory}/jacoco-report</outputDirectory>
+        <excludes>
+            <exclude>br/com/grupobrasileiro/sistema_grupo_brasileiro_backend/SistemaGrupoBrasileiroBackendApplication*</exclude>
+        </excludes>
+    </configuration>
+</plugin>
+
 
 
 		

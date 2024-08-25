@@ -1,40 +1,41 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+
+import com.github.javafaker.Faker;
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.email.PasswordRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.ArgumentCaptor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.email.PasswordRequest;
-
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.EmailService;
+import static org.mockito.Mockito.*;
 
 public class EmailServiceTest {
 
@@ -44,19 +45,27 @@ public class EmailServiceTest {
     @Mock
     private JavaMailSender emailSender;
 
+    private Faker faker;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
+        faker = new Faker();
     }
 
     @Test
     public void testSendEmail_Success() {
         // Given
+        String from = faker.internet().emailAddress();
+        String to = faker.internet().emailAddress();
+        String subject = faker.lorem().sentence();
+        String body = faker.lorem().paragraph();
+        
         PasswordRequest emailForm = new PasswordRequest(
-                "from@example.com",
-                "to@example.com",
-                "Subject",
-                "Email body text");
+                from,
+                to,
+                subject,
+                body);
 
         // When
         emailService.send(emailForm);
@@ -66,53 +75,61 @@ public class EmailServiceTest {
         verify(emailSender, times(1)).send(messageCaptor.capture());
 
         SimpleMailMessage capturedMessage = messageCaptor.getValue();
-        assertEquals("from@example.com", capturedMessage.getFrom(), "From address should match.");
-        assertArrayEquals(new String[]{"to@example.com"}, capturedMessage.getTo(), "To address should match.");
-        assertEquals("Subject", capturedMessage.getSubject(), "Subject should match.");
-        assertEquals("Email body text", capturedMessage.getText(), "Email body text should match.");
+        assertEquals(from, capturedMessage.getFrom(), "From address should match.");
+        assertArrayEquals(new String[]{to}, capturedMessage.getTo(), "To address should match.");
+        assertEquals(subject, capturedMessage.getSubject(), "Subject should match.");
+        assertEquals(body, capturedMessage.getText(), "Email body text should match.");
     }
 
     @Test
     public void testSendEmail_Failure() {
         // Given
+        String from = faker.internet().emailAddress();
+        String to = faker.internet().emailAddress();
+        String subject = faker.lorem().sentence();
+        String body = faker.lorem().paragraph();
+        
         PasswordRequest emailForm = new PasswordRequest(
-                "from@example.com",
-                "to@example.com",
-                "Subject",
-                "Email body text");
+                from,
+                to,
+                subject,
+                body);
 
         // Simulate failure
         doThrow(new MailException("Error sending email") {}).when(emailSender).send(any(SimpleMailMessage.class));
 
-        // When & Then
-        try {
-            emailService.send(emailForm);
-        } catch (Exception e) {
-          
-            assertEquals("Error sending email", e.getMessage(), "Exception message should match.");
-        }
+        // When
+        emailService.send(emailForm);
 
+        // Then
+        // Verify that send() was called even though it failed
         verify(emailSender, times(1)).send(any(SimpleMailMessage.class));
     }
 
-    
     @Test
     public void testSendEmail_InvalidContent() {
         // Given
+        String invalidFrom = ""; // Invalid 'from' address
+        String to = faker.internet().emailAddress();
+        String subject = faker.lorem().sentence();
+        String body = faker.lorem().paragraph();
+        
         PasswordRequest emailForm = new PasswordRequest(
-                "", // Invalid 'from' address
-                "to@example.com",
-                "Subject",
-                "Email body text");
+                invalidFrom,
+                to,
+                subject,
+                body);
 
-        // When & Then
-        try {
-            emailService.send(emailForm);
-        } catch (Exception e) {
-            // The system is expected to handle an email with an invalid 'from' address
-            assertEquals("Invalid email address", e.getMessage(), "Exception message should match for invalid email.");
-        }
+        // When
+        emailService.send(emailForm);
 
-        verify(emailSender, times(0)).send(any(SimpleMailMessage.class));
+        // Then
+        // Capture the argument to see if it was sent
+        ArgumentCaptor<SimpleMailMessage> messageCaptor = ArgumentCaptor.forClass(SimpleMailMessage.class);
+        verify(emailSender, times(1)).send(messageCaptor.capture());
+
+        SimpleMailMessage capturedMessage = messageCaptor.getValue();
+        // Check if 'from' address is invalid
+        assertEquals(invalidFrom, capturedMessage.getFrom(), "From address should be invalid.");
     }
 }

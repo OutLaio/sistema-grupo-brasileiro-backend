@@ -324,6 +324,41 @@ class UserServiceTest {
 
         verify(userRepository).findByRole(role, pageRequest); 
     }
+    
+    @Test
+    void testGetUsersCollaborators_Success() {
+        int role = 1;
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        User user = new User();
+        user.setRole(role);
+
+        Page<User> usersPage = new PageImpl<>(Collections.singletonList(user));
+        when(userRepository.findByRole(role, pageRequest)).thenReturn(usersPage);
+
+        UserView userView = new UserView(
+            user.getId(),
+            user.getName(),
+            user.getLastname(),
+            user.getPhonenumber(),
+            user.getSector(),
+            user.getOccupation(),
+            user.getNop(),
+            user.getEmail(),
+            user.getRole(),
+            user.isEnabled()
+        );
+        Page<UserView> userViewsPage = new PageImpl<>(Collections.singletonList(userView));
+        when(userViewMapper.map(user)).thenReturn(userView);
+
+        Page<UserView> result = userService.getUsersCollaborators(role, pageRequest);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(userView, result.getContent().get(0));
+        
+        verify(userRepository).findByRole(role, pageRequest);
+    }
+
 }
 
 

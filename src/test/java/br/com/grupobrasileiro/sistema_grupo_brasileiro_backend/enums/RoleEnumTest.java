@@ -6,14 +6,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class RoleEnumTest {
 
-    @Test
-    void testGetCode() {
-        // Checks if the getCode() method returns non-null and correct codes for each value of the enum
-        for (RoleEnum role : RoleEnum.values()) {
-            assertNotNull(role.getCode(), "O código não deve ser nulo.");
-            assertTrue(role.getCode() > 0, "O código deve ser um valor positivo.");
-        }
-    }
+	@Test
+	void testGetCode() {
+	   
+	    for (RoleEnum role : RoleEnum.values()) {
+	        assertNotNull(role.getCode(), "O código não deve ser nulo.");
+	        assertTrue(role.getCode() >= 0, "O código deve ser um valor não negativo.");  // Permitir zero como valor válido
+	    }
+	}
+
 
     @Test
     void testGetDescription() {

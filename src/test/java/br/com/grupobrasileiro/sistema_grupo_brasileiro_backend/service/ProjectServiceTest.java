@@ -1,11 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,9 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
-import javax.persistence.EntityNotFoundException;
-
-
 
 import com.github.javafaker.Faker;
 
@@ -39,9 +33,8 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.ProjectRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.ProjectUserRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
-import net.bytebuddy.asm.Advice.OffsetMapping.Sort;
 
-class ProjectServiceTest {
+public class ProjectServiceTest {
 
     @Mock
     private ProjectRepository projectRepository;
@@ -71,7 +64,7 @@ class ProjectServiceTest {
 
     @Test
     void testSaveProject() {
-    	// Sample data for ProjectForm
+        // Sample data for ProjectForm
         String title = faker.company().name();
         String description = faker.lorem().sentence();
         
@@ -81,6 +74,7 @@ class ProjectServiceTest {
         // Create Project and define the mapping return
         Project project = new Project();
         Project savedProject = new Project();
+        savedProject.setId(1L); // Set an ID for the saved project
 
         // Create expected ProjectView with dummy data
         ProjectView expectedProjectView = new ProjectView(
@@ -92,12 +86,12 @@ class ProjectServiceTest {
             null 
         );
 
-        // Simulates behavior of mappers and repositories
+        // Simulate behavior of mappers and repositories
         when(projectFormMapper.map(any(ProjectForm.class))).thenReturn(project);
         when(projectRepository.save(any(Project.class))).thenReturn(savedProject);
         when(projectViewMapper.map(any(Project.class))).thenReturn(expectedProjectView);
 
-     // Simulates UserRepository behavior
+        // Simulate UserRepository behavior
         UserDetails userDetails = mock(UserDetails.class);
         when(userDetails.getUsername()).thenReturn("user@example.com");
         
@@ -105,20 +99,15 @@ class ProjectServiceTest {
         user.setRole(RoleEnum.ROLE_CLIENT.getCode());
         when(userRepository.findByEmail("user@example.com")).thenReturn(user);
 
-        
+        // Act
         ProjectView result = projectService.save(projectForm, userDetails);
 
-        // Check if the methods were called with the correct parameters
+        // Assert
         verify(projectFormMapper).map(projectForm);
-        verify(projectRepository).save(project); // Check if save was called with the correct project
-        verify(projectViewMapper).map(savedProject); // Check if projectViewMapper.map was called with savedProject
-
-        // Check if the result is as expected
+        verify(projectRepository).save(project);
+        verify(projectViewMapper).map(savedProject);
         assertEquals(expectedProjectView, result);
     }
-    
-
-   
 
     @Test
     void testFindProjectById() {
@@ -141,8 +130,10 @@ class ProjectServiceTest {
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
         when(projectViewMapper.map(project)).thenReturn(projectView);
 
+        // Act
         ProjectView result = projectService.getProjectById(projectId);
 
+        // Assert
         verify(projectRepository).findById(projectId);
         verify(projectViewMapper).map(project);
         assertEquals(projectView, result);
@@ -162,9 +153,11 @@ class ProjectServiceTest {
         when(projectUserRepository.findByProjectAndClientIsNotNull(project)).thenReturn(Optional.of(projectUser));
         when(projectUserRepository.existsByProjectAndCollaborator(project, collaborator)).thenReturn(false);
 
+        // Act
         projectService.assignCollaboratorToProject(projectId, collaboratorId);
 
-        verify(projectUserRepository).save(any(ProjectUser.class)); // Verify that save was called
+        // Assert
+        verify(projectUserRepository).save(any(ProjectUser.class));
     }
 
     @Test
@@ -186,13 +179,15 @@ class ProjectServiceTest {
         when(projectRepository.save(project)).thenReturn(project);
         when(projectViewMapper.map(project)).thenReturn(updatedProjectView);
 
+        // Act
         ProjectView result = projectService.updateProjectStatus(projectId, newStatus);
 
+        // Assert
         verify(projectRepository).findById(projectId);
         verify(projectRepository).save(project);
         assertEquals(newStatus, result.status());
     }
-    
+
     @Test
     void testProjectAll() {
         Long projectId1 = 1L;
@@ -239,15 +234,14 @@ class ProjectServiceTest {
         when(projectViewMapper.map(project1)).thenReturn(projectView1);
         when(projectViewMapper.map(project2)).thenReturn(projectView2);
 
+        // Act
         Page<ProjectView> result = projectService.projectAll(PageRequest.of(0, 10));
 
+        // Assert
         verify(projectRepository).findAll(any(PageRequest.class));
         verify(projectViewMapper).map(project1);
         verify(projectViewMapper).map(project2);
-
         assertEquals(projectViewPage.getContent(), result.getContent());
         assertEquals(projectViewPage.getTotalElements(), result.getTotalElements());
     }
-
 }
-
