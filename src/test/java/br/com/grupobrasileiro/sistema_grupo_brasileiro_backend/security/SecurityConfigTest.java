@@ -1,20 +1,86 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.security;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 public class SecurityConfigTest {
 
     @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Test
-    public void testPasswordEncoderBean() {
-        assertNotNull(passwordEncoder, "PasswordEncoder bean should not be null");
+    void testPublicEndpointsAreAccessible() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/login"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/v1/auth/register"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/swagger-ui.html"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testProtectedEndpointRequiresAuthentication() throws Exception {
+        mockMvc.perform(get("/protected-endpoint"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testPasswordEncoderBean() {
+        assertThat(passwordEncoder).isNotNull();
+    }
+
+    @Test
+    @WithMockUser
+    void testAuthenticatedUserCanAccessProtectedEndpoint() throws Exception {
+        mockMvc.perform(get("/protected-endpoint"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testCsrfDisabled() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/login"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testSessionManagementStateless() throws Exception {
+        mockMvc.perform(get("/api/v1/auth/login"))
+                .andExpect(status().isOk()) // Adjusted to expect OK instead of checking for cookie
+                .andExpect(header().doesNotExist("Set-Cookie"));
+    }
+
+    @Test
+    void testSwaggerEndpointsAreAccessible() throws Exception {
+        mockMvc.perform(get("/swagger-ui/index.html"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testCustomSecurityFilterApplied() throws Exception {
+        mockMvc.perform(get("/protected-endpoint"))
+                .andExpect(status().isUnauthorized());
     }
 }
+

@@ -145,21 +145,27 @@ public class ApiExceptionHandlerTest {
 
     @Test
     public void testHandleMethodArgumentNotValidExceptionWithFaker() {
+        // Mocking HttpServletRequest
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getRequestURI()).thenReturn(faker.internet().url());
+        String urlPath = faker.internet().url(); // Generating the URL only once
+        when(request.getRequestURI()).thenReturn(urlPath);
 
+        // Mocking MethodArgumentNotValidException and BindingResult
         MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
         BindingResult bindingResult = mock(BindingResult.class);
         when(ex.getBindingResult()).thenReturn(bindingResult);
         when(bindingResult.getFieldError()).thenReturn(new FieldError("object", "field", faker.lorem().sentence()));
 
+        // Calling the handler method with all required parameters
         ResponseEntity<ErrorMessage> response = apiExceptionHandler.handleMethodArgumentNotValidException(request, ex, bindingResult);
 
+        // Asserting the response
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Campo(s) invalido(s)", response.getBody().getMessage());
-        assertEquals(faker.internet().url(), response.getBody().getPath());
+        assertEquals(urlPath, response.getBody().getPath()); // Use the same URL that was mocked
     }
+
 
     @Test
     public void testHandleIllegalArgumentExceptionWithFaker() {
