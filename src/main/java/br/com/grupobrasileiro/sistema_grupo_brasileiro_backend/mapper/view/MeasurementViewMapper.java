@@ -12,10 +12,9 @@ public class MeasurementViewMapper implements Mapper<Measurement, MeasurementVie
     @Override
     public MeasurementView map(Measurement i) {
     	return new MeasurementView(
-    		i.getId(),
     		i.getHeight(),
-    		i.getLength(),
-    		i.getBAgencyBoard().getId()
+    		i.getLength()
+
     	);			
     }
 }

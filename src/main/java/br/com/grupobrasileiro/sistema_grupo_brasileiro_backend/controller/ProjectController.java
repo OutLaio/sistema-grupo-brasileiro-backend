@@ -20,6 +20,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.CompanyF
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectCompleteForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.CompanyView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.DetailsView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.ProjectView;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
@@ -111,6 +112,11 @@ public class ProjectController {
     	
     }
     
+    @GetMapping("/{projectId}/details")
+    public ResponseEntity<DetailsView> getDetailsByProjectId(@PathVariable Long projectId) {
+        DetailsView detailsView = projectService.getDetailsByProjectId(projectId);
+        return ResponseEntity.ok(detailsView);
+    }
     
     @PostMapping("/{projectId}/assign-collaborator")
     @PreAuthorize("hasRole('SUPERVISOR')")
