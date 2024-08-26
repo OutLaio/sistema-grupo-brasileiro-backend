@@ -9,8 +9,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.MeasurementForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.MeasurementView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.MeasurementFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.MeasurementViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.Measurement;
@@ -31,7 +33,6 @@ public class MeasurementService {
 	@Transactional
     public void save(MeasurementForm measurementForm) {
 		Measurement measurement = measurementFormMapper.map(measurementForm);
-  
         measurementsRepository.save(measurement);   
 	}
 	
@@ -48,6 +49,18 @@ public class MeasurementService {
 	        .map(measurement -> measurementViewMapper.map(measurement))
 	        .collect(Collectors.toList());
 	}
+
+	@Transactional
+    public MeasurementView updateMeasurement(Long id, MeasurementForm form) {
+        Measurement measurement = measurementsRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Medição não encontrado."));
+
+        measurement.setHeight(form.height());
+        measurement.setLength(form.length());
+
+        Measurement updatedMeasurement = measurementsRepository.save(measurement);
+        return measurementViewMapper.map(updatedMeasurement);
+    }
 	    
 }
 

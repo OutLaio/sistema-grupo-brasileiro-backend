@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.CompanyForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.CompanyAlreadyExistsException;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.CompanyFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.CompanyViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.Company;
@@ -43,4 +44,23 @@ public class CompanyService {
 		companyRepository.save(entity);
 		return companyViewMapper.map(entity);
 	}
+
+	@Transactional(readOnly = true)
+    public CompanyView getCompanyById(Long id) {
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Empresa não encontrado."));
+        return companyViewMapper.map(company);
+    }
+
+	
+    @Transactional
+    public CompanyView updateCompany(Long id, CompanyForm form) {
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Empresa não encontrado."));
+
+        company.setName(form.name());
+        Company updatedcompany = companyRepository.save(company);
+        return companyViewMapper.map(updatedcompany);
+    }
+
 }

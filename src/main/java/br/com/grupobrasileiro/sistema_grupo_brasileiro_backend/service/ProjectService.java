@@ -245,8 +245,12 @@ public class ProjectService {
 		BAgencyBoard bAgencyBoard = bAgencyBoardRepository.findByProjectId(projectId)
             .orElseThrow(() -> new EntityNotFoundException("Board not found for projectId: " + projectId));
         
-        List<Measurement> measurements = measurementRepository.findByBAgencyBoardId(bAgencyBoard.getId());
-        List<Itinerary> itineraries = itineraryRepository.findByBAgencyBoardId(bAgencyBoard.getId());
+        List<Measurement> measurements = measurementRepository.findAll().stream()
+                .filter(measurement -> measurement.getBAgencyBoard().getId().equals(bAgencyBoard.getId()))
+                .collect(Collectors.toList());
+        List<Itinerary> itineraries = itineraryRepository.findAll().stream()
+                .filter(itinerary -> itinerary.getBAgencyBoard().getId().equals(bAgencyBoard.getId()))
+                .collect(Collectors.toList());
 
         return mapToDetailsView(bAgencyBoard, measurements, itineraries);
     }
