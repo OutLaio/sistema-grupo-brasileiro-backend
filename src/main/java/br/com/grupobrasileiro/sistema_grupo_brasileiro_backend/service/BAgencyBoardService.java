@@ -29,11 +29,12 @@ public class BAgencyBoardService {
 	private BAgencyBoardViewMapper bAgencyBoardViewMapper;
 
 	@Transactional
-    public void save(BAgencyBoardForm bAgencyBoardForm) {
+    public BAgencyBoardView save(BAgencyBoardForm bAgencyBoardForm) {
         BAgencyBoard bAgencyBoard = bAgencyBoardFormMapper.map(bAgencyBoardForm);
 
         // Salva o projeto no repositório
-        BAgencyBoard savedBAgencyBoard = bAgencyBoardRepository.save(bAgencyBoard);
+        bAgencyBoardRepository.save(bAgencyBoard);
+        return bAgencyBoardViewMapper.map(bAgencyBoard);
     }
 
 	@Transactional(readOnly = true)

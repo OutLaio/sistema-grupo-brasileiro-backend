@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.CollaboratorAssignmentForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.CompanyForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectCompleteForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.ProjectView;
@@ -96,10 +97,20 @@ public class ProjectController {
     public ResponseEntity<ProjectView> save(@Valid @RequestBody ProjectForm body, @AuthenticationPrincipal UserDetails userDetails) {
     	LOGGER.info("Starting create-project request for: title={}", body.toString());
     	
-    	ProjectView projectView = projectService.save(body, userDetails);
+    	ProjectView projectView = projectService.saveBasic(body, userDetails);
     	return ResponseEntity.status(HttpStatus.CREATED).body(projectView);
     	
     }
+    
+    @PostMapping("/new-complet")
+    public ResponseEntity<ProjectView> saveProjectComplet(@Valid @RequestBody ProjectCompleteForm body, @AuthenticationPrincipal UserDetails userDetails) {
+    	LOGGER.info("Starting create-project request for: title={}", body.toString());
+    	
+    	ProjectView projectView = projectService.saveComplet(body, userDetails);
+    	return ResponseEntity.status(HttpStatus.CREATED).body(projectView);
+    	
+    }
+    
     
     @PostMapping("/{projectId}/assign-collaborator")
     @PreAuthorize("hasRole('SUPERVISOR')")

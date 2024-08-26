@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ItineraryForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.Company;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.Itinerary;
@@ -23,8 +24,10 @@ public class ItineraryFormMapper {
         BAgencyBoard bAgencyBoard = bAgencyBoardRepository.findById(form.bAgencyBoardId())
                 .orElseThrow(() -> new RuntimeException("BAgencyBoard not found"));
         
-        Company company = companyRepository.findById(form.companyId())
-                .orElseThrow(() -> new RuntimeException("Company not found"));
+            Company company = companyRepository.findByName(form.companyName());
+            if(company == null){
+                new EntityNotFoundException("Company not found");
+            }
 
         return new Itinerary(
             null, 
