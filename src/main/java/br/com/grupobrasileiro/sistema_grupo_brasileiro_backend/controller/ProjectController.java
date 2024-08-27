@@ -17,13 +17,14 @@ import org.springframework.web.bind.annotation.*;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.CollaboratorAssignmentForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.CompanyForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectCompleteForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.CompanyView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.DetailsView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.ProjectView;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.CompanyService;
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.ProjectService;
 import jakarta.validation.Valid;
 
@@ -35,9 +36,7 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
     
-    @Autowired
-    private CompanyService companyService;
-    
+
     @Cacheable("all")
     @GetMapping("/all")
     public ResponseEntity<Page<ProjectView>> projectAll(
@@ -65,8 +64,6 @@ public class ProjectController {
         return ResponseEntity.ok(projectViews);
     }
 
-    
-    
     @Cacheable("getId")
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('SUPERVISOR') OR (hasRole('COLLABORATOR') AND #id == authentication.principal.id)")
@@ -91,14 +88,28 @@ public class ProjectController {
         }
     }
     
-    
-    @PostMapping("/new")
+    @PostMapping("/new-basic")
     public ResponseEntity<ProjectView> save(@Valid @RequestBody ProjectForm body, @AuthenticationPrincipal UserDetails userDetails) {
     	LOGGER.info("Starting create-project request for: title={}", body.toString());
     	
-    	ProjectView projectView = projectService.save(body, userDetails);
+    	ProjectView projectView = projectService.saveBasic(body, userDetails);
     	return ResponseEntity.status(HttpStatus.CREATED).body(projectView);
     	
+    }
+    
+    @PostMapping("/new-complet")
+    public ResponseEntity<ProjectView> saveProjectComplet(@Valid @RequestBody ProjectCompleteForm body, @AuthenticationPrincipal UserDetails userDetails) {
+    	LOGGER.info("Starting create-project request for: title={}", body.toString());
+    	
+    	ProjectView projectView = projectService.saveComplet(body, userDetails);
+    	return ResponseEntity.status(HttpStatus.CREATED).body(projectView);
+    	
+    }
+    
+    @GetMapping("/{projectId}/details")
+    public ResponseEntity<DetailsView> getDetailsByProjectId(@PathVariable Long projectId) {
+        DetailsView detailsView = projectService.getDetailsByProjectId(projectId);
+        return ResponseEntity.ok(detailsView);
     }
     
     @PostMapping("/{projectId}/assign-collaborator")
@@ -111,26 +122,5 @@ public class ProjectController {
     	return ResponseEntity.ok("Colaborador atribuído ao projeto com sucesso.");
     }
     
-    @PostMapping("/new-company")
-    public ResponseEntity<CompanyView> save(@Valid @RequestBody CompanyForm body) {
-    	LOGGER.info("Starting create-project request for: title={}", body.toString());
-    	
-    	CompanyView companyView = companyService.save(body);
-    	return ResponseEntity.status(HttpStatus.CREATED).body(companyView);
-    	
-    }
-    
-    @Cacheable("all")
-    @GetMapping("/all-company")
-    public ResponseEntity<Page<CompanyView>> companyAll(
-        @RequestParam(defaultValue = "0") Integer page,
-        @RequestParam(value = "direction", defaultValue = "ASC" ) String direction,
-        @RequestParam(value = "orderBy", defaultValue = "name" ) String orderBy,
-        @RequestParam(defaultValue = "10") int size) {
-        
-        PageRequest pageRequest  = PageRequest.of(page, size, Direction.valueOf(direction),  orderBy);
-        Page<CompanyView> companyViews = companyService.companyAll(pageRequest);
-        return ResponseEntity.ok(companyViews);
-    }
-    
+   
 }

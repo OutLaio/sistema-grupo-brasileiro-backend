@@ -1,5 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,13 +13,14 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UpdateBA
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.BAgencyBoardView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.BAgencyBoardService;
 
+
 @RestController
 @RequestMapping("/api/v1/b-agency-boards")
 public class BAgencyBoardController {
 
     @Autowired
     private BAgencyBoardService bAgencyBoardService;
-
+	
     // Endpoint para salvar um novo BAgencyBoard
     @PostMapping
     public ResponseEntity<Void> createBAgencyBoard(@RequestBody BAgencyBoardForm bAgencyBoardForm) {
@@ -49,5 +51,6 @@ public class BAgencyBoardController {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<BAgencyBoardView> bAgencyBoardPage = bAgencyBoardService.bAgencyBoardAll(pageRequest);
         return ResponseEntity.ok(bAgencyBoardPage);
-    }
+    }             
+    
 }

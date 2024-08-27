@@ -15,6 +15,6 @@ public record ItineraryForm(
     Long bAgencyBoardId,
 
     @NotNull(message = "Company ID is required!")
-    Long companyId
+    String companyName
 ) {
 }
