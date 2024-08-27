@@ -49,17 +49,23 @@ public class MeasurementService {
 	        .map(measurement -> measurementViewMapper.map(measurement))
 	        .collect(Collectors.toList());
 	}
-
-	@Transactional
-    public MeasurementView updateMeasurement(Long id, MeasurementForm form) {
-        Measurement measurement = measurementsRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Medição não encontrado."));
-
-        measurement.setHeight(form.height());
-        measurement.setLength(form.length());
-
-        Measurement updatedMeasurement = measurementsRepository.save(measurement);
-        return measurementViewMapper.map(updatedMeasurement);
+	
+    @Transactional(readOnly = true)
+    public MeasurementView getMeasurementById(Long id) {
+    	Measurement measurement = measurementsRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Measurement não encontrado"));
+        return measurementViewMapper.map(measurement);
+    }
+    
+    @Transactional(readOnly = true)
+    public MeasurementView updateMeasurement(Long id, MeasurementForm measurementForm) {
+    	Measurement measurement = measurementsRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Measurement não encontrado"));
+    	
+    	measurement.setHeight(measurementForm.height());
+    	measurement.setLength(measurementForm.length());
+    	
+        return measurementViewMapper.map(measurement);
     }
 	    
 }
