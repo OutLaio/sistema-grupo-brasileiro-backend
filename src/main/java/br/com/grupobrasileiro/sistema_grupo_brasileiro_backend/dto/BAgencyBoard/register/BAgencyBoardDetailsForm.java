@@ -9,7 +9,7 @@ import java.util.List;
  *
  * <p>Este registro contém informações sobre o BAgencyBoard, medidas, rotas e outras rotas.</p>
  */
-public record RegistrationForm(
+public record BAgencyBoardDetailsForm(
 
         /**
          * Formulário para informações do BAgencyBoard.
