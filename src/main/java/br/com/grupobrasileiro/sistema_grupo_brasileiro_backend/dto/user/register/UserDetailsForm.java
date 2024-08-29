@@ -7,7 +7,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.registe
  * <p>Este registro combina as informações de perfil do empregado e as credenciais de
  * usuário, facilitando a criação e manipulação dos dados de registro de forma coesa.</p>
  */
-public record RegistrationForm(
+public record UserDetailsForm(
 
         /**
          * Informações de perfil do empregado.

@@ -1,5 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.profile.register;
 
+import java.math.BigInteger;
+
 /**
  * Formulário de perfil que contém informações sobre o perfil do usuário.
  *
@@ -15,7 +17,7 @@ public record ProfileForm(
          *
          * @return O código da função do perfil.
          */
-        Integer role,
+        BigInteger role,
 
         /**
          * Descrição do perfil.
