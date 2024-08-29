@@ -1,4 +1,4 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.BAgencyBoard.view;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.bAgencyBoard.view;
 
 /**
  * Representa uma visão das informações de um quadro de BAgency.
