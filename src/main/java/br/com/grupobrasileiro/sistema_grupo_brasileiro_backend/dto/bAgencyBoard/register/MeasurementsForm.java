@@ -1,4 +1,4 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.BAgencyBoard.register;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.bAgencyBoard.register;
 
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
