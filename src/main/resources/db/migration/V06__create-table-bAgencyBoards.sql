@@ -6,6 +6,6 @@ CREATE TABLE bAgencyBoards (
     board_type VARCHAR(255),
     material VARCHAR(255),
     observations TEXT,
-    CONSTRAINT fk_version FOREIGN KEY (id_version) REFERENCES variations (id)
+    CONSTRAINT fk_version FOREIGN KEY (id_version) REFERENCES versions (id)
 );
 
