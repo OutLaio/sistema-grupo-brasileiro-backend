@@ -1,15 +1,15 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,9 +17,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "Tb_Projects")
-public class Project {
-	private static final long serialVersionUID = 1L;
+@Entity(name = "Tb_Employees")
+public class Employee {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,25 +26,22 @@ public class Project {
     private Long id;
 
     @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
-    private Integer progress;
-
-    @Column(nullable = false)
-    private String status;
+    private String name;
     
     @Column(nullable = false)
-    private Integer briefing_type;
+    private String lastname;
     
     @Column(nullable = false)
-    private Boolean disabled;
+    private String fonenumber;
 
-    @OneToMany(mappedBy = "employee_id")
-    private Set<Employee> clients = new HashSet<>();
+    @Column(nullable = false)
+    private String sector;
+
+    @Column(nullable = false)
+    private String occupation;
+    
+    @Column(nullable = false)
+    private String agency;
     
     @Override
     public boolean equals(Object o) {
@@ -53,8 +49,8 @@ public class Project {
         return true;
       if (o == null || getClass() != o.getClass())
         return false;
-      Project project = (Project) o;
-      return Objects.equals(id, project.id);
+      Employee employee = (Employee) o;
+      return Objects.equals(id, employee.id);
     }
 
     @Override
@@ -64,6 +60,6 @@ public class Project {
 
     @Override
     public String toString() {
-      return "Project{" + "id=" + id + '}';
+      return "Employee{" + "id=" + id + '}';
     }
 }

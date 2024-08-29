@@ -1,10 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,10 +11,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "Users")
+@Entity(name = "Tb_Users")
 public class User implements UserDetails {
   private static final long serialVersionUID = 1L;
 
@@ -33,66 +34,35 @@ public class User implements UserDetails {
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "name", nullable = false)
-  private String name;
-
-  @Column(name = "lastname", nullable = false)
-  private String lastname;
-
-  @Column(name = "phonenumber", nullable = false)
-  private String phonenumber;
-
-  @Column(name = "sector", nullable = false)
-  private String sector;
-
-  @Column(name = "occupation", nullable = false)
-  private String occupation;
-
-  @Column(name = "nop", nullable = false)
-  private String nop;
-
   @Column(name = "email", nullable = false, unique = true)
   private String email;
 
   @Column(name = "password")
   private String password;
-
-  @Column(name = "role", nullable = false)
-  private Integer role;
   
-  @Column(name = "active", nullable = false)
-  private Boolean active = true;
+  @Column(name = "disabled", nullable = false)
+  private Boolean disabled;
   
-  @OneToMany(mappedBy = "client")
-  private Set<ProjectUser> clientProjects = new HashSet<>();
-
-  @OneToMany(mappedBy = "collaborator")
-  private Set<ProjectUser> collaboratorProjects = new HashSet<>();
-
-  public User(Long id, String name, String lastname, String phonenumber, String sector, 
-		  String occupation, String nop, String email, String password, Integer role) {
-    this.name = name;
-    this.lastname = lastname;
-    this.phonenumber = phonenumber;
-    this.sector = sector;
-    this.occupation = occupation;
-    this.nop = nop;
-    this.email = email;
-    this.password = password;
-    this.role = role != null ? role : RoleEnum.ROLE_CLIENT.getCode();
-    this.active = true;  
-    this.clientProjects = new HashSet<>();
-    this.collaboratorProjects = new HashSet<>();
-  }
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "profile_id", nullable = false)
+  private Profile profile;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "employee_id", nullable = false)
+  private Employee employee;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    if(this.role == RoleEnum.ROLE_SUPERVISOR.getCode()) return List.of(new SimpleGrantedAuthority("ROLE_SUPERVISOR"), new SimpleGrantedAuthority("ROLE_CLIENT"));
-    else return List.of(new SimpleGrantedAuthority("ROLE_CLIENT"));
+    if (this.profile.getRole() == RoleEnum.ROLE_SUPERVISOR.getCode()) {
+    	return List.of(new SimpleGrantedAuthority("ROLE_SUPERVISOR"), new SimpleGrantedAuthority("ROLE_CLIENT"));
+    }
+    else {
+    	return List.of(new SimpleGrantedAuthority("ROLE_CLIENT"));
+    }
   }
   
-  public Boolean isActive() {
-	return active;
+  public Boolean isDisabled() {
+	return disabled;
   }
 
   @Override
@@ -133,11 +103,6 @@ public class User implements UserDetails {
   @Override
   public boolean isCredentialsNonExpired() {
     return true;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return active;
   }
 
 }

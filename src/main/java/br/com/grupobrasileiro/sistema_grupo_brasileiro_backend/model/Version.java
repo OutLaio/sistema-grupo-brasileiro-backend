@@ -1,5 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -17,9 +18,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "Tb_Projects")
-public class Project {
-	private static final long serialVersionUID = 1L;
+@Entity(name = "Tb_Versions")
+public class Version {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,24 +28,33 @@ public class Project {
 
     @Column(nullable = false)
     private String title;
-
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
-    private Integer progress;
-
-    @Column(nullable = false)
-    private String status;
     
     @Column(nullable = false)
-    private Integer briefing_type;
+    private String feedback;
     
     @Column(nullable = false)
-    private Boolean disabled;
+    private Date begin;
 
+    @Column(nullable = false)
+    private Date end;
+    
+    @Column(name = "num_version", nullable = false)
+    private Integer numVersion;
+
+    @Column(name = "product_link", nullable = false)
+    private String productLink;
+    
+    @Column(name = "client_approve", nullable = false)
+    private Boolean clientApproved;
+    
+    @Column(name = "supervisor_approve", nullable = false)
+    private Boolean supervisorApproved;
+    
     @OneToMany(mappedBy = "employee_id")
-    private Set<Employee> clients = new HashSet<>();
+    private Set<Employee> collaborators = new HashSet<>();
+    
+    @OneToMany(mappedBy = "project_id")
+    private Set<Project> projects = new HashSet<>();
     
     @Override
     public boolean equals(Object o) {
@@ -53,8 +62,8 @@ public class Project {
         return true;
       if (o == null || getClass() != o.getClass())
         return false;
-      Project project = (Project) o;
-      return Objects.equals(id, project.id);
+      Version employee = (Version) o;
+      return Objects.equals(id, employee.id);
     }
 
     @Override
@@ -64,6 +73,6 @@ public class Project {
 
     @Override
     public String toString() {
-      return "Project{" + "id=" + id + '}';
+      return "Employee{" + "id=" + id + '}';
     }
 }

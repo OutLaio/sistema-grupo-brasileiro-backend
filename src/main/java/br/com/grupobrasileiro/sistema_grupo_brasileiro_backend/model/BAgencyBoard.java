@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "B_agency_boards")
+@Entity(name = "Tb_BAgency_boards")
 public class BAgencyBoard {
 	
 	@Id
@@ -26,13 +27,13 @@ public class BAgencyBoard {
 	@Column(name = "id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "board_location", nullable = false)
     private String boardLocation;
 
-    @Column(nullable = false)
+    @Column(name = "company_sharing", nullable = false)
     private Boolean companySharing;
 
-    @Column(nullable = false)
+    @Column(name = "board_type", nullable = false)
     @Size(max = 50)
     private String boardType;
 
@@ -40,6 +41,10 @@ public class BAgencyBoard {
     private String material;
     
     private String observations;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "version_id", nullable = false)
+    private Version version;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
