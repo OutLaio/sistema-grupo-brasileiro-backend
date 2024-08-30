@@ -1,6 +1,5 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 
-
 import java.util.Objects;
 
 import jakarta.persistence.Column;
@@ -15,16 +14,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "Tb_Companies")
-public class Company {
-	private static final long serialVersionUID = 1L;
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+@Entity(name = "Tb_Cities")
+public class City {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-	@Column(name = "name", nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
 	@Override
@@ -35,7 +31,7 @@ public class Company {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Company other = (Company) obj;
+		City other = (City) obj;
 		return Objects.equals(id, other.id) && Objects.equals(name, other.name);
 	}
 
@@ -43,6 +39,7 @@ public class Company {
 	public int hashCode() {
 		return Objects.hash(id, name);
 	}
-	
-	
+
+   
+    
 }

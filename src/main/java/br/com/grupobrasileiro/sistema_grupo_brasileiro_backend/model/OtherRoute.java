@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,23 +16,29 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "Tb_Measurements")
-public class Measurement {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+@Entity(name = "Tb_OthersRoutes")
+public class OtherRoute {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private float height;
-
-    @Column(nullable = false)
-    private float length;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "b_agency_board_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "id_BAagencyBoard", nullable = false)
     private BAgencyBoard bAgencyBoard;
+
+    @Column(nullable = false)
+    private String company;
+
+    @Column(nullable = false)
+    private String city;
+
+    @Column(nullable = false)
+    private String type;
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -43,13 +48,10 @@ public class Measurement {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Measurement other = (Measurement) obj;
+		OtherRoute other = (OtherRoute) obj;
 		return Objects.equals(id, other.id);
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
- 
+    
+    
 }
