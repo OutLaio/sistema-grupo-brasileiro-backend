@@ -2,7 +2,6 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 
 import java.util.Objects;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,31 +17,30 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity(name = "Tb_Routes")
 public class Route {
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "id_BAgencyBoard", nullable = false)
+    @JoinColumn(name = "id_bAgency_board")
     private BAgencyBoard bAgencyBoard;
 
     @ManyToOne
-    @JoinColumn(name = "id_citycompany", nullable = false)
+    @JoinColumn(name = "id_city_company")
     private CompanyCity companyCity;
 
-    @Column(nullable = false)
     private String type;
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(Object o) {
+		if (this == o)
 			return true;
-		if (obj == null)
+		if (o == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (getClass() != o.getClass())
 			return false;
-		Route other = (Route) obj;
-		return Objects.equals(id, other.id);
+		Route obj = (Route) o;
+		return Objects.equals(id, obj.id);
 	}
 
 	@Override
@@ -50,5 +48,9 @@ public class Route {
 		return Objects.hash(id);
 	}
     
+	@Override
+    public String toString() {
+      return "Route{" + "id=" + id + '}';
+    }
     
 }

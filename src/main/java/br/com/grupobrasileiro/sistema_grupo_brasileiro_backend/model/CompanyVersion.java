@@ -15,15 +15,16 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "Tb_Company_Cities")
-public class CompanyCity {
-	@Id
+@Entity(name = "Tb_Company_Versions")
+public class CompanyVersion {
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "id_city")
-    private City city;
+    @JoinColumn(name = "id_version")
+    private Version version;
 
     @ManyToOne
     @JoinColumn(name = "id_company")
@@ -37,7 +38,7 @@ public class CompanyCity {
 			return false;
 		if (getClass() != o.getClass())
 			return false;
-		CompanyCity obj = (CompanyCity) o;
+		CompanyVersion obj = (CompanyVersion) o;
 		return Objects.equals(id, obj.id);
 	}
 
@@ -48,7 +49,7 @@ public class CompanyCity {
     
 	@Override
     public String toString() {
-      return "CompanyCity{" + "id=" + id + '}';
+      return "CompanyVersion{" + "id=" + id + '}';
     }
 
 }

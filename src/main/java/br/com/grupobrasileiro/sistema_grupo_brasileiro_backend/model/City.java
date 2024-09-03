@@ -2,7 +2,6 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 
 import java.util.Objects;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,23 +15,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity(name = "Tb_Cities")
 public class City {
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, unique = true)
+	
     private String name;
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(Object o) {
+		if (this == o)
 			return true;
-		if (obj == null)
+		if (o == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (getClass() != o.getClass())
 			return false;
-		City other = (City) obj;
-		return Objects.equals(id, other.id) && Objects.equals(name, other.name);
+		City obj = (City) o;
+		return Objects.equals(id, obj.id) && Objects.equals(name, obj.name);
 	}
 
 	@Override
@@ -40,6 +38,9 @@ public class City {
 		return Objects.hash(id, name);
 	}
 
-   
+	@Override
+    public String toString() {
+      return "City{" + "id=" + id + '}';
+    }
     
 }
