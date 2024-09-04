@@ -3,7 +3,6 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 
 import java.util.Objects;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,25 +16,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity(name = "Tb_Companies")
 public class Company {
-	private static final long serialVersionUID = 1L;
-	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-	@Column(name = "name", nullable = false)
+	
     private String name;
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(Object o) {
+		if (this == o)
 			return true;
-		if (obj == null)
+		if (o == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (getClass() != o.getClass())
 			return false;
-		Company other = (Company) obj;
+		Company other = (Company) o;
 		return Objects.equals(id, other.id) && Objects.equals(name, other.name);
 	}
 
@@ -43,6 +38,10 @@ public class Company {
 	public int hashCode() {
 		return Objects.hash(id, name);
 	}
-	
+
+	@Override
+    public String toString() {
+      return "Company{" + "id=" + id + '}';
+    }
 	
 }

@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "Tb_BAgency_boards")
-public class BAgencyBoard {
-	
-	@Id
+@Entity(name = "Tb_BPrinteds")
+public class Printed {
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -28,15 +28,20 @@ public class BAgencyBoard {
     private Version version;
 
     @ManyToOne
-    @JoinColumn(name = "id_board_agency_type")
-    private BoardAgencyType boardAgencyType;
+    @JoinColumn(name = "id_paper_type")
+    private PaperType paperType;
 
     @ManyToOne
-    @JoinColumn(name = "id_board_type")
-    private BoardType boardType;
+    @JoinColumn(name = "id_printed_type")
+    private PrintedType printedType;
 
-    private String boardLocation;
-    private String observation;
+    @ManyToOne
+    @JoinColumn(name = "id_printing_type")
+    private PrintingType printingType;
+
+    private Integer folds;
+    private Integer pages;
+
     
     @Override
     public boolean equals(Object o) {
@@ -44,7 +49,7 @@ public class BAgencyBoard {
         return true;
       if (o == null || getClass() != o.getClass())
         return false;
-      BAgencyBoard obj = (BAgencyBoard) o;
+      Printed obj = (Printed) o;
       return Objects.equals(id, obj.id);
     }
 
@@ -55,6 +60,6 @@ public class BAgencyBoard {
 
     @Override
     public String toString() {
-      return "BAgencyBoard{" + "id=" + id + '}';
+      return "Printed{" + "id=" + id + '}';
     }
 }

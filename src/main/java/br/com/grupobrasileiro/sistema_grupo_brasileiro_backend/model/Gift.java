@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "Tb_BAgency_boards")
-public class BAgencyBoard {
-	
-	@Id
+@Entity(name = "Tb_BGifts")
+public class Gift {
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -28,15 +28,28 @@ public class BAgencyBoard {
     private Version version;
 
     @ManyToOne
-    @JoinColumn(name = "id_board_agency_type")
-    private BoardAgencyType boardAgencyType;
+    @JoinColumn(name = "id_printing_type")
+    private PrintingType printingType;
 
     @ManyToOne
-    @JoinColumn(name = "id_board_type")
-    private BoardType boardType;
+    @JoinColumn(name = "id_printing_shirt_type")
+    private PrintingShirtType printingShirtType;
 
-    private String boardLocation;
-    private String observation;
+    @ManyToOne
+    @JoinColumn(name = "id_printing_location")
+    private PrintingLocation printingLocation;
+
+    @ManyToOne
+    @JoinColumn(name = "id_calendar_type")
+    private CalendarType calendarType;
+
+    @ManyToOne
+    @JoinColumn(name = "id_obj_type")
+    private GiftType objType;
+
+    private String descriptionGift;
+    private String linkModel;
+
     
     @Override
     public boolean equals(Object o) {
@@ -44,7 +57,7 @@ public class BAgencyBoard {
         return true;
       if (o == null || getClass() != o.getClass())
         return false;
-      BAgencyBoard obj = (BAgencyBoard) o;
+      Gift obj = (Gift) o;
       return Objects.equals(id, obj.id);
     }
 
@@ -55,6 +68,6 @@ public class BAgencyBoard {
 
     @Override
     public String toString() {
-      return "BAgencyBoard{" + "id=" + id + '}';
+      return "Gift{" + "id=" + id + '}';
     }
 }

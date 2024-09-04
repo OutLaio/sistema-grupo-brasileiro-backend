@@ -2,7 +2,6 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 
 import java.util.Objects;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,24 +15,15 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "Tb_OthersRoutes")
+@Entity(name = "Tb_Other_Routes")
 public class OtherRoute {
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "id_BAagencyBoard", nullable = false)
+    @JoinColumn(name = "id_bAgency_board")
     private BAgencyBoard bAgencyBoard;
-
-    @Column(nullable = false)
-    private String company;
-
-    @Column(nullable = false)
-    private String city;
-
-    @Column(nullable = false)
-    private String type;
 
 	@Override
 	public int hashCode() {
@@ -51,7 +41,10 @@ public class OtherRoute {
 		OtherRoute other = (OtherRoute) obj;
 		return Objects.equals(id, other.id);
 	}
-
-    
-    
+	
+	@Override
+    public String toString() {
+      return "OtherRoute{" + "id=" + id + '}';
+    }
+	
 }
