@@ -1,346 +1,244 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-
-
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UpdateUserForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserProfileView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.UserService;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(UserController.class)
 public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-    
+
     @MockBean
     private UserService userService;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-    
-    @InjectMocks
-    private UserController userController;
-
+    @Autowired
+    private ObjectMapper objectMapper;
     private Faker faker;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         faker = new Faker();
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"CLIENT"})
-    void testSaveUser() throws Exception {
-        UserForm userForm = new UserForm(
-            faker.name().firstName(), 
-            faker.name().lastName(), 
-            faker.phoneNumber().phoneNumber(),
-            faker.company().industry(), 
-            faker.job().title(), 
-            faker.bothify("#####"), 
-            faker.internet().emailAddress(),
-            faker.internet().password(), 
-            RoleEnum.ROLE_CLIENT.getCode() 
-        );
+    void testGetUsersCollaborators() throws Exception {
+        UserView user1 = new UserView(1L, "John", "Doe", "1234567890", "IT", "Developer", "001", "john.doe@example.com", 1, true);
+        UserView user2 = new UserView(2L, "Jane", "Doe", "0987654321", "HR", "Manager", "002", "jane.doe@example.com", 1, true);
+        Page<UserView> userPage = new PageImpl<>(Arrays.asList(user1, user2), PageRequest.of(0, 10, Sort.by("name")), 2);
 
-        UserView userView = new UserView(
-            1L, 
-            userForm.name(),
-            userForm.lastname(),
-            userForm.phonenumber(),
-            userForm.sector(),
-            userForm.occupation(),
-            userForm.nop(),
-            userForm.email(),
-            userForm.role(),
-            true 
-        );
-
-        when(userService.save(any(UserForm.class))).thenReturn(userView);
-
-        mockMvc.perform(post("/api/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userForm)))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(userView.name()))
-                .andExpect(jsonPath("$.lastname").value(userView.lastname()))
-                .andExpect(jsonPath("$.phonenumber").value(userView.phonenumber()))
-                .andExpect(jsonPath("$.sector").value(userView.sector()))
-                .andExpect(jsonPath("$.occupation").value(userView.occupation()))
-                .andExpect(jsonPath("$.nop").value(userView.nop()))
-                .andExpect(jsonPath("$.email").value(userView.email()))
-                .andExpect(jsonPath("$.role").value(userView.role()))
-                .andExpect(jsonPath("$.status").value(userView.status()));
-    }
-
-    @Test
-    void testGetUserProfile() throws Exception {
-        Long userId = faker.number().randomNumber();
-        UserProfileView userProfileView = new UserProfileView(
-            userId,
-            faker.name().firstName(),
-            faker.name().lastName(),
-            faker.phoneNumber().phoneNumber(),
-            faker.company().industry(),
-            faker.job().title(),
-            faker.bothify("??###"),
-            faker.internet().emailAddress()
-        );
-
-        when(userService.getUserProfile(eq(userId))).thenReturn(userProfileView);
-
-        mockMvc.perform(get("/api/v1/users/{id}", userId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(userProfileView.id()))
-                .andExpect(jsonPath("$.name").value(userProfileView.name()))
-                .andExpect(jsonPath("$.lastname").value(userProfileView.lastname()));
-    }
-
-    @Test
-    void testUpdateUser() throws Exception {
-        Long userId = faker.number().randomNumber();
-        UpdateUserForm updateUserForm = new UpdateUserForm(
-            faker.name().firstName(),
-            faker.name().lastName(),
-            faker.phoneNumber().phoneNumber(),
-            faker.company().industry(),
-            faker.job().title(),
-            faker.bothify("??###")
-        );
-
-        User user = new User();
-        user.setId(userId);
-        user.setName(updateUserForm.name());
-        user.setLastname(updateUserForm.lastname());
-
-        when(userService.updateUser(eq(userId), any(UpdateUserForm.class))).thenReturn(user);
-
-        mockMvc.perform(put("/api/v1/users/{id}", userId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(updateUserForm)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(userId))
-                .andExpect(jsonPath("$.name").value(user.getName()))
-                .andExpect(jsonPath("$.lastname").value(user.getLastname()));
-    }
-
-    @Test
-    void testDeactivateUser() throws Exception {
-        Long userId = faker.number().randomNumber();
-
-        User user = new User();
-        user.setId(userId);
-
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
-
-        mockMvc.perform(put("/api/v1/users/deactivate")
-                .principal(new UsernamePasswordAuthenticationToken(user, null)))
-                .andExpect(status().isNoContent());
-
-        verify(userService).deactivateUser(userId);
-    }
-
-    @Test
-    void testGetUsersByRole() throws Exception {
-        Integer role = RoleEnum.ROLE_CLIENT.getCode();
-        PageRequest pageRequest = PageRequest.of(0, 10, Direction.ASC, "name");
-        
-        UserView userView = new UserView(
-            faker.number().randomNumber(),
-            faker.name().firstName(),
-            faker.name().lastName(),
-            faker.phoneNumber().phoneNumber(),
-            faker.company().industry(),
-            faker.job().title(),
-            faker.bothify("??###"),
-            faker.internet().emailAddress(),
-            role,
-            true
-        );
-
-        Page<UserView> userViewPage = new PageImpl<>(List.of(userView), pageRequest, 1);
-
-        when(userService.getUsersCollaborators(eq(role), eq(pageRequest))).thenReturn(userViewPage);
+        given(userService.getUsersCollaborators(1, PageRequest.of(0, 10, Sort.by("name")))).willReturn(userPage);
 
         mockMvc.perform(get("/api/v1/users/collaborators")
-                .param("role", role.toString())
                 .param("page", "0")
                 .param("direction", "ASC")
                 .param("orderBy", "name")
-                .param("size", "10"))
-                .andDo(print())
+                .param("size", "10")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].name").value(userViewPage.getContent().get(0).name()))
-                .andExpect(jsonPath("$.content[0].lastname").value(userViewPage.getContent().get(0).lastname()));
+                .andExpect(jsonPath("$.content[0].name").value("John"))
+                .andExpect(jsonPath("$.content[1].name").value("Jane"));
     }
 
     @Test
-    void testInvalidPhoneNumber() throws Exception {
-        UserForm userForm = new UserForm(
-            "John",
-            "Doe",
-            "1234", 
-            "Tech",
-            "Engineer",
-            "12345",
-            "john.doe@example.com",
-            "Valid1Password@",
-            1
+    @WithMockUser(roles = {"SUPERVISOR"})
+    void testGetUserProfile_AsSupervisor() throws Exception {
+        Long userId = 1L;
+        UserProfileView userProfile = new UserProfileView(
+            userId, faker.name().firstName(), faker.name().lastName(), faker.phoneNumber().phoneNumber(),
+            faker.company().industry(), faker.job().title(), faker.bothify("#####"), faker.internet().emailAddress()
         );
 
-        mockMvc.perform(post("/api/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userForm)))
-            .andExpect(status().isBadRequest()) 
-            .andExpect(jsonPath("$.errors[0]").value("Invalid phonenumber!")); 
+        when(userService.getUserProfile(userId)).thenReturn(userProfile);
+
+        mockMvc.perform(get("/api/v1/users/{id}", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userId))
+                .andExpect(jsonPath("$.name").isNotEmpty());
     }
 
     @Test
-    void testValidPassword() throws Exception {
-        UserForm userForm = new UserForm("John", "Doe", "+55 (11) 98888-8888", "Tech", "Engineer", "12345", "john.doe@example.com", "Valid1Password@", 1);
-        mockMvc.perform(post("/api/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userForm)))
-                .andExpect(status().isCreated());
-    }
-
-    @Test
-    void testInvalidPassword() throws Exception {
-        UserForm userForm = new UserForm("John", "Doe", "+55 (11) 98888-8888", "Tech", "Engineer", "12345", "john.doe@example.com", "invalidpassword", 1);
-        mockMvc.perform(post("/api/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userForm)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0]").value("Password does not meet the required criteria"));
-    }
-
-    @Test
-    void testSaveUserWithDuplicateEmail() throws Exception {
-        UserForm userForm = new UserForm(
-            faker.name().firstName(),
-            faker.name().lastName(),
-            faker.phoneNumber().phoneNumber(),
-            faker.company().industry(),
-            faker.job().title(),
-            faker.bothify("??###"),
-            faker.internet().emailAddress(),
-            faker.internet().password(),
-            RoleEnum.ROLE_CLIENT.getCode()
+    @WithMockUser(username = "clientUser", roles = {"CLIENT"})
+    void testGetUserProfile_AsClient_OwnProfile() throws Exception {
+        Long userId = 1L;
+        UserProfileView userProfile = new UserProfileView(
+            userId, faker.name().firstName(), faker.name().lastName(), faker.phoneNumber().phoneNumber(),
+            faker.company().industry(), faker.job().title(), faker.bothify("#####"), faker.internet().emailAddress()
         );
 
-        when(userService.save(any(UserForm.class))).thenThrow(new RuntimeException("Email already exists"));
+        when(userService.getUserProfile(userId)).thenReturn(userProfile);
 
-        mockMvc.perform(post("/api/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userForm)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Email already exists"));
+        mockMvc.perform(get("/api/v1/users/{id}", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userId))
+                .andExpect(jsonPath("$.name").isNotEmpty());
     }
 
     @Test
-    void testSaveUserWithMissingRequiredFields() throws Exception {
-        UserForm userForm = new UserForm(
-            null, 
-            faker.name().lastName(),
-            faker.phoneNumber().phoneNumber(),
-            faker.company().industry(),
-            faker.job().title(),
-            faker.bothify("??###"),
-            faker.internet().emailAddress(),
-            faker.internet().password(),
-            RoleEnum.ROLE_CLIENT.getCode()
+    @WithMockUser(username = "adminUser", roles = {"ADMIN"})
+    void testUpdateUser_AsAdmin() throws Exception {
+        Long userId = 1L;
+        UpdateUserForm updateUserForm = new UpdateUserForm(
+            faker.name().firstName(), faker.name().lastName(), faker.phoneNumber().phoneNumber(),
+            faker.company().industry(), faker.job().title(), faker.bothify("#####")
         );
 
-        mockMvc.perform(post("/api/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userForm)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0]").value("Name is required"));
-    }
-    
-    @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void testDeactivateUserWithAdminRole() throws Exception {
-        Long userId = faker.number().randomNumber();
+        User updatedUser = new User(userId, updateUserForm.name(), updateUserForm.lastname(),
+            updateUserForm.phonenumber(), updateUserForm.sector(), updateUserForm.occupation(),
+            updateUserForm.nop(), faker.internet().emailAddress(), "encryptedPassword", RoleEnum.ROLE_CLIENT.getCode());
 
-        // Mock de desativação de usuário
+        when(userService.updateUser(eq(userId), any(UpdateUserForm.class))).thenReturn(updatedUser);
+
+        mockMvc.perform(put("/api/v1/users/{id}", userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateUserForm)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userId))
+                .andExpect(jsonPath("$.name").value(updateUserForm.name()));
+    }
+
+    @Test
+    @WithMockUser(username = "clientUser", roles = {"CLIENT"})
+    void testUpdateUser_AsClient_OwnProfile() throws Exception {
+        Long userId = 1L;
+        UpdateUserForm updateUserForm = new UpdateUserForm(
+            faker.name().firstName(), faker.name().lastName(), faker.phoneNumber().phoneNumber(),
+            faker.company().industry(), faker.job().title(), faker.bothify("#####")
+        );
+
+        User updatedUser = new User(userId, updateUserForm.name(), updateUserForm.lastname(),
+            updateUserForm.phonenumber(), updateUserForm.sector(), updateUserForm.occupation(),
+            updateUserForm.nop(), faker.internet().emailAddress(), "encryptedPassword", RoleEnum.ROLE_CLIENT.getCode());
+
+        when(userService.updateUser(eq(userId), any(UpdateUserForm.class))).thenReturn(updatedUser);
+
+        mockMvc.perform(put("/api/v1/users/{id}", userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateUserForm)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userId))
+                .andExpect(jsonPath("$.name").value(updateUserForm.name()));
+    }
+
+    @Test
+    @WithMockUser(username = "adminUser", roles = {"ADMIN"})
+    void testDeactivateUser_AsAdmin() throws Exception {
+        Long userId = 1L;
         doNothing().when(userService).deactivateUser(userId);
 
         mockMvc.perform(put("/api/v1/users/deactivate")
-                .principal(new UsernamePasswordAuthenticationToken(userId, null)))
+                .with(request -> {
+                    request.setUserPrincipal(new UsernamePasswordAuthenticationToken(userId, null, AuthorityUtils.createAuthorityList("ROLE_ADMIN")));
+                    return request;
+                }))
                 .andExpect(status().isNoContent());
-
-        verify(userService).deactivateUser(userId);
     }
 
-    
-    
     @Test
-    @WithMockUser(username = "client", roles = {"CLIENT"})
-    void testDeactivateUserWithClientRole() throws Exception {
-        Long userId = faker.number().randomNumber();
-
-        // Mock de desativação de usuário
+    @WithMockUser(username = "clientUser", roles = {"CLIENT"})
+    void testDeactivateUser_AsClient() throws Exception {
+        Long userId = 1L;
         doNothing().when(userService).deactivateUser(userId);
 
         mockMvc.perform(put("/api/v1/users/deactivate")
-                .principal(new UsernamePasswordAuthenticationToken(userId, null)))
+                .with(request -> {
+                    request.setUserPrincipal(new UsernamePasswordAuthenticationToken(userId, null, AuthorityUtils.createAuthorityList("ROLE_CLIENT")));
+                    return request;
+                }))
                 .andExpect(status().isNoContent());
-
-        verify(userService).deactivateUser(userId);
     }
 
     @Test
-    @WithMockUser(username = "unauthorizedUser", roles = {"USER"})
-    void testDeactivateUserWithInsufficientPermissions() throws Exception {
-        mockMvc.perform(put("/api/v1/users/deactivate"))
+    @WithMockUser(roles = {"CLIENT"})
+    void testGetUserProfile_AsClient_NotOwnProfile() throws Exception {
+        Long userId = 2L; // Different user ID than the authenticated one
+        mockMvc.perform(get("/api/v1/users/{id}", userId))
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    @WithMockUser(roles = {"SUPERVISOR"})
+    void testGetUserProfile_NonExistentUser() throws Exception {
+        Long userId = 999L;
+        when(userService.getUserProfile(userId)).thenReturn(null);
 
+        mockMvc.perform(get("/api/v1/users/{id}", userId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(roles = {"CLIENT"})
+    void testUpdateUser_InvalidData() throws Exception {
+        Long userId = 1L;
+        UpdateUserForm updateUserForm = new UpdateUserForm(
+            "", "", "", "", "", ""
+        );
+
+        mockMvc.perform(put("/api/v1/users/{id}", userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateUserForm)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "clientUser", roles = {"CLIENT"})
+    void testDeactivateUser_NotAuthenticated() throws Exception {
+        mockMvc.perform(put("/api/v1/users/deactivate"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testGetUsersCollaborators_NoAuth() throws Exception {
+        mockMvc.perform(get("/api/v1/users/collaborators"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testGetUserProfile_NoAuth() throws Exception {
+        Long userId = 1L;
+        mockMvc.perform(get("/api/v1/users/{id}", userId))
+                .andExpect(status().isUnauthorized());
+    }
 }

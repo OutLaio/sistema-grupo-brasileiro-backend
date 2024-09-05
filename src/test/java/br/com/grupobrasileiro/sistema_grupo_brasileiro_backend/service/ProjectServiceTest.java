@@ -1,6 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -9,6 +11,8 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import org.springframework.http.MediaType;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,7 +67,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    void testSaveProject() {
+    void testSaveBasic() {
         // Sample data for ProjectForm
         String title = faker.company().name();
         String description = faker.lorem().sentence();
@@ -100,7 +104,7 @@ public class ProjectServiceTest {
         when(userRepository.findByEmail("user@example.com")).thenReturn(user);
 
         // Act
-        ProjectView result = projectService.save(projectForm, userDetails);
+        ProjectView result = projectService.saveBasic(projectForm, userDetails);
 
         // Assert
         verify(projectFormMapper).map(projectForm);
