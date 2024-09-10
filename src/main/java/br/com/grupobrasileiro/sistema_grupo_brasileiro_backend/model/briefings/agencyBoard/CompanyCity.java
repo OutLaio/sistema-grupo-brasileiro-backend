@@ -24,11 +24,11 @@ public class CompanyCity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "id_city")
+    @JoinColumn(name = "id_city", nullable = false)
     private City city;
 
     @ManyToOne
-    @JoinColumn(name = "id_company")
+    @JoinColumn(name = "id_company", nullable = false)
     private Company company;
 
 

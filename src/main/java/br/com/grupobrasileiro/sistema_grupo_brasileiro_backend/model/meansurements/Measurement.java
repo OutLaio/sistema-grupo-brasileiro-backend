@@ -3,13 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.meansureme
 import java.math.BigDecimal;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 /**
@@ -35,7 +29,7 @@ public class Measurement {
      * O briefing ao qual a medição está associada.
      * Este campo não pode ser nulo.
      */
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "id_briefing", nullable = false)
     private Briefing briefing;
 

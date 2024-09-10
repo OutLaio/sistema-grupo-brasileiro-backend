@@ -11,11 +11,18 @@ import lombok.*;
 @Entity(name = "Tb_AgencyBoardTypes")
 public class AgencyBoardType {
 
+    /**
+     * O identificador único do tipo de placa de agencia.
+     */
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "description")
+    /**
+     * A descrição do tipo de placa de agencia.
+     * Este campo não pode ser nulo.
+     */
+    @Column(name = "description", nullable = false)
     private String description;
 
 

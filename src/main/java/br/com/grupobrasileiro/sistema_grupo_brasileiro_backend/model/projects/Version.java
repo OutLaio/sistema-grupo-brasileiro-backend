@@ -18,7 +18,7 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Entity(name = "Tb_Version")
+@Entity(name = "Tb_Versions")
 public class Version {
 
     /**

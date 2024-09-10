@@ -20,12 +20,12 @@ public class OtherRoute {
     @JoinColumn(name = "id_b_agency_board", nullable = false)
     private BAgencyBoard bAgencyBoard;
 
-    @Column(name = "company")
+    @Column(name = "company", nullable = false)
     private String company;
 
-    @Column(name = "city")
+    @Column(name = "city", nullable = false)
     private String city;
 
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     private String type;
 }

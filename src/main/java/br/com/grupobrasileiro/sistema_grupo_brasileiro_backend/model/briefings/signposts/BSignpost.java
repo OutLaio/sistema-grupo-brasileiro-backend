@@ -12,7 +12,7 @@ import lombok.*;
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
 @Entity(name = "Tb_BSignposts")
-public class Signpost {
+public class BSignpost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,13 +23,13 @@ public class Signpost {
     @JoinColumn(name = "id_material", nullable = false)
     private Material material;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "id_briefing", nullable = false)
     private Briefing briefing;
 
-    @Column(name = "board_location")
+    @Column(name = "board_location", nullable = false)
     private String boardLocation;
 
-    @Column(name = "setor")
-    private String setor;
+    @Column(name = "sector", nullable = false)
+    private String sector;
 }

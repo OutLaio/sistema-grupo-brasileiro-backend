@@ -1,4 +1,4 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.campaingInternal;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.internalcampaign;
 
 
 
@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
-@Entity(name = "BInternalCampaigns")
+@Entity(name = "Tb_BInternalCampaigns")
 public class BInternalCampaign {
 
     @Id
@@ -27,10 +27,10 @@ public class BInternalCampaign {
     @JoinColumn(name = "id_other_items", nullable = false)
     private OtherItem otherItem;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "id_briefing", nullable = false)
     private Briefing briefing;
 
-    @Column(name = "campaign_motto")
+    @Column(name = "campaign_motto", nullable = false)
     private String campaignMotto;
 }

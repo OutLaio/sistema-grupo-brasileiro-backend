@@ -18,7 +18,7 @@ public class BPrinted {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "id_briefing", nullable = false)
     private Briefing briefing;
 
@@ -27,7 +27,7 @@ public class BPrinted {
     private PrintedType printedType;
 
     @ManyToOne
-    @JoinColumn(name = "id_printing_types", nullable = false)
+    @JoinColumn(name = "id_printing_types")
     private PrintingType printingType;
 
     @Column(name = "paper_type")

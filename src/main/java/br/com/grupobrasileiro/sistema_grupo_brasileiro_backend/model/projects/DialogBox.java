@@ -59,8 +59,9 @@ public class DialogBox {
     /**
      * O conteúdo da caixa de diálogo.
      * Pode conter um texto longo.
+     * Este campo não pode ser nulo.
      */
     @Lob
-    @Column(name = "dialog")
+    @Column(name = "dialog", nullable = false)
     private String dialog;
 }

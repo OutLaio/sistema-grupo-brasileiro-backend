@@ -16,6 +16,6 @@ public class Material {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 }

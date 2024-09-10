@@ -1,4 +1,4 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.campaingInternal;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.internalcampaign;
 
 
 import jakarta.persistence.*;
@@ -17,6 +17,6 @@ public class StationeryType {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 }

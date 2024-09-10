@@ -21,7 +21,7 @@ public class BHandout {
     @JoinColumn(name = "id_handout_type", nullable = false)
     private HandoutType handoutType;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "id_briefing", nullable = false)
     private Briefing briefing;
 }

@@ -34,6 +34,6 @@ public class Route {
     @JoinColumn(name = "id_company_city", nullable = false)
     private CompanyCity companyCity;
 
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     private String type;
 }

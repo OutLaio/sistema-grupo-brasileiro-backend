@@ -1,11 +1,10 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Representa o perfil de um usuário no sistema.
@@ -34,4 +33,6 @@ public class Profile {
 	@Column(name = "description", nullable = false)
 	private String description;
 
+	@OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private Set<User> users = new HashSet<>();
 }

@@ -1,4 +1,4 @@
-CREATE TABLE Tb_CompaniesBriefing (
+CREATE TABLE Tb_CompaniesBriefings (
     id BIGSERIAL PRIMARY KEY,
     id_company BIGINT NOT NULL,
     id_briefing BIGINT NOT NULL,

@@ -1,13 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 /**
@@ -57,4 +51,7 @@ public class User {
    */
   @Column(nullable = false)
   private Boolean disabled;
+
+  @OneToOne(mappedBy = "user")
+  private Employee employee;
 }

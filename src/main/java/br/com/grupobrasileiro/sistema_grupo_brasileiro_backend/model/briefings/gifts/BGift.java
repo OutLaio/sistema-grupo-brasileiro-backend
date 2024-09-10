@@ -19,7 +19,7 @@ public class BGift {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "id_briefing", nullable = false)
     private Briefing briefing;
 
@@ -28,19 +28,19 @@ public class BGift {
     private GiftType giftType;
 
     @ManyToOne
-    @JoinColumn(name = "id_printing_type", nullable = false)
+    @JoinColumn(name = "id_printing_type")
     private PrintingType printingType;
 
     @ManyToOne
-    @JoinColumn(name = "id_printing_shirt_type", nullable = false)
+    @JoinColumn(name = "id_printing_shirt_type")
     private PrintingShirtType printingShirtType;
 
     @ManyToOne
-    @JoinColumn(name = "id_stamp", nullable = false)
+    @JoinColumn(name = "id_stamp")
     private Stamp stamp;
 
     @ManyToOne
-    @JoinColumn(name = "id_calendar_type", nullable = false)
+    @JoinColumn(name = "id_calendar_type")
     private CalendarType calendarType;
 
     @Column(name = "gift_model")

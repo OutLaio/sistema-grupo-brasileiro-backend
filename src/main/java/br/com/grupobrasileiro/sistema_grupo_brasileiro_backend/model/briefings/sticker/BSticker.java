@@ -19,7 +19,7 @@ public class BSticker {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "id_briefing", nullable = false)
     private Briefing briefing;
 
@@ -28,12 +28,12 @@ public class BSticker {
     private StickerType stickerType;
 
     @ManyToOne
-    @JoinColumn(name = "id_sticker_information_type", nullable = false)
+    @JoinColumn(name = "id_sticker_information_type")
     private StickerInformationType stickerInformationType;
 
-    @Column(name = "sector")
+    @Column(name = "sector", nullable = false)
     private String sector;
 
-    @Column(name = "observations")
+    @Column(name = "observations", nullable = false)
     private String observations;
 }

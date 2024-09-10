@@ -5,15 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 
 /**
@@ -76,7 +68,7 @@ public class Project {
      * Os briefings associados ao projeto.
      * A relação é mapeada pelo campo "project" na entidade Briefing.
      */
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    private Set<Briefing> briefings = new HashSet<>();
+    @OneToOne(mappedBy = "project")
+    private Briefing briefing;
 
 }
