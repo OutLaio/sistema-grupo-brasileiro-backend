@@ -19,7 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.github.javafaker.Faker;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.UserRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 
 public class AuthorizationServiceTest {
 

@@ -1,5 +1,4 @@
-CREATE TABLE profiles (
-    id SERIAL PRIMARY KEY,
-    role INT NOT NULL,
-    description VARCHAR(255)
+CREATE TABLE Tb_Profiles (
+    id BIGSERIAL PRIMARY KEY,
+    description VARCHAR(255) NOT NULL
 );

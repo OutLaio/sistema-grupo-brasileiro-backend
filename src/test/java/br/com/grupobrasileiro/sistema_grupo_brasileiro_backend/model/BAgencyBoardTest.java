@@ -1,17 +1,11 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.jupiter.api.Test;
-import java.util.Objects;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.jupiter.api.Test;
 
 public class BAgencyBoardTest {
 

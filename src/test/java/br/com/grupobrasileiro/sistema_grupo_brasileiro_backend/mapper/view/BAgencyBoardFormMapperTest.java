@@ -5,34 +5,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.BAgencyBoardForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.BAgencyBoardView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.BAgencyBoardFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.BAgencyBoard;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.Project;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.ProjectRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProjectRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.github.javafaker.Faker;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.*;
-import com.github.javafaker.Faker;
-import java.util.Optional;
 
 public class BAgencyBoardFormMapperTest {
 
