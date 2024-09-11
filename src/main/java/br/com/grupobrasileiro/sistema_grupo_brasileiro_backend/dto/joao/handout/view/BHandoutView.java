@@ -5,13 +5,12 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.joao.handout
  * Este DTO encapsula as informações de um comunicado para exibição.
  *
  * @param id              O ID do comunicado.
- * @param handoutTypeView O tipo de comunicado, representado pelo DTO {@link HandoutTypeView}.
+ * @param handoutType     O tipo de comunicado, representado pelo DTO {@link HandoutTypeView}.
  */
 public record BHandoutView(
 
         Long id,
-
-        HandoutTypeView handoutTypeView
+        HandoutTypeView handoutType
 
 ) {
 }

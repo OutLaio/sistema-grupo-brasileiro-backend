@@ -10,7 +10,6 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.joao.Interna
 public record StationeryTypeView(
 
         Long id,
-
         String description
 
 ) {
