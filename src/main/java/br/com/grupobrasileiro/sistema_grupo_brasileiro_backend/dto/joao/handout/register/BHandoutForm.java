@@ -1,5 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.joao.handout.register;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -11,7 +12,8 @@ import jakarta.validation.constraints.NotNull;
  */
 public record BHandoutForm(
 
-        @NotNull
+        @NotNull(message = "The handout type cannot be null")
+        @JsonAlias("id_handout_type")
         Long idHandoutType
 
 ) {

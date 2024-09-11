@@ -13,13 +13,12 @@ import jakarta.validation.constraints.Positive;
  */
 public record MeasurementsForm(
 
-        @NotNull(message = "{measurementsForm.height.required}")
-        @Positive(message = "{measurementsForm.height.positive}")
+        @NotNull(message = "The height of the measurement cannot be null")
+        @Positive(message = "The height of the measurement cannot be negative")
         BigDecimal height,
 
-        @NotNull(message = "{measurementsForm.length.required}")
-        @Positive(message = "{measurementsForm.length.positive}")
+        @NotNull(message = "The length of the measurement cannot be null")
+        @Positive(message = "The length of the measurement cannot be negative")
         BigDecimal length
-
 ) {
 }

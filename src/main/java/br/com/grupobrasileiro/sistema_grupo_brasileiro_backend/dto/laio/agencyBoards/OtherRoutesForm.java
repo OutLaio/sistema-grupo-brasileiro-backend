@@ -1,4 +1,4 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.BAgencyBoards;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.agencyBoards;
 
 import jakarta.validation.constraints.NotBlank;
 

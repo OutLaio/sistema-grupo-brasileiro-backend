@@ -1,4 +1,4 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.BPrinteds;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.printeds;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotNull;

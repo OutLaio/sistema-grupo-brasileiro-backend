@@ -1,5 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.joao.companies.register;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -11,11 +12,8 @@ import jakarta.validation.constraints.NotNull;
  */
 public record CompaniesBriefingsForm(
 
-        @NotNull(message = "{companiesBriefingsForm.idCompany.required}")
-        Long idCompany,
-
-        @NotNull(message = "{companiesBriefingsForm.idBriefing.required}")
-        Long idBriefing
-
+        @NotNull(message = "The company of the briefing cannot be null")
+        @JsonAlias({"id_company"})
+        Long idCompany
 ) {
 }

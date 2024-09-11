@@ -1,5 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.joao.InternalCampaigns.register;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
 
@@ -13,13 +14,16 @@ import jakarta.validation.constraints.NotBlank;
  */
 public record BInternalCampaignsForm(
 
-        @NotNull(message = "{bInternalCampaignsForm.idStationeryType.required}")
+        @NotNull(message = "The stationery type cannot be null")
+        @JsonAlias({"id_stationery_type"})
         Long idStationeryType,
 
-        @NotNull(message = "{bInternalCampaignsForm.idOtherItem.required}")
+        @NotNull(message = "Other item cannot be null")
+        @JsonAlias({"id_other_item"})
         Long idOtherItem,
 
-        @NotBlank(message = "{bInternalCampaignsForm.campaignMotto.required}")
+        @NotBlank(message = "The campaign motto cannot be blank")
+        @JsonAlias({"campaign_motto"})
         String campaignMotto
 
 ) {
