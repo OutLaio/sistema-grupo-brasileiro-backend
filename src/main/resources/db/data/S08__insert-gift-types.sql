@@ -1,0 +1,13 @@
+INSERT INTO Tb_GiftTypes (description) VALUES ('VISEIRA/ BONÉ');
+INSERT INTO Tb_GiftTypes (description) VALUES ('COPO');
+INSERT INTO Tb_GiftTypes (description) VALUES ('AGENDA');
+INSERT INTO Tb_GiftTypes (description) VALUES ('CAMISA');
+INSERT INTO Tb_GiftTypes (description) VALUES ('ALMOFADA NORMAL');
+INSERT INTO Tb_GiftTypes (description) VALUES ('ALMOFADA DE PESCOÇO');
+INSERT INTO Tb_GiftTypes (description) VALUES ('TAPA OLHO');
+INSERT INTO Tb_GiftTypes (description) VALUES ('CANETA');
+INSERT INTO Tb_GiftTypes (description) VALUES ('SQUEEZE');
+INSERT INTO Tb_GiftTypes (description) VALUES ('CALENDÁRIO');
+INSERT INTO Tb_GiftTypes (description) VALUES ('MOCHILA');
+INSERT INTO Tb_GiftTypes (description) VALUES ('NECESSAIRE');
+INSERT INTO Tb_GiftTypes (description) VALUES ('OUTROS');
