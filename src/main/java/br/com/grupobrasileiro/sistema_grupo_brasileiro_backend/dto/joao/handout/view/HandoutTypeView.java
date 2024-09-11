@@ -10,7 +10,6 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.joao.handout
 public record HandoutTypeView(
 
         Long id,
-
         String description
 
 ) {

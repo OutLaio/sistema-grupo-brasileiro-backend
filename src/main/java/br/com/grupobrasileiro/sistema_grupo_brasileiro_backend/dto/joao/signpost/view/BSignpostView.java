@@ -5,19 +5,16 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.joao.signpos
  * Este DTO encapsula as informações de uma placa para exibição.
  *
  * @param id             O ID da placa.
- * @param materialView   As informações do material da placa, representadas pelo DTO {@link MaterialView}.
- * @param boardLocation A localização da placa.
- * @param setor          O setor onde a placa está localizada.
+ * @param material       As informações do material da placa, representadas pelo DTO {@link MaterialView}.
+ * @param boardLocation  A localização da placa.
+ * @param sector         O setor onde a placa está localizada.
  */
 public record BSignpostView(
 
         Long id,
-
-        MaterialView materialView,
-
+        MaterialView material,
         String boardLocation,
-
-        String setor
+        String sector
 
 ) {
 }

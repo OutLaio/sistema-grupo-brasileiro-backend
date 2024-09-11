@@ -5,18 +5,15 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.joao.Interna
  * Este DTO encapsula as informações sobre uma campanha interna para exibição.
  *
  * @param id                O ID da campanha interna.
- * @param stationeryTypeView O tipo de papelaria associado à campanha, representado pelo DTO {@link StationeryTypeView}.
- * @param otherItemView      Informações sobre outros itens relacionados à campanha, representadas pelo DTO {@link OtherItemView}.
- * @param campaignMotto      O lema da campanha.
+ * @param stationeryType    O tipo de papelaria associado à campanha, representado pelo DTO {@link StationeryTypeView}.
+ * @param otherItem         Informações sobre outros itens relacionados à campanha, representadas pelo DTO {@link OtherItemView}.
+ * @param campaignMotto     O lema da campanha.
  */
 public record BInternalCampaignsView(
 
         Long id,
-
-        StationeryTypeView stationeryTypeView,
-
-        OtherItemView otherItemView,
-
+        StationeryTypeView stationeryType,
+        OtherItemView otherItem,
         String campaignMotto
 
 ) {
