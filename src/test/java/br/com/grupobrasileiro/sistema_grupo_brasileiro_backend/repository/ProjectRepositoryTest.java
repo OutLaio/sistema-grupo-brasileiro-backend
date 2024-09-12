@@ -2,7 +2,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProjectRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -18,7 +18,7 @@ import jakarta.transaction.Transactional;
 public class ProjectRepositoryTest {
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private EmployeeRepository projectRepository;
 
     @Test
     @Rollback(false)

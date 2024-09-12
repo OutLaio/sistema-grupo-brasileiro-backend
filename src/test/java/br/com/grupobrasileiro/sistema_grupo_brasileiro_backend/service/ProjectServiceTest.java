@@ -30,14 +30,14 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.Proje
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.ProjectUser;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProjectRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.ProjectUserRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 
 public class ProjectServiceTest {
 
     @Mock
-    private ProjectRepository projectRepository;
+    private EmployeeRepository projectRepository;
 
     @Mock
     private ProjectUserRepository projectUserRepository;

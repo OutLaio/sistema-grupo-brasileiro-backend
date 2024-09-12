@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProjectRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -22,7 +22,7 @@ public class BAgencyBoardRepositoryTest {
     private BAgencyBoardRepository bAgencyBoardRepository;
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private EmployeeRepository projectRepository;
 
     @Test
     public void testSaveAndFindById() {

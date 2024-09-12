@@ -8,7 +8,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.BAgencyB
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.BAgencyBoardFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProjectRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,12 +22,12 @@ import org.mockito.Mockito;
 public class BAgencyBoardFormMapperTest {
 
     private BAgencyBoardFormMapper mapper;
-    private ProjectRepository projectRepository;
+    private EmployeeRepository projectRepository;
     private Faker faker;
 
     @BeforeEach
     public void setUp() {
-        projectRepository = Mockito.mock(ProjectRepository.class);
+        projectRepository = Mockito.mock(EmployeeRepository.class);
         mapper = new BAgencyBoardFormMapper(projectRepository);
         faker = new Faker();
     }
