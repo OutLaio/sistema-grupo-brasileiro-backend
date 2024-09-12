@@ -1,4 +1,5 @@
-INSERT INTO Tb_GiftTypes (description) VALUES ('VISEIRA/ BONÉ');
+INSERT INTO Tb_GiftTypes (description) VALUES ('VISEIRA');
+INSERT INTO Tb_GiftTypes (description) VALUES ('BONÉ');
 INSERT INTO Tb_GiftTypes (description) VALUES ('COPO');
 INSERT INTO Tb_GiftTypes (description) VALUES ('AGENDA');
 INSERT INTO Tb_GiftTypes (description) VALUES ('CAMISA');
