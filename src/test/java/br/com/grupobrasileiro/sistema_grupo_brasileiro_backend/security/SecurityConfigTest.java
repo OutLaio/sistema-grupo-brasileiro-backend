@@ -109,4 +109,3 @@ public class SecurityConfigTest {
                 .andExpect(status().isOk());
     }
 }
-
