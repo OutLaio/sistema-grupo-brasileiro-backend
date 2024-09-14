@@ -38,7 +38,7 @@ public class Employee {
      * O sobrenome do empregado.
      * Este campo não pode ser nulo.
      */
-    @Column(nullable = false)
+    @Column(name = "lastname", nullable = false)
     private String lastName;
 
     /**

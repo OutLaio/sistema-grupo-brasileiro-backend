@@ -7,7 +7,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Mikaelle.form.DisableUserForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Mikaelle.form.PasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.form.EmployeeForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.view.EmployeeView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.Mikaelle.EmployeeService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.Mikaelle.PasswordService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.Mikaelle.UserService;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 
@@ -38,6 +41,12 @@ public class UserController {
     @Autowired
     private EmployeeService employeeService;
 
+    @Autowired
+    private PasswordService passwordService;
+
+    @Autowired
+    private UserService userService;
+
     /**
      * Endpoint para atualizar um Employee existente.
      * Permite que usuários com o papel 'ADMIN' ou o próprio usuário (CLIENT) com o ID correspondente
@@ -49,7 +58,6 @@ public class UserController {
      * @return uma resposta com status 200 OK e o Employee atualizado
      */
     @PutMapping("/employees/{id}")
-    @PreAuthorize("hasRole('ADMIN') OR (hasRole('CLIENT') AND #id == authentication.principal.id)")
     public ResponseEntity<EmployeeView> updateEmployee(
         @PathVariable Long id, 
         @Valid @RequestBody EmployeeForm form, 
@@ -60,27 +68,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee);
     }
 
-    /**
-     * Endpoint para adicionar um novo Employee.
-     * Apenas usuários com o papel 'ADMIN' ou o próprio usuário (CLIENT) com o ID correspondente
-     * podem criar novos empregados.
-     *
-     * @param form o formulário EmployeeForm contendo os dados do novo Employee
-     * @param userId o ID do usuário associado ao novo Employee
-     * @return uma resposta com status 201 Created e o Employee recém-criado
-     */
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN') OR (hasRole('CLIENT') AND #id == authentication.principal.id)")
-    public ResponseEntity<Employee> addEmployee(
-        @Valid @RequestBody EmployeeForm form, 
-        @RequestParam Long userId) {
-        
-        // Chama o serviço para adicionar um novo Employee e retorna a resposta
-        Employee newEmployee = employeeService.addEmployee(form, userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newEmployee);
-    }
-
-
 	/**
      * Endpoint para buscar um Employee pelo ID.
      * @param id o ID do Employee.
@@ -88,7 +75,6 @@ public class UserController {
      */
 	@Cacheable(value = "idEmployee", key = "#id")
 	@GetMapping("/employees/{id}")
-    @PreAuthorize("hasRole('ADMIN') OR (hasRole('CLIENT') AND #id == authentication.principal.id)")
     public ResponseEntity<EmployeeView> getEmployeeById(@PathVariable Long id) {
         EmployeeView employeeView = employeeService.getEmployeeById(id);
         return ResponseEntity.status(HttpStatus.OK).body(employeeView);
@@ -103,8 +89,7 @@ public class UserController {
      * @return Página de EmployeeView com status 200 OK.
      */
 	@Cacheable("Employees")
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/employees/all")
     public ResponseEntity<Page<EmployeeView>> getAllEmployees(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
@@ -120,4 +105,31 @@ public class UserController {
         return ResponseEntity.ok(employeesPage);
     }
 
+    /**
+     * Redefine a senha de um usuário.
+     *
+     * @param passwordForm o formulário PasswordForm contendo a nova senha e o ID do usuário
+     * @return uma resposta com status 200 OK e uma mensagem de sucesso
+     */
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestBody @Valid PasswordForm passwordForm) {
+
+        // Chama o serviço para redefinir a senha usando o token e a nova senha
+        passwordService.resetPassword(passwordForm);
+
+        return ResponseEntity.ok("Password successfully changed!");
+    }
+
+    /**
+     * Desativa um usuário no sistema.
+     * Apenas administradores ou o próprio usuário podem realizar essa ação.
+     * 
+     * @param disableUserForm formulário contendo o ID do usuário a ser desativado.
+     * @return resposta com status 204 No Content se a operação for bem-sucedida.
+     */
+    @PutMapping("/users/deactivate")
+    public ResponseEntity<Void> deactivateUser(@Valid @RequestBody DisableUserForm disableUserForm) {
+        userService.deactivateUser(disableUserForm);
+        return ResponseEntity.noContent().build();
+    }
 }

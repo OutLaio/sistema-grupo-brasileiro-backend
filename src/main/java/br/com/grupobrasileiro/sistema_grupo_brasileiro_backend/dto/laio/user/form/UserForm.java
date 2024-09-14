@@ -25,7 +25,7 @@ public record UserForm(
 
         /**
          * Senha do usuário.
-         * Este campo é validado usando a anotação personalizada {@link Password},
+         * Este campo é validado usando a anotação personalizada {@link PasswordForm},
          * que garante que a senha atenda a todos os critérios de segurança, incluindo
          * comprimento mínimo, letras maiúsculas e minúsculas, dígitos e caracteres especiais.
          */
@@ -37,7 +37,7 @@ public record UserForm(
          * Este campo é obrigatório e não pode ser nulo.
          */
         @NotNull(message = "The user role is required")
-        Integer profile
+        Long profile
 
 ) {
 }
