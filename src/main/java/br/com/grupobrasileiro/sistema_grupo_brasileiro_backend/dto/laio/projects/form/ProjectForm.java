@@ -11,5 +11,8 @@ public record ProjectForm(
 
         @NotBlank(message = "The id of the client cannot be blank")
         String title
+
+
+
 ) {
 }

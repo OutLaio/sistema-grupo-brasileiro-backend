@@ -1,9 +1,12 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.projects.form.BriefingForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.projects.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.internalcampaign.BInternalCampaign;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.gifts.BGift;
@@ -56,20 +59,20 @@ public class Briefing {
      * Este campo não pode ser nulo.
      */
     @Column(name = "start_time", nullable = false)
-    private LocalDate startTime;
+    private LocalDateTime startTime;
 
     /**
      * A data esperada para a conclusão do briefing.
      * Este campo não pode ser nulo.
      */
     @Column(name = "expected_time", nullable = false)
-    private LocalDate expectedTime;
+    private LocalDateTime expectedTime;
 
     /**
      * A data de conclusão do briefing.
      */
     @Column(name = "finish_time")
-    private LocalDate finishTime;
+    private LocalDateTime finishTime;
 
     /**
      * Descrição detalhada do briefing.
@@ -77,6 +80,18 @@ public class Briefing {
      */
     @Column(name = "detailed_description", nullable = false)
     private String detailedDescription;
+
+
+    public Briefing(BriefingForm briefingForm){
+        this.startTime = LocalDateTime.now();
+        this.expectedTime = briefingForm.expectedTime();
+        this.detailedDescription = briefingForm.detailedDescription();
+
+    }
+
+
+
+
 
     /**
      * Nome da outra empresa associada ao briefing, se houver.
