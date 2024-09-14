@@ -82,6 +82,18 @@ public class Briefing {
     private String detailedDescription;
     
 
+
+    public Briefing(BriefingForm briefingForm){
+        this.startTime = LocalDateTime.now();
+        this.expectedTime = briefingForm.expectedTime();
+        this.detailedDescription = briefingForm.detailedDescription();
+
+    }
+
+
+
+
+
     /**
      * Nome da outra empresa associada ao briefing, se houver.
      */
