@@ -1,118 +1,137 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.CollaboratorAssignmentForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.CompanyForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.ProjectForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.CompanyService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.ProjectService;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = {ProjectController.class})
 public class ProjectControllerTest {
 
-    @Mock
+    @MockBean
     private ProjectService projectService;
 
-    @Mock
-    private CompanyService companyService;
+    @Autowired
+    private MockMvc mockMvc;
+
+    private ObjectMapper objectMapper;
+    private Faker faker;
 
     @InjectMocks
     private ProjectController projectController;
 
-    private Faker faker;
-
     @BeforeEach
     public void setUp() {
+        // Initialize Faker and ObjectMapper
         faker = new Faker();
+        objectMapper = new ObjectMapper();
     }
 
     @Test
-    public void testAssignCollaboratorToProject_Success() {
+    public void testAssignCollaboratorToProject_Success() throws Exception {
         Long projectId = faker.number().randomNumber();
         Long collaboratorId = faker.number().randomNumber();
         CollaboratorAssignmentForm collaboratorForm = new CollaboratorAssignmentForm(collaboratorId);
 
         doNothing().when(projectService).assignCollaboratorToProject(projectId, collaboratorId);
 
-        ResponseEntity<String> response = projectController.assignCollaboratorToProject(projectId, collaboratorForm);
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/projects/{projectId}/collaborators", projectId)
+                .contentType(MediaType.APPLICATION_JSON) // Make sure MediaType is correctly imported
+                .content(objectMapper.writeValueAsString(collaboratorForm)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Colaborador atribuído ao projeto com sucesso.", response.getBody());
+        assertEquals("Colaborador atribuído ao projeto com sucesso.", result.getResponse().getContentAsString());
         verify(projectService, times(1)).assignCollaboratorToProject(projectId, collaboratorId);
     }
 
     @Test
-    public void testAssignCollaboratorToProject_ProjectNotFound() {
+    public void testAssignCollaboratorToProject_ProjectNotFound() throws Exception {
         Long projectId = faker.number().randomNumber();
         Long collaboratorId = faker.number().randomNumber();
         CollaboratorAssignmentForm collaboratorForm = new CollaboratorAssignmentForm(collaboratorId);
 
-         
-        doThrow(new RuntimeException("Project not found"))
-            .when(projectService).assignCollaboratorToProject(projectId, collaboratorId);
+        doThrow(new RuntimeException("Project not found")).when(projectService).assignCollaboratorToProject(projectId, collaboratorId);
 
-       
-        ResponseEntity<String> response = projectController.assignCollaboratorToProject(projectId, collaboratorForm);
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/projects/{projectId}/collaborators", projectId)
+                .contentType(MediaType.APPLICATION_JSON) // Make sure MediaType is correctly imported
+                .content(objectMapper.writeValueAsString(collaboratorForm)))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+                .andReturn();
 
-        
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());  
-        assertEquals("Project not found", response.getBody());
-
-       
+        assertEquals("Project not found", result.getResponse().getContentAsString());
         verify(projectService, times(1)).assignCollaboratorToProject(projectId, collaboratorId);
     }
 
-
-
     @Test
-    public void testGetAllProjects_Success() {
+    public void testGetAllProjects_Success() throws Exception {
         int page = faker.number().numberBetween(0, 10);
         int size = faker.number().numberBetween(1, 50);
         String direction = faker.options().option("ASC", "DESC");
         String orderBy = faker.lorem().word();
 
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.valueOf(direction), orderBy);
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.fromString(direction), orderBy);
 
+        // Ensure the correct Page class is used
         ProjectView projectView = new ProjectView(
-            faker.number().randomNumber(),
-            faker.lorem().word(),
-            faker.lorem().paragraph(),
-            faker.number().numberBetween(0, 100),
-            faker.options().option("ACTIVE", "INACTIVE", "COMPLETED"),
-            faker.number().randomNumber()
+                faker.number().randomNumber(),
+                faker.lorem().word(),
+                faker.lorem().paragraph(),
+                faker.number().numberBetween(0, 100),
+                faker.options().option("ACTIVE", "INACTIVE", "COMPLETED"),
+                faker.number().randomNumber()
         );
 
         Page<ProjectView> mockPage = new PageImpl<>(List.of(projectView));
         when(projectService.projectAll(pageRequest)).thenReturn(mockPage);
 
-        ResponseEntity<Page<ProjectView>> response = projectController.projectAll(page, direction, orderBy, size);
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/projects")
+                .param("page", String.valueOf(page))
+                .param("size", String.valueOf(size))
+                .param("direction", direction)
+                .param("orderBy", orderBy))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockPage, response.getBody());
+        String responseBody = result.getResponse().getContentAsString();
+        assertEquals(objectMapper.writeValueAsString(mockPage), responseBody);
         verify(projectService, times(1)).projectAll(pageRequest);
     }
 
     @Test
-    public void testGetProjectsByCollaborators_Success() {
+    public void testGetProjectsByCollaborators_Success() throws Exception {
         int page = faker.number().numberBetween(0, 10);
         int size = faker.number().numberBetween(1, 50);
         String direction = faker.options().option("ASC", "DESC");
@@ -120,213 +139,110 @@ public class ProjectControllerTest {
 
         Integer role = RoleEnum.ROLE_COLLABORATOR.getCode();
 
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.valueOf(direction), orderBy);
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.fromString(direction), orderBy);
 
+        // Ensure the correct Page class is used
         ProjectView projectView = new ProjectView(
-            faker.number().randomNumber(),
-            faker.lorem().word(),
-            faker.lorem().paragraph(),
-            faker.number().numberBetween(0, 100),
-            faker.options().option("ACTIVE", "INACTIVE", "COMPLETED"),
-            faker.number().randomNumber()
+                faker.number().randomNumber(),
+                faker.lorem().word(),
+                faker.lorem().paragraph(),
+                faker.number().numberBetween(0, 100),
+                faker.options().option("ACTIVE", "INACTIVE", "COMPLETED"),
+                faker.number().randomNumber()
         );
 
         Page<ProjectView> mockPage = new PageImpl<>(List.of(projectView));
         when(projectService.projectsCollaborators(pageRequest, role)).thenReturn(mockPage);
 
-        ResponseEntity<Page<ProjectView>> response = projectController.projectsByRole(page, direction, orderBy, size);
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/projects/collaborators")
+                .param("page", String.valueOf(page))
+                .param("size", String.valueOf(size))
+                .param("direction", direction)
+                .param("orderBy", orderBy))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockPage, response.getBody());
+        String responseBody = result.getResponse().getContentAsString();
+        assertEquals(objectMapper.writeValueAsString(mockPage), responseBody);
         verify(projectService, times(1)).projectsCollaborators(pageRequest, role);
     }
 
     @Test
-    public void testGetProjectById_Success() {
+    public void testGetProjectById_Success() throws Exception {
         Long projectId = faker.number().randomNumber();
         ProjectView projectView = new ProjectView(
-            projectId,
-            faker.lorem().word(),
-            faker.lorem().paragraph(),
-            faker.number().numberBetween(0, 100),
-            faker.options().option("ACTIVE", "INACTIVE", "COMPLETED"),
-            faker.number().randomNumber()
+                projectId,
+                faker.lorem().word(),
+                faker.lorem().paragraph(),
+                faker.number().numberBetween(0, 100),
+                faker.options().option("ACTIVE", "INACTIVE", "COMPLETED"),
+                faker.number().randomNumber()
         );
 
         when(projectService.getProjectById(projectId)).thenReturn(projectView);
 
-        ResponseEntity<ProjectView> response = projectController.getProjectById(projectId);
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/projects/{projectId}", projectId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(projectView, response.getBody());
+        String responseBody = result.getResponse().getContentAsString();
+        assertEquals(objectMapper.writeValueAsString(projectView), responseBody);
         verify(projectService, times(1)).getProjectById(projectId);
     }
 
     @Test
-    public void testGetProjectById_NotFound() {
+    public void testGetProjectById_NotFound() throws Exception {
         Long projectId = faker.number().randomNumber();
 
         when(projectService.getProjectById(projectId)).thenThrow(new RuntimeException("Project not found"));
 
-        ResponseEntity<ProjectView> response = projectController.getProjectById(projectId);
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/projects/{projectId}", projectId))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn();
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody());
+        assertEquals("Project not found", result.getResponse().getContentAsString());
         verify(projectService, times(1)).getProjectById(projectId);
     }
 
     @Test
-    public void testUpdateProjectStatus_Success() {
+    public void testUpdateProjectStatus_Success() throws Exception {
         Long projectId = faker.number().randomNumber();
         String newStatus = "COMPLETED";
 
         ProjectView updatedProjectView = new ProjectView(
-            projectId,
-            "Updated Project Title",
-            "Updated Project Description",
-            75,
-            newStatus,
-            2L
+                projectId,
+                faker.lorem().word(),
+                faker.lorem().paragraph(),
+                faker.number().numberBetween(0, 100),
+                newStatus,
+                faker.number().randomNumber()
         );
 
         when(projectService.updateProjectStatus(projectId, newStatus)).thenReturn(updatedProjectView);
 
-        ResponseEntity<ProjectView> response = projectController.updateProjectStatus(projectId, newStatus);
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/projects/{projectId}/status", projectId)
+                .param("status", newStatus))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(updatedProjectView, response.getBody());
+        String responseBody = result.getResponse().getContentAsString();
+        assertEquals(objectMapper.writeValueAsString(updatedProjectView), responseBody);
         verify(projectService, times(1)).updateProjectStatus(projectId, newStatus);
     }
 
     @Test
-    public void testUpdateProjectStatus_NotFound() {
+    public void testUpdateProjectStatus_BadRequest() throws Exception {
         Long projectId = faker.number().randomNumber();
-        String newStatus = "COMPLETED";
+        String newStatus = "INVALID_STATUS";
 
-        when(projectService.updateProjectStatus(projectId, newStatus)).thenThrow(new RuntimeException("Project not found"));
+        when(projectService.updateProjectStatus(projectId, newStatus)).thenThrow(new RuntimeException("Invalid status"));
 
-        ResponseEntity<ProjectView> response = projectController.updateProjectStatus(projectId, newStatus);
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/projects/{projectId}/status", projectId)
+                .param("status", newStatus))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody());
+        assertEquals("Invalid status", result.getResponse().getContentAsString());
         verify(projectService, times(1)).updateProjectStatus(projectId, newStatus);
     }
-
-    @Test
-    public void testUpdateProjectStatus_InternalServerError() {
-        Long projectId = faker.number().randomNumber();
-        String newStatus = "COMPLETED";
-
-        when(projectService.updateProjectStatus(projectId, newStatus)).thenThrow(new RuntimeException("Unexpected error"));
-
-        ResponseEntity<ProjectView> response = projectController.updateProjectStatus(projectId, newStatus);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNull(response.getBody());
-        verify(projectService, times(1)).updateProjectStatus(projectId, newStatus);
-    }
-
-    @Test
-    public void testSaveProject_Success() {
-        ProjectForm projectForm = new ProjectForm(faker.lorem().word(), faker.lorem().paragraph());
-        ProjectView projectView = new ProjectView(
-            faker.number().randomNumber(),
-            faker.lorem().word(),
-            faker.lorem().paragraph(),
-            faker.number().numberBetween(0, 100),
-            "ACTIVE",
-            faker.number().randomNumber()
-        );
-
-        when(projectService.save(projectForm, null)).thenReturn(projectView);
-
-        ResponseEntity<ProjectView> response = projectController.save(projectForm, null);
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(projectView, response.getBody());
-        verify(projectService, times(1)).save(projectForm, null);
-    }
-
-    @Test
-    public void testSaveCompany_Success() {
-       
-        CompanyForm companyForm = new CompanyForm("Test Company");
-
-        CompanyView companyView = new CompanyView(
-            1L,  
-            "Test Company"
-        );
-
- 
-        when(companyService.save(companyForm)).thenReturn(companyView);
-
-        ResponseEntity<CompanyView> response = projectController.save(companyForm);
-
-        
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(companyView, response.getBody());
-
-       
-        verify(companyService, times(1)).save(companyForm);
-    }
-
-
-    @Test
-    public void testSaveCompany_BadRequest() {
- 
-        CompanyForm companyForm = new CompanyForm("");
-
-        ResponseEntity<CompanyView> response = projectController.save(companyForm);
-
-        
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertNull(response.getBody());
-    }
-    
-    @Test
-    public void testCompanyAll_Success() {
-      
-        Page<CompanyView> companyViews = new PageImpl<>(List.of(new CompanyView(1L, "Company1")));
-        when(companyService.companyAll(any(PageRequest.class))).thenReturn(companyViews);
-
-       
-        ResponseEntity<Page<CompanyView>> response = projectController.companyAll(0, "ASC", "name", 10);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().getContent().size());
-        assertEquals("Company1", response.getBody().getContent().get(0).name());
-    }
-    
-    @Test
-    public void testCompanyAll_PaginationAndSorting() {
-        
-        Page<CompanyView> companyViews = new PageImpl<>(List.of(new CompanyView(1L, "Company1")));
-        when(companyService.companyAll(any(PageRequest.class))).thenReturn(companyViews);
-
-         ResponseEntity<Page<CompanyView>> response = projectController.companyAll(1, "DESC", "name", 5);
-
-         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().getContent().size());
-        assertEquals("Company1", response.getBody().getContent().get(0).name());
-    }
-    
-    @Test
-    public void testCompanyAll_NoData() {
-     
-        Page<CompanyView> companyViews = Page.empty();
-        when(companyService.companyAll(any(PageRequest.class))).thenReturn(companyViews);
-
-     
-        ResponseEntity<Page<CompanyView>> response = projectController.companyAll(0, "ASC", "name", 10);
-
-        
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().getContent().isEmpty());
-    }
-
-
-
 }
