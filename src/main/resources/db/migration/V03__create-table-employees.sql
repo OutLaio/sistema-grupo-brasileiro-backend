@@ -1,4 +1,4 @@
-CREATE TABLE Tb_Employees (
+CREATE TABLE "Tb_Employees" (
     id BIGSERIAL PRIMARY KEY,
     id_user BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -8,6 +8,6 @@ CREATE TABLE Tb_Employees (
     occupation VARCHAR(255) NOT NULL,
     agency VARCHAR(255) NOT NULL,
     avatar INT NOT NULL,
-    CONSTRAINT fk_user FOREIGN KEY (id_user) REFERENCES Tb_Users (id)
+    CONSTRAINT fk_user FOREIGN KEY (id_user) REFERENCES "Tb_Users" (id)
 );
 
