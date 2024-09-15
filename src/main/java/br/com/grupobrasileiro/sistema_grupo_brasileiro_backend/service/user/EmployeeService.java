@@ -42,7 +42,6 @@ public class EmployeeService {
      * @return o empregado recém-criado e salvo no banco de dados
      * @throws EntityNotFoundException se o usuário não for encontrado
      */
-    @Transactional
     public EmployeeView addEmployee(EmployeeForm form, User user) {
         Employee employee = employeeFormMapper.map(form);
         employee.setUser(user);
@@ -62,7 +61,6 @@ public class EmployeeService {
      * @return uma representação visual do empregado atualizado {@link EmployeeView}
      * @throws EntityNotFoundException se o empregado com o ID fornecido não for encontrado
      */
-    @Transactional
     public EmployeeView updateEmployee(Long id, EmployeeForm form) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado"));
@@ -87,7 +85,6 @@ public class EmployeeService {
      * @return uma representação visual do empregado {@link EmployeeView}
      * @throws EntityNotFoundException se o empregado com o ID fornecido não for encontrado
      */
-    @Transactional(readOnly = true)
     public EmployeeView getEmployeeById(Long id) {
         Employee employee = employeeRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado com id:: " + id));
@@ -103,9 +100,8 @@ public class EmployeeService {
      * @param pageable o objeto que define as propriedades da página (tamanho e número)
      * @return uma página de {@link EmployeeView} representando os empregados
      */
-    @Transactional(readOnly = true)
-    public Page<EmployeeView> getAllEmployees(Pageable pageable) {
-        return employeeRepository.findAll(pageable)
+    public Page<EmployeeView> getAllCollaborators(Pageable pageable) {
+        return employeeRepository.findAllCollaborators(pageable)
             .map(employeeViewMapper::map);
     }
 }
