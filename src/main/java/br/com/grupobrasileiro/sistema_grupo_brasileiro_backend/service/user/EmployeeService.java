@@ -1,5 +1,6 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.Mikaelle;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.form.EmployeeFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Service;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.form.EmployeeForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.view.EmployeeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.Mikaelle.EmployeeViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view.EmployeeViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
@@ -26,6 +27,9 @@ public class EmployeeService {
     @Autowired
     private EmployeeViewMapper employeeViewMapper;
 
+    @Autowired
+    private EmployeeFormMapper employeeFormMapper;
+
     /**
      * Adiciona um novo empregado ao sistema.
      * 
@@ -39,17 +43,11 @@ public class EmployeeService {
      * @throws EntityNotFoundException se o usuário não for encontrado
      */
     @Transactional
-    public Employee addEmployee(EmployeeForm form, User user) {
-        Employee employee = new Employee();
-        employee.setName(form.name());
-        employee.setLastName(form.lastname());
-        employee.setPhoneNumber(form.phoneNumber());
-        employee.setSector(form.sector());
-        employee.setOccupation(form.occupation());
-        employee.setAgency(form.agency());
-        employee.setAvatar(form.avatar());
+    public EmployeeView addEmployee(EmployeeForm form, User user) {
+        Employee employee = employeeFormMapper.map(form);
         employee.setUser(user);
-        return employeeRepository.save(employee);
+        employeeRepository.save(employee);
+        return employeeViewMapper.map(employee);
     }
 
     /**

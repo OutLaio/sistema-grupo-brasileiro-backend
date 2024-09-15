@@ -1,5 +1,6 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.Mikaelle;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.view.EmployeeView;
@@ -13,7 +14,10 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Emplo
  */
 @Component
 public class EmployeeViewMapper implements Mapper<Employee, EmployeeView> {
-    
+
+    @Autowired
+    private UserViewMapper userViewMapper;
+
     /**
      * Mapeia um objeto {@link Employee} para um objeto {@link EmployeeView}.
      *
@@ -24,16 +28,16 @@ public class EmployeeViewMapper implements Mapper<Employee, EmployeeView> {
      */
     @Override
     public EmployeeView map(Employee employee) {
-        // Mapeia os dados da entidade Employee para a EmployeeView
         return new EmployeeView(
-            employee.getId(),                   // ID do funcionário
-            employee.getUser().getId(),          // ID do usuário relacionado ao funcionário
-            employee.getName(),                  // Nome do funcionário
-            employee.getLastName(),              // Sobrenome do funcionário
-            employee.getPhoneNumber(),           // Número de telefone do funcionário
-            employee.getSector(),                // Setor de trabalho do funcionário
-            employee.getOccupation(),            // Ocupação do funcionário
-            null                                 // Campo adicional (avatar ou outro dado, se necessário)
+            employee.getId(),
+            userViewMapper.map(employee.getUser()),
+            employee.getName(),
+            employee.getLastName(),
+            employee.getPhoneNumber(),
+            employee.getSector(),
+            employee.getOccupation(),
+            employee.getAgency(),
+            employee.getAvatar()
         );
     }
 }

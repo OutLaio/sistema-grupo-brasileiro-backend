@@ -21,9 +21,9 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Mikaelle.form
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Mikaelle.form.PasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.form.EmployeeForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.view.EmployeeView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.Mikaelle.EmployeeService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user.EmployeeService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.Mikaelle.PasswordService;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.Mikaelle.UserService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user.UserService;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;

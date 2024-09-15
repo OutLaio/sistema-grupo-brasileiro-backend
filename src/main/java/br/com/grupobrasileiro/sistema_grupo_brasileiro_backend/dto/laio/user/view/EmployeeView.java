@@ -51,7 +51,12 @@ public record EmployeeView(
          */
         String occupation,
 
+        /**
+         * Nucleo Operacional de Origem / Agencia do funcionario.
+         * Este campo exibe o número de operações associadas ao funcionário.
+         */
+        String agency,
 
-        Long avatar
+        Integer avatar
 ) {
 }

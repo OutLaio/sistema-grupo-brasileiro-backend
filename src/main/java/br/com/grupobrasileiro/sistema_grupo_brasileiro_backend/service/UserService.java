@@ -12,9 +12,9 @@
 //import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserProfileView;
 //import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
 //import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
-//import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.form.UserFormMapper;
+//import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.form.UserFormMapper;
 //import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.UserProfileViewMapper;
-//import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view.UserViewMapper;
+//import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view.UserViewMapper;
 //import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 //import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 //import jakarta.transaction.Transactional;
