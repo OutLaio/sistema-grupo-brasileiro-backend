@@ -71,10 +71,6 @@ public class Project {
     @OneToOne(mappedBy = "project")
     private Briefing briefing;
 
-    public Project(ProjectForm projectForm) {
-        this.title = projectForm.title();
-        this.disabled = false;
-    }
 
 
 

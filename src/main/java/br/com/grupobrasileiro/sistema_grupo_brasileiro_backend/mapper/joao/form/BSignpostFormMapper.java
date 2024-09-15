@@ -19,7 +19,13 @@ public class BSignpostFormMapper implements Mapper<BSignpostForm, BSignpost> {
 
     @Override
     public BSignpost map(BSignpostForm signpostForm) {
-        return new BSignpost(signpostForm);
+        return new BSignpost(
+                null,
+                null,
+                null,
+                signpostForm.boardLocation(),
+                signpostForm.sector()
+        );
     }
 
 

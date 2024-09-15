@@ -5,7 +5,8 @@ import java.util.List;
 public record OtherRouteView(
         Long id,
         String company,
-        List<String> cities,
+        String cityView,
+
         String type
 ) {
 }

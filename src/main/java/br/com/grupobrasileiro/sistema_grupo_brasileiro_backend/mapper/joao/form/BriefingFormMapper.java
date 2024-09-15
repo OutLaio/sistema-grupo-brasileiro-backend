@@ -20,8 +20,28 @@ public class BriefingFormMapper implements Mapper<BriefingForm, Briefing> {
 
     @Override
     public Briefing map(BriefingForm briefingForm) {
-        return new Briefing(briefingForm);
+
+
+        return new Briefing(
+                null,
+                null,
+                null,
+                LocalDateTime.now(),
+                briefingForm.expectedTime(),
+                null,
+                briefingForm.detailedDescription(),
+                briefingForm.otherCompany(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+                ,null
+                ,null,
+                null
+        );
     }
-
-
 }

@@ -17,6 +17,13 @@ public class ProjectFormMapper implements Mapper<ProjectForm, Project> {
 
     @Override
     public Project map(ProjectForm projectForm) {
-        return new Project(projectForm);
-    }
+        return new Project(
+                null,
+                null,
+                null,
+                projectForm.title(),
+                null,
+                false,
+                null
+        );    }
 }

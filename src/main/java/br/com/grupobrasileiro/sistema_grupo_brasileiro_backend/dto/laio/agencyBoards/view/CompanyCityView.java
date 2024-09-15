@@ -1,8 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.agencyBoards.view;
 
-public record RouteView(
+public record CompanyCityView(
         Long id,
-        CompanyCityView companyCity,
-        String type
+        CityView city,
+        CompanyView company
 ) {
 }

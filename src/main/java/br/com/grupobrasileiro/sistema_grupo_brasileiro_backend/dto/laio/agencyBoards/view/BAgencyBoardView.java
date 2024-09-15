@@ -1,13 +1,14 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.agencyBoards.view;
 
 import java.util.List;
+import java.util.Set;
 
-public record AgencyBoardView(
+public record BAgencyBoardView(
         Long id,
         AgencyBoardTypeView agencyBoardType,
         BoardTypeView boardType,
-        List<RouteView> routes,
-        List<OtherRouteView> otherRoutes,
+        Set<RouteView> routes,
+        Set<OtherRouteView> otherRoutes,
         String boardLocation,
         String observations
 ) {

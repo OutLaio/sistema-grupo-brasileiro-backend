@@ -35,10 +35,7 @@ public class BSignpost {
     @Column(name = "sector", nullable = false)
     private String sector;
 
-    public BSignpost(BSignpostForm bSignpostForm) {
-        this.boardLocation = bSignpostForm.boardLocation();
-        this.sector = bSignpostForm.sector();
-    }
+
 
 
 }
