@@ -1,11 +1,13 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.auth.form.PasswordForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.IncorrectPasswordException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.form.UserFormMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Mikaelle.form.DisableUserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
@@ -17,33 +19,29 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.
  * Serviço responsável por gerenciar operações relacionadas a usuários.
  */
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
 	private UserRepository userRepository;
-
-    @Autowired
     private UserFormMapper userFormMapper;
-
-    @Autowired
 	private ProfileRepository profileRepository;
+    private PasswordEncoder passwordEncoder;
 
     /**
      * Desativa um usuário no sistema.
      * 
-     * Este método busca o usuário pelo ID fornecido no formulário e o desativa,
+     * Este método busca o usuário pelo ID fornecido e o desativa,
      * marcando o campo `disabled` como `true`. Se o usuário não for encontrado,
      * uma exceção é lançada.
      *
-     * @param disableUserForm Formulário contendo o ID do usuário a ser desativado.
+     * @param id ID do usuário a ser desativado.
      * @throws RuntimeException Se o usuário não for encontrado.
      */
     @Transactional
-    public void deactivateUser(DisableUserForm disableUserForm) {
-        User user = userRepository.findById(disableUserForm.idUser())
-                .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado, id: " + disableUserForm.idUser()));
+    public void deactivateUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado, id: " + id));
 
-        // Marca o usuário como desativado.
         user.setDisabled(true);
         userRepository.save(user);
     }
@@ -68,5 +66,14 @@ public class UserService {
         User user = userFormMapper.map(userForm);
         userRepository.save(user);
         return user;
+    }
+
+    public void resetPassword(PasswordForm passwordForm) {
+        User user = userRepository.findById(passwordForm.id())
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+        String currentPassword = passwordEncoder.encode(passwordForm.currentPassword());
+        if(!user.getPassword().equals(currentPassword)) throw new IncorrectPasswordException("A senha atual está incorreta!");
+        user.setPassword(passwordEncoder.encode(passwordForm.newPassword()));
+        userRepository.save(user);
     }
 }
