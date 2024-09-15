@@ -1,6 +1,5 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.auth;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.auth.form;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.annotations.ValidEmail;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
