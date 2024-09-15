@@ -19,7 +19,7 @@ public record EmployeeView(
          * Identificador único do usuário associado ao funcionário.
          * Este campo é obrigatório e não pode ser nulo.
          */
-        Long userId,
+        UserView userView,
 
         /**
          * Nome do funcionário.
@@ -52,10 +52,11 @@ public record EmployeeView(
         String occupation,
 
         /**
-         * Número de operações (NOP) do funcionário.
+         * Nucleo Operacional de Origem / Agencia do funcionario.
          * Este campo exibe o número de operações associadas ao funcionário.
          */
-        String nop
+        String agency,
 
+        Integer avatar
 ) {
 }

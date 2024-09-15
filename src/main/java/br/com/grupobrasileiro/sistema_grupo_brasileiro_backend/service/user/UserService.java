@@ -1,7 +1,7 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.Mikaelle;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.form.UserFormMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,7 +9,6 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Mikaelle.form
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProfileRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
@@ -24,8 +23,7 @@ public class UserService {
 	private UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; 
-
+    private UserFormMapper userFormMapper;
 
     @Autowired
 	private ProfileRepository profileRepository;
@@ -63,32 +61,12 @@ public class UserService {
      * @throws EmailUniqueViolationException Se o e-mail já estiver em uso.
      * @throws EntityNotFoundException Se o perfil associado ao usuário não for encontrado.
      */
-    public User createUser(UserForm userForm) {
-        // Verifica se o e-mail já está em uso.
+    public User create(UserForm userForm) {
         if (userRepository.findByEmail(userForm.email()).isPresent()) {
             throw new EmailUniqueViolationException("Email já está em uso");
         }
-
-        // Busca o perfil associado ao ID fornecido.
-        Profile profile = profileRepository.findById(userForm.profile())
-                .orElseThrow(() -> new EntityNotFoundException("Profile não encontrado"));
-
-        // Cria uma nova instância de User e define seus atributos.
-        User user = new User();
-        user.setEmail(userForm.email());
-
-        // Criptografa a senha fornecida e define no usuário.
-        String encryptedPassword = passwordEncoder.encode(userForm.password());
-        user.setPassword(encryptedPassword);
-
-        // Define o perfil e marca o usuário como ativo (não desativado).
-        user.setProfile(profile);
-        user.setDisabled(false);
-
-        // Salva o novo usuário no repositório.
+        User user = userFormMapper.map(userForm);
         userRepository.save(user);
-
         return user;
     }
-
 }

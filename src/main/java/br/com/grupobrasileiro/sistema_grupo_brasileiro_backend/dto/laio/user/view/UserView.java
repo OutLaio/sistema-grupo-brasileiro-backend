@@ -17,7 +17,6 @@ public record UserView(
          * Identificador único do usuário.
          * Este campo é obrigatório e não pode ser nulo.
          */
-        @NotNull(message = "{id.required}")
         Long id,
 
         /**
@@ -25,14 +24,12 @@ public record UserView(
          * Este campo é validado usando a anotação personalizada {@link ValidEmail},
          * que verifica se o e-mail está em um formato válido e não está em branco.
          */
-        @ValidEmail
         String email,
 
         /**
          * Código da função (role) do usuário.
          * Este campo é obrigatório e não pode ser nulo.
          */
-        @NotNull(message = "{role.required}")
         ProfileView profileView
 
 ) {
