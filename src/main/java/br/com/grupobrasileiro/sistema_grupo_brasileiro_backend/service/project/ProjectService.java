@@ -2,9 +2,11 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project;
 
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.ProjectStatusEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.InvalidProfileException;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.form.ProjectFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
@@ -18,6 +20,16 @@ public class ProjectService {
 
     private ProjectRepository projectRepository;
     private EmployeeRepository employeeRepository;
+    private ProjectFormMapper projectFormMapper;
+
+    public Project register(ProjectForm projectForm) {
+        Employee client = employeeRepository.findById(projectForm.idClient())
+                .orElseThrow(() -> new EntityNotFoundException("Client not found with ID: " + projectForm.idClient()));
+        Project project = projectFormMapper.map(projectForm);
+        project.setClient(client);
+        project = projectRepository.save(project);
+        return project;
+    }
 
     public void assignCollaborator(Long id, AssignCollaboratorForm form) {
         Project project = projectRepository.findById(id).orElseThrow(

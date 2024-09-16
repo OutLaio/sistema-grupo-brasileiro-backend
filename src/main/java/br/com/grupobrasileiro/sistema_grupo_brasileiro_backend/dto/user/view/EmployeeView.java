@@ -57,6 +57,6 @@ public record EmployeeView(
          */
         String agency,
 
-        Integer avatar
+        Long avatar
 ) {
 }

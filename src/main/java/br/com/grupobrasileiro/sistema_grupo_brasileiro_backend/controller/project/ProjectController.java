@@ -6,6 +6,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.NewVersionForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.VersionService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/projects")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearer-key")
 public class ProjectController {
     private ProjectService projectService;
     private VersionService versionService;
