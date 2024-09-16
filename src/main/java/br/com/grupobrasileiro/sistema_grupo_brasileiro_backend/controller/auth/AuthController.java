@@ -1,31 +1,21 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.auth;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.auth.form.LoginForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.auth.form.RecoveryPasswordForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.auth.form.ResetPasswordForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.auth.view.TokenView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.form.UserDetailsForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.view.EmployeeView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.email.PasswordRequest;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.InvalidTokenException;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.UserIsNotActiveException;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.LoginForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.RecoveryPasswordForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.ResetPasswordForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.view.TokenView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form.UserDetailsForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.auth.AuthService;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.email.EmailService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user.EmployeeService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 

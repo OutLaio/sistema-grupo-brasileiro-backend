@@ -3,7 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.view.EmployeeView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 
