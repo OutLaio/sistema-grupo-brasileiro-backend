@@ -14,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 
 @SpringBootTest

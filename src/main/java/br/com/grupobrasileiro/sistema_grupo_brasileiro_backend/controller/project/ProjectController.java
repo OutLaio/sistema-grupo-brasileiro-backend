@@ -2,10 +2,10 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.proje
 
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ApproveForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.VersionService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.NewVersionForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.VersionService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

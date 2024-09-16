@@ -1,32 +1,27 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.form.EmployeeFormMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form.EmployeeForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.form.EmployeeFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view.EmployeeViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 /**
  * Classe de serviço responsável por operações relacionadas à entidade Employee.
  */
 @Service
+@RequiredArgsConstructor
 public class EmployeeService {
 
-    @Autowired
     private EmployeeRepository employeeRepository;
-
-    @Autowired
     private EmployeeViewMapper employeeViewMapper;
-
-    @Autowired
     private EmployeeFormMapper employeeFormMapper;
 
     /**

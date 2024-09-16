@@ -14,7 +14,6 @@ import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;

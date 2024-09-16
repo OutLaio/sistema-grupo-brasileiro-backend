@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import com.github.javafaker.Faker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.form.UserForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
-import com.github.javafaker.Faker;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

@@ -25,9 +25,9 @@ public class UserController {
      * @param passwordForm o formulário PasswordForm contendo a nova senha e o ID do usuário
      * @return uma resposta com status 200 OK e uma mensagem de sucesso
      */
-    @PostMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@RequestBody @Valid PasswordForm passwordForm) {
-        userService.resetPassword(passwordForm);
+    @PostMapping("/changePassword")
+    public ResponseEntity<String> changePassword(@RequestBody @Valid PasswordForm passwordForm) {
+        userService.changePassword(passwordForm);
         return ResponseEntity.ok("Password successfully changed!");
     }
 
