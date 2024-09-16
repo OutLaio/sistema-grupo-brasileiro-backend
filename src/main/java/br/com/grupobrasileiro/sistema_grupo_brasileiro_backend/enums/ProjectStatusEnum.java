@@ -8,5 +8,4 @@ public enum ProjectStatusEnum {
     IN_PRODUCTION,
     COMPLETED,
     STAND_BY;
-
 }
