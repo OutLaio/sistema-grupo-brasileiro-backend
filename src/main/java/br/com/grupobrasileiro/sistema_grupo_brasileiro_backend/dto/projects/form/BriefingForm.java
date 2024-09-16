@@ -1,13 +1,14 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.companiesBriefing.form.CompaniesBriefingsForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.measurements.form.MeasurementsForm;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 public record BriefingForm(
         @NotNull(message = "The expected date cannot be null")
@@ -19,13 +20,15 @@ public record BriefingForm(
         @JsonAlias({"detailed_description"})
         String detailedDescription,
 
-        List<CompaniesBriefingsForm> companies,
+        Set<CompaniesBriefingsForm> companies,
 
         @JsonAlias({"other_company"})
         String otherCompany,
 
         @NotNull(message = "The briefing type cannot be null")
         @JsonAlias({"id_briefing_type"})
-        Long idBriefingType
+        Long idBriefingType,
+
+        MeasurementsForm measurement
 ) {
 }

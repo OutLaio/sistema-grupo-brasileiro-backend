@@ -5,13 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record RoutesForm(
-        @NotNull(message = "The route company cannot be null")
-        @JsonAlias({"id_company"})
-        Long idCompany,
-
-        @NotNull(message = "The route city cannot be null")
-        @JsonAlias({"id_city"})
-        Long idCity,
+        @NotNull(message = "The route company city cannot be null")
+        @JsonAlias({"id_companyCity"})
+        Long idCompanyCity,
 
         @NotBlank(message = "The route type cannot be blank")
         String type

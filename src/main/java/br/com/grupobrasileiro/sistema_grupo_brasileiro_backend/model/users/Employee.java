@@ -74,7 +74,7 @@ public class Employee {
      * Este campo não pode ser nulo.
      */
     @Column(nullable = false)
-    private Integer avatar;
+    private Long avatar;
 
     @OneToOne
     @JoinColumn(name = "id_user", nullable = false)

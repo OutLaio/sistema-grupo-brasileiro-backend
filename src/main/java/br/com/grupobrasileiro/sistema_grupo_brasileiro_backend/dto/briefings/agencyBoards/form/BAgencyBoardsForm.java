@@ -25,6 +25,6 @@ public record BAgencyBoardsForm(
         @JsonAlias({"other_routes"})
         List<OtherRoutesForm> otherRoutes,
 
-        List<Route> routes
+        List<RoutesForm> routes
 ) {
 }
