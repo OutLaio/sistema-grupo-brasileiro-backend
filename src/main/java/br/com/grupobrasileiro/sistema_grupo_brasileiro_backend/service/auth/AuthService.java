@@ -1,8 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.auth;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.auth.form.LoginForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.auth.form.RecoveryPasswordForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.auth.form.ResetPasswordForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.LoginForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.RecoveryPasswordForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.ResetPasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.email.PasswordRequest;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.InvalidTokenException;

@@ -1,6 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.auth.form.PasswordForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.PasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.IncorrectPasswordException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.form.UserFormMapper;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.form.UserForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EmailUniqueViolationException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;

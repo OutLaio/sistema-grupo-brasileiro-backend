@@ -1,6 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.user;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.auth.form.PasswordForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.PasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

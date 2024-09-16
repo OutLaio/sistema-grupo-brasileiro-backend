@@ -1,6 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.form;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.form.UserForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form.UserForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;

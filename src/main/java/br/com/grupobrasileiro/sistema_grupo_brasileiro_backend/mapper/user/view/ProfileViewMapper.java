@@ -1,6 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.profile.view.ProfileView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.profile.view.ProfileView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
 

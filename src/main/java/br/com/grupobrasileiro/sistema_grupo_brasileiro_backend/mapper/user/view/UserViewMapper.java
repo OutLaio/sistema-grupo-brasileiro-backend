@@ -1,6 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.view.UserView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.UserView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
