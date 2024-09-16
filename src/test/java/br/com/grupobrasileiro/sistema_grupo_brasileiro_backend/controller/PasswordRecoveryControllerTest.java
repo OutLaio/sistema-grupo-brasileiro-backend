@@ -9,7 +9,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.Te
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.EmailService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.email.EmailService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

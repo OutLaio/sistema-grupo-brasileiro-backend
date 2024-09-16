@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.view;
 
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view.UserViewMapper;
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.view.UserView;
@@ -8,7 +9,6 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.User;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class UserViewMapperTest {
 

@@ -2,8 +2,6 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model;
 
 import com.github.javafaker.Faker;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.RoleEnum;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
