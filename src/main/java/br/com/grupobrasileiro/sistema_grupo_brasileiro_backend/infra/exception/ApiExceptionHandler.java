@@ -21,6 +21,7 @@ public class ApiExceptionHandler {
         @ExceptionHandler(BadCredentialsException.class)
         public ResponseEntity<ErrorMessage> handleBadCredentialsException(BadCredentialsException ex,
                         HttpServletRequest request) {
+        	log.warn("Falha de autenticação: {}", ex.getMessage());
                 return ResponseEntity
                                 .status(HttpStatus.BAD_REQUEST)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -31,6 +32,7 @@ public class ApiExceptionHandler {
         @ExceptionHandler(InvalidTokenException.class)
         public ResponseEntity<ErrorMessage> handleInvalidTokenException(InvalidTokenException ex,
                         HttpServletRequest request) {
+        	log.warn("Token inválido: {}", ex.getMessage());
                 return ResponseEntity
                                 .status(HttpStatus.BAD_REQUEST)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -40,6 +42,7 @@ public class ApiExceptionHandler {
         @ExceptionHandler(HttpMessageNotReadableException.class)
         public ResponseEntity<ErrorMessage> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex,
                         HttpServletRequest request) {
+        	log.warn("Mensagem HTTP não legível: {}", ex.getMessage());
                 return ResponseEntity
                                 .status(HttpStatus.BAD_REQUEST)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -50,6 +53,7 @@ public class ApiExceptionHandler {
         @ExceptionHandler(NullPointerException.class)
         public ResponseEntity<ErrorMessage> handleNullPointerException(NullPointerException ex,
                         HttpServletRequest request) {
+        	log.error("NullPointerException: {}", ex.getMessage());
                 return ResponseEntity
                                 .status(HttpStatus.BAD_REQUEST)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +63,7 @@ public class ApiExceptionHandler {
 
         @ExceptionHandler({ Exception.class, RuntimeException.class, Throwable.class })
         public ResponseEntity<ErrorMessage> handleException(Exception ex, HttpServletRequest request) {
-                log.error("Unexpected error: ", ex);
+        	log.error("Erro inesperado: ", ex);
                 return ResponseEntity
                                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -70,7 +74,7 @@ public class ApiExceptionHandler {
         @ExceptionHandler(EntityNotFoundException.class)
         private ResponseEntity<ErrorMessage> handleEntityNotFoundException(EntityNotFoundException ex,
                         HttpServletRequest request) {
-                log.error("Api Error - " + ex);
+        	log.error("Entidade não encontrada: {}", ex.getMessage());
                 return ResponseEntity
                                 .status(HttpStatus.NOT_FOUND)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -81,7 +85,7 @@ public class ApiExceptionHandler {
         public ResponseEntity<ErrorMessage> handleUniqueViolationException(EmailUniqueViolationException ex,
                         HttpServletRequest request) {
 
-                log.error("Api Error - " + ex);
+            log.error("E-mail unique violation - " + ex);
                 return ResponseEntity
                                 .status(HttpStatus.CONFLICT)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -92,7 +96,7 @@ public class ApiExceptionHandler {
         public ResponseEntity<ErrorMessage> handleUserIsNotActiveException(UserIsNotActiveException ex,
                         HttpServletRequest request) {
 
-                log.error("Api Error - " + ex);
+                log.error("User is not active - " + ex);
                 return ResponseEntity
                                 .status(HttpStatus.FORBIDDEN)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -125,6 +129,7 @@ public class ApiExceptionHandler {
         @ExceptionHandler(InvalidRoleException.class)
         public ResponseEntity<ErrorMessage> handleNullPointerException(InvalidRoleException ex,
                         HttpServletRequest request) {
+        	log.error("Invalid role - " + ex);
                 return ResponseEntity
                                 .status(HttpStatus.BAD_REQUEST)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -135,6 +140,7 @@ public class ApiExceptionHandler {
         @ExceptionHandler(UnauthorizedException.class)
         public ResponseEntity<ErrorMessage> handleNullPointerException(UnauthorizedException ex,
         		HttpServletRequest request) {
+        	log.error("NullPointerException - " + ex);
         	return ResponseEntity
         			.status(HttpStatus.BAD_REQUEST)
         			.contentType(MediaType.APPLICATION_JSON)
@@ -145,7 +151,7 @@ public class ApiExceptionHandler {
         @ExceptionHandler(ProjectNotFoundException .class)
         public ResponseEntity<ErrorMessage> handleProjectNotFoundException(ProjectNotFoundException ex,
                         HttpServletRequest request) {
-                log.error("Api Error - " + ex);
+                log.error("Project not found - " + ex);
                 return ResponseEntity
                                 .status(HttpStatus.NOT_FOUND)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -156,7 +162,7 @@ public class ApiExceptionHandler {
         public ResponseEntity<ErrorMessage> handleCollaboratorAlreadyAssignedException(CollaboratorAlreadyAssignedException ex,
                         HttpServletRequest request) {
 
-                log.error("Api Error - " + ex);
+                log.error("Collaborator already assigned - " + ex);
                 return ResponseEntity
                                 .status(HttpStatus.CONFLICT)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -167,7 +173,7 @@ public class ApiExceptionHandler {
         public ResponseEntity<ErrorMessage> handleCompanyAlreadyExistsException(CompanyAlreadyExistsException ex,
                         HttpServletRequest request) {
 
-                log.error("Api Error - " + ex);
+                log.error("Company already exists - " + ex);
                 return ResponseEntity
                                 .status(HttpStatus.CONFLICT)
                                 .contentType(MediaType.APPLICATION_JSON)
