@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("EmailService Tests")
 class EmailServiceTest {
 
     @Mock
