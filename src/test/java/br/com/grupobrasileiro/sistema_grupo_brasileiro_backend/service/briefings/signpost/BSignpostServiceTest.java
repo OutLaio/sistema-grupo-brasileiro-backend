@@ -37,7 +37,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Br
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.singpost.MaterialRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.singpost.SignpostRepository;
 
-@DisplayName(" BSignpostService Tests")
+@DisplayName("BSignpostService Tests")
 class BSignpostServiceTest {
 
     @Mock

@@ -46,7 +46,7 @@ public class BriefingService {
         Measurement measurement = measurementFormMapper.map(briefingForm.measurement());
         measurement.setBriefing(briefing);
 
-        Set<CompaniesBriefing> companies = briefing.getCompanies() != null ? briefingForm.companies().stream().map(
+        Set<CompaniesBriefing> companies =(briefingForm.companies() != null) ? briefingForm.companies().stream().map(
                 company -> {
                     CompaniesBriefing companyBriefing = companiesBriefingFormMapper.map(company);
                     companyBriefing.setBriefing(briefing);
