@@ -34,7 +34,7 @@ public class BriefingService {
     private MeasurementRepository measurementRepository;
     private CompaniesBriefingRepository companiesBriefingRepository;
     private CompaniesBriefingFormMapper companiesBriefingFormMapper;
-
+    
 
     public Briefing register(BriefingForm briefingForm, Project project) {
         BriefingType briefingType = briefingTypeRepository.findById(briefingForm.idBriefingType())
@@ -61,6 +61,5 @@ public class BriefingService {
         companiesBriefingRepository.saveAll(companies);
         return briefing;
     }
-
 
 }
