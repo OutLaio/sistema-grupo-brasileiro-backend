@@ -1,9 +1,10 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.view.EmployeeSimpleView;
+import org.springframework.stereotype.Component;
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
-import org.springframework.stereotype.Component;
 
 @Component
 public class EmployeeSimpleViewMapper implements Mapper<Employee, EmployeeSimpleView> {

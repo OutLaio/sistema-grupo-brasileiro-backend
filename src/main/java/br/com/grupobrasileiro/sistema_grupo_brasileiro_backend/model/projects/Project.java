@@ -1,13 +1,19 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.projects.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Representa um projeto no sistema.

@@ -1,10 +1,11 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.projects.view.BriefingView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 
 @Component
 public class BriefingViewMapper implements Mapper<Briefing, BriefingView> {

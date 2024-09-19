@@ -41,10 +41,8 @@ public class AuthService {
 
     public void requestRecoveryPassword(RecoveryPasswordForm form){
         User user = (User) userRepository.findByEmail(form.email()).orElseThrow(
-                () -> new EntityNotFoundException("User not found for email: " + form.email())
+                () -> new EntityNotFoundException("Usuário não encontrado com e-mail: " + form.email())
         );
-
-        if (user == null) throw new EntityNotFoundException("Usuário não encontrado com e-mail: " + form.email());
 
         String token = tokenService.generateToken(user);
         String resetUrl = "http://localhost:4200/resetPassword?token=" + token;
