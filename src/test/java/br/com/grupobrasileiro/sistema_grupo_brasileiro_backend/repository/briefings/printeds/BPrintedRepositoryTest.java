@@ -15,12 +15,13 @@ import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.printeds.BPrinted;
 
+
 @DataJpaTest
 public class BPrintedRepositoryTest {
 
     @Autowired
-    private BPrintedRepository bPrintedRepository;
-
+    private BPrintedRepository bPrintedRepository; 
+    
     private Faker faker;
 
     @BeforeEach
@@ -38,7 +39,7 @@ public class BPrintedRepositoryTest {
     void testSaveAndFindBPrinted() {
         // Arrange
         BPrinted bPrinted = new BPrinted();
-        bPrinted.setName(faker.lorem().word());
+        bPrinted.setPaperType(faker.lorem().word()); 
 
         // Act
         BPrinted savedPrinted = bPrintedRepository.save(bPrinted);
@@ -46,6 +47,6 @@ public class BPrintedRepositoryTest {
         // Assert
         Optional<BPrinted> foundPrinted = bPrintedRepository.findById(savedPrinted.getId());
         assertThat(foundPrinted).isPresent();
-        assertThat(foundPrinted.get().getName()).isEqualTo(bPrinted.getName());
+        assertThat(foundPrinted.get().getPaperType()).isEqualTo(bPrinted.getPaperType()); // Verificando paperType
     }
 }

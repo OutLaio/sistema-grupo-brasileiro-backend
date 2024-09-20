@@ -1,17 +1,15 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.form;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.form.OtherRoutesForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.OtherRoute;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Testa a classe OtherRouteFormMapper.
@@ -32,6 +30,7 @@ public class OtherRouteFormMapperTest {
      * Verifica se o método mapeia corretamente um OtherRoutesForm para um OtherRoute.
      */
     @Test
+    @DisplayName("Deve mapear OtherRoutesForm para OtherRoute corretamente")
     void deveMapearOtherRoutesFormParaOtherRoute() {
         // Gerando dados de teste utilizando o Java Faker
         String companyFalsa = faker.company().name();
@@ -62,6 +61,7 @@ public class OtherRouteFormMapperTest {
      * Verifica se o método mapeia corretamente um OtherRoutesForm com valores nulos para um OtherRoute.
      */
     @Test
+    @DisplayName("Deve mapear OtherRoutesForm com valores nulos para OtherRoute corretamente")
     void deveMapearOtherRoutesFormComValoresNulosParaOtherRoute() {
         // Cria uma instância de OtherRoutesForm com valores nulos
         OtherRoutesForm form = new OtherRoutesForm(
@@ -87,6 +87,7 @@ public class OtherRouteFormMapperTest {
      * Verifica se o método mapeia corretamente um OtherRoutesForm com dados variados para um OtherRoute.
      */
     @Test
+    @DisplayName("Deve mapear OtherRoutesForm com dados variados para OtherRoute corretamente")
     void deveMapearOtherRoutesFormComDadosVariadosParaOtherRoute() {
         // Gerando dados de teste variados utilizando o Java Faker
         String companyFalsa = faker.company().name();
@@ -110,5 +111,31 @@ public class OtherRouteFormMapperTest {
         assertThat(result.getCompany()).isEqualTo(companyFalsa);
         assertThat(result.getCity()).isEqualTo(cityFalsa);
         assertThat(result.getType()).isEqualTo(typeFalso);
+    }
+
+    /**
+     * Testa o método map da classe OtherRouteFormMapper com dados em branco.
+     * Verifica se o método lida corretamente com campos em branco no OtherRoutesForm.
+     */
+    @Test
+    @DisplayName("Deve lidar com campos em branco no OtherRoutesForm")
+    void NoOtherRoutesForm() {
+        // Criando o OtherRoutesForm com campos em branco
+        OtherRoutesForm form = new OtherRoutesForm(
+                "", // company
+                "", // city
+                ""  // type
+        );
+
+        // Mapeia o OtherRoutesForm para OtherRoute
+        OtherRoute result = mapper.map(form);
+
+        // Verifica se o resultado não é nulo
+        assertThat(result).isNotNull();
+
+        // Verifica se os campos foram mapeados corretamente
+        assertThat(result.getCompany()).isEqualTo("");
+        assertThat(result.getCity()).isEqualTo("");
+        assertThat(result.getType()).isEqualTo("");
     }
 }

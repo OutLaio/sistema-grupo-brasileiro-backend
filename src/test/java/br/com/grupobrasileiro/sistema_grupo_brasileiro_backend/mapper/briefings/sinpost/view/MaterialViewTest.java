@@ -1,10 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.sinpost.view;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.MaterialView;
@@ -16,8 +14,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Testa a classe MaterialViewMapper.
- * Verifica o mapeamento de Material para MaterialView.
+ * Tests the MaterialViewMapper class.
+ * Verifies the mapping from Material to MaterialView.
  */
 public class MaterialViewTest {
 
@@ -31,26 +29,110 @@ public class MaterialViewTest {
     }
 
     /**
-     * Testa o mapeamento de Material para MaterialView.
-     * Verifica se os valores são corretamente mapeados.
+     * Tests the mapping of Material to MaterialView.
+     * Verifies that the values are correctly mapped.
      */
     @Test
-    @DisplayName("Deve mapear corretamente Material para MaterialView")
+    @DisplayName("Should correctly map Material to MaterialView")
     void shouldMapMaterialToMaterialView() {
-        // Cria dados fictícios usando o Faker
+        // Create fake data using Faker
         Long id = faker.number().randomNumber();
         String description = faker.lorem().sentence();
 
-        // Cria um objeto Material fictício
+        // Create a fake Material object
         Material material = new Material();
         material.setId(id);
         material.setDescription(description);
 
-        // Executa o método a ser testado
+        // Execute the method to be tested
         MaterialView result = materialViewMapper.map(material);
 
-        // Verifica se o resultado foi mapeado corretamente
+        // Verify that the result was mapped correctly
         assertThat(result.id()).isEqualTo(id);
         assertThat(result.description()).isEqualTo(description);
+    }
+
+    /**
+     * Tests the mapping with null values in the Material object.
+     * Verifies that the mapper handles null values correctly.
+     */
+    @Test
+    @DisplayName("Should handle null values in Material correctly")
+    void shouldHandleNullValuesInMaterial() {
+        // Create a Material object with null values
+        Material material = new Material();
+        material.setId(null);
+        material.setDescription(null);
+
+        // Execute the method to be tested
+        MaterialView result = materialViewMapper.map(material);
+
+        // Verify that the result was mapped correctly
+        assertThat(result.id()).isNull();
+        assertThat(result.description()).isNull();
+    }
+
+    /**
+     * Tests the mapping of Material with an empty description.
+     * Verifies that the empty description is handled correctly.
+     */
+    @Test
+    @DisplayName("Should map Material with empty description correctly")
+    void shouldMapMaterialWithEmptyDescription() {
+        // Create a Material object with an empty description
+        Material material = new Material();
+        material.setId(faker.number().randomNumber());
+        material.setDescription("");
+
+        // Execute the method to be tested
+        MaterialView result = materialViewMapper.map(material);
+
+        // Verify that the result was mapped correctly
+        assertThat(result.id()).isNotNull();
+        assertThat(result.description()).isEqualTo("");
+    }
+
+    /**
+     * Tests the mapping of a Material object with only an ID.
+     * Verifies that the description is null in the result.
+     */
+    @Test
+    @DisplayName("Should map Material with only ID correctly")
+    void shouldMapMaterialWithOnlyId() {
+        // Create a Material object with only ID
+        Long id = faker.number().randomNumber();
+        Material material = new Material();
+        material.setId(id);
+        material.setDescription(null);
+
+        // Execute the method to be tested
+        MaterialView result = materialViewMapper.map(material);
+
+        // Verify that the result was mapped correctly
+        assertThat(result.id()).isEqualTo(id);
+        assertThat(result.description()).isNull();
+    }
+
+    /**
+     * Tests the mapping of multiple Material objects to verify consistent mapping.
+     * This can be useful to check if the mapper handles batch processing well.
+     */
+    @Test
+    @DisplayName("Should map multiple Materials to MaterialViews correctly")
+    void shouldMapMultipleMaterialsToMaterialViews() {
+        // Create an array of Material objects
+        Material[] materials = new Material[3];
+        for (int i = 0; i < materials.length; i++) {
+            materials[i] = new Material();
+            materials[i].setId(faker.number().randomNumber());
+            materials[i].setDescription(faker.lorem().sentence());
+        }
+
+        // Map each Material to MaterialView and verify
+        for (Material material : materials) {
+            MaterialView result = materialViewMapper.map(material);
+            assertThat(result.id()).isEqualTo(material.getId());
+            assertThat(result.description()).isEqualTo(material.getDescription());
+        }
     }
 }

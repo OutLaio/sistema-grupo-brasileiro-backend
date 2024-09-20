@@ -10,12 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.gifts.PrintingShirtType;
 
 @DataJpaTest
+@ActiveProfiles("test")  
 public class PrintingShirtTypeRepositoryTest {
 
     @Autowired
@@ -29,7 +31,7 @@ public class PrintingShirtTypeRepositoryTest {
     }
 
     /**
-     * Testa a persistência e recuperação de um PrintingShirtType.
+     * Testa a persistência e recuperação do PrintingShirtType no repositório.
      * Verifica se o objeto é salvo e pode ser recuperado corretamente.
      */
     @Test
@@ -38,7 +40,7 @@ public class PrintingShirtTypeRepositoryTest {
     void testSaveAndFindPrintingShirtType() {
         // Arrange
         PrintingShirtType shirtType = new PrintingShirtType();
-        shirtType.setType(faker.lorem().word());
+        shirtType.setDescription(faker.lorem().word()); 
 
         // Act
         PrintingShirtType savedType = printingShirtTypeRepository.save(shirtType);
@@ -46,6 +48,6 @@ public class PrintingShirtTypeRepositoryTest {
         // Assert
         Optional<PrintingShirtType> foundType = printingShirtTypeRepository.findById(savedType.getId());
         assertThat(foundType).isPresent();
-        assertThat(foundType.get().getType()).isEqualTo(shirtType.getType());
+        assertThat(foundType.get().getDescription()).isEqualTo(shirtType.getDescription());
     }
 }

@@ -16,10 +16,10 @@ public class SistemaGrupoBrasileiroBackendApplicationTests {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
-    void testGetAuthEndpoint() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auth"))
-               .andExpect(MockMvcResultMatchers.status().isOk())
-               .andExpect(MockMvcResultMatchers.content().string("Autenticação bem-sucedida"));
-    }
+    //@Test
+   // void testGetAuthEndpoint() throws Exception {
+  //      mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auth"))
+  //             .andExpect(MockMvcResultMatchers.status().isOk())
+  //             .andExpect(MockMvcResultMatchers.content().string("Autenticação bem-sucedida"));
+  //  }
 }

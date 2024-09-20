@@ -2,6 +2,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.brief
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.Material;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingRepository;
 
 @DataJpaTest
 public class SignpostRepositoryTest {
@@ -18,34 +22,51 @@ public class SignpostRepositoryTest {
     @Autowired
     private SignpostRepository signpostRepository;
 
+    @Autowired
+    private MaterialRepository materialRepository;
+
+    @Autowired
+    private BriefingRepository briefingRepository;
+
+    private Material material;
+    private Briefing briefing;
     private BSignpost signpost;
 
     @BeforeEach
     void setUp() {
-        // Configurando um signpost fictício para teste
+        // Criar e salvar um Material fictício
+        material = new Material();
+        material.setDescription("Material de Teste");
+        material = materialRepository.save(material); // Persistir o Material
+
+        // Criar e salvar um Briefing fictício
+        briefing = new Briefing();
+        briefing.setDetailedDescription("Descrição detalhada de teste");
+        briefing.setStartTime(LocalDateTime.now());
+        briefing.setExpectedTime(LocalDateTime.now().plusDays(7));
+        briefing = briefingRepository.save(briefing); // Persistir o Briefing
+
+        // Criar e configurar um BSignpost fictício
         signpost = new BSignpost();
-        signpost.setLocation("Main St & 1st Ave");
-        signpost.setDescription("Directional signpost indicating various locations.");
+        signpost.setMaterial(material);
+        signpost.setBriefing(briefing);
+        signpost.setBoardLocation("Locação de Exemplo");
+        signpost.setSector("Setor de Exemplo");
     }
 
-    /**
-     * Testa a persistência e recuperação de um Signpost.
-     */
     @Test
-    @Rollback(false) // Coloque false se você não quer que o banco de dados reverta após o teste
+    @Rollback(false)
     void testSaveAndFindSignpost() {
         // Act
         BSignpost savedSignpost = signpostRepository.save(signpost);
-        
+
         // Assert
         Optional<BSignpost> foundSignpost = signpostRepository.findById(savedSignpost.getId());
         assertThat(foundSignpost).isPresent();
-        assertThat(foundSignpost.get().getLocation()).isEqualTo("Main St & 1st Ave");
+        assertThat(foundSignpost.get().getBoardLocation()).isEqualTo("Locação de Exemplo");
+        assertThat(foundSignpost.get().getSector()).isEqualTo("Setor de Exemplo");
     }
 
-    /**
-     * Testa a exclusão de um Signpost.
-     */
     @Test
     @Rollback(false)
     void testDeleteSignpost() {
