@@ -60,4 +60,5 @@ public class SignpostController {
         URI uri = uriBuilder.path("/api/v1/signposts/{id}").buildAndExpand(signpostRegisterView.bSignpostView().id()).toUri();
         return ResponseEntity.created(uri).body(signpostRegisterView);
     }
+    
 }

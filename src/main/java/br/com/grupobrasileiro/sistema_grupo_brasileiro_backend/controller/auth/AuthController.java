@@ -35,7 +35,7 @@ public class AuthController {
     private final UserService userService;
     private final EmployeeService employeeService;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
-    private AuthService authService;
+    private final AuthService authService;
 
     /**
      * Endpoint para registrar um novo colaborador.
