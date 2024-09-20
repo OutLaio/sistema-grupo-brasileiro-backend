@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/v1/dialogs")
 @RequiredArgsConstructor
+@Tag(name = "Dialog Box", description = "Managing briefing-related dialog messages")
 public class DialogBoxController {
 
     private final DialogBoxService dialogBoxService;

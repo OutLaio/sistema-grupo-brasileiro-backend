@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Authentication management and access control")
 public class AuthController {
 
     private final UserService userService;
@@ -48,13 +50,13 @@ public class AuthController {
      * @param form {@link UserDetailsForm} contendo os dados de usuário e funcionário.
      * @return uma resposta HTTP 201 Created com a visão do colaborador ou um erro apropriado.
      */
-    @Operation(summary = "Registrar um novo colaborador", description = "Cria um novo usuário e um colaborador associado.")
+    @Operation(summary = "Register a new employee", description = "Create a new user and associated collaborator.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Usuário registrado com sucesso", 
+        @ApiResponse(responseCode = "201", description = "User registered successfully", 
             content = @Content(schema = @Schema(implementation = EmployeeView.class))),
-        @ApiResponse(responseCode = "400", description = "Dados de validação inválidos", 
+        @ApiResponse(responseCode = "400", description = "Invalid validation data", 
             content = @Content),
-        @ApiResponse(responseCode = "409", description = "E-mail já existente", 
+        @ApiResponse(responseCode = "409", description = "Email already exists", 
             content = @Content)
     })
     @PostMapping("/register")
@@ -70,11 +72,11 @@ public class AuthController {
      * @param form {@link LoginForm} contendo as credenciais de login.
      * @return token JWT para autenticação do usuário.
      */
-    @Operation(summary = "Realizar login", description = "Autentica o usuário com as credenciais fornecidas.")
+    @Operation(summary = "Login", description = "Authenticates the user with the provided credentials.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Login bem-sucedido", 
+        @ApiResponse(responseCode = "200", description = "Login successful", 
             content = @Content(schema = @Schema(implementation = TokenView.class))),
-        @ApiResponse(responseCode = "401", description = "Credenciais inválidas", 
+        @ApiResponse(responseCode = "401", description = "Invalid credentials", 
             content = @Content)
     })
     @PostMapping("/login")
@@ -91,10 +93,10 @@ public class AuthController {
      * @param form {@link RecoveryPasswordForm} contendo o e-mail do usuário.
      * @return mensagem de confirmação de envio do e-mail de redefinição.
      */
-    @Operation(summary = "Solicitar redefinição de senha", description = "Envia um e-mail para redefinição de senha.")
+    @Operation(summary = "Request password reset", description = "Sends a password reset email.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "E-mail de redefinição enviado com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+        @ApiResponse(responseCode = "200", description = "Reset email sent successfully"),
+        @ApiResponse(responseCode = "404", description = "User not found")
     })
     @PostMapping("/requestReset")
     public ResponseEntity<String> requestReset(@Valid @RequestBody RecoveryPasswordForm form) {
@@ -110,10 +112,10 @@ public class AuthController {
      * @param form {@link ResetPasswordForm} contendo os novos dados de senha.
      * @return mensagem de sucesso após a alteração da senha.
      */
-    @Operation(summary = "Redefinir senha", description = "Atualiza a senha do usuário com base nas credenciais fornecidas.")
+    @Operation(summary = "Reset Password", description = "Updates the user's password based on the provided credentials")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Senha alterada com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Token inválido ou dados inválidos")
+        @ApiResponse(responseCode = "200", description = "Password changed successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid token or invalid data")
     })
     @PostMapping("/resetPassword")
     public ResponseEntity<String> resetPassword(@RequestBody @Valid ResetPasswordForm form) {
