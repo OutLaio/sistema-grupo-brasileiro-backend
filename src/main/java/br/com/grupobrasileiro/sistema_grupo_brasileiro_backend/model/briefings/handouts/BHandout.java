@@ -9,7 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
-@Entity(name = "Tb_BHandouts")
+@Entity
+@Table(name = "\"Tb_BHandouts\"")
 public class BHandout {
 
     @Id

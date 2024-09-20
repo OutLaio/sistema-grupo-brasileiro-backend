@@ -16,9 +16,9 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "Tb_BAgencyBoards")
+@Entity
 @EqualsAndHashCode
-@ToString(of = "id") // Generates toString method including only the 'id' field
+@Table(name = "\"Tb_BAgencyBoards\"")
 public class BAgencyBoard {
 
     @Id
