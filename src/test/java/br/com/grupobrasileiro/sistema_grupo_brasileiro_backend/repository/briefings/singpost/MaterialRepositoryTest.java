@@ -22,27 +22,24 @@ public class MaterialRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Configurando um material fictício para teste
+        // Inicializando um objeto Material para os testes
         material = new Material();
-        material.setName("Madeira");
         material.setDescription("Material usado para construções.");
-        material.setPrice(100.50);
     }
 
     /**
      * Testa a persistência e recuperação de um Material.
      */
     @Test
-    @Rollback(false) // Coloque false se você não quer que o banco de dados reverta após o teste
+    @Rollback(false) 
     void testSaveAndFindMaterial() {
-        // Act
+        // Act: Salva o material no banco de dados
         Material savedMaterial = materialRepository.save(material);
         
-        // Assert
+        // Assert: Verifica se o material foi salvo e pode ser recuperado corretamente
         Optional<Material> foundMaterial = materialRepository.findById(savedMaterial.getId());
         assertThat(foundMaterial).isPresent();
-        assertThat(foundMaterial.get().getName()).isEqualTo("Madeira");
-        assertThat(foundMaterial.get().getPrice()).isEqualTo(100.50);
+        assertThat(foundMaterial.get().getDescription()).isEqualTo("Material usado para construções.");
     }
 
     /**
@@ -51,11 +48,11 @@ public class MaterialRepositoryTest {
     @Test
     @Rollback(false)
     void testDeleteMaterial() {
-        // Act
+        // Act: Salva e depois deleta o material
         Material savedMaterial = materialRepository.save(material);
         materialRepository.delete(savedMaterial);
 
-        // Assert
+        // Assert: Verifica se o material foi deletado
         Optional<Material> foundMaterial = materialRepository.findById(savedMaterial.getId());
         assertThat(foundMaterial).isNotPresent();
     }
