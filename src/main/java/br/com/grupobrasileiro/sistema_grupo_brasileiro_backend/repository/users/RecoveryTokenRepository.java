@@ -8,5 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface RecoveryTokenRepository extends JpaRepository<RecoveryToken,Long> {
-    Optional<RecoveryToken> findByToken(String token);
+
+    Boolean existsByToken(String token);
 }

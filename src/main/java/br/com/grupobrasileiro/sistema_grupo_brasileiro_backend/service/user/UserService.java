@@ -10,6 +10,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProfileRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +22,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
 
+
+    @Autowired
 	private UserRepository userRepository;
+
+    @Autowired
     private UserFormMapper userFormMapper;
+
+    @Autowired
 	private ProfileRepository profileRepository;
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     /**
@@ -59,7 +67,7 @@ public class UserService {
      * @throws EntityNotFoundException Se o perfil associado ao usuário não for encontrado.
      */
     public User create(UserForm userForm) {
-        if (userRepository.findByEmail(userForm.email()).isPresent()) {
+        if (userRepository.findByEmail(userForm.email()) != null) {
             throw new EmailUniqueViolationException("Email já está em uso");
         }
         User user = userFormMapper.map(userForm);
