@@ -8,7 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id") // Generates equals and hashCode methods based on the 'id' field
 @ToString(of = "id") // Generates toString method including only the 'id' field
-@Entity(name = "Tb_OtherRoutes")
+@Entity
+@Table(name = "\"Tb_OtherRoutes\"")
 public class OtherRoute {
 
     @Id

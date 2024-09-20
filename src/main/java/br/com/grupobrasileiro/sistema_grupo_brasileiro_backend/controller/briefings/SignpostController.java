@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,8 +35,14 @@ import java.net.URI;
 @Tag(name = "Signpost", description = "API for managing signposts")
 public class SignpostController {
 
+
+    @Autowired
     private ProjectService projectService;
+
+    @Autowired
     private BriefingService briefingService;
+
+    @Autowired
     private BSignpostService signpostService;
 
     @PostMapping

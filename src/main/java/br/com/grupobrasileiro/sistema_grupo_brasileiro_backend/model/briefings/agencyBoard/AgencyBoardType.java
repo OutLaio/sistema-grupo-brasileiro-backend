@@ -8,7 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Entity(name = "Tb_AgencyBoardTypes")
+@Entity
+@Table(name = "\"Tb_AgencyBoardTypes\"")
 public class AgencyBoardType {
 
     /**
