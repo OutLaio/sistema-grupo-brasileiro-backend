@@ -1,7 +1,9 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.companiesBrienfing.form;
 
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -44,34 +46,62 @@ class CompaniesBriefingFormMapperTest {
 
     @BeforeEach
     void setUp() {
-        // Initializes Mockito mocks
         MockitoAnnotations.openMocks(this);
-
-        // Initializes Java Faker for generating fake data
         faker = new Faker();
-
-        // Creates a fake Company object with only id and name
         company = new Company(faker.number().randomNumber(), faker.company().name());
-
-        // Creates a fake CompaniesBriefingsForm object
         companiesBriefingsForm = new CompaniesBriefingsForm(company.getId());
     }
 
     @Test
     @DisplayName("Should map CompaniesBriefingsForm to CompaniesBriefing successfully")
     void shouldMapCompaniesBriefingsFormToCompaniesBriefing() {
-        // Mocks the repository response to return the fake Company
         when(companyRepository.findById(company.getId())).thenReturn(Optional.of(company));
 
-        // Calls the method to be tested
         CompaniesBriefing result = companiesBriefingFormMapper.map(companiesBriefingsForm);
 
-        // Asserts the result
         assertNotNull(result);
         assertEquals(company.getId(), result.getCompany().getId());
         assertEquals(company.getName(), result.getCompany().getName());
 
-        // Verifies that the repository's findById method was called correctly
         verify(companyRepository).findById(company.getId());
+    }
+
+    @Test
+    @DisplayName("Should throw exception when company is not found")
+    void shouldThrowExceptionWhenCompanyNotFound() {
+        when(companyRepository.findById(company.getId())).thenReturn(Optional.empty());
+
+        // Expecting an exception (you might want to define what exception your mapper throws)
+        assertThrows(RuntimeException.class, () -> companiesBriefingFormMapper.map(companiesBriefingsForm));
+    }
+
+    @Test
+    @DisplayName("Should handle CompaniesBriefingsForm with null companyId")
+    void shouldHandleCompaniesBriefingsFormWithNullCompanyId() {
+        companiesBriefingsForm = new CompaniesBriefingsForm(null); // Setting companyId to null
+
+        // Calling the method and expecting a null result
+        CompaniesBriefing result = companiesBriefingFormMapper.map(companiesBriefingsForm);
+
+        assertNotNull(result);
+        assertNull(result.getCompany()); // Assuming your mapper handles null companyId appropriately
+    }
+
+    @Test
+    @DisplayName("Should map CompaniesBriefingsForm with different companyId")
+    void shouldMapCompaniesBriefingsFormWithDifferentCompanyId() {
+        // Create a different fake company
+        Company anotherCompany = new Company(faker.number().randomNumber(), faker.company().name());
+        when(companyRepository.findById(anotherCompany.getId())).thenReturn(Optional.of(anotherCompany));
+
+        CompaniesBriefingsForm differentForm = new CompaniesBriefingsForm(anotherCompany.getId());
+
+        CompaniesBriefing result = companiesBriefingFormMapper.map(differentForm);
+
+        assertNotNull(result);
+        assertEquals(anotherCompany.getId(), result.getCompany().getId());
+        assertEquals(anotherCompany.getName(), result.getCompany().getName());
+
+        verify(companyRepository).findById(anotherCompany.getId());
     }
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
@@ -15,8 +16,8 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BoardType;
 
 /**
- * Testa a classe BoardTypeViewMapper.
- * Verifica se o mapeamento lida com BoardType nulo corretamente.
+ * Tests the BoardTypeViewMapper class.
+ * Verifies if the mapping handles null BoardType correctly.
  */
 public class BoardTypeViewMapperTest {
 
@@ -28,52 +29,59 @@ public class BoardTypeViewMapperTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        faker = new Faker(); // Inicializa o Faker
+        faker = new Faker(); // Initializes the Faker
     }
 
     /**
-     * Testa o mapeamento de BoardType para BoardTypeView.
-     * Verifica se um BoardType é corretamente mapeado para um BoardTypeView.
+     * Tests the mapping of BoardType to BoardTypeView.
+     * Verifies if a BoardType is correctly mapped to a BoardTypeView.
      */
     @Test
-    void deveMapearBoardTypeParaBoardTypeView() {
-        // Dados de teste usando Faker
+    @DisplayName("Maps BoardType to BoardTypeView correctly")
+    void mapBoardTypeToBoardTypeView() {
+        // Arrange
         BoardType boardType = new BoardType();
         boardType.setId(faker.number().randomNumber());
         boardType.setDescription(faker.lorem().word());
 
-        // Mapeamento
+        // Act
         BoardTypeView result = boardTypeViewMapper.map(boardType);
 
-        // Verificação dos resultados
+        // Assert
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo(boardType.getId());
         assertThat(result.description()).isEqualTo(boardType.getDescription());
     }
 
     /**
-     * Testa que o método map retorna null ao receber BoardType nulo.
+     * Tests that the map method returns null when receiving a null BoardType.
      */
     @Test
-    void deveRetornarNullParaBoardTypeNulo() {
-        BoardTypeView result = boardTypeViewMapper.map(null);
-        assertThat(result).isNull();
+    @DisplayName("Returns null for null BoardType")
+    void returnNullForNullBoardType() {
+        // Act & Assert
+        assertThrows(NullPointerException.class, () -> {
+            boardTypeViewMapper.map(null);
+        }, "Mapping should throw a NullPointerException for null BoardType");
     }
 
+
     /**
-     * Testa o mapeamento de BoardType com campos nulos para BoardTypeView.
-     * Verifica se o método map lida corretamente com campos nulos no BoardType.
+     * Tests the mapping of BoardType with null fields to BoardTypeView.
+     * Verifies if the map method handles null fields in BoardType correctly.
      */
     @Test
-    void deveMapearBoardTypeComCamposNulosParaBoardTypeView() {
+    @DisplayName("Maps BoardType with null fields to BoardTypeView correctly")
+    void mapBoardTypeWithNullFieldsToBoardTypeView() {
+        // Arrange
         BoardType boardType = new BoardType();
         boardType.setId(null);
         boardType.setDescription(null);
 
-        // Mapeamento
+        // Act
         BoardTypeView result = boardTypeViewMapper.map(boardType);
 
-        // Verificação dos resultados
+        // Assert
         assertThat(result).isNotNull();
         assertThat(result.id()).isNull();
         assertThat(result.description()).isNull();

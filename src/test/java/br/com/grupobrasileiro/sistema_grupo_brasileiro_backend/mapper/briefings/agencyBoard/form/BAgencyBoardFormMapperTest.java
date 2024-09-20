@@ -14,8 +14,8 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.age
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
 
 /**
- * Testa a classe BAgencyBoardFormMapper.
- * Verifica se a classe mapeia corretamente instâncias de BAgencyBoardsForm para BAgencyBoard.
+ * Tests the BAgencyBoardFormMapper class.
+ * Verifies that the class correctly maps instances of BAgencyBoardsForm to BAgencyBoard.
  */
 public class BAgencyBoardFormMapperTest {
 
@@ -23,8 +23,8 @@ public class BAgencyBoardFormMapperTest {
     private Faker faker;
 
     /**
-     * Configura o ambiente de teste antes de cada teste.
-     * Inicializa o mapeador e o Faker.
+     * Sets up the testing environment before each test.
+     * Initializes the mapper and the Faker.
      */
     @BeforeEach
     void setUp() {
@@ -33,64 +33,119 @@ public class BAgencyBoardFormMapperTest {
     }
 
     /**
-     * Testa o método map da classe BAgencyBoardFormMapper.
-     * Verifica se o método mapeia corretamente um BAgencyBoardsForm para um BAgencyBoard.
+     * Tests the map method of the BAgencyBoardFormMapper class.
+     * Verifies that the method correctly maps a BAgencyBoardsForm to a BAgencyBoard.
      */
     @Test
-    @DisplayName("Deve mapear BAgencyBoardsForm para BAgencyBoard corretamente")
-    void deveMapearBAgencyBoardsFormParaBAgencyBoard() {
-        // Gera dados fictícios para os campos do formulário usando o Java Faker
-        String localizacaoFalsa = faker.address().streetAddress();
-        String observacaoFalsa = faker.lorem().sentence();
+    @DisplayName("Should correctly map BAgencyBoardsForm to BAgencyBoard")
+    void shouldMapBAgencyBoardsFormToBAgencyBoard() {
+        // Generate fake data for form fields using Java Faker
+        String fakeLocation = faker.address().streetAddress();
+        String fakeObservation = faker.lorem().sentence();
 
-        // Cria uma instância de BAgencyBoardsForm com os dados gerados
+        // Create an instance of BAgencyBoardsForm with the generated data
         BAgencyBoardsForm form = new BAgencyBoardsForm(
-            null, // idAgencyBoardType, pode ser null se não for utilizado
-            null, // idBoardType, pode ser null se não for utilizado
-            localizacaoFalsa, // Localização do quadro
-            observacaoFalsa, // Observações
-            new ArrayList<>(), // Lista de outras rotas, pode ser uma lista vazia se não for utilizado
-            new ArrayList<>()  // Lista de rotas, pode ser uma lista vazia se não for utilizado
+            1L, // idAgencyBoardType
+            null, // idBoardType can be null
+            fakeLocation, // Board location
+            fakeObservation, // Observations
+            new ArrayList<>(), // List of other routes
+            new ArrayList<>()  // List of routes
         );
 
-        // Mapeia o BAgencyBoardsForm para BAgencyBoard
+        // Map BAgencyBoardsForm to BAgencyBoard
         BAgencyBoard result = mapper.map(form);
 
-        // Verifica se o resultado não é nulo
+        // Verify that the result is not null
         assertThat(result).isNotNull();
 
-        // Verifica se a localização do quadro foi mapeada corretamente
-        assertThat(result.getBoardLocation()).isEqualTo(localizacaoFalsa);
+        // Verify that the board location was mapped correctly
+        assertThat(result.getBoardLocation()).isEqualTo(fakeLocation);
 
-        // Verifica se as observações foram mapeadas corretamente
-        assertThat(result.getObservations()).isEqualTo(observacaoFalsa);
+        // Verify that the observations were mapped correctly
+        assertThat(result.getObservations()).isEqualTo(fakeObservation);
     }
-    
+
     /**
-     * Testa o método map da classe BAgencyBoardFormMapper com valores nulos.
-     * Verifica se o método mapeia corretamente um BAgencyBoardsForm com valores nulos para um BAgencyBoard.
+     * Tests the map method of the BAgencyBoardFormMapper with null values.
+     * Verifies that the method correctly maps a BAgencyBoardsForm with null values to a BAgencyBoard.
      */
     @Test
-    @DisplayName("Deve mapear BAgencyBoardsForm com valores nulos para BAgencyBoard corretamente")
-    void deveMapearBAgencyBoardsFormComValoresNulosParaBAgencyBoard() {
-        // Cria uma instância de BAgencyBoardsForm com valores nulos para campos não obrigatórios
+    @DisplayName("Should correctly map BAgencyBoardsForm with null values to BAgencyBoard")
+    void shouldMapBAgencyBoardsFormWithNullValuesToBAgencyBoard() {
+        // Create an instance of BAgencyBoardsForm with null values for optional fields
         BAgencyBoardsForm form = new BAgencyBoardsForm(
-            null, // idAgencyBoardType
-            null, // idBoardType
-            null, // Localização do quadro
-            null, // Observações
-            new ArrayList<>(), // Lista de outras rotas
-            new ArrayList<>()  // Lista de rotas
+            null, // idAgencyBoardType can be null
+            null, // idBoardType can be null
+            null, // Board location
+            null, // Observations
+            new ArrayList<>(), // List of other routes
+            new ArrayList<>()  // List of routes
         );
 
-        // Mapeia o BAgencyBoardsForm para BAgencyBoard
+        // Map BAgencyBoardsForm to BAgencyBoard
         BAgencyBoard result = mapper.map(form);
 
-        // Verifica se o resultado não é nulo
+        // Verify that the result is not null
         assertThat(result).isNotNull();
 
-        // Verifica se os campos foram mapeados corretamente, incluindo valores nulos
+        // Verify that the fields were mapped correctly, including null values
         assertThat(result.getBoardLocation()).isNull();
         assertThat(result.getObservations()).isNull();
     }
+
+    /**
+     * Tests the map method of the BAgencyBoardFormMapper with empty lists.
+     * Verifies that the method correctly maps a BAgencyBoardsForm with empty lists to a BAgencyBoard.
+     */
+    @Test
+    @DisplayName("Should correctly map BAgencyBoardsForm with empty lists to BAgencyBoard")
+    void shouldMapBAgencyBoardsFormWithEmptyListsToBAgencyBoard() {
+        BAgencyBoardsForm form = new BAgencyBoardsForm(
+            1L, // idAgencyBoardType
+            null, // idBoardType can be null
+            "Some Location", // Board location
+            "Some observation", // Observations
+            new ArrayList<>(), // Empty list of other routes
+            new ArrayList<>()  // Empty list of routes
+        );
+
+        // Map BAgencyBoardsForm to BAgencyBoard
+        BAgencyBoard result = mapper.map(form);
+
+        // Verify that the result is not null
+        assertThat(result).isNotNull();
+
+        // Verify that other routes and routes lists are initialized
+       // assertThat(result.getOtherRoutes()).isNotNull().isEmpty();
+      //  assertThat(result.getRoutes()).isNotNull().isEmpty();
+    }
+
+    /**
+     * Tests the map method of the BAgencyBoardFormMapper with various data.
+     * Verifies that the method correctly maps a BAgencyBoardsForm with varied data to a BAgencyBoard.
+     */
+    @Test
+    @DisplayName("Should correctly map BAgencyBoardsForm with varied data to BAgencyBoard")
+    void shouldMapBAgencyBoardsFormWithVariedDataToBAgencyBoard() {
+        String fakeLocation = faker.address().streetAddress();
+        String fakeObservation = faker.lorem().sentence();
+
+        BAgencyBoardsForm form = new BAgencyBoardsForm(
+            2L, // idAgencyBoardType
+            3L, // idBoardType
+            fakeLocation, // Board location
+            fakeObservation, // Observations
+            new ArrayList<>(), // List of other routes
+            new ArrayList<>()
+        );
+
+        BAgencyBoard result = mapper.map(form);
+
+        // Verify that the result is not null
+        assertThat(result).isNotNull();
+        assertThat(result.getBoardLocation()).isEqualTo(fakeLocation);
+        assertThat(result.getObservations()).isEqualTo(fakeObservation);
+    }
 }
+

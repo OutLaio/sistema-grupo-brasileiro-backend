@@ -14,12 +14,17 @@ import org.springframework.test.annotation.Rollback;
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.sticker.BSticker;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.sticker.StickerType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 
 @DataJpaTest
 public class BStickerRepositoryTest {
 
     @Autowired
     private BStickerRepository bStickerRepository;
+
+    @Autowired
+    private StickerTypeRepository stickerTypeRepository;
 
     private Faker faker;
 
@@ -28,17 +33,20 @@ public class BStickerRepositoryTest {
         faker = new Faker();
     }
 
-    /**
-     * Testa a persistência e recuperação de um BSticker.
-     * Verifica se o objeto é salvo e pode ser recuperado corretamente.
-     */
     @Test
     @Rollback(false)
     @DisplayName("Should save and find BSticker correctly")
     void testSaveAndFindBSticker() {
         // Arrange
+        StickerType stickerType = new StickerType(); 
+        stickerType.setDescription(faker.lorem().word());
+        stickerTypeRepository.save(stickerType);
+
         BSticker bSticker = new BSticker();
-        bSticker.setName(faker.lorem().word());
+        bSticker.setBriefing(new Briefing()); 
+        bSticker.setStickerType(stickerType);
+        bSticker.setSector(faker.lorem().word());
+        bSticker.setObservations(faker.lorem().sentence());
 
         // Act
         BSticker savedSticker = bStickerRepository.save(bSticker);
@@ -46,6 +54,17 @@ public class BStickerRepositoryTest {
         // Assert
         Optional<BSticker> foundSticker = bStickerRepository.findById(savedSticker.getId());
         assertThat(foundSticker).isPresent();
-        assertThat(foundSticker.get().getName()).isEqualTo(bSticker.getName());
+        assertThat(foundSticker.get().getSector()).isEqualTo(bSticker.getSector());
+        assertThat(foundSticker.get().getObservations()).isEqualTo(bSticker.getObservations());
+    }
+
+    @Test
+    @DisplayName("Should not find BSticker with nonexistent ID")
+    void testNotFoundBSticker() {
+        // Act
+        Optional<BSticker> foundSticker = bStickerRepository.findById(-1L); // ID inexistente
+
+        // Assert
+        assertThat(foundSticker).isNotPresent();
     }
 }
