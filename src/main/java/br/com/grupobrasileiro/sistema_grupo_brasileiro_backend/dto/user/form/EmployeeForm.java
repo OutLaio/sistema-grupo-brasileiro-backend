@@ -59,6 +59,6 @@ public record EmployeeForm(
          * Este campo é obrigatório.
          */
         @NotNull(message = "The employee avatar cannot be null")
-        Integer avatar
+        Long avatar
 ) {
 }

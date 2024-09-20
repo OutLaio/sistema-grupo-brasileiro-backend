@@ -16,7 +16,8 @@ import java.util.Set;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Entity(name = "Tb_Employees")
+@Entity
+@Table(name = "\"Tb_Employees\"")
 public class Employee {
 
     /**

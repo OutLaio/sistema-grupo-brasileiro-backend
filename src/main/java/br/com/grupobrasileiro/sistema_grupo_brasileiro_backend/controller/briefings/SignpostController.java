@@ -31,7 +31,6 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api/v1/signposts")
 @SecurityRequirement(name = "bearer-key")
-@RequiredArgsConstructor
 @Tag(name = "Signpost", description = "API for managing signposts")
 public class SignpostController {
 

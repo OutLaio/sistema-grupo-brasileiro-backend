@@ -25,10 +25,11 @@ public class UserFormMapper implements Mapper<UserForm, User> {
 	 * */
     @Override
     public User map(UserForm i) {
+        Profile profile = profileRepository.findProfileById(i.profile());
 
-        Profile profile = profileRepository.findById(i.profile()).orElseThrow(
-                () -> new EntityNotFoundException("Profile with number " + i.profile() + " not found")
-        );
+        if(profile==null){
+            throw new EntityNotFoundException("Profile with number " + i.profile() + " not found");
+        }
 
         String password = passwordEncoder.encode(i.password());
 

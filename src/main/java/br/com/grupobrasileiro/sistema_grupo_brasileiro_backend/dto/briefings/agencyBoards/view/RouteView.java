@@ -1,11 +1,14 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view;
 
-import java.util.List;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.agencyBoards.view.CompanyCityView;
+
 
 public record RouteView(
         Long id,
-        CompanyView company,
-        List<CityView> cities,
+
+        CompanyCityView companyCityView,
+
+
         String type
 ) {
 }
