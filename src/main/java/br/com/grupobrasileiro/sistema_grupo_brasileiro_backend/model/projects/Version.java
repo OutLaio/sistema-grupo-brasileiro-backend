@@ -12,7 +12,7 @@ import lombok.*;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "Tb_Version")
+@Table(name = "\"Tb_Version\"")
 public class Version {
 
     /**
