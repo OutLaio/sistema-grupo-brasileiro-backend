@@ -9,7 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
-@Entity(name = "Tb_StationeryTypes")
+@Entity
+@Table(name = "\"Tb_StationeryTypes\"")
 public class StationeryType {
 
     @Id

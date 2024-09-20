@@ -16,7 +16,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Entity(name = "Tb_Projects")
+@Entity
+@Table(name = "\"Tb_Projects\"")
 public class Project {
 
     /**
