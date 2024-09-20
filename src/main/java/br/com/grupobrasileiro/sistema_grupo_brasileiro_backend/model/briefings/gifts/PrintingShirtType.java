@@ -9,7 +9,8 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
-@Entity(name = "Tb_PrintingShirtTypes")
+@Entity
+@Table(name = "\"Tb_PrintingShirtTypes\"")
 public class PrintingShirtType {
 
     @Id

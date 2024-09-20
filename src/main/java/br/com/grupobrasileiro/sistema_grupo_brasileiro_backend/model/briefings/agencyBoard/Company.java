@@ -11,7 +11,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Entity(name = "Tb_Companies")
+@Entity
+@Table(name = "\"Tb_Companies\"")
 public class Company {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

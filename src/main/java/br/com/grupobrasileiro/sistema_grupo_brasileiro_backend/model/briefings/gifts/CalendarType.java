@@ -8,7 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
-@Entity(name = "Tb_CalendarTypes")
+@Entity
+@Table(name = "\"Tb_CalendarTypes\"")
 public class CalendarType {
 
     @Id

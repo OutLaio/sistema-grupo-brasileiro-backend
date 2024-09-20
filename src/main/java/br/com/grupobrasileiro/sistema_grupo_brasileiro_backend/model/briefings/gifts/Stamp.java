@@ -8,7 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
-@Entity(name = "Tb_Stamps")
+@Entity
+@Table(name = "\"Tb_Stamps\"")
 public class Stamp {
 
     @Id
