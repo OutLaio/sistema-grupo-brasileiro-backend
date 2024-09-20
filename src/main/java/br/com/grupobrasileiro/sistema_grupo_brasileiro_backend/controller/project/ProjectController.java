@@ -39,14 +39,14 @@ public class ProjectController {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping("/approve/supervisor")
+    @PutMapping("/approve/supervisor")
     @Transactional
     public ResponseEntity<?> supervisorApprove(@RequestBody @Valid ApproveForm form){
         versionService.supervisorApprove(form);
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping("/approve/client")
+    @PutMapping("/approve/client")
     @Transactional
     public ResponseEntity<?> clientApprove(@RequestBody @Valid ApproveForm form){
         versionService.clientApprove(form);

@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
+import java.time.Instant;
+
 /**
  * Representa um token desabilitado.
  */
@@ -33,4 +35,8 @@ public class RecoveryToken {
     @Column(nullable = false)
     private String token;
 
+
+    public RecoveryToken(String token) {
+        this.token = token;
+    }
 }
