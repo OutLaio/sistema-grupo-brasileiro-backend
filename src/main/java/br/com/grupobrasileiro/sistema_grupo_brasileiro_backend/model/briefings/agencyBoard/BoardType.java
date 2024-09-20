@@ -10,7 +10,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Entity(name = "Tb_BoardTypes")
+@Entity
+@Table(name = "\"Tb_BoardTypes\"")
 public class BoardType {
 
 	@Id

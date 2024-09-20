@@ -11,7 +11,8 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
-@Entity(name = "Tb_BGifts")
+@Entity
+@Table(name = "\"Tb_BGifts\"")
 public class BGift {
 
     @Id
