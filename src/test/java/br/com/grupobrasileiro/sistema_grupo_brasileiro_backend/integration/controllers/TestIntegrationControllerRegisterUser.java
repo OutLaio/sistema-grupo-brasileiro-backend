@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.integration.controllers;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.config.TestConfig;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.LoginForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form.EmployeeForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form.UserDetailsForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form.UserForm;
@@ -21,6 +22,7 @@ import org.springframework.test.context.TestPropertySource;
 import static io.restassured.RestAssured.given;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -49,7 +51,7 @@ public class TestIntegrationControllerRegisterUser extends AbstractIntegrationTe
                 .build();
 
         specificationLogin = new RequestSpecBuilder()
-                .setBasePath("/auth/login")
+                .setBasePath("/api/v1/auth/login")
                 .setPort(TestConfig.SERVE_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
@@ -79,7 +81,7 @@ public class TestIntegrationControllerRegisterUser extends AbstractIntegrationTe
         );
 
         UserForm userForm = new UserForm(
-                "email@email.com",
+                "email8@email.com",
                 "SecurePassword123*",
                 2L
         );
@@ -99,4 +101,26 @@ public class TestIntegrationControllerRegisterUser extends AbstractIntegrationTe
 
         assertNotNull(response);
     }
+
+    @Test
+    @DisplayName("Test login with registered user")
+    @Order(2)
+    void loginUser() {
+        // Use o mesmo email gerado no registro
+        LoginForm loginForm = new LoginForm("email8@email.com", "SecurePassword123*");
+
+        String response = given().spec(specificationLogin)
+                .contentType(TestConfig.CONTENT_TYPE_JSON)
+                .body(loginForm)
+                .when()
+                .post()
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        assertNotNull(response);
+    }
+
 }
