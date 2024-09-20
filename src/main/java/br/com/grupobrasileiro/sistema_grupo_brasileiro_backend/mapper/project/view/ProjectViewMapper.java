@@ -1,7 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.projects.view.ProjectView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.user.view.EmployeeSimpleView;
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view.EmployeeSimpleViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;

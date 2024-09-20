@@ -2,8 +2,8 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.
 
 
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.joao.signpost.form.BSignpostForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.joao.signpost.view.MaterialView;
+
+
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import jakarta.persistence.*;
 import lombok.*;

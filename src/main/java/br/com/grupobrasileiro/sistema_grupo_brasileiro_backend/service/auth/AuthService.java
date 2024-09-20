@@ -28,9 +28,10 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
 
     public String doLogin(LoginForm form){
-        User user = (User) userRepository.findByEmail(form.email()).orElseThrow(
-                () -> new EntityNotFoundException("User not found for email: " + form.email())
-        );
+        User user = userRepository.findByEmail(form.email());
+        if (user == null) {
+            throw new EntityNotFoundException("User not found for email: " + form.email());
+        }
         if (user.getDisabled()) throw new UserIsNotActiveException("Acesso negado.");
 
         var usernamePassword = new UsernamePasswordAuthenticationToken(form.email(), form.password());
@@ -40,9 +41,10 @@ public class AuthService {
     }
 
     public void requestRecoveryPassword(RecoveryPasswordForm form){
-        User user = (User) userRepository.findByEmail(form.email()).orElseThrow(
-                () -> new EntityNotFoundException("User not found for email: " + form.email())
-        );
+        User user = userRepository.findByEmail(form.email());
+        if (user == null) {
+            throw new EntityNotFoundException("User not found for email: " + form.email());
+        }
 
         if (user == null) throw new EntityNotFoundException("Usuário não encontrado com e-mail: " + form.email());
 
@@ -73,9 +75,10 @@ public class AuthService {
         String emailFromToken = tokenService.validateToken(form.token());
         if (emailFromToken == null) throw new InvalidTokenException("Token inválido ou expirado");
 
-        User user = (User)userRepository.findByEmail(emailFromToken).orElseThrow(
-                () -> new EntityNotFoundException("User not found for email: " + emailFromToken)
-        );
+        User user = userRepository.findByEmail(emailFromToken);
+        if (user == null) {
+            throw new EntityNotFoundException("User not found for email: " + emailFromToken);
+        }
 
         user.setPassword(passwordEncoder.encode(form.password()));
         userRepository.save(user);
