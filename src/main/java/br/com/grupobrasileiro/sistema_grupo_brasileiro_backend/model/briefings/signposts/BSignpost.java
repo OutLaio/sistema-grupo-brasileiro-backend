@@ -22,7 +22,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
-@Entity(name = "Tb_BSignposts")
+@Entity
+@Table(name = "\"Tb_BSignposts\"")
 public class BSignpost {
 
     @Id

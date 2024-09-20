@@ -39,7 +39,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Entity(name = "Tb_Briefings")
+@Entity
+@Table(name = "\"Tb_Briefings\"")
 public class Briefing {
 
     /**

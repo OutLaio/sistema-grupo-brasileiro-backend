@@ -15,7 +15,7 @@ import java.util.Set;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "\"Tb_Profiles\"") // Use aspas duplas para o nome da tabela
+@Table(name = "\"Tb_Profiles\"")
 public class Profile {
 
 	/**
