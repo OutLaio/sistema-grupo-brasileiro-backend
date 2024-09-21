@@ -8,4 +8,14 @@ public record RouteView(
         List<CityView> cities,
         String type
 ) {
+
+	public RouteView(Long routerViewId, CompanyCityView companyCityView, String routerViewType) {
+
+		this(
+		        routerViewId,
+		        companyCityView.company() != null ? companyCityView.company() : null,
+		        companyCityView.city() != null ? List.of(companyCityView.city()) : null,
+		        routerViewType
+		);
+	}
 }
