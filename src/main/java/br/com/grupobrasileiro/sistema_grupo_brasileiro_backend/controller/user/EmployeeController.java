@@ -5,6 +5,8 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.Emp
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,11 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/vi/employees")
+@RequestMapping("/api/v1/employees")
 @RequiredArgsConstructor
 public class EmployeeController {
 
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeController.class);
 
     /**
      * Endpoint para atualizar um Employee existente.
@@ -31,7 +34,9 @@ public class EmployeeController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<EmployeeView> updateEmployee(@PathVariable Long id, @Valid @RequestBody EmployeeForm form) {
+        LOGGER.info("Starting update for employeeId={}", id);
         EmployeeView updatedEmployee = employeeService.updateEmployee(id, form);
+        LOGGER.info("Successfully updated employeeId={}", id);
         return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee);
     }
 
@@ -50,8 +55,11 @@ public class EmployeeController {
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(value = "direction", defaultValue = "ASC") String direction,
             @RequestParam(value = "orderBy", defaultValue = "name") String orderBy) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.valueOf(direction),  orderBy);
+        LOGGER.info("Fetching all collaborators with pagination: page={}, size={}, direction={}, orderBy={}",
+                page, size, direction, orderBy);
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.valueOf(direction), orderBy);
         Page<EmployeeView> employeesPage = employeeService.getAllCollaborators(pageRequest);
+        LOGGER.info("Successfully retrieved page {} of collaborators", page);
         return ResponseEntity.ok(employeesPage);
     }
 
@@ -63,7 +71,9 @@ public class EmployeeController {
     @Cacheable(value = "idEmployee", key = "#id")
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeView> getEmployeeById(@PathVariable Long id) {
+        LOGGER.info("Fetching employee by id={}", id);
         EmployeeView employeeView = employeeService.getEmployeeById(id);
+        LOGGER.info("Successfully retrieved employeeId={}", id);
         return ResponseEntity.status(HttpStatus.OK).body(employeeView);
     }
 }

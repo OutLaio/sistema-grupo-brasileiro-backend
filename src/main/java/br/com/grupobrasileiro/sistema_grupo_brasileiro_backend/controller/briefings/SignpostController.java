@@ -1,5 +1,16 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
+import java.net.URI;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.RegisterSignpostForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.SignpostRegisterView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
@@ -18,15 +29,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-
 
 @RestController
 @RequestMapping("/api/v1/signposts")
@@ -35,9 +37,11 @@ import java.net.URI;
 @Tag(name = "Signpost", description = "API for managing signposts")
 public class SignpostController {
 
-    private ProjectService projectService;
-    private BriefingService briefingService;
-    private BSignpostService signpostService;
+    private final ProjectService projectService;
+    private final BriefingService briefingService;
+    private final BSignpostService signpostService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SignpostController.class);
 
     @PostMapping
     @Transactional
@@ -54,10 +58,21 @@ public class SignpostController {
             @Valid @RequestBody RegisterSignpostForm registerSignpost,
             UriComponentsBuilder uriBuilder
     ) {
+        LOGGER.info("Starting registration for signpost");
         Project project = projectService.register(registerSignpost.projectForm());
-        Briefing briefing = briefingService.register(registerSignpost.briefingForm(),project);
-        SignpostRegisterView signpostRegisterView = signpostService.register(registerSignpost.signpostForm(),briefing);
+        LOGGER.info("Project registered successfully: projectId={}", project.getId());
+
+        LOGGER.info("Registering briefing for projectId={}", project.getId());
+        Briefing briefing = briefingService.register(registerSignpost.briefingForm(), project);
+        LOGGER.info("Briefing registered successfully: briefingId={}", briefing.getId());
+
+        LOGGER.info("Registering signpost for briefingId={}", briefing.getId());
+        SignpostRegisterView signpostRegisterView = signpostService.register(registerSignpost.signpostForm(), briefing);
+        LOGGER.info("Signpost registered successfully: signpostId={}", signpostRegisterView.bSignpostView().id());
+
         URI uri = uriBuilder.path("/api/v1/signposts/{id}").buildAndExpand(signpostRegisterView.bSignpostView().id()).toUri();
+        LOGGER.info("URI for new signpost: {}", uri);
+
         return ResponseEntity.created(uri).body(signpostRegisterView);
     }
 }

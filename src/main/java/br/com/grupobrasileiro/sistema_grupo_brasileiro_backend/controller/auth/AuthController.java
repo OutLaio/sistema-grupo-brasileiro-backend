@@ -55,8 +55,10 @@ public class AuthController {
      */
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserDetailsForm form) {
+        LOGGER.info("Starting user registration for: email={}", form.userForm().email());
         User user = userService.create(form.userForm());
         EmployeeView employeeView = employeeService.addEmployee(form.employeeForm(), user);
+        LOGGER.info("User registration successful for: email={}", form.userForm().email());
         return ResponseEntity.status(HttpStatus.CREATED).body(employeeView);
     }
 
