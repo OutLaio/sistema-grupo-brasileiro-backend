@@ -1,2 +1,2 @@
-INSERT INTO Tb_Materials (description) VALUES ('ALUMÍNIO');
-INSERT INTO Tb_Materials (description) VALUES ('POLIETILENO');
+INSERT INTO "Tb_Materials" (description) VALUES ('ALUMÍNIO');
+INSERT INTO "Tb_Materials" (description) VALUES ('POLIETILENO');

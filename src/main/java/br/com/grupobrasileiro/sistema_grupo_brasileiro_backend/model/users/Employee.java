@@ -38,7 +38,7 @@ public class Employee {
      * O sobrenome do empregado.
      * Este campo não pode ser nulo.
      */
-    @Column(nullable = false)
+    @Column(name = "lastname", nullable = false)
     private String lastName;
 
     /**
@@ -74,7 +74,7 @@ public class Employee {
      * Este campo não pode ser nulo.
      */
     @Column(nullable = false)
-    private Integer avatar;
+    private Long avatar;
 
     @OneToOne
     @JoinColumn(name = "id_user", nullable = false)

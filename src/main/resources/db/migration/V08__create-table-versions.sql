@@ -1,4 +1,4 @@
-CREATE TABLE Tb_Version (
+CREATE TABLE "Tb_Version" (
     id BIGSERIAL PRIMARY KEY,
     id_briefing BIGINT NOT NULL,
     num_version INT NOT NULL,
@@ -6,5 +6,5 @@ CREATE TABLE Tb_Version (
     client_approve BOOLEAN,
     supervisor_approve BOOLEAN,
     feedback TEXT,
-    CONSTRAINT fk_briefing FOREIGN KEY (id_briefing) REFERENCES Tb_Briefings (id)
+    CONSTRAINT fk_briefing FOREIGN KEY (id_briefing) REFERENCES "Tb_Briefings" (id)
 );

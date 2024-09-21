@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.laio.projects.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,10 +30,9 @@ public class Project {
 
     /**
      * O colaborador associado ao projeto.
-     * Este campo não pode ser nulo.
      */
     @ManyToOne
-    @JoinColumn(name = "id_collaborator", nullable = false)
+    @JoinColumn(name = "id_collaborator")
     private Employee collaborator;
 
     /**
@@ -70,5 +70,8 @@ public class Project {
      */
     @OneToOne(mappedBy = "project")
     private Briefing briefing;
+
+
+
 
 }
