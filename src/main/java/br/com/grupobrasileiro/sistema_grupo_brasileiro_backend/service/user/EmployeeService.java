@@ -9,6 +9,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Emplo
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EmployeeService {
 
+    @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
     private EmployeeViewMapper employeeViewMapper;
+
+    @Autowired
     private EmployeeFormMapper employeeFormMapper;
 
     /**

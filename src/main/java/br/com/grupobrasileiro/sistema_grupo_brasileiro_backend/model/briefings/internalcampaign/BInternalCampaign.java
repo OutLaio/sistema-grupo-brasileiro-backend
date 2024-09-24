@@ -11,7 +11,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
-@Entity(name = "Tb_BInternalCampaigns")
+@Entity
+@Table(name = "\"Tb_BInternalCampaigns\"")
 public class BInternalCampaign {
 
     @Id

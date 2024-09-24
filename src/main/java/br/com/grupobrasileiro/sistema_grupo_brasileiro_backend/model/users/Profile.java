@@ -14,7 +14,8 @@ import java.util.Set;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Entity(name = "Tb_Profiles")
+@Entity
+@Table(name = "\"Tb_Profiles\"")
 public class Profile {
 
 	/**
