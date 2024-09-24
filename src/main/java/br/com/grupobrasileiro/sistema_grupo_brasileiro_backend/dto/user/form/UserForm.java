@@ -2,7 +2,6 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.annotations.Password;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.annotations.ValidEmail;
-import jakarta.validation.constraints.NotNull;
 
 
 /**
@@ -36,8 +35,7 @@ public record UserForm(
          * Código da função (role) do usuário.
          * Este campo é obrigatório e não pode ser nulo.
          */
-        @NotNull(message = "The user role is required")
-        Long profile
+        long profile
 
 ) {
 }

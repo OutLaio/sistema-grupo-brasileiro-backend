@@ -50,7 +50,7 @@ public class VersionService {
         Version version = versionRepository.findById(form.idVersion()).orElseThrow(
                 () -> new EntityNotFoundException("Could not find version " + form.idVersion() + " in repository")
         );
-
+        
         version.setClientApprove(form.approved());
 
         if (form.approved()) {
