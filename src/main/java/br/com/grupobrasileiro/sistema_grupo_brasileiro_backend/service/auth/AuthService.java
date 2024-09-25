@@ -3,11 +3,13 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.auth;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.LoginForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.RecoveryPasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.ResetPasswordForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.view.TokenView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.email.PasswordRequest;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.InvalidTokenException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.UserIsNotActiveException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view.UserViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.email.EmailService;
@@ -37,25 +39,28 @@ public class AuthService implements UserDetailsService {
     @Autowired
     private  PasswordEncoder passwordEncoder;
 
-    public String doLogin(LoginForm form, AuthenticationManager authenticationManager) {
-        User user = userRepository.findByEmail(form.email());
-        if (user == null) {
-            throw new EntityNotFoundException("User not found for email: " + form.email());
-        }
-        if (user.getDisabled()) throw new UserIsNotActiveException("Acesso negado.");
+    @Autowired
+    private UserViewMapper userViewMapper;
 
+    public TokenView doLogin(LoginForm form, AuthenticationManager authenticationManager) {
+        User user = userRepository.findByEmail(form.email()).orElseThrow(
+                () -> new EntityNotFoundException("User not found for email: " + form.email())
+        );
+        if (user.getDisabled()) throw new UserIsNotActiveException("Acesso negado.");
         var usernamePassword = new UsernamePasswordAuthenticationToken(form.email(), form.password());
         var auth = authenticationManager.authenticate(usernamePassword);
+        String token = tokenService.generateToken((User) auth.getPrincipal());
+        return tokenResponse(token, user);
+    }
 
-        // Retornar um token gerado
-        return tokenService.generateToken(user); // Supondo que você tenha um método para gerar o token
+    private TokenView tokenResponse(String token, User user){
+        return new TokenView(token, userViewMapper.map(user));
     }
 
     public void requestRecoveryPassword(RecoveryPasswordForm form) {
-        User user = userRepository.findByEmail(form.email());
-        if (user == null) {
-            throw new EntityNotFoundException("Usuário não encontrado com e-mail: " + form.email());
-        }
+        User user = userRepository.findByEmail(form.email()).orElseThrow(
+                () -> new EntityNotFoundException("User not found for email: " + form.email())
+        );
 
         String token = tokenService.generateToken(user);
         String resetUrl = "http://localhost:4200/resetPassword?token=" + token;
@@ -78,10 +83,9 @@ public class AuthService implements UserDetailsService {
             throw new InvalidTokenException("Token inválido ou expirado");
         }
 
-        User user = userRepository.findByEmail(emailFromToken);
-        if (user == null) {
-            throw new EntityNotFoundException("User not found for email: " + emailFromToken);
-        }
+        User user = userRepository.findByEmail(emailFromToken).orElseThrow(
+                () -> new EntityNotFoundException("User not found for email: " + emailFromToken)
+        );
 
         user.setPassword(passwordEncoder.encode(form.password()));
         userRepository.save(user);
@@ -90,10 +94,8 @@ public class AuthService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with email: " + email);
-        }
-        return user; // Certifique-se de que `User` implementa `UserDetails`
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new EntityNotFoundException("User not found for email: " + email)
+        );
     }
 }

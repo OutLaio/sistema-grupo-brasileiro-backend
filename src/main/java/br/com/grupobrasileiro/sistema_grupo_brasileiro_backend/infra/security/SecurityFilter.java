@@ -1,8 +1,11 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security;
 
-import java.io.IOException;
-
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,11 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -31,7 +30,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         if(token != null){
             var login = tokenService.validateToken(token);
-            UserDetails user = userRepository.findByEmail(login);
+            UserDetails user = userRepository.findByEmail(login).orElseThrow(
+                    () -> new EntityNotFoundException("User not found for email: " + login)
+            );
 
             if (user != null) {
                 var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());

@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,6 +44,7 @@ public class AuthController {
     private final EmployeeService employeeService;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
     private final AuthService authService;
+    private final AuthenticationManager authenticationManager;
 
     /**
      * Endpoint para registrar um novo colaborador.
@@ -82,9 +84,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginForm form){
         LOGGER.info("Iniciando solicitação de login para: email={}", form.email());
-        String token = authService.doLogin(form);
+        TokenView view = authService.doLogin(form, authenticationManager);
         LOGGER.info("Autenticação bem-sucedida para: email={}", form.email());
-        return ResponseEntity.ok(new TokenView(token));
+        return ResponseEntity.ok(view);
     }
 
     /**
