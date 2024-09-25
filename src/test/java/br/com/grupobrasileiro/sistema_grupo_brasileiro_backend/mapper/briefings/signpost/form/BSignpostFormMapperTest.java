@@ -1,4 +1,5 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.sinpost.form;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.form;
+
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,8 +40,8 @@ public class BSignpostFormMapperTest {
      * Verifica se as propriedades são mapeadas corretamente e se as propriedades não mapeadas são nulas.
      */
     @Test
-    @DisplayName("Should return a BSignpost with null properties when mapping a valid BSignpostForm")
-    void BSignpostQuandoMapearBSignpostFormValido() {
+    @DisplayName("Should map valid BSignpostForm to BSignpost")
+    void mapValidForm() {
         // Dados de teste
         BSignpostForm signpostForm = new BSignpostForm(
                 1L, // idMaterial (não usado no mapper, mas incluído para alinhamento com o DTO)
@@ -64,8 +65,8 @@ public class BSignpostFormMapperTest {
      * Testa que o método map lança uma exceção ao tentar mapear um BSignpostForm nulo.
      */
     @Test
-    @DisplayName("Should throw exception when mapping null BSignpostForm")
-    void shouldThrowExceptionWhenMappingNullBSignpostForm() {
+    @DisplayName("Should throw exception for null BSignpostForm")
+    void throwForNullForm() {
         // Act & Assert
         assertThrows(NullPointerException.class, () -> bSignpostFormMapper.map(null), 
             "Mapping should throw a NullPointerException for null BSignpostForm");
@@ -76,8 +77,8 @@ public class BSignpostFormMapperTest {
      * Verifica se os valores mapeados correspondem aos valores fornecidos, que devem ser nulos ou vazios.
      */
     @Test
-    @DisplayName("Should map BSignpostForm with empty fields correctly")
-    void shouldMapBSignpostFormWithEmptyFields() {
+    @DisplayName("Should map BSignpostForm with empty fields")
+    void mapEmptyFields() {
         // Dados de teste
         BSignpostForm signpostForm = new BSignpostForm(
                 1L,
@@ -99,8 +100,8 @@ public class BSignpostFormMapperTest {
      * Verifica se os valores mapeados correspondem a nulos quando os campos no DTO são nulos.
      */
     @Test
-    @DisplayName("Should map BSignpostForm with null fields correctly")
-    void shouldMapBSignpostFormWithNullFields() {
+    @DisplayName("Should map BSignpostForm with null fields")
+    void mapNullFields() {
         // Dados de teste
         BSignpostForm signpostForm = new BSignpostForm(
                 1L,
@@ -115,5 +116,48 @@ public class BSignpostFormMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.getBoardLocation()).isNull(); // Verifica se boardLocation está nulo
         assertThat(result.getSector()).isNull(); // Verifica se o sector está nulo
+    }
+
+    /**
+     * Testa o mapeamento de um BSignpostForm com ID nulo.
+     * Verifica se o ID do BSignpost permanece nulo.
+     */
+    @Test
+    @DisplayName("Should map BSignpostForm with null ID")
+    void mapFormWithNullId() {
+        BSignpostForm signpostForm = new BSignpostForm(
+                null, // ID nulo
+                "Localização da Placa",
+                "Setor"
+        );
+
+        // Mapeamento
+        BSignpost result = bSignpostFormMapper.map(signpostForm);
+
+        // Verificação dos resultados
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isNull(); // Verifica se o ID é nulo
+    }
+
+    /**
+     * Testa o mapeamento de um BSignpostForm com dados inconsistentes.
+     * Verifica como o mapper lida com dados inconsistentes.
+     */
+    @Test
+    @DisplayName("Should handle inconsistent data correctly")
+    void handleInconsistentData() {
+        BSignpostForm signpostForm = new BSignpostForm(
+                1L,
+                "Localização Inconsistente",
+                "Setor Inconsistente"
+        );
+
+        // Mapeamento
+        BSignpost result = bSignpostFormMapper.map(signpostForm);
+
+        // Verificação dos resultados
+        assertThat(result).isNotNull();
+        assertThat(result.getBoardLocation()).isEqualTo("Localização Inconsistente");
+        assertThat(result.getSector()).isEqualTo("Setor Inconsistente");
     }
 }

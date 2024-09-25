@@ -1,6 +1,5 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.companiesBrienfing.form;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -28,8 +27,8 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.companies.C
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.agencyBoard.CompanyRepository;
 
 /**
- * Tests the CompaniesBriefingFormMapper class.
- * Verifies the mapping from CompaniesBriefingsForm to CompaniesBriefing.
+ * Testa a classe CompaniesBriefingFormMapper.
+ * Verifica o mapeamento de CompaniesBriefingsForm para CompaniesBriefing.
  */
 @ExtendWith(MockitoExtension.class)
 class CompaniesBriefingFormMapperTest {
@@ -52,9 +51,13 @@ class CompaniesBriefingFormMapperTest {
         companiesBriefingsForm = new CompaniesBriefingsForm(company.getId());
     }
 
+    /**
+     * Testa o mapeamento bem-sucedido de CompaniesBriefingsForm para CompaniesBriefing.
+     * Verifica se a empresa correta é recuperada e mapeada.
+     */
     @Test
     @DisplayName("Should map CompaniesBriefingsForm to CompaniesBriefing successfully")
-    void shouldMapCompaniesBriefingsFormToCompaniesBriefing() {
+    void mapToBriefing() {
         when(companyRepository.findById(company.getId())).thenReturn(Optional.of(company));
 
         CompaniesBriefing result = companiesBriefingFormMapper.map(companiesBriefingsForm);
@@ -66,31 +69,43 @@ class CompaniesBriefingFormMapperTest {
         verify(companyRepository).findById(company.getId());
     }
 
+    /**
+     * Testa o cenário em que uma empresa não é encontrada no repositório.
+     * Espera-se que uma RuntimeException seja lançada.
+     */
     @Test
     @DisplayName("Should throw exception when company is not found")
-    void shouldThrowExceptionWhenCompanyNotFound() {
+    void throwExceptionWhenNotFound() {
         when(companyRepository.findById(company.getId())).thenReturn(Optional.empty());
 
-        // Expecting an exception (you might want to define what exception your mapper throws)
+        // Esperando uma exceção ao tentar mapear um CompaniesBriefingsForm com uma empresa inexistente
         assertThrows(RuntimeException.class, () -> companiesBriefingFormMapper.map(companiesBriefingsForm));
     }
 
+    /**
+     * Testa o manuseio de CompaniesBriefingsForm quando o companyId é nulo.
+     * Espera-se que o CompaniesBriefing mapeado contenha uma empresa nula.
+     */
     @Test
-    @DisplayName("Should handle CompaniesBriefingsForm with null companyId")
-    void shouldHandleCompaniesBriefingsFormWithNullCompanyId() {
-        companiesBriefingsForm = new CompaniesBriefingsForm(null); // Setting companyId to null
+    @DisplayName("Deve lançar exceção ao tratar CompaniesBriefingsForm com companyId nulo")
+    void handleNullCompanyId() {
+        companiesBriefingsForm = new CompaniesBriefingsForm(null); // Definindo companyId como nulo
 
-        // Calling the method and expecting a null result
-        CompaniesBriefing result = companiesBriefingFormMapper.map(companiesBriefingsForm);
-
-        assertNotNull(result);
-        assertNull(result.getCompany()); // Assuming your mapper handles null companyId appropriately
+        // Esperando que uma exceção seja lançada ao tentar mapear um form com companyId nulo
+        assertThrows(IllegalArgumentException.class, () -> {
+            companiesBriefingFormMapper.map(companiesBriefingsForm);
+        });
     }
 
+
+    /**
+     * Testa o mapeamento quando um companyId diferente é fornecido no CompaniesBriefingsForm.
+     * Verifica se a empresa correta é recuperada e mapeada.
+     */
     @Test
     @DisplayName("Should map CompaniesBriefingsForm with different companyId")
-    void shouldMapCompaniesBriefingsFormWithDifferentCompanyId() {
-        // Create a different fake company
+    void mapWithDifferentId() {
+        // Cria uma empresa falsa diferente
         Company anotherCompany = new Company(faker.number().randomNumber(), faker.company().name());
         when(companyRepository.findById(anotherCompany.getId())).thenReturn(Optional.of(anotherCompany));
 
@@ -104,4 +119,21 @@ class CompaniesBriefingFormMapperTest {
 
         verify(companyRepository).findById(anotherCompany.getId());
     }
+
+    /**
+     * Testa o mapeamento com um companyId inválido ou inexistente.
+     * Espera-se que uma RuntimeException seja lançada quando a empresa não é encontrada.
+     */
+    @Test
+    @DisplayName("Should throw exception for invalid companyId")
+    void throwExceptionForInvalidId() {
+        Long invalidCompanyId = 999L; // Supõe-se que este ID não exista
+        companiesBriefingsForm = new CompaniesBriefingsForm(invalidCompanyId);
+        
+        when(companyRepository.findById(invalidCompanyId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> companiesBriefingFormMapper.map(companiesBriefingsForm));
+    }
+
+    
 }

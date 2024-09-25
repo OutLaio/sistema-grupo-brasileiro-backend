@@ -1,55 +1,5 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
-
-import com.github.javafaker.Faker;
-
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.OtherRouteView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.OtherRouteViewMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.OtherRoute;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import com.github.javafaker.Faker;
-
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.OtherRouteView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.OtherRouteViewMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.OtherRoute;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import com.github.javafaker.Faker;
-
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.OtherRouteView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.OtherRouteViewMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.OtherRoute;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -62,7 +12,6 @@ import org.mockito.MockitoAnnotations;
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.OtherRouteView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.OtherRouteViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.OtherRoute;
 
 /**
@@ -88,7 +37,7 @@ public class OtherRouteViewMapperTest {
      */
     @Test
     @DisplayName("Should map OtherRoute to OtherRouteView correctly")
-    void deveMapearOtherRouteParaOtherRouteView() {
+    void mapOtherRoute() {
         // Dados de teste usando Faker
         OtherRoute otherRoute = new OtherRoute();
         otherRoute.setId(faker.number().randomNumber());
@@ -113,7 +62,7 @@ public class OtherRouteViewMapperTest {
      */
     @Test
     @DisplayName("Should throw NullPointerException when mapping null OtherRoute")
-    void deveLancarExcecaoParaOtherRouteNulo() {
+    void throwExceptionForNullOtherRoute() {
         assertThrows(NullPointerException.class, () -> {
             otherRouteViewMapper.map(null);
         });
@@ -125,7 +74,7 @@ public class OtherRouteViewMapperTest {
      */
     @Test
     @DisplayName("Should map OtherRoute with null fields to OtherRouteView with null fields")
-    void deveMapearOtherRouteComCamposNulosParaOtherRouteView() {
+    void mapOtherRouteWithNullFields() {
         OtherRoute otherRoute = new OtherRoute();
         otherRoute.setId(null);
         otherRoute.setCompany(null);
@@ -141,5 +90,77 @@ public class OtherRouteViewMapperTest {
         assertThat(result.company()).isNull();
         assertThat(result.cityView()).isNull();
         assertThat(result.type()).isNull();
+    }
+
+    /**
+     * Testa o mapeamento de OtherRoute com ID nulo e campos não nulos.
+     * Verifica se o método lida corretamente com ID nulo.
+     */
+    @Test
+    @DisplayName("Should map OtherRoute with null ID and non-null fields")
+    void mapOtherRouteWithNullId() {
+        OtherRoute otherRoute = new OtherRoute();
+        otherRoute.setId(null);
+        otherRoute.setCompany(faker.company().name());
+        otherRoute.setCity(faker.address().city());
+        otherRoute.setType(faker.lorem().word());
+
+        // Mapeamento
+        OtherRouteView result = otherRouteViewMapper.map(otherRoute);
+
+        // Verificação dos resultados
+        assertThat(result).isNotNull();
+        assertThat(result.id()).isNull();
+        assertThat(result.company()).isEqualTo(otherRoute.getCompany());
+        assertThat(result.cityView()).isEqualTo(otherRoute.getCity());
+        assertThat(result.type()).isEqualTo(otherRoute.getType());
+    }
+
+    /**
+     * Testa o mapeamento de OtherRoute com ID não nulo e campos nulos.
+     * Verifica se o método lida corretamente com campos nulos.
+     */
+    @Test
+    @DisplayName("Should map OtherRoute with non-null ID and null fields")
+    void mapOtherRouteWithNonNullIdAndNullFields() {
+        OtherRoute otherRoute = new OtherRoute();
+        otherRoute.setId(faker.number().randomNumber());
+        otherRoute.setCompany(null);
+        otherRoute.setCity(null);
+        otherRoute.setType(null);
+
+        // Mapeamento
+        OtherRouteView result = otherRouteViewMapper.map(otherRoute);
+
+        // Verificação dos resultados
+        assertThat(result).isNotNull();
+        assertThat(result.id()).isEqualTo(otherRoute.getId());
+        assertThat(result.company()).isNull();
+        assertThat(result.cityView()).isNull();
+        assertThat(result.type()).isNull();
+    }
+
+    /**
+     * Testa o mapeamento de OtherRoute com valores válidos, mas sem nome de empresa.
+     * Verifica se o método lida corretamente com nome de empresa vazio.
+     */
+    @Test
+    @DisplayName("Should map OtherRoute with valid ID and empty company name")
+    void mapOtherRouteWithEmptyCompany() {
+        OtherRoute otherRoute = new OtherRoute();
+        otherRoute.setId(faker.number().randomNumber());
+        otherRoute.setCompany("");
+        otherRoute.setCity(faker.address().city());
+        otherRoute.setType(faker.lorem().word());
+
+        // Mapeamento
+        OtherRouteView result = otherRouteViewMapper.map(otherRoute);
+
+        // Verificação dos resultados
+        assertThat(result).isNotNull();
+        assertThat(result.id()).isEqualTo(otherRoute.getId());
+        assertThat(result.company()).isEqualTo(""); // Verifica se o nome vazio é mapeado corretamente
+        assertThat(result.cityView()).isEqualTo(otherRoute.getCity());
+        assertThat(result.type()).isEqualTo(otherRoute.getType());
     }
 }

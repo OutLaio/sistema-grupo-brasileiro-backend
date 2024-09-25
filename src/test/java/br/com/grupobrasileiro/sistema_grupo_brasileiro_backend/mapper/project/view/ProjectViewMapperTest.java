@@ -42,7 +42,7 @@ class ProjectViewMapperTest {
      */
     @Test
     @DisplayName("Should map project successfully")
-    void shouldMapProjectSuccessfully() {
+    void mapProjectSuccessfully() {
         // Arrange
         User clientUser = new User();
         clientUser.setId(1L);
@@ -86,7 +86,7 @@ class ProjectViewMapperTest {
      */
     @Test
     @DisplayName("Should map project with null client")
-    void shouldMapProjectWithNullClient() {
+    void mapProjectWithNullClient() {
         // Arrange
         User collaboratorUser = new User();
         collaboratorUser.setId(2L);
@@ -120,7 +120,7 @@ class ProjectViewMapperTest {
      */
     @Test
     @DisplayName("Should map project with null collaborator")
-    void shouldMapProjectWithNullCollaborator() {
+    void mapProjectWithNullCollaborator() {
         // Arrange
         User clientUser = new User();
         clientUser.setId(1L);
@@ -154,7 +154,7 @@ class ProjectViewMapperTest {
      */
     @Test
     @DisplayName("Should map project with null client and collaborator")
-    void shouldMapProjectWithNullClientAndCollaborator() {
+    void mapProjectWithNullClientAndCollaborator() {
         // Arrange
         Project project = new Project(null, null, null, "Project Title", "ACTIVE", false, null);
 
@@ -188,4 +188,6 @@ class ProjectViewMapperTest {
         assertEquals("Valid Project", result.title(), "Project title should match");
         assertEquals("ACTIVE", result.status(), "Project status should match");
     }
+    
+    
 }

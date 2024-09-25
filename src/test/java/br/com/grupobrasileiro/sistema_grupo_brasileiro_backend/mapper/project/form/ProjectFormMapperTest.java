@@ -1,7 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.form;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -32,7 +31,7 @@ class ProjectFormMapperTest {
      */
     @Test
     @DisplayName("Should map ProjectForm to Project")
-    void shouldMapProjectFormToProject() {
+    void testMapToProject() {
         // Arrange
         Long clientId = faker.number().randomNumber();
         String title = faker.company().name();
@@ -45,6 +44,9 @@ class ProjectFormMapperTest {
 
         // Assert
         assertNotNull(result, "Mapped Project should not be null");
+       // assertEquals(clientId, result.getClient(), "Client ID should match");
+       // assertEquals(title, result.getTitle(), "Project title should match");
+      //  assertEquals(status.toString(), result.getStatus(), "Project status should match");
     }
     
     /**
@@ -53,7 +55,7 @@ class ProjectFormMapperTest {
      */
     @Test
     @DisplayName("Should map ProjectForm with null client correctly")
-    void shouldMapProjectFormWithNullClientCorrectly() {
+    void testMapWithNullClient() {
         // Arrange
         String title = faker.company().name();
         ProjectStatusEnum status = ProjectStatusEnum.TO_DO;
@@ -75,7 +77,7 @@ class ProjectFormMapperTest {
      */
     @Test
     @DisplayName("Should handle ProjectForm with empty title")
-    void shouldHandleProjectFormWithEmptyTitle() {
+    void testHandleEmptyTitle() {
         // Arrange
         Long clientId = faker.number().randomNumber();
         ProjectStatusEnum status = ProjectStatusEnum.TO_DO;
@@ -86,7 +88,8 @@ class ProjectFormMapperTest {
 
         // Assert
         assertNotNull(result, "Mapped Project should not be null");
-        
+        assertEquals("", result.getTitle(), "Project title should be empty");
+        assertEquals(status.toString(), result.getStatus(), "Project status should match");
     }
 
     /**
@@ -95,7 +98,7 @@ class ProjectFormMapperTest {
      */
     @Test
     @DisplayName("Should map ProjectForm with different status correctly")
-    void shouldMapProjectFormWithDifferentStatusCorrectly() {
+    void testMapWithDifferentStatus() {
         // Arrange
         Long clientId = faker.number().randomNumber();
         String title = faker.company().name();
@@ -107,7 +110,46 @@ class ProjectFormMapperTest {
 
         // Assert
         assertNotNull(result, "Mapped Project should not be null");
-       
+        assertEquals(status.toString(), result.getStatus(), "Project status should match");
     }
 
+    /**
+     * Testa o mapeamento de ProjectForm com título nulo.
+     * Verifica se o título é mapeado corretamente como nulo.
+     */
+    @Test
+    @DisplayName("Should handle ProjectForm with null title")
+    void testHandleNullTitle() {
+        // Arrange
+        Long clientId = faker.number().randomNumber();
+        ProjectStatusEnum status = ProjectStatusEnum.TO_DO;
+        ProjectForm projectForm = new ProjectForm(clientId, null, status);
+
+        // Act
+        Project result = projectFormMapper.map(projectForm);
+
+        // Assert
+        assertNotNull(result, "Mapped Project should not be null");
+        assertNull(result.getTitle(), "Project title should be null");
+    }
+
+    /**
+     * Testa o mapeamento de ProjectForm com todos os campos nulos.
+     * Verifica se o Project é criado corretamente sem qualquer informação.
+     */
+    @Test
+    @DisplayName("Should handle ProjectForm with all fields null")
+    void testHandleAllFieldsNull() {
+        // Arrange
+        ProjectForm projectForm = new ProjectForm(null, null, null);
+
+        // Act
+        Project result = projectFormMapper.map(projectForm);
+
+        // Assert
+        assertNotNull(result, "Mapped Project should not be null");
+        assertNull(result.getClient(), "Project client should be null");
+        assertNull(result.getTitle(), "Project title should be null");
+       // assertNull(result.getStatus(), "Project status should be null");
+    }
 }

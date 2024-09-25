@@ -12,7 +12,6 @@ import org.mockito.MockitoAnnotations;
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BoardTypeView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.BoardTypeViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BoardType;
 
 /**
@@ -65,7 +64,6 @@ public class BoardTypeViewMapperTest {
         }, "Mapping should throw a NullPointerException for null BoardType");
     }
 
-
     /**
      * Tests the mapping of BoardType with null fields to BoardTypeView.
      * Verifies if the map method handles null fields in BoardType correctly.
@@ -86,4 +84,47 @@ public class BoardTypeViewMapperTest {
         assertThat(result.id()).isNull();
         assertThat(result.description()).isNull();
     }
+
+    /**
+     * Tests the mapping of BoardType with only an ID.
+     * Verifies if the map method handles a BoardType with only an ID correctly.
+     */
+    @Test
+    @DisplayName("Maps BoardType with only ID to BoardTypeView correctly")
+    void mapBoardTypeWithOnlyId() {
+        // Arrange
+        BoardType boardType = new BoardType();
+        boardType.setId(faker.number().randomNumber());
+        boardType.setDescription(null); // No description
+
+        // Act
+        BoardTypeView result = boardTypeViewMapper.map(boardType);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.id()).isEqualTo(boardType.getId());
+        assertThat(result.description()).isNull();
+    }
+
+    /**
+     * Tests the mapping of BoardType with an empty description.
+     * Verifies if the map method handles an empty description correctly.
+     */
+    @Test
+    @DisplayName("Maps BoardType with empty description to BoardTypeView correctly")
+    void mapBoardTypeWithEmptyDescription() {
+        // Arrange
+        BoardType boardType = new BoardType();
+        boardType.setId(faker.number().randomNumber());
+        boardType.setDescription(""); // Empty description
+
+        // Act
+        BoardTypeView result = boardTypeViewMapper.map(boardType);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.id()).isEqualTo(boardType.getId());
+        assertThat(result.description()).isEqualTo(""); // Expecting empty string
+    }
 }
+

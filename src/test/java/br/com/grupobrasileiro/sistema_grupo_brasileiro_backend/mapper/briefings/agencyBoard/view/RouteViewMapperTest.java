@@ -13,12 +13,11 @@ import org.mockito.MockitoAnnotations;
 
 import com.github.javafaker.Faker;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Route;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.RouteView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CityView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyCityView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.CompanyCityViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.RouteView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Route;
 
 /**
  * Testa a classe RouteViewMapper.
@@ -46,7 +45,7 @@ public class RouteViewMapperTest {
      */
     @Test
     @DisplayName("Should map Route to RouteView correctly")
-    void deveMapearRouteParaRouteView() {
+    void mapRouteToView() {
         // Dados de teste usando Faker
         Route route = new Route();
         route.setId(faker.number().randomNumber());
@@ -87,7 +86,7 @@ public class RouteViewMapperTest {
      */
     @Test
     @DisplayName("Should return null when mapping null Route")
-    void deveRetornarNullParaRouteNulo() {
+    void returnNullForNullRoute() {
         RouteView result = routeViewMapper.map(null);
         assertThat(result).isNull();
     }
@@ -98,7 +97,7 @@ public class RouteViewMapperTest {
      */
     @Test
     @DisplayName("Should map Route with null CompanyCity to RouteView with null CompanyCity")
-    void deveMapearRouteComCompanyCityNuloParaRouteView() {
+    void mapRouteWithNullCompanyCity() {
         Route route = new Route();
         route.setId(faker.number().randomNumber());
         route.setType(faker.lorem().word());
@@ -114,5 +113,24 @@ public class RouteViewMapperTest {
         assertThat(result.cities()).isEmpty(); 
         assertThat(result.type()).isEqualTo(route.getType());
     }
-}
 
+    /**
+     * Testa o mapeamento de Route com ID nulo.
+     * Verifica se o método lida corretamente com ID nulo no Route.
+     */
+    @Test
+    @DisplayName("Should map Route with null ID")
+    void mapRouteWithNullId() {
+        Route route = new Route();
+        route.setId(null);
+        route.setType(faker.lorem().word());
+
+        // Mapeamento
+        RouteView result = routeViewMapper.map(route);
+
+        // Verificação dos resultados
+        assertThat(result).isNotNull();
+        assertThat(result.id()).isNull();
+        assertThat(result.type()).isEqualTo(route.getType());
+    }
+}
