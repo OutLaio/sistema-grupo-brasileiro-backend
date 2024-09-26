@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BAgencyBoardRegisterViewMapper implements Mapper<BAgencyBoard, BAgencyBoardDetailedView> {
+public class BAgencyBoardDetailedViewMapper implements Mapper<BAgencyBoard, BAgencyBoardDetailedView> {
 
     @Autowired
     private BAgencyBoardViewMapper bAgencyBoardViewMapper;

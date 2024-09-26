@@ -1,12 +1,12 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.agencyBoard;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardRegisterView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.form.BAgencyBoardsForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.form.BAgencyBoardFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.form.OtherRouteFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.form.RouteFormMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.BAgencyBoardRegisterViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.BAgencyBoardDetailedViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.*;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.agencyBoard.*;
@@ -49,9 +49,9 @@ public class BAgencyBoardService {
     private BAgencyBoardRepository bAgencyBoardRepository;
 
     @Autowired
-    private BAgencyBoardRegisterViewMapper bAgencyBoardRegisterViewMapper;
+    private BAgencyBoardDetailedViewMapper bAgencyBoardRegisterViewMapper;
 
-    public BAgencyBoardRegisterView register(BAgencyBoardsForm bAgencyBoardsForm, Briefing briefing) {
+    public BAgencyBoardDetailedView register(BAgencyBoardsForm bAgencyBoardsForm, Briefing briefing) {
         BAgencyBoard bAgencyBoard = bAgencyBoardFormMapper.map(bAgencyBoardsForm);
 
         AgencyBoardType agencyBoardType = agencyBoardTypeRepository.findById(bAgencyBoardsForm.idAgencyBoardType()).orElseThrow(

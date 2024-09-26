@@ -2,7 +2,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.integration.cont
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.config.TestConfig;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.RegisterSignpostForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.SignpostRegisterView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.BSignpostForm;
@@ -89,7 +89,7 @@ public class TestIntegrationControllerRegisterSignpost extends AbstractIntegrati
         RegisterSignpostForm registerSignpostForm = new RegisterSignpostForm(projectForm, briefingForm, signpostForm);
 
 
-        SignpostRegisterView response = given().spec(specificationRegisterSignpost)
+        BSignpostDetailedView response = given().spec(specificationRegisterSignpost)
                 .contentType(TestConfig.CONTENT_TYPE_JSON)
                 .body(registerSignpostForm)
                 .when()
@@ -97,7 +97,7 @@ public class TestIntegrationControllerRegisterSignpost extends AbstractIntegrati
                 .then()
                 .statusCode(201)
                 .extract()
-                .as(SignpostRegisterView.class);
+                .as(BSignpostDetailedView.class);
 
         assertNotNull(response);
         assertEquals(signpostForm.boardLocation(), response.bSignpostView().boardLocation());

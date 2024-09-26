@@ -1,8 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.view;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.SignpostRegisterView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;
@@ -15,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BSignpostRegisterViewMapper implements Mapper<BSignpost, SignpostRegisterView> {
+public class BSignpostDetailedViewMapper implements Mapper<BSignpost, BSignpostDetailedView> {
 
     @Autowired
     private BSignpostViewMapper bSignpostViewMapper;
@@ -27,7 +26,7 @@ public class BSignpostRegisterViewMapper implements Mapper<BSignpost, SignpostRe
     private BriefingViewMapper briefingViewMapper;
 
     @Override
-    public SignpostRegisterView map(BSignpost bSignpost) {
+    public BSignpostDetailedView map(BSignpost bSignpost) {
         Briefing briefing = bSignpost.getBriefing();
         Project project = briefing != null ? briefing.getProject() : null;
 
@@ -35,7 +34,7 @@ public class BSignpostRegisterViewMapper implements Mapper<BSignpost, SignpostRe
         ProjectView projectView = project != null ? projectViewMapper.map(project) : null;
         BriefingView briefingView = briefing != null ? briefingViewMapper.map(briefing) : null;
 
-        return new SignpostRegisterView(
+        return new BSignpostDetailedView(
                 bSignpostView,
                 projectView,
                 briefingView

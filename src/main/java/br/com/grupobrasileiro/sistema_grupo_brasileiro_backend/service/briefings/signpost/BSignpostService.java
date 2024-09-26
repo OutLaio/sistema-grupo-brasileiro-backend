@@ -1,9 +1,9 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.signpost;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.BSignpostForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.SignpostRegisterView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.form.BSignpostFormMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.view.BSignpostRegisterViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.view.BSignpostDetailedViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.Material;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
@@ -22,9 +22,9 @@ public class BSignpostService {
     private SignpostRepository signpostRepository;
     private MaterialRepository materialRepository;
     private BSignpostFormMapper bSignpostFormMapper;
-    private BSignpostRegisterViewMapper bSignpostRegisterViewMapper;
+    private BSignpostDetailedViewMapper bSignpostRegisterViewMapper;
 
-    public SignpostRegisterView register(BSignpostForm bSignpostForm, Briefing briefing) {
+    public BSignpostDetailedView register(BSignpostForm bSignpostForm, Briefing briefing) {
         Material material = materialRepository.getReferenceById(bSignpostForm.idMaterial());
         BSignpost bSignpost = bSignpostFormMapper.map(bSignpostForm);
         bSignpost.setBriefing(briefing);

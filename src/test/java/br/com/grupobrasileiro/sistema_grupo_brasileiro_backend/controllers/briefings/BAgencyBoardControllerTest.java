@@ -3,7 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controllers.brie
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings.BAgencyBoardController;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.form.BAgencyBoardsForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.form.RegisterAgencyBoard;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardRegisterView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
@@ -67,7 +67,7 @@ class BAgencyBoardControllerTest {
 
         Project mockProject = new Project(); // Crie e preencha o mock conforme necessário
         Briefing mockBriefing = new Briefing(); // Crie e preencha o mock conforme necessário
-        BAgencyBoardRegisterView mockView = new BAgencyBoardRegisterView(
+        BAgencyBoardDetailedView mockView = new BAgencyBoardDetailedView(
                 new BAgencyBoardView(1L, null, null, null, null, faker.address().fullAddress(), faker.lorem().sentence()), 
                 new ProjectView(mockProject.getId(), mockProject.getTitle(), mockProject.getStatus(), null, null),
                 new BriefingView(mockBriefing.getId(), null, LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), faker.lorem().sentence())
@@ -80,7 +80,7 @@ class BAgencyBoardControllerTest {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
 
         // Act
-        ResponseEntity<BAgencyBoardRegisterView> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
+        ResponseEntity<BAgencyBoardDetailedView> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
 
         // Assert
         assertEquals(201, response.getStatusCodeValue());

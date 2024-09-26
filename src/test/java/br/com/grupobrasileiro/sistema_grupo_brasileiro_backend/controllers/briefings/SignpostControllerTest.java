@@ -3,8 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controllers.brie
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings.SignpostController;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.RegisterSignpostForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.MaterialView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.SignpostRegisterView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
@@ -24,7 +23,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 
@@ -68,7 +66,7 @@ class SignpostControllerTest {
 
         Project mockProject = new Project(); // Crie e preencha o mock conforme necessário
         Briefing mockBriefing = new Briefing(); // Crie e preencha o mock conforme necessário
-        SignpostRegisterView mockView = new SignpostRegisterView(
+        BSignpostDetailedView mockView = new BSignpostDetailedView(
                 new BSignpostView(1L, null, faker.lorem().sentence(), faker.lorem().sentence()), // Crie e preencha conforme necessário
                 new ProjectView(mockProject.getId(), mockProject.getTitle(), mockProject.getStatus(), null, null),
                 new BriefingView(mockBriefing.getId(), null, LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), faker.lorem().sentence())
@@ -81,7 +79,7 @@ class SignpostControllerTest {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
 
         // Act
-        ResponseEntity<SignpostRegisterView> response = signpostController.registerSignpost(registerSignpost, uriBuilder);
+        ResponseEntity<BSignpostDetailedView> response = signpostController.registerSignpost(registerSignpost, uriBuilder);
 
         // Assert
         assertEquals(201, response.getStatusCodeValue());
@@ -101,7 +99,7 @@ class SignpostControllerTest {
 
         Project mockProject = new Project();
         Briefing mockBriefing = new Briefing();
-        SignpostRegisterView mockView = new SignpostRegisterView(
+        BSignpostDetailedView mockView = new BSignpostDetailedView(
                 new BSignpostView(1L, null, faker.lorem().sentence(), faker.lorem().sentence()),
                 new ProjectView(mockProject.getId(), mockProject.getTitle(), mockProject.getStatus(), null, null),
                 new BriefingView(mockBriefing.getId(), null, LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), faker.lorem().sentence())
