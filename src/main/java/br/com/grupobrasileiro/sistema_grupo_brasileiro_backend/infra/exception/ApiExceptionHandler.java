@@ -221,4 +221,18 @@ public class ApiExceptionHandler {
                         .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "500", description = "File storage error")
+    })
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<ErrorMessage> handleFileStorageException(FileStorageException ex,
+                    HttpServletRequest request) {
+        log.error("Api Error - " + ex.getMessage(), ex);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.INTERNAL_SERVER_ERROR,
+                                "Internal server error: " + ex.getMessage()));
+    }
+
 }
