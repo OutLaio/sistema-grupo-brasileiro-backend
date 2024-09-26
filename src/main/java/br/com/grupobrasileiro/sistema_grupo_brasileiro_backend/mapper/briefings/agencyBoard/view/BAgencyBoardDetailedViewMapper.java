@@ -1,6 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardRegisterView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BAgencyBoardRegisterViewMapper implements Mapper<BAgencyBoard, BAgencyBoardRegisterView> {
+public class BAgencyBoardRegisterViewMapper implements Mapper<BAgencyBoard, BAgencyBoardDetailedView> {
 
     @Autowired
     private BAgencyBoardViewMapper bAgencyBoardViewMapper;
@@ -27,7 +27,7 @@ public class BAgencyBoardRegisterViewMapper implements Mapper<BAgencyBoard, BAge
     private BriefingViewMapper briefingViewMapper;
 
     @Override
-    public BAgencyBoardRegisterView map(BAgencyBoard bAgencyBoard) {
+    public BAgencyBoardDetailedView map(BAgencyBoard bAgencyBoard) {
 
 
         Briefing briefing = bAgencyBoard.getBriefing();
@@ -38,7 +38,7 @@ public class BAgencyBoardRegisterViewMapper implements Mapper<BAgencyBoard, BAge
         ProjectView projectView = project != null ? projectViewMapper.map(project) : null;
         BriefingView briefingView = briefing != null ? briefingViewMapper.map(briefing) : null;
 
-        return new BAgencyBoardRegisterView(
+        return new BAgencyBoardDetailedView(
                 bAgencyBoardView,
                 projectView,
                 briefingView
