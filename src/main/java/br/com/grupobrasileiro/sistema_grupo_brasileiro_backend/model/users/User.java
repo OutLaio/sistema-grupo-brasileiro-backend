@@ -1,8 +1,13 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Representa um usuário do sistema.
@@ -12,8 +17,9 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Entity(name = "Tb_Users")
-public class User {
+@Entity
+@Table(name = "\"Tb_Users\"") // Use aspas duplas para o nome da tabela
+public class User implements UserDetails {
 
   /**
    * O identificador único do usuário.
@@ -54,4 +60,38 @@ public class User {
 
   @OneToOne(mappedBy = "user")
   private Employee employee;
+
+  /**
+   * Retorna as permissões associadas ao perfil do usuário.
+   * No caso, retorna o `description` do `Profile` como a permissão.
+   */
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return Collections.singletonList(new SimpleGrantedAuthority(profile.getDescription()));
+  }
+
+  @Override
+  public String getUsername() {
+    return this.email;
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return !this.disabled;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return !this.disabled;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return !this.disabled;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return !this.disabled;
+  }
 }

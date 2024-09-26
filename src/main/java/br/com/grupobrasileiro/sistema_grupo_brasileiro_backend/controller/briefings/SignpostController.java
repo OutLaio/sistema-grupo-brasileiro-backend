@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,12 +32,17 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api/v1/signposts")
 @SecurityRequirement(name = "bearer-key")
-@RequiredArgsConstructor
 @Tag(name = "Signpost", description = "API for managing signposts")
 public class SignpostController {
 
+
+    @Autowired
     private ProjectService projectService;
+
+    @Autowired
     private BriefingService briefingService;
+
+    @Autowired
     private BSignpostService signpostService;
 
     @PostMapping
@@ -60,4 +66,5 @@ public class SignpostController {
         URI uri = uriBuilder.path("/api/v1/signposts/{id}").buildAndExpand(signpostRegisterView.bSignpostView().id()).toUri();
         return ResponseEntity.created(uri).body(signpostRegisterView);
     }
+    
 }

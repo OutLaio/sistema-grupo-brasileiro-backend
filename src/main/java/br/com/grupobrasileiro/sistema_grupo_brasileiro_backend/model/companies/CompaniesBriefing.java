@@ -12,7 +12,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-@Entity(name = "Tb_CompaniesBriefing")
+@Entity
+@Table(name = "\"Tb_CompaniesBriefing\"")
 public class CompaniesBriefing {
 
     /**

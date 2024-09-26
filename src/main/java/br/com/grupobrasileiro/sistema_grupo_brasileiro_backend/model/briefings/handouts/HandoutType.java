@@ -9,7 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
-@Entity(name = "Tb_HandoutTypes")
+@Entity
+@Table(name = "\"Tb_HandoutTypes\"")
 public class HandoutType {
 
 

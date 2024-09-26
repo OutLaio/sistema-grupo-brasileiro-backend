@@ -1,10 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 /**
@@ -15,7 +11,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Entity(name = "Tb_BriefingTypes")
+@Entity
+@Table(name = "\"Tb_BriefingTypes\"")
 public class BriefingType {
 
     /**

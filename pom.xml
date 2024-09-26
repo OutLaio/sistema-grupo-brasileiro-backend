@@ -165,6 +165,14 @@
 		</dependency>
 		
 		<dependency>
+		    <groupId>org.mockito</groupId>
+		    <artifactId>mockito-inline</artifactId>
+		    <version>5.0.0</version>
+		    <scope>test</scope>
+		</dependency>
+
+		
+		<dependency>
 		    <groupId>org.springdoc</groupId>
 		    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 		    <version>2.3.0</version>
@@ -194,8 +202,20 @@
 	        <scope>provided</scope>
 	    </dependency>
 
-		
-		</dependencies>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+
+	</dependencies>
 
 		<build>
 			

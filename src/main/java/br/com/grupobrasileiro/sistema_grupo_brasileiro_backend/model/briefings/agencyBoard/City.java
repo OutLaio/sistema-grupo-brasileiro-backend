@@ -10,7 +10,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Entity(name = "Tb_Cities")
+@Entity
+@Table(name = "\"Tb_Cities\"")
 public class City {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

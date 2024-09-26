@@ -1,11 +1,9 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.Instant;
 
 /**
  * Representa um token desabilitado.
@@ -15,7 +13,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Entity(name = "Tb_RecoveryTokens")
+@Entity
+@Table(name = "\"Tb_RecoveryTokens\"")
 public class RecoveryToken {
 
     /**
@@ -33,4 +32,8 @@ public class RecoveryToken {
     @Column(nullable = false)
     private String token;
 
+
+    public RecoveryToken(String token) {
+        this.token = token;
+    }
 }
