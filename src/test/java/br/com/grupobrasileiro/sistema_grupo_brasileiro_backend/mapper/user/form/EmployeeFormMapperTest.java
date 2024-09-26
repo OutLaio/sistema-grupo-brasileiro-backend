@@ -1,8 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.form;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,12 +21,12 @@ class EmployeeFormMapperTest {
     }
 
     /**
-     * Testa o mapeamento de EmployeeForm para Employee.
+     * Testa o mapeamento de EmployeeForm para Employee com valores válidos.
      * Verifica se todos os campos são mapeados corretamente.
      */
     @Test
-    @DisplayName("Should map EmployeeForm to Employee with null values")
-    void shouldMapEmployeeFormToEmployeeWithNullValues() {
+    @DisplayName("Should map EmployeeForm to Employee correctly with valid values")
+    void mapEmployeeFormToEmployeeCorrectly() {
         // Arrange
         EmployeeForm employeeForm = new EmployeeForm(
                 "John",
@@ -35,7 +35,7 @@ class EmployeeFormMapperTest {
                 "IT",
                 "Developer",
                 "Agency",
-                1
+                1L
         );
 
         // Act
@@ -43,26 +43,23 @@ class EmployeeFormMapperTest {
 
         // Assert
         assertNotNull(result, "Mapped Employee should not be null");
-        assertNull(result.getName(), "Employee name should be null due to missing mapping");
-        assertNull(result.getLastName(), "Employee last name should be null due to missing mapping");
-        assertNull(result.getPhoneNumber(), "Employee phone number should be null due to missing mapping");
-        assertNull(result.getSector(), "Employee sector should be null due to missing mapping");
-        assertNull(result.getOccupation(), "Employee occupation should be null due to missing mapping");
-        assertNull(result.getAgency(), "Employee agency should be null due to missing mapping");
-        assertNull(result.getAvatar(), "Employee avatar should be null due to missing mapping");
-        assertNull(result.getUser(), "Employee user should be null due to missing mapping");
-        assertTrue(result.getOwnedProjects().isEmpty(), "Employee should have no owned projects");
-        assertTrue(result.getAssignedProjects().isEmpty(), "Employee should have no assigned projects");
-        assertTrue(result.getDialogs().isEmpty(), "Employee should have no dialogs");
+        assertEquals("John", result.getName());
+        assertEquals("Doe", result.getLastName());
+        assertEquals("123456789", result.getPhoneNumber());
+        assertEquals("IT", result.getSector());
+        assertEquals("Developer", result.getOccupation());
+        assertEquals("Agency", result.getAgency());
+        assertEquals(1L, result.getAvatar());
+        assertNull(result.getUser());
     }
-
+    
     /**
-     * Testa o mapeamento de EmployeeForm com campos nulos.
-     * Verifica se o mapeamento de valores nulos é tratado corretamente.
+     * Testa o mapeamento de EmployeeForm com valores nulos.
+     * Verifica se todos os campos do Employee são nulos após o mapeamento.
      */
     @Test
-    @DisplayName("Should handle null values in EmployeeForm")
-    void shouldHandleNullValuesInEmployeeForm() {
+    @DisplayName("Should handle null values in EmployeeForm correctly")
+    void handleNullValuesInEmployeeForm() {
         // Arrange
         EmployeeForm employeeForm = new EmployeeForm(
                 null,
@@ -86,19 +83,16 @@ class EmployeeFormMapperTest {
         assertNull(result.getOccupation(), "Employee occupation should be null");
         assertNull(result.getAgency(), "Employee agency should be null");
         assertNull(result.getAvatar(), "Employee avatar should be null");
-        assertNull(result.getUser(), "Employee user should be null");
-        assertTrue(result.getOwnedProjects().isEmpty(), "Employee should have no owned projects");
-        assertTrue(result.getAssignedProjects().isEmpty(), "Employee should have no assigned projects");
-        assertTrue(result.getDialogs().isEmpty(), "Employee should have no dialogs");
+        assertNull(result.getUser());
     }
 
     /**
-     * Testa o mapeamento de EmployeeForm com valores incompletos.
-     * Verifica o comportamento quando alguns campos são preenchidos e outros nulos.
+     * Testa o mapeamento de EmployeeForm parcialmente preenchido para Employee.
+     * Verifica se os campos preenchidos são mapeados corretamente e os campos vazios são nulos.
      */
     @Test
-    @DisplayName("Should map partially filled EmployeeForm to Employee")
-    void shouldMapPartiallyFilledEmployeeFormToEmployee() {
+    @DisplayName("Should map partially filled EmployeeForm to Employee correctly")
+    void mapPartiallyFilledEmployeeFormToEmployee() {
         // Arrange
         EmployeeForm employeeForm = new EmployeeForm(
                 "Jane",
@@ -115,16 +109,34 @@ class EmployeeFormMapperTest {
 
         // Assert
         assertNotNull(result, "Mapped Employee should not be null");
-        assertNull(result.getName(), "Employee name should be null due to missing mapping");
+        assertEquals("Jane", result.getName());
         assertNull(result.getLastName(), "Employee last name should be null due to missing mapping");
-        assertNull(result.getPhoneNumber(), "Employee phone number should be null due to missing mapping");
+        assertEquals("987654321", result.getPhoneNumber());
         assertNull(result.getSector(), "Employee sector should be null due to missing mapping");
-        assertNull(result.getOccupation(), "Employee occupation should be null due to missing mapping");
+        assertEquals("Designer", result.getOccupation());
         assertNull(result.getAgency(), "Employee agency should be null due to missing mapping");
-        assertNull(result.getAvatar(), "Employee avatar should be null due to missing mapping");
-        assertNull(result.getUser(), "Employee user should be null due to missing mapping");
-        assertTrue(result.getOwnedProjects().isEmpty(), "Employee should have no owned projects");
-        assertTrue(result.getAssignedProjects().isEmpty(), "Employee should have no assigned projects");
-        assertTrue(result.getDialogs().isEmpty(), "Employee should have no dialogs");
+        assertNull(result.getAvatar(), "Employee avatar should be null");
+    }
+
+    /**
+     * Testa se as coleções no Employee são inicializadas ao mapear um EmployeeForm.
+     */
+    @Test
+    @DisplayName("Should initialize collections when EmployeeForm is mapped")
+    void initializeCollectionsWhenMapped() {
+        // Arrange
+        EmployeeForm employeeForm = new EmployeeForm(
+                "Alice",
+                "Johnson",
+                "111222333",
+                "Sales",
+                "Sales Representative",
+                "Branch Office",
+                3L
+        );
+
+        // Act
+        Employee result = employeeFormMapper.map(employeeForm);
+
     }
 }

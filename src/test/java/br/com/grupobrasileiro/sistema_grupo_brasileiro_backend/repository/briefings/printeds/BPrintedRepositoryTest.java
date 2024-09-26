@@ -15,7 +15,6 @@ import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.printeds.BPrinted;
 
-
 @DataJpaTest
 public class BPrintedRepositoryTest {
 
@@ -47,6 +46,67 @@ public class BPrintedRepositoryTest {
         // Assert
         Optional<BPrinted> foundPrinted = bPrintedRepository.findById(savedPrinted.getId());
         assertThat(foundPrinted).isPresent();
-        assertThat(foundPrinted.get().getPaperType()).isEqualTo(bPrinted.getPaperType()); // Verificando paperType
+        assertThat(foundPrinted.get().getPaperType()).isEqualTo(bPrinted.getPaperType());
+    }
+
+    /**
+     * Testa a atualização de um BPrinted.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should update a BPrinted")
+    void testUpdateBPrinted() {
+        // Arrange
+        BPrinted bPrinted = new BPrinted();
+        bPrinted.setPaperType(faker.lorem().word());
+        BPrinted savedPrinted = bPrintedRepository.save(bPrinted);
+
+        // Act - Atualiza o tipo de papel
+        savedPrinted.setPaperType("Novo Tipo de Papel");
+        BPrinted updatedPrinted = bPrintedRepository.save(savedPrinted);
+
+        // Assert
+        assertThat(updatedPrinted.getPaperType()).isEqualTo("Novo Tipo de Papel");
+    }
+
+    /**
+     * Testa a exclusão de um BPrinted.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should delete a BPrinted")
+    void testDeleteBPrinted() {
+        // Arrange
+        BPrinted bPrinted = new BPrinted();
+        bPrinted.setPaperType(faker.lorem().word());
+        BPrinted savedPrinted = bPrintedRepository.save(bPrinted);
+
+        // Act
+        bPrintedRepository.delete(savedPrinted);
+        Optional<BPrinted> foundPrinted = bPrintedRepository.findById(savedPrinted.getId());
+
+        // Assert
+        assertThat(foundPrinted).isNotPresent();
+    }
+
+    /**
+     * Testa a recuperação de todos os BPrinted.
+     */
+    @Test
+    @DisplayName("Should retrieve all BPrinted")
+    void testFindAllBPrinted() {
+        // Arrange
+        BPrinted printed1 = new BPrinted();
+        printed1.setPaperType(faker.lorem().word());
+        BPrinted printed2 = new BPrinted();
+        printed2.setPaperType(faker.lorem().word());
+        bPrintedRepository.save(printed1);
+        bPrintedRepository.save(printed2);
+
+        // Act
+        Iterable<BPrinted> allPrinted = bPrintedRepository.findAll();
+
+        // Assert
+        assertThat(allPrinted).hasSize(2);
     }
 }

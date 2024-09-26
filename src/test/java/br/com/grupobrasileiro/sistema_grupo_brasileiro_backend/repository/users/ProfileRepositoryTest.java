@@ -65,4 +65,65 @@ public class ProfileRepositoryTest {
         // Assert
         assertThat(deletedProfile).isNotPresent();
     }
+
+    /**
+     * Testa a recuperação de um perfil que não existe.
+     */
+    @Test
+    @DisplayName("Should return empty when retrieving non-existing profile")
+    void testRetrieveNonExistingProfile() {
+        // Act
+        Optional<Profile> retrievedProfile = profileRepository.findById(999L); // ID que não existe
+
+        // Assert
+        assertThat(retrievedProfile).isNotPresent();
+    }
+
+    /**
+     * Testa a atualização de um perfil existente.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should update an existing profile")
+    void testUpdateProfile() {
+        // Arrange
+        Profile profile = new Profile();
+        profile.setDescription(faker.job().title());
+        profile = profileRepository.save(profile);
+
+        // Act
+        profile.setDescription(faker.job().field());
+        profileRepository.save(profile);
+        Optional<Profile> updatedProfile = profileRepository.findById(profile.getId());
+
+        // Assert
+        assertThat(updatedProfile).isPresent();
+        assertThat(updatedProfile.get().getDescription()).isEqualTo(profile.getDescription());
+    }
+
+    /**
+     * Testa a criação de perfis com descrições diferentes.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should create profiles with different descriptions")
+    void testCreateMultipleProfiles() {
+        // Arrange
+        Profile profile1 = new Profile();
+        profile1.setDescription(faker.job().title());
+        profileRepository.save(profile1);
+
+        Profile profile2 = new Profile();
+        profile2.setDescription(faker.job().title());
+        profileRepository.save(profile2);
+
+        // Act
+        Optional<Profile> retrievedProfile1 = profileRepository.findById(profile1.getId());
+        Optional<Profile> retrievedProfile2 = profileRepository.findById(profile2.getId());
+
+        // Assert
+        assertThat(retrievedProfile1).isPresent();
+        assertThat(retrievedProfile2).isPresent();
+        assertThat(retrievedProfile1.get().getDescription()).isNotEqualTo(retrievedProfile2.get().getDescription());
+    }
 }

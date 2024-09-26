@@ -43,7 +43,7 @@ public class BStickerRepositoryTest {
         stickerTypeRepository.save(stickerType);
 
         BSticker bSticker = new BSticker();
-        bSticker.setBriefing(new Briefing()); 
+        bSticker.setBriefing(new Briefing()); // Briefing fictício, considere criar um de teste.
         bSticker.setStickerType(stickerType);
         bSticker.setSector(faker.lorem().word());
         bSticker.setObservations(faker.lorem().sentence());
@@ -66,5 +66,59 @@ public class BStickerRepositoryTest {
 
         // Assert
         assertThat(foundSticker).isNotPresent();
+    }
+
+    @Test
+    @Rollback(false)
+    @DisplayName("Should delete BSticker correctly")
+    void testDeleteBSticker() {
+        // Arrange
+        StickerType stickerType = new StickerType();
+        stickerType.setDescription(faker.lorem().word());
+        stickerTypeRepository.save(stickerType);
+
+        BSticker bSticker = new BSticker();
+        bSticker.setBriefing(new Briefing());
+        bSticker.setStickerType(stickerType);
+        bSticker.setSector(faker.lorem().word());
+        bSticker.setObservations(faker.lorem().sentence());
+        
+        BSticker savedSticker = bStickerRepository.save(bSticker);
+
+        // Act
+        bStickerRepository.delete(savedSticker);
+
+        // Assert
+        Optional<BSticker> foundSticker = bStickerRepository.findById(savedSticker.getId());
+        assertThat(foundSticker).isNotPresent();
+    }
+
+    @Test
+    @Rollback(false)
+    @DisplayName("Should update BSticker correctly")
+    void testUpdateBSticker() {
+        // Arrange
+        StickerType stickerType = new StickerType();
+        stickerType.setDescription(faker.lorem().word());
+        stickerTypeRepository.save(stickerType);
+
+        BSticker bSticker = new BSticker();
+        bSticker.setBriefing(new Briefing());
+        bSticker.setStickerType(stickerType);
+        bSticker.setSector(faker.lorem().word());
+        bSticker.setObservations(faker.lorem().sentence());
+        
+        BSticker savedSticker = bStickerRepository.save(bSticker);
+        savedSticker.setSector("Novo Setor");
+        savedSticker.setObservations("Novas Observações");
+
+        // Act
+        BSticker updatedSticker = bStickerRepository.save(savedSticker);
+
+        // Assert
+        Optional<BSticker> foundSticker = bStickerRepository.findById(updatedSticker.getId());
+        assertThat(foundSticker).isPresent();
+        assertThat(foundSticker.get().getSector()).isEqualTo("Novo Setor");
+        assertThat(foundSticker.get().getObservations()).isEqualTo("Novas Observações");
     }
 }

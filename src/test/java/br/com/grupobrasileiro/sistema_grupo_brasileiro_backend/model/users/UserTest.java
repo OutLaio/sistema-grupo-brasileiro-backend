@@ -1,12 +1,12 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.github.javafaker.Faker;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserTest {
 
@@ -38,6 +38,7 @@ public class UserTest {
      * com os valores de id, email, password, disabled e profile.
      */
     @Test
+    @DisplayName("Should return a correct string representation of the User instance")
     void testToString() {
         // Crie um Profile para associar ao User
         Profile profile = new Profile();
@@ -63,6 +64,7 @@ public class UserTest {
      * e se têm o mesmo hashCode.
      */
     @Test
+    @DisplayName("Should consider equal instances with the same id and email")
     void testEqualsAndHashCode() {
         // Cria um Profile para associar ao User
         Profile profile = new Profile();
@@ -88,5 +90,47 @@ public class UserTest {
         // Verifica que objetos com IDs diferentes não são iguais
         assertThat(user1).isNotEqualTo(user3);
         assertThat(user1.hashCode()).isNotEqualTo(user3.hashCode());
+    }
+
+    /**
+     * Testa a criação de um User com valores nulos.
+     * Verifica se a instância pode ser criada e não é nula.
+     */
+    @Test
+    @DisplayName("Should create a User instance and not be null")
+    void testCreateUserWithNullValues() {
+        User user = createSampleUser(null, null, null, null, null);
+        assertNotNull(user);
+    }
+
+    /**
+     * Testa a criação de um User com valores padrão.
+     * Verifica se os atributos são atribuídos corretamente.
+     */
+    @Test
+    @DisplayName("Should correctly set attributes when creating User with default values")
+    void testCreateUserWithDefaultValues() {
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setDescription("Admin");
+
+        User user = createSampleUser(1L, "test@example.com", "testPass", false, profile);
+        assertThat(user.getId()).isEqualTo(1L);
+        assertThat(user.getEmail()).isEqualTo("test@example.com");
+        assertThat(user.getPassword()).isEqualTo("testPass");
+        assertThat(user.getDisabled()).isFalse();
+        assertThat(user.getProfile()).isEqualTo(profile);
+    }
+
+    /**
+     * Testa a alteração do atributo disabled de um User.
+     * Verifica se o método setDisabled altera corretamente o valor.
+     */
+    @Test
+    @DisplayName("Should correctly set disabled attribute")
+    void testSetDisabled() {
+        User user = createSampleUser(1L, "user@example.com", "password123", false, new Profile());
+        user.setDisabled(true);
+        assertThat(user.getDisabled()).isTrue();
     }
 }

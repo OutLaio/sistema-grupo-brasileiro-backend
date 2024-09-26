@@ -39,16 +39,7 @@ public class ProjectRepositoryTest {
     @DisplayName("Should create and retrieve a project")
     void testCreateAndRetrieveProject() {
         // Arrange
-        Employee client = new Employee();
-        client.setName(faker.name().firstName());
-        client.setLastName(faker.name().lastName());
-        client.setPhoneNumber(faker.phoneNumber().phoneNumber());
-        client.setSector(faker.company().industry());
-        client.setOccupation(faker.job().title());
-        client.setAgency(faker.company().name());
-        client.setAvatar((long) faker.number().randomDigitNotZero()); // Correção aqui
-        // Salvar o cliente
-        employeeRepository.save(client);
+        Employee client = createTestEmployee();
 
         Project project = new Project();
         project.setClient(client);
@@ -78,4 +69,19 @@ public class ProjectRepositoryTest {
         // Assert
         assertThat(retrievedProject).isNotPresent();
     }
+
+    private Employee createTestEmployee() {
+        Employee employee = new Employee();
+        employee.setName(faker.name().firstName());
+        employee.setLastName(faker.name().lastName());
+        employee.setPhoneNumber(faker.phoneNumber().phoneNumber());
+        employee.setSector(faker.company().industry());
+        employee.setOccupation(faker.job().title());
+        employee.setAgency(faker.company().name());
+        employee.setAvatar((long) faker.number().randomDigitNotZero()); // Correção aqui
+
+        // Salvar o cliente
+        return employeeRepository.save(employee);
+    }
 }
+

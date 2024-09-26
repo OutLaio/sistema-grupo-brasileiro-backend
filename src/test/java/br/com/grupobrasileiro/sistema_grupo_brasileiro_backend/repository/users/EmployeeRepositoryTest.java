@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
+
 import java.util.List;
 
 @DataJpaTest
@@ -65,12 +66,12 @@ public class EmployeeRepositoryTest {
         Employee collaborator = new Employee();
         collaborator.setUser(collaboratorUser);
         collaborator.setName(faker.name().firstName());
-        collaborator.setLastName(faker.name().lastName()); 
+        collaborator.setLastName(faker.name().lastName());
 
         Employee manager = new Employee();
         manager.setUser(otherUser);
-        manager.setName(faker.name().firstName()); 
-        manager.setLastName(faker.name().lastName()); 
+        manager.setName(faker.name().firstName());
+        manager.setLastName(faker.name().lastName());
 
         // Salvando os dados no banco
         employeeRepository.save(collaborator);
@@ -87,4 +88,59 @@ public class EmployeeRepositoryTest {
         assertThat(collaborators).allMatch(emp -> emp.getUser().getProfile().getId() == 2L);
         assertThat(collaborators).noneMatch(emp -> emp.getUser().getProfile().getId() == 1L);
     }
+
+    /**
+     * Testa a busca de colaboradores quando não há nenhum.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should return empty page when no collaborators exist")
+    void testFindAllCollaboratorsEmpty() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // Act
+        Page<Employee> collaboratorsPage = employeeRepository.findAllCollaborators(pageable);
+
+        // Assert
+        assertThat(collaboratorsPage.getContent()).isEmpty();
+    }
+
+    /**
+     * Testa a busca de colaboradores com paginação.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should return paginated collaborators")
+    void testFindPaginatedCollaborators() {
+        // Arrange
+        Profile collaboratorProfile = new Profile();
+        collaboratorProfile.setDescription("Collaborator");
+        collaboratorProfile.setId(2L);
+
+        // Criação de 15 colaboradores
+        for (int i = 0; i < 15; i++) {
+            User collaboratorUser = new User();
+            collaboratorUser.setEmail(faker.internet().emailAddress());
+            collaboratorUser.setPassword(faker.internet().password());
+            collaboratorUser.setDisabled(false);
+            collaboratorUser.setProfile(collaboratorProfile);
+
+            Employee collaborator = new Employee();
+            collaborator.setUser(collaboratorUser);
+            collaborator.setName(faker.name().firstName());
+            collaborator.setLastName(faker.name().lastName());
+            employeeRepository.save(collaborator);
+        }
+
+        Pageable pageable = PageRequest.of(0, 10); // Página 0, tamanho 10
+
+        // Act
+        Page<Employee> collaboratorsPage = employeeRepository.findAllCollaborators(pageable);
+
+        // Assert
+        assertThat(collaboratorsPage.getContent()).hasSize(10); // Verifica se a primeira página contém 10 colaboradores
+        assertThat(collaboratorsPage.getTotalElements()).isEqualTo(15); // Total de colaboradores
+    }
 }
+

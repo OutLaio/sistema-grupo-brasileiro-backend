@@ -2,7 +2,6 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.brief
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.gifts.BGift;
@@ -45,6 +44,75 @@ public class BGiftRepositoryTest {
     @DisplayName("Should save and find BGift with all associations correctly")
     void testSaveAndFindBGift() {
         // Arrange
+        BGift bGift = createSampleBGift();
+
+        // Act
+        BGift savedBGift = bGiftRepository.save(bGift);
+
+        // Assert
+        Optional<BGift> foundBGift = bGiftRepository.findById(savedBGift.getId());
+        assertThat(foundBGift).isPresent();
+        assertThat(foundBGift.get()).usingRecursiveComparison().isEqualTo(savedBGift);
+    }
+
+    /**
+     * Testa a atualização de um BGift.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should update a BGift")
+    void testUpdateBGift() {
+        // Arrange
+        BGift bGift = createSampleBGift();
+        BGift savedBGift = bGiftRepository.save(bGift);
+
+        // Act - Atualiza o modelo do presente
+        savedBGift.setGiftModel("Modelo Atualizado");
+        BGift updatedBGift = bGiftRepository.save(savedBGift);
+
+        // Assert
+        assertThat(updatedBGift.getGiftModel()).isEqualTo("Modelo Atualizado");
+    }
+
+    /**
+     * Testa a exclusão de um BGift.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should delete a BGift")
+    void testDeleteBGift() {
+        // Arrange
+        BGift bGift = createSampleBGift();
+        BGift savedBGift = bGiftRepository.save(bGift);
+
+        // Act
+        bGiftRepository.delete(savedBGift);
+        Optional<BGift> foundBGift = bGiftRepository.findById(savedBGift.getId());
+
+        // Assert
+        assertThat(foundBGift).isNotPresent();
+    }
+
+    /**
+     * Testa a recuperação de todos os BGifts.
+     */
+    @Test
+    @DisplayName("Should retrieve all BGifts")
+    void testFindAllBGifts() {
+        // Arrange
+        BGift bGift1 = createSampleBGift();
+        BGift bGift2 = createSampleBGift();
+        bGiftRepository.save(bGift1);
+        bGiftRepository.save(bGift2);
+
+        // Act
+        Iterable<BGift> allBGifts = bGiftRepository.findAll();
+
+        // Assert
+        assertThat(allBGifts).hasSize(2);
+    }
+
+    private BGift createSampleBGift() {
         // Criação do briefing
         Briefing briefing = new Briefing();
         briefing.setDetailedDescription(faker.lorem().sentence());
@@ -77,19 +145,6 @@ public class BGiftRepositoryTest {
         bGift.setGiftModel(faker.commerce().productName());
         bGift.setLinkModel(faker.internet().url());
 
-        // Act
-        BGift savedBGift = bGiftRepository.save(bGift);
-
-        // Assert
-        Optional<BGift> foundBGift = bGiftRepository.findById(savedBGift.getId());
-        assertThat(foundBGift).isPresent();
-        assertThat(foundBGift.get().getGiftModel()).isEqualTo(bGift.getGiftModel());
-        assertThat(foundBGift.get().getLinkModel()).isEqualTo(bGift.getLinkModel());
-        assertThat(foundBGift.get().getGiftType().getDescription()).isEqualTo(giftType.getDescription());
-        assertThat(foundBGift.get().getBriefing().getDetailedDescription()).isEqualTo(briefing.getDetailedDescription());
-        assertThat(foundBGift.get().getPrintingType().getDescription()).isEqualTo(printingType.getDescription());
-        assertThat(foundBGift.get().getPrintingShirtType().getDescription()).isEqualTo(printingShirtType.getDescription());
-        assertThat(foundBGift.get().getStamp().getDescription()).isEqualTo(stamp.getDescription());
-        assertThat(foundBGift.get().getCalendarType().getDescription()).isEqualTo(calendarType.getDescription());
+        return bGift;
     }
 }

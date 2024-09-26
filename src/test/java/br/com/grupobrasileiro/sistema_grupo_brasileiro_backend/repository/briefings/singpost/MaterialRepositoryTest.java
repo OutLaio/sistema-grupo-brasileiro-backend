@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -32,6 +33,7 @@ public class MaterialRepositoryTest {
      */
     @Test
     @Rollback(false) 
+    @DisplayName("Should save and find Material correctly")
     void testSaveAndFindMaterial() {
         // Act: Salva o material no banco de dados
         Material savedMaterial = materialRepository.save(material);
@@ -47,6 +49,7 @@ public class MaterialRepositoryTest {
      */
     @Test
     @Rollback(false)
+    @DisplayName("Should delete Material correctly")
     void testDeleteMaterial() {
         // Act: Salva e depois deleta o material
         Material savedMaterial = materialRepository.save(material);
@@ -55,5 +58,42 @@ public class MaterialRepositoryTest {
         // Assert: Verifica se o material foi deletado
         Optional<Material> foundMaterial = materialRepository.findById(savedMaterial.getId());
         assertThat(foundMaterial).isNotPresent();
+    }
+
+    /**
+     * Testa a atualização de um Material existente.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should update Material description correctly")
+    void testUpdateMaterial() {
+        // Act: Salva o material e atualiza a descrição
+        Material savedMaterial = materialRepository.save(material);
+        savedMaterial.setDescription("Descrição atualizada.");
+        Material updatedMaterial = materialRepository.save(savedMaterial);
+
+        // Assert: Verifica se a descrição foi atualizada corretamente
+        Optional<Material> foundMaterial = materialRepository.findById(updatedMaterial.getId());
+        assertThat(foundMaterial).isPresent();
+        assertThat(foundMaterial.get().getDescription()).isEqualTo("Descrição atualizada.");
+    }
+
+    /**
+     * Testa a tentativa de salvar um Material com descrição nula.
+     */
+    @Test
+    @DisplayName("Should not save Material with null description")
+    void testSaveMaterialWithNullDescription() {
+        // Arrange: Cria um Material com descrição nula
+        Material nullDescriptionMaterial = new Material();
+        nullDescriptionMaterial.setDescription(null);
+
+        // Act: Tenta salvar o material
+        Material savedMaterial = materialRepository.save(nullDescriptionMaterial);
+        Optional<Material> foundMaterial = materialRepository.findById(savedMaterial.getId());
+
+        // Assert: Verifica se o material foi salvo com descrição nula
+        assertThat(foundMaterial).isPresent();
+        assertThat(foundMaterial.get().getDescription()).isNull();
     }
 }

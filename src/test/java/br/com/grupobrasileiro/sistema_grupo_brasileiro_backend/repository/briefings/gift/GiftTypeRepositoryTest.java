@@ -48,4 +48,65 @@ public class GiftTypeRepositoryTest {
         assertThat(foundType).isPresent();
         assertThat(foundType.get().getDescription()).isEqualTo(giftType.getDescription());
     }
+
+    /**
+     * Testa a atualização de um GiftType.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should update a GiftType")
+    void testUpdateGiftType() {
+        // Arrange
+        GiftType giftType = new GiftType();
+        giftType.setDescription(faker.lorem().sentence());
+        GiftType savedType = giftTypeRepository.save(giftType);
+
+        // Act - Atualiza a descrição do tipo de presente
+        savedType.setDescription("Descrição Atualizada");
+        GiftType updatedType = giftTypeRepository.save(savedType);
+
+        // Assert
+        assertThat(updatedType.getDescription()).isEqualTo("Descrição Atualizada");
+    }
+
+    /**
+     * Testa a exclusão de um GiftType.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should delete a GiftType")
+    void testDeleteGiftType() {
+        // Arrange
+        GiftType giftType = new GiftType();
+        giftType.setDescription(faker.lorem().sentence());
+        GiftType savedType = giftTypeRepository.save(giftType);
+
+        // Act
+        giftTypeRepository.delete(savedType);
+        Optional<GiftType> foundType = giftTypeRepository.findById(savedType.getId());
+
+        // Assert
+        assertThat(foundType).isNotPresent();
+    }
+
+    /**
+     * Testa a recuperação de todos os GiftTypes.
+     */
+    @Test
+    @DisplayName("Should retrieve all GiftTypes")
+    void testFindAllGiftTypes() {
+        // Arrange
+        GiftType giftType1 = new GiftType();
+        giftType1.setDescription(faker.lorem().sentence());
+        GiftType giftType2 = new GiftType();
+        giftType2.setDescription(faker.lorem().sentence());
+        giftTypeRepository.save(giftType1);
+        giftTypeRepository.save(giftType2);
+
+        // Act
+        Iterable<GiftType> allGiftTypes = giftTypeRepository.findAll();
+
+        // Assert
+        assertThat(allGiftTypes).hasSize(2);
+    }
 }

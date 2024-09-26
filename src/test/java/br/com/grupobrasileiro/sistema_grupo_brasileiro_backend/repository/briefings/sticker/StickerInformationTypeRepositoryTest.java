@@ -48,4 +48,59 @@ public class StickerInformationTypeRepositoryTest {
         assertThat(foundType).isPresent();
         assertThat(foundType.get().getDescription()).isEqualTo(stickerInformationType.getDescription());
     }
+
+    /**
+     * Testa a exclusão de um StickerInformationType.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should delete StickerInformationType correctly")
+    void testDeleteStickerInformationType() {
+        // Arrange
+        StickerInformationType stickerInformationType = new StickerInformationType();
+        stickerInformationType.setDescription(faker.lorem().sentence());
+        StickerInformationType savedType = stickerInformationTypeRepository.save(stickerInformationType);
+
+        // Act
+        stickerInformationTypeRepository.delete(savedType);
+
+        // Assert
+        Optional<StickerInformationType> foundType = stickerInformationTypeRepository.findById(savedType.getId());
+        assertThat(foundType).isNotPresent();
+    }
+
+    /**
+     * Testa a atualização de um StickerInformationType.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should update StickerInformationType correctly")
+    void testUpdateStickerInformationType() {
+        // Arrange
+        StickerInformationType stickerInformationType = new StickerInformationType();
+        stickerInformationType.setDescription(faker.lorem().sentence());
+        StickerInformationType savedType = stickerInformationTypeRepository.save(stickerInformationType);
+
+        // Act
+        savedType.setDescription("Nova Descrição");
+        StickerInformationType updatedType = stickerInformationTypeRepository.save(savedType);
+
+        // Assert
+        Optional<StickerInformationType> foundType = stickerInformationTypeRepository.findById(updatedType.getId());
+        assertThat(foundType).isPresent();
+        assertThat(foundType.get().getDescription()).isEqualTo("Nova Descrição");
+    }
+
+    /**
+     * Testa a busca por um StickerInformationType inexistente.
+     */
+    @Test
+    @DisplayName("Should not find StickerInformationType with nonexistent ID")
+    void testNotFoundStickerInformationType() {
+        // Act
+        Optional<StickerInformationType> foundType = stickerInformationTypeRepository.findById(-1L); // ID inexistente
+
+        // Assert
+        assertThat(foundType).isNotPresent();
+    }
 }

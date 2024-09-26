@@ -50,7 +50,7 @@ class MapperTest {
      */
     @Test
     @DisplayName("Should throw NumberFormatException for invalid input")
-    void shouldThrowExceptionForInvalidInput() {
+    void throwExceptionForInvalidInput() {
         String input = faker.lorem().word(); // Gera uma string não numérica, ex: "abc"
 
         // Verifica se o método map lança a exceção NumberFormatException para uma entrada inválida
@@ -67,7 +67,7 @@ class MapperTest {
      */
     @Test
     @DisplayName("Should return null for null input")
-    void shouldReturnNullForNullInput() {
+    void returnNullForNullInput() {
         String input = null; // Entrada nula
 
         // Define o comportamento esperado do mock
@@ -84,7 +84,7 @@ class MapperTest {
      */
     @Test
     @DisplayName("Should throw NumberFormatException for empty string")
-    void shouldThrowExceptionForEmptyString() {
+    void throwExceptionForEmptyString() {
         String input = ""; // Entrada de string vazia
 
         // Verifica se o método map lança a exceção NumberFormatException para uma string vazia

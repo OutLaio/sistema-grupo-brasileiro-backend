@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -56,6 +57,7 @@ public class SignpostRepositoryTest {
 
     @Test
     @Rollback(false)
+    @DisplayName("Should save and find Signpost correctly")
     void testSaveAndFindSignpost() {
         // Act
         BSignpost savedSignpost = signpostRepository.save(signpost);
@@ -69,6 +71,7 @@ public class SignpostRepositoryTest {
 
     @Test
     @Rollback(false)
+    @DisplayName("Should delete Signpost correctly")
     void testDeleteSignpost() {
         // Act
         BSignpost savedSignpost = signpostRepository.save(signpost);
@@ -76,6 +79,32 @@ public class SignpostRepositoryTest {
 
         // Assert
         Optional<BSignpost> foundSignpost = signpostRepository.findById(savedSignpost.getId());
+        assertThat(foundSignpost).isNotPresent();
+    }
+
+    @Test
+    @Rollback(false)
+    @DisplayName("Should update Signpost correctly")
+    void testUpdateSignpost() {
+        // Act
+        BSignpost savedSignpost = signpostRepository.save(signpost);
+        savedSignpost.setBoardLocation("Nova Locação");
+        BSignpost updatedSignpost = signpostRepository.save(savedSignpost);
+
+        // Assert
+        Optional<BSignpost> foundSignpost = signpostRepository.findById(updatedSignpost.getId());
+        assertThat(foundSignpost).isPresent();
+        assertThat(foundSignpost.get().getBoardLocation()).isEqualTo("Nova Locação");
+    }
+
+    @Test
+    @Rollback(false)
+    @DisplayName("Should not find non-existing Signpost")
+    void testFindNonExistingSignpost() {
+        // Act
+        Optional<BSignpost> foundSignpost = signpostRepository.findById(999L); // ID que não existe
+
+        // Assert
         assertThat(foundSignpost).isNotPresent();
     }
 }

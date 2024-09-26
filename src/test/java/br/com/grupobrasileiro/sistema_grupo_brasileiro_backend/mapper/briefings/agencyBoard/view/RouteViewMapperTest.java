@@ -17,12 +17,11 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.age
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyCityView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.RouteView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.City;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Company;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.CompanyCity;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Route;
 
-/**
- * Testa a classe RouteViewMapper.
- * Verifica se o mapeamento lida com Route nulo e campos nulos corretamente.
- */
 public class RouteViewMapperTest {
 
     @InjectMocks
@@ -46,25 +45,34 @@ public class RouteViewMapperTest {
     @Test
     @DisplayName("Should map Route to RouteView correctly")
     void mapRouteToView() {
-        // Dados de teste usando Faker
         Route route = new Route();
         route.setId(faker.number().randomNumber());
         route.setType(faker.lorem().word());
 
-        CompanyView companyView = new CompanyView(
-                faker.number().randomNumber(),
-                faker.company().name()
-        );
+        // Criando um City para o teste
+        City city = new City(); 
+        city.setId(faker.number().randomNumber());
+        city.setName(faker.address().city()); 
+        
+        // Criando um Company para o teste
+        Company company = new Company(); 
+        company.setId(faker.number().randomNumber());
+        company.setName(faker.company().name());
 
-        CityView cityView = new CityView(
-                faker.number().randomNumber(),
-                faker.address().city()
-        );
+        // Criando um CompanyCity para o teste
+        CompanyCity companyCity = new CompanyCity();
+        companyCity.setId(faker.number().randomNumber());
+        companyCity.setCity(city);
+        companyCity.setCompany(company);
 
+        // Associando o CompanyCity ao Route
+        route.setCompanyCity(companyCity);
+
+        // Criando um CompanyCityView para o mapeamento
         CompanyCityView companyCityView = new CompanyCityView(
-                faker.number().randomNumber(),
-                cityView,
-                companyView
+                companyCity.getId(),
+                new CityView(city.getId(), city.getName()), // Supondo que você tenha um construtor adequado
+                new CompanyView(company.getId(), company.getName())
         );
 
         when(companyCityViewMapper.map(any())).thenReturn(companyCityView);
@@ -75,10 +83,10 @@ public class RouteViewMapperTest {
         // Verificação dos resultados
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo(route.getId());
-        assertThat(result.company()).isEqualTo(companyView);
-        assertThat(result.cities()).containsExactly(cityView);
+        assertThat(result.companyCityView()).isEqualTo(companyCityView); 
         assertThat(result.type()).isEqualTo(route.getType());
     }
+
 
     /**
      * Testa que o método map retorna null ao receber Route nulo.
@@ -101,7 +109,7 @@ public class RouteViewMapperTest {
         Route route = new Route();
         route.setId(faker.number().randomNumber());
         route.setType(faker.lorem().word());
-        route.setCompanyCity(null);
+        route.setCompanyCity(null); // Certifique-se de que CompanyCity é nulo
 
         // Mapeamento
         RouteView result = routeViewMapper.map(route);
@@ -109,8 +117,7 @@ public class RouteViewMapperTest {
         // Verificação dos resultados
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo(route.getId());
-        assertThat(result.company()).isNull(); 
-        assertThat(result.cities()).isEmpty(); 
+        assertThat(result.companyCityView()).isNull(); 
         assertThat(result.type()).isEqualTo(route.getType());
     }
 
@@ -122,15 +129,44 @@ public class RouteViewMapperTest {
     @DisplayName("Should map Route with null ID")
     void mapRouteWithNullId() {
         Route route = new Route();
-        route.setId(null);
+        route.setId(null); // ID nulo
         route.setType(faker.lorem().word());
+
+        // Criando um City para o teste
+        City city = new City(); // Supondo que você tenha uma classe City
+        city.setId(faker.number().randomNumber());
+        city.setName(faker.address().city()); 
+
+        // Criando um Company para o teste
+        Company company = new Company();
+        company.setId(faker.number().randomNumber());
+        company.setName(faker.company().name()); 
+
+        // Criando um CompanyCity para o teste
+        CompanyCity companyCity = new CompanyCity();
+        companyCity.setId(faker.number().randomNumber());
+        companyCity.setCity(city);
+        companyCity.setCompany(company);
+
+        // Associando o CompanyCity ao Route
+        route.setCompanyCity(companyCity);
+
+        // Criando um CompanyCityView para o mapeamento
+        CompanyCityView companyCityView = new CompanyCityView(
+                companyCity.getId(),
+                new CityView(city.getId(), city.getName()), 
+                new CompanyView(company.getId(), company.getName())
+        );
+
+        when(companyCityViewMapper.map(any())).thenReturn(companyCityView);
 
         // Mapeamento
         RouteView result = routeViewMapper.map(route);
 
         // Verificação dos resultados
         assertThat(result).isNotNull();
-        assertThat(result.id()).isNull();
+        assertThat(result.id()).isNull(); // Verifica se o ID é nulo
+        assertThat(result.companyCityView()).isEqualTo(companyCityView); // Verifica se o CompanyCityView está correto
         assertThat(result.type()).isEqualTo(route.getType());
     }
 }

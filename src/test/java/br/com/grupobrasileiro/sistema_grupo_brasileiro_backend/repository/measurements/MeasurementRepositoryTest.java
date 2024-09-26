@@ -34,6 +34,11 @@ public class MeasurementRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        createTestBriefing();
+        createTestMeasurement();
+    }
+
+    private void createTestBriefing() {
         // Configurando o Briefing com Project e BriefingType
         Project project = new Project(); 
         BriefingType briefingType = new BriefingType(); 
@@ -46,7 +51,9 @@ public class MeasurementRepositoryTest {
         briefing.setDetailedDescription("Descrição do Briefing para Teste");
 
         briefingRepository.save(briefing);
+    }
 
+    private void createTestMeasurement() {
         // Criando a Measurement associada ao briefing
         measurement = new Measurement();
         measurement.setBriefing(briefing);

@@ -48,4 +48,65 @@ public class CalendarTypeRepositoryTest {
         assertThat(foundType).isPresent();
         assertThat(foundType.get().getDescription()).isEqualTo(calendarType.getDescription());
     }
+
+    /**
+     * Testa a atualização de um CalendarType.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should update a CalendarType")
+    void testUpdateCalendarType() {
+        // Arrange
+        CalendarType calendarType = new CalendarType();
+        calendarType.setDescription(faker.lorem().sentence());
+        CalendarType savedType = calendarTypeRepository.save(calendarType);
+
+        // Act - Atualiza a descrição do tipo de calendário
+        savedType.setDescription("Descrição Atualizada");
+        CalendarType updatedType = calendarTypeRepository.save(savedType);
+
+        // Assert
+        assertThat(updatedType.getDescription()).isEqualTo("Descrição Atualizada");
+    }
+
+    /**
+     * Testa a exclusão de um CalendarType.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should delete a CalendarType")
+    void testDeleteCalendarType() {
+        // Arrange
+        CalendarType calendarType = new CalendarType();
+        calendarType.setDescription(faker.lorem().sentence());
+        CalendarType savedType = calendarTypeRepository.save(calendarType);
+
+        // Act
+        calendarTypeRepository.delete(savedType);
+        Optional<CalendarType> foundType = calendarTypeRepository.findById(savedType.getId());
+
+        // Assert
+        assertThat(foundType).isNotPresent();
+    }
+
+    /**
+     * Testa a recuperação de todos os CalendarTypes.
+     */
+    @Test
+    @DisplayName("Should retrieve all CalendarTypes")
+    void testFindAllCalendarTypes() {
+        // Arrange
+        CalendarType calendarType1 = new CalendarType();
+        calendarType1.setDescription(faker.lorem().sentence());
+        CalendarType calendarType2 = new CalendarType();
+        calendarType2.setDescription(faker.lorem().sentence());
+        calendarTypeRepository.save(calendarType1);
+        calendarTypeRepository.save(calendarType2);
+
+        // Act
+        Iterable<CalendarType> allCalendarTypes = calendarTypeRepository.findAll();
+
+        // Assert
+        assertThat(allCalendarTypes).hasSize(2);
+    }
 }

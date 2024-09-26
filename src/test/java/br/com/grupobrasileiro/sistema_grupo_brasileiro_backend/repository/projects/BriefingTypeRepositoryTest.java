@@ -1,7 +1,5 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.javafaker.Faker;
@@ -38,8 +36,7 @@ public class BriefingTypeRepositoryTest {
     @DisplayName("Should create and retrieve a briefing type")
     void testCreateAndRetrieveBriefingType() {
         // Arrange
-        BriefingType briefingType = new BriefingType();
-        briefingType.setDescription(faker.lorem().word());
+        BriefingType briefingType = createTestBriefingType();
 
         // Act
         briefingTypeRepository.save(briefingType);
@@ -61,5 +58,11 @@ public class BriefingTypeRepositoryTest {
 
         // Assert
         assertThat(retrievedBriefingType).isNotPresent();
+    }
+
+    private BriefingType createTestBriefingType() {
+        BriefingType briefingType = new BriefingType();
+        briefingType.setDescription(faker.lorem().word());
+        return briefingType;
     }
 }

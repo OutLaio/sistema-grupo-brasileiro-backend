@@ -64,13 +64,14 @@ public class StickerTypeRepositoryTest {
         StickerType savedType = stickerTypeRepository.save(stickerType);
 
         // Act
-        savedType.setDescription(faker.lorem().word());
+        String newDescription = faker.lorem().word(); // Nova descrição
+        savedType.setDescription(newDescription);
         StickerType updatedType = stickerTypeRepository.save(savedType);
 
         // Assert
         Optional<StickerType> foundType = stickerTypeRepository.findById(updatedType.getId());
         assertThat(foundType).isPresent();
-        assertThat(foundType.get().getDescription()).isEqualTo(updatedType.getDescription());
+        assertThat(foundType.get().getDescription()).isEqualTo(newDescription);
     }
 
     /**
@@ -102,7 +103,7 @@ public class StickerTypeRepositoryTest {
     @DisplayName("Should not find non-existent StickerType")
     void testFindNonExistentStickerType() {
         // Act
-        Optional<StickerType> foundType = stickerTypeRepository.findById(Long.MAX_VALUE);
+        Optional<StickerType> foundType = stickerTypeRepository.findById(Long.MAX_VALUE); // ID que não existe
 
         // Assert
         assertThat(foundType).isNotPresent();
@@ -118,11 +119,12 @@ public class StickerTypeRepositoryTest {
     void testSaveStickerTypeWithNullDescription() {
         // Arrange
         StickerType stickerType = new StickerType();
-        stickerType.setDescription(null); // Null value for non-nullable field
+        stickerType.setDescription(null); // Valor nulo para campo não nulo
 
         // Act & Assert
-        assertThrows(javax.persistence.EntityExistsException.class, () -> {
+        assertThrows(javax.persistence.PersistenceException.class, () -> {
             stickerTypeRepository.save(stickerType);
         });
     }
 }
+

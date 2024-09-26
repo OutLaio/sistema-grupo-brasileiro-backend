@@ -1,44 +1,11 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.github.javafaker.Faker;
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.github.javafaker.Faker;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.github.javafaker.Faker;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.github.javafaker.Faker;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.github.javafaker.Faker;
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.github.javafaker.Faker;
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.github.javafaker.Faker;
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Testa a classe Employee.
@@ -77,6 +44,7 @@ public class EmployeeTest {
      * Verifica se o construtor padrão cria uma instância não nula da classe.
      */
     @Test
+    @DisplayName("Should create an Employee instance using the default constructor")
     void testDefaultConstructor() {
         Employee employee = new Employee();
         assertThat(employee).isNotNull();
@@ -88,6 +56,7 @@ public class EmployeeTest {
      * da instância de Employee.
      */
     @Test
+    @DisplayName("Should correctly set and get Employee attributes")
     void testSettersAndGetters() {
         Employee employee = createSampleEmployee(null);
 
@@ -108,6 +77,7 @@ public class EmployeeTest {
      * e se têm o mesmo hashCode.
      */
     @Test
+    @DisplayName("Should consider equal instances with the same attributes")
     void testEqualsAndHashCode() {
         // Cria um ID fixo
         Long id = 123L;
@@ -156,13 +126,13 @@ public class EmployeeTest {
         assertThat(employee1.hashCode()).isNotEqualTo(employee3.hashCode());
     }
 
-
     /**
      * Testa o método toString da classe Employee.
      * Verifica se o método toString retorna uma representação correta da instância
      * com os valores de id, name, lastName, phoneNumber, sector, occupation, agency, avatar e user.
      */
     @Test
+    @DisplayName("Should return a correct string representation of the Employee instance")
     void testToString() {
         // Crie um Employee com valores fixos para garantir que o teste seja consistente
         Employee employee = new Employee();
@@ -182,5 +152,35 @@ public class EmployeeTest {
         assertThat(employee.toString()).isEqualTo(expectedToString);
     }
 
-}
+    /**
+     * Testa a criação de um Employee com valores nulos.
+     * Verifica se a instância pode ser criada e não é nula.
+     */
+    @Test
+    @DisplayName("Should create an Employee instance with null values and not be null")
+    void testCreateEmployeeWithNullValues() {
+        Employee employee = createSampleEmployee(null);
+        assertThat(employee).isNotNull();
+        assertThat(employee.getName()).isNotNull();
+        assertThat(employee.getLastName()).isNotNull();
+        assertThat(employee.getPhoneNumber()).isNotNull();
+        assertThat(employee.getSector()).isNotNull();
+        assertThat(employee.getOccupation()).isNotNull();
+        assertThat(employee.getAgency()).isNotNull();
+        assertThat(employee.getAvatar()).isNotNull();
+        assertThat(employee.getUser()).isNotNull();
+    }
 
+    /**
+     * Testa a alteração do setor de um Employee.
+     * Verifica se o método setSector altera corretamente o valor.
+     */
+    @Test
+    @DisplayName("Should correctly set the sector attribute")
+    void testSetSector() {
+        Employee employee = createSampleEmployee(null);
+        String newSector = "Human Resources";
+        employee.setSector(newSector);
+        assertThat(employee.getSector()).isEqualTo(newSector);
+    }
+}

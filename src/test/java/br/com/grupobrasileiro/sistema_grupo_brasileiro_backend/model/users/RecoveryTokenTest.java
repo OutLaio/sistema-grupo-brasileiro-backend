@@ -1,15 +1,12 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
-
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import com.github.javafaker.Faker;
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class RecoveryTokenTest {
 
@@ -33,6 +30,7 @@ public class RecoveryTokenTest {
      * com os valores de id e token.
      */
     @Test
+    @DisplayName("Should return a correct string representation of the RecoveryToken instance")
     void testToString() {
         // Crie um RecoveryToken com valores fixos
         RecoveryToken recoveryToken = createSampleRecoveryToken(123L, "abc123");
@@ -53,10 +51,8 @@ public class RecoveryTokenTest {
      * e se têm o mesmo hashCode.
      */
     @Test
+    @DisplayName("Should consider equal instances with the same id and token")
     void testEqualsAndHashCode() {
-        // Cria uma instância de Faker
-        Faker faker = new Faker();
-
         // Cria duas instâncias idênticas com o mesmo ID e token
         Long id = faker.number().randomNumber();
         String token = faker.lorem().word();
@@ -75,5 +71,39 @@ public class RecoveryTokenTest {
         assertThat(token1).isNotEqualTo(token3);
         assertThat(token1.hashCode()).isNotEqualTo(token3.hashCode());
     }
-}
 
+    /**
+     * Testa a criação de um RecoveryToken com valores nulos.
+     * Verifica se a instância pode ser criada e não é nula.
+     */
+    @Test
+    @DisplayName("Should create a RecoveryToken instance and not be null")
+    void testCreateRecoveryTokenWithNullValues() {
+        RecoveryToken recoveryToken = createSampleRecoveryToken(null, null);
+        assertNotNull(recoveryToken);
+    }
+
+    /**
+     * Testa a criação de um RecoveryToken com valores padrão.
+     * Verifica se os atributos são atribuídos corretamente.
+     */
+    @Test
+    @DisplayName("Should correctly set attributes when creating RecoveryToken with default values")
+    void testCreateRecoveryTokenWithDefaultValues() {
+        RecoveryToken recoveryToken = createSampleRecoveryToken(1L, "defaultToken");
+        assertThat(recoveryToken.getId()).isEqualTo(1L);
+        assertThat(recoveryToken.getToken()).isEqualTo("defaultToken");
+    }
+
+    /**
+     * Testa a alteração do atributo token de um RecoveryToken.
+     * Verifica se o método setToken altera corretamente o valor.
+     */
+    @Test
+    @DisplayName("Should correctly set token attribute")
+    void testSetToken() {
+        RecoveryToken recoveryToken = createSampleRecoveryToken(1L, "initialToken");
+        recoveryToken.setToken("updatedToken");
+        assertThat(recoveryToken.getToken()).isEqualTo("updatedToken");
+    }
+}

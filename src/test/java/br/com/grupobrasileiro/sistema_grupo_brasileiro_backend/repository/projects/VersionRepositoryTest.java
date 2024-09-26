@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,31 +39,9 @@ public class VersionRepositoryTest {
     @DisplayName("Should count versions by briefing ID")
     void testCountVersionsByBriefingId() {
         // Arrange
-        Briefing briefing = new Briefing();
-        // Configura o briefing (defina os campos necessários)
-        briefing.setDetailedDescription(faker.lorem().sentence());
-        // Salva o briefing
-        briefingRepository.save(briefing);
-
-        // Cria e salva versões
-        Version version1 = new Version();
-        version1.setBriefing(briefing);
-        version1.setNumVersion(1);
-        version1.setProductLink(faker.internet().url());
-        version1.setClientApprove(true);
-        version1.setSupervisorApprove(false);
-        version1.setFeedback("Initial feedback");
-        
-        Version version2 = new Version();
-        version2.setBriefing(briefing);
-        version2.setNumVersion(2);
-        version2.setProductLink(faker.internet().url());
-        version2.setClientApprove(true);
-        version2.setSupervisorApprove(true);
-        version2.setFeedback("Approved version");
-        
-        versionRepository.save(version1);
-        versionRepository.save(version2);
+        Briefing briefing = createTestBriefing();
+        saveTestVersion(briefing, 1, "Initial feedback", true, false);
+        saveTestVersion(briefing, 2, "Approved version", true, true);
 
         // Act
         long count = versionRepository.countVersionsByBriefingId(briefing.getId());
@@ -82,5 +61,89 @@ public class VersionRepositoryTest {
 
         // Assert
         assertThat(count).isEqualTo(0); // Verifica se a contagem é igual a 0
+    }
+
+    /**
+     * Testa a contagem de versões após a exclusão de uma versão.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should update count after deleting a version")
+    void testCountAfterDeletingVersion() {
+        // Arrange
+        Briefing briefing = createTestBriefing();
+        Version version1 = saveTestVersion(briefing, 1, "Feedback 1", true, false);
+        saveTestVersion(briefing, 2, "Feedback 2", true, true);
+
+        // Act - Excluir uma versão
+        versionRepository.delete(version1);
+
+        // Assert - Verifica a contagem de versões
+        long count = versionRepository.countVersionsByBriefingId(briefing.getId());
+        assertThat(count).isEqualTo(1); // Verifica se a contagem é igual a 1
+    }
+
+    /**
+     * Testa a atualização de uma versão existente.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should update an existing version")
+    void testUpdateVersion() {
+        // Arrange
+        Briefing briefing = createTestBriefing();
+        Version version = saveTestVersion(briefing, 1, "Initial feedback", true, false);
+
+        // Act - Atualiza a versão
+        version.setFeedback("Updated feedback");
+        Version updatedVersion = versionRepository.save(version);
+
+        // Assert - Verifica se a atualização foi feita
+        assertThat(updatedVersion.getFeedback()).isEqualTo("Updated feedback");
+    }
+
+   
+
+    /**
+     * Testa a criação e recuperação de uma versão.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should create and retrieve a version")
+    void testCreateAndRetrieveVersion() {
+        // Arrange
+        Briefing briefing = createTestBriefing();
+        Version version = new Version();
+        version.setBriefing(briefing);
+        version.setNumVersion(1);
+        version.setProductLink(faker.internet().url());
+        version.setClientApprove(true);
+        version.setSupervisorApprove(false);
+        version.setFeedback("Test feedback");
+
+        // Act
+        versionRepository.save(version);
+        Optional<Version> retrievedVersion = versionRepository.findById(version.getId());
+
+        // Assert
+        assertThat(retrievedVersion).isPresent();
+        assertThat(retrievedVersion.get().getFeedback()).isEqualTo(version.getFeedback());
+    }
+
+    private Briefing createTestBriefing() {
+        Briefing briefing = new Briefing();
+        briefing.setDetailedDescription(faker.lorem().sentence());
+        return briefingRepository.save(briefing);
+    }
+
+    private Version saveTestVersion(Briefing briefing, int versionNumber, String feedback, boolean clientApprove, boolean supervisorApprove) {
+        Version version = new Version();
+        version.setBriefing(briefing);
+        version.setNumVersion(versionNumber);
+        version.setProductLink(faker.internet().url());
+        version.setClientApprove(clientApprove);
+        version.setSupervisorApprove(supervisorApprove);
+        version.setFeedback(feedback);
+        return versionRepository.save(version);
     }
 }

@@ -45,16 +45,8 @@ public class DialogBoxRepositoryTest {
     @DisplayName("Should create and retrieve a dialog box")
     void testCreateAndRetrieveDialogBox() {
         // Arrange
-        Employee employee = new Employee();
-        employee.setName(faker.name().firstName());
-        employee.setLastName(faker.name().lastName());
-        // Salvar o empregado
-        employeeRepository.save(employee);
-
-        Briefing briefing = new Briefing();
-        briefing.setDetailedDescription(faker.lorem().sentence());
-        // Salvar o briefing
-        briefingRepository.save(briefing);
+        Employee employee = createTestEmployee();
+        Briefing briefing = createTestBriefing();
 
         DialogBox dialogBox = new DialogBox();
         dialogBox.setEmployee(employee);
@@ -84,5 +76,20 @@ public class DialogBoxRepositoryTest {
 
         // Assert
         assertThat(retrievedDialogBox).isNotPresent();
+    }
+
+    private Employee createTestEmployee() {
+        Employee employee = new Employee();
+        employee.setName(faker.name().firstName());
+        employee.setLastName(faker.name().lastName());
+        // Salvar o empregado
+        return employeeRepository.save(employee);
+    }
+
+    private Briefing createTestBriefing() {
+        Briefing briefing = new Briefing();
+        briefing.setDetailedDescription(faker.lorem().sentence());
+        // Salvar o briefing
+        return briefingRepository.save(briefing);
     }
 }

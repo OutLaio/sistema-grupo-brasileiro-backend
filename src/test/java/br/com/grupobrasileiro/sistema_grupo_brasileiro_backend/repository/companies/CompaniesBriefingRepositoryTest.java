@@ -9,16 +9,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
 
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Company;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.companies.CompaniesBriefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = Replace.NONE) 
 public class CompaniesBriefingRepositoryTest {
 
     @Autowired
@@ -32,14 +35,17 @@ public class CompaniesBriefingRepositoryTest {
     @BeforeEach
     void setUp() {
         faker = new Faker();
+        createTestData();
+    }
 
+    private void createTestData() {
         // Criando um objeto Company fictício
         testCompany = new Company();
-        testCompany.setName(faker.company().name()); // Ajuste conforme os métodos disponíveis na classe Company
+        testCompany.setName(faker.company().name()); // Configure conforme necessário
 
         // Criando um objeto Briefing fictício
         testBriefing = new Briefing();
-        testBriefing.setDetailedDescription(faker.lorem().paragraph()); // Ajuste conforme os métodos disponíveis na classe Briefing
+        testBriefing.setDetailedDescription(faker.lorem().paragraph()); // Configure conforme necessário
         testBriefing.setStartTime(LocalDateTime.now());
         testBriefing.setExpectedTime(LocalDateTime.now().plusDays(7));
 
@@ -54,13 +60,13 @@ public class CompaniesBriefingRepositoryTest {
      * Verifica se o objeto é salvo e pode ser recuperado corretamente.
      */
     @Test
-    @Rollback(false)
+    @Rollback // Habilita rollback após o teste
     @DisplayName("Should save and find CompaniesBriefing correctly")
     void testSaveAndFindCompaniesBriefing() {
-        // Act
+        // Ação
         CompaniesBriefing savedBriefing = companiesBriefingRepository.save(companiesBriefing);
         
-        // Assert
+        // Assertiva
         Optional<CompaniesBriefing> foundBriefing = companiesBriefingRepository.findById(savedBriefing.getId());
         assertThat(foundBriefing).isPresent();
         assertThat(foundBriefing.get().getCompany()).isEqualTo(companiesBriefing.getCompany());
@@ -72,14 +78,14 @@ public class CompaniesBriefingRepositoryTest {
      * Verifica se o objeto é excluído corretamente do repositório.
      */
     @Test
-    @Rollback(false)
+    @Rollback // Habilita rollback após o teste
     @DisplayName("Should delete CompaniesBriefing correctly")
     void testDeleteCompaniesBriefing() {
-        // Act
+        // Ação
         CompaniesBriefing savedBriefing = companiesBriefingRepository.save(companiesBriefing);
         companiesBriefingRepository.delete(savedBriefing);
 
-        // Assert
+        // Assertiva
         Optional<CompaniesBriefing> foundBriefing = companiesBriefingRepository.findById(savedBriefing.getId());
         assertThat(foundBriefing).isNotPresent();
     }
