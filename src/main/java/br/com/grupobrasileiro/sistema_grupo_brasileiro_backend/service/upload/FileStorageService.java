@@ -8,14 +8,11 @@ import java.nio.file.StandardCopyOption;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.FileStorageException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.upload.FileStorageProperties;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class FileStorageService {
 	
 	private final Path fileStorageLocation;
