@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -12,8 +13,6 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 @Entity
 @Table(name = "\"Tb_Profiles\"")
 public class Profile {
@@ -36,4 +35,26 @@ public class Profile {
 
 	@OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private Set<User> users = new HashSet<>();
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Profile profile = (Profile) o;
+		return Objects.equals(id, profile.id) &&
+				Objects.equals(description, profile.description);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, description);
+	}
+
+	@Override
+	public String toString() {
+		return "Profile{" +
+				"id=" + id +
+				", description='" + description + '\'' +
+				'}';
+	}
 }

@@ -10,18 +10,25 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Br
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.singpost.MaterialRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.singpost.SignpostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
  * Serviço responsável pela lógica de negócio relacionada aos pontos de sinalização (signposts).
  */
 @Service
-@RequiredArgsConstructor
 public class BSignpostService {
 
+    @Autowired
     private SignpostRepository signpostRepository;
+
+    @Autowired
     private MaterialRepository materialRepository;
+
+    @Autowired
     private BSignpostFormMapper bSignpostFormMapper;
+
+    @Autowired
     private BSignpostDetailedViewMapper bSignpostRegisterViewMapper;
 
     public BSignpostDetailedView register(BSignpostForm bSignpostForm, Briefing briefing) {

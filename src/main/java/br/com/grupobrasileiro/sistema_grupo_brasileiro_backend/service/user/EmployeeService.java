@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
  * Classe de serviço responsável por operações relacionadas à entidade Employee.
  */
 @Service
-@RequiredArgsConstructor
 public class EmployeeService {
 
     @Autowired

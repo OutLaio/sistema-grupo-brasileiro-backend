@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
 @Service
 public class BAgencyBoardService {
 
-
-
     @Autowired
     private BoardTypeRepository boardTypeRepository;
 
@@ -80,6 +78,10 @@ public class BAgencyBoardService {
                         })
                         .collect(Collectors.toSet()) : Set.of();
         bAgencyBoard.setRoutes(routes);
+
+        System.out.println("Cadastro de RotasForm: " + bAgencyBoardsForm.routes());
+        System.out.println("Cadastro de Rotas: " + routes.size());
+
 
         Set<OtherRoute> otherRoutes = bAgencyBoardsForm.otherRoutes() != null ?
                 bAgencyBoardsForm.otherRoutes().stream()

@@ -34,7 +34,6 @@ import java.net.URI;
 @Tag(name = "Signpost", description = "API for managing signposts")
 public class SignpostController {
 
-
     @Autowired
     private ProjectService projectService;
 

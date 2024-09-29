@@ -61,7 +61,7 @@ class BAgencyBoardControllerTest {
         // Arrange
         RegisterAgencyBoard registerAgencyBoard = new RegisterAgencyBoard(
                 new ProjectForm(faker.number().randomNumber(), faker.company().name(), null), // idClient, title, status
-                new BriefingForm(LocalDateTime.now().plusDays(10), faker.lorem().sentence(), new HashSet<>(), null, 1L, null), // expectedTime, detailedDescription, companies, otherCompany, idBriefingType, measurement
+                new BriefingForm(LocalDateTime.now().plusDays(10), faker.lorem().sentence(), new HashSet<>(), null, 1L, null), // expectedDate, detailedDescription, companies, otherCompany, idBriefingType, measurement
                 new BAgencyBoardsForm(null, null, faker.lorem().sentence(), faker.lorem().sentence(), null, null) // Preencha conforme necessário
         );
 

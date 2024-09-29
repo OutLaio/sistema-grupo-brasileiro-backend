@@ -7,6 +7,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projec
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Component
@@ -23,8 +24,8 @@ public class BriefingFormMapper implements Mapper<BriefingForm, Briefing> {
                 null,
                 null,
                 null,
-                LocalDateTime.now(),
-                briefingForm.expectedTime(),
+                LocalDate.now(),
+                briefingForm.expectedDate(),
                 null,
                 briefingForm.detailedDescription(),
                 briefingForm.otherCompany(),

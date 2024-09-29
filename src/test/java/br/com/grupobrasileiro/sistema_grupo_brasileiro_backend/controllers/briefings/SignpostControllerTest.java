@@ -60,7 +60,7 @@ class SignpostControllerTest {
         // Arrange
         RegisterSignpostForm registerSignpost = new RegisterSignpostForm(
                 new ProjectForm(faker.number().randomNumber(), faker.company().name(), null), // idClient, title, status
-                new BriefingForm(LocalDateTime.now().plusDays(10), faker.lorem().sentence(), new HashSet<>(), null, 1L, null), // expectedTime, detailedDescription, companies, otherCompany, idBriefingType, measurement
+                new BriefingForm(LocalDateTime.now().plusDays(10), faker.lorem().sentence(), new HashSet<>(), null, 1L, null), // expectedDate, detailedDescription, companies, otherCompany, idBriefingType, measurement
                 null // Preencha conforme necessário para o signpostForm
         );
 

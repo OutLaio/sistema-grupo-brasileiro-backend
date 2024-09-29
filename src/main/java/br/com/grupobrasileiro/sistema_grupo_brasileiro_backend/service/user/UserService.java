@@ -19,9 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Serviço responsável por gerenciar operações relacionadas a usuários.
  */
 @Service
-@RequiredArgsConstructor
 public class UserService {
-
 
     @Autowired
 	private UserRepository userRepository;
@@ -31,6 +29,7 @@ public class UserService {
 
     @Autowired
 	private ProfileRepository profileRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -67,7 +66,7 @@ public class UserService {
      * @throws EntityNotFoundException Se o perfil associado ao usuário não for encontrado.
      */
     public User create(UserForm userForm) {
-        if (userRepository.findByEmail(userForm.email()) != null) {
+        if (userRepository.findByEmail(userForm.email()).isPresent()) {
             throw new EmailUniqueViolationException("Email já está em uso");
         }
         User user = userFormMapper.map(userForm);

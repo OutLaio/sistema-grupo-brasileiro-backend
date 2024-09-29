@@ -15,8 +15,6 @@ public class RouteFormMapper implements Mapper<RoutesForm, Route> {
 
     @Override
     public Route map(RoutesForm routesForm) {
-
-
         return new Route(
                 null,
                 null,

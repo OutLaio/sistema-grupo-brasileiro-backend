@@ -9,11 +9,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class BAgencyBoardFormMapper implements Mapper<BAgencyBoardsForm, BAgencyBoard> {
 
-
-
     @Override
     public BAgencyBoard map(BAgencyBoardsForm form) {
-
 
         return new BAgencyBoard(
                 null,

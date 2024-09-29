@@ -27,23 +27,40 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Emplo
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class ProjectService {
 
+    @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
     private ProjectFormMapper projectFormMapper;
+
+    @Autowired
     private ProjectViewMapper projectViewMapper;
+
+    @Autowired
     private BAgencyBoardDetailedViewMapper bAgencyBoardDetailedViewMapper;
+
+    @Autowired
     private BSignpostDetailedViewMapper bSignpostDetailedViewMapper;
+
+    @Autowired
+    private UserRepository userRepository;
 
 
     public Project register(ProjectForm projectForm) {
@@ -101,9 +118,11 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
-    public Set<ProjectView> getAll(User user) {
+    public Set<ProjectView> getAll(Long idUser) {
+        User user = userRepository.getReferenceById(idUser);
         Set<ProjectView> projects;
         if(user.getProfile().getId().equals(3L)){
+            Hibernate.initialize(user.getEmployee().getOwnedProjects());
             projects = user.getEmployee().getOwnedProjects().stream().map(
                 project -> projectViewMapper.map(project)
             ).collect(Collectors.toSet());
