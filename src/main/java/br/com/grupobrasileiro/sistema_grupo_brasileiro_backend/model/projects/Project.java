@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,8 +15,6 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 @Entity
 @Table(name = "\"Tb_Projects\"")
 public class Project {
@@ -71,7 +70,35 @@ public class Project {
     @OneToOne(mappedBy = "project")
     private Briefing briefing;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Project project = (Project) o;
+        return Objects.equals(id, project.id) &&
+                Objects.equals(title, project.title) &&
+                Objects.equals(status, project.status) &&
+                Objects.equals(disabled, project.disabled) &&
+                Objects.equals(collaborator != null ? collaborator.getId() : null, project.collaborator != null ? project.collaborator.getId() : null) &&
+                Objects.equals(client != null ? client.getId() : null, project.client != null ? project.client.getId() : null);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, status, disabled,
+                collaborator != null ? collaborator.getId() : null,
+                client != null ? client.getId() : null);
+    }
 
-
+    @Override
+    public String toString() {
+        return "Project{" +
+                "id=" + id +
+                ", collaborator=" + (collaborator != null ? collaborator.getId() : "null") +
+                ", client=" + (client != null ? client.getId() : "null") +
+                ", title='" + title + '\'' +
+                ", status='" + status + '\'' +
+                ", disabled=" + disabled +
+                '}';
+    }
 }

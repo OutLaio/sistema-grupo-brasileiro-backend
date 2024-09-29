@@ -32,7 +32,7 @@ import java.util.Set;
 
         /**
          * Testa o construtor parametrizado da classe Briefing.
-         * Verifica se o construtor com parâmetros define corretamente os atributos startTime, expectedTime e detailedDescription.
+         * Verifica se o construtor com parâmetros define corretamente os atributos startTime, expectedDate e detailedDescription.
          */
         @Test
         void testParameterizedConstructor() {
@@ -73,7 +73,7 @@ import java.util.Set;
 
         /**
          * Testa os métodos equals e hashCode da classe Briefing.
-         * Verifica se duas instâncias com os mesmos valores de startTime, expectedTime e detailedDescription são iguais
+         * Verifica se duas instâncias com os mesmos valores de startTime, expectedDate e detailedDescription são iguais
          * e se têm o mesmo hashCode.
          */
         @Test
@@ -108,7 +108,7 @@ import java.util.Set;
         /**
          * Testa o método toString da classe Briefing.
          * Verifica se o método toString retorna uma representação correta da instância
-         * com os valores de startTime, expectedTime e detailedDescription.
+         * com os valores de startTime, expectedDate e detailedDescription.
          */
         @Test
         void testToString() {
@@ -122,7 +122,7 @@ import java.util.Set;
             briefing.setDetailedDescription(detailedDescription);
 
             String expectedToString = "Briefing(id=null, project=null, briefingType=null, startTime=" + startTime + 
-                                      ", expectedTime=" + expectedTime + 
+                                      ", expectedDate=" + expectedTime +
                                       ", finishTime=null, detailedDescription=" + detailedDescription +
                                       ", otherCompany=null, versions=[], dialogs=[], measurement=null, " +
                                       "companies=[], printed=null, gift=null, agencyBoard=null, sticker=null, " +

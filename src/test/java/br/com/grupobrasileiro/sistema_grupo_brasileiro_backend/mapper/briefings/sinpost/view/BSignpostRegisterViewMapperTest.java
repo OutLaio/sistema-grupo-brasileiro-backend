@@ -1,7 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.sinpost.view;
 
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -14,10 +13,10 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.SignpostRegisterView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.view.BSignpostRegisterViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.view.BSignpostDetailedViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.view.BSignpostViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view.BriefingViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view.ProjectViewMapper;
@@ -32,7 +31,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Pr
 public class BSignpostRegisterViewMapperTest {
 
     @InjectMocks
-    private BSignpostRegisterViewMapper bSignpostRegisterViewMapper;
+    private BSignpostDetailedViewMapper bSignpostRegisterViewMapper;
 
     @Mock
     private BSignpostViewMapper bSignpostViewMapper;
@@ -81,7 +80,7 @@ public class BSignpostRegisterViewMapperTest {
         when(briefingViewMapper.map(briefing)).thenReturn(briefingView);
 
         // Mapeamento
-        SignpostRegisterView result = bSignpostRegisterViewMapper.map(bSignpost);
+        BSignpostDetailedView result = bSignpostRegisterViewMapper.map(bSignpost);
 
         // Verificação dos resultados
         assertThat(result).isNotNull();
@@ -100,7 +99,7 @@ public class BSignpostRegisterViewMapperTest {
         when(bSignpost.getBriefing()).thenReturn(null);
         
         // Mapeamento
-        SignpostRegisterView result = bSignpostRegisterViewMapper.map(bSignpost);
+        BSignpostDetailedView result = bSignpostRegisterViewMapper.map(bSignpost);
         
         // Verificação dos resultados
         assertThat(result).isNotNull();
@@ -120,7 +119,7 @@ public class BSignpostRegisterViewMapperTest {
         when(bSignpostViewMapper.map(bSignpost)).thenReturn(bSignpostView);
 
         // Mapeamento
-        SignpostRegisterView result = bSignpostRegisterViewMapper.map(bSignpost);
+        BSignpostDetailedView result = bSignpostRegisterViewMapper.map(bSignpost);
 
         // Verificação dos resultados
         assertThat(result).isNotNull();

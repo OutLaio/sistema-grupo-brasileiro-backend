@@ -9,15 +9,18 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Emplo
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
-@RequiredArgsConstructor
 public class DialogBoxFormMapper implements Mapper<DialogBoxForm, DialogBox> {
 
+    @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
     private BriefingRepository briefingRepository;
 
     @Override

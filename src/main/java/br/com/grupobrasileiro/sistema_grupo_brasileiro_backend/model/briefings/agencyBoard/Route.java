@@ -11,8 +11,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@EqualsAndHashCode(of = "id")
-@ToString(of = "id")
 @Table(name = "\"Tb_Routes\"")
 public class Route {
 
@@ -31,4 +29,35 @@ public class Route {
 
     @Column(name = "type", nullable = false)
     private String type;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Route route = (Route) o;
+
+        // Comparação baseada em 'bAgencyBoard', 'companyCity', e 'type'
+        if (!bAgencyBoard.equals(route.bAgencyBoard)) return false;
+        if (!companyCity.equals(route.companyCity)) return false;
+        return type.equals(route.type);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = bAgencyBoard.hashCode();
+        result = 31 * result + companyCity.hashCode();
+        result = 31 * result + type.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Route{" +
+                "id=" + id +
+                ", bAgencyBoard=" + (bAgencyBoard != null ? bAgencyBoard.getId() : "null") +
+                ", companyCity=" + (companyCity != null ? companyCity.getId() : "null") +
+                ", type='" + type + '\'' +
+                '}';
+    }
 }

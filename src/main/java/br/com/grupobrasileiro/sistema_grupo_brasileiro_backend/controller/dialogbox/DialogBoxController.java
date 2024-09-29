@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +19,11 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/dialogs")
-@RequiredArgsConstructor
 @Tag(name = "Dialog Box", description = "Managing briefing-related dialog messages")
 public class DialogBoxController {
 
-    private final DialogBoxService dialogBoxService;
+    @Autowired
+    private DialogBoxService dialogBoxService;
 
     @Operation(summary = "Create a new dialog message",
             description = "Creates a new dialog message and persists it in the database.")

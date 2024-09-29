@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
@@ -58,7 +59,7 @@ class BriefingFormMapperTest {
 
         // Mocking BriefingForm com dados de exemplo
         BriefingForm form = new BriefingForm(
-                LocalDateTime.of(2024, 9, 19, 12, 0), // Data de exemplo
+                LocalDate.of(2024, 9, 19), // Data de exemplo
                 faker.lorem().sentence(), // Gera uma descrição detalhada aleatória
                 new HashSet<>(), // Conjunto vazio de CompaniesBriefingsForm
                 faker.company().name(), // Gera um nome de empresa aleatório
@@ -70,7 +71,7 @@ class BriefingFormMapperTest {
         Briefing result = briefingFormMapper.map(form);
 
         // Assert - verifica se os valores foram mapeados corretamente
-        assertEquals(form.expectedTime(), result.getExpectedTime(), "Expected time should match");
+        assertEquals(form.expectedDate(), result.getExpectedTime(), "Expected time should match");
         assertEquals(form.detailedDescription(), result.getDetailedDescription(), "Detailed description should match");
         assertEquals(form.otherCompany(), result.getOtherCompany(), "Other company should match");
         
@@ -85,7 +86,7 @@ class BriefingFormMapperTest {
     void shouldReturnBriefingWithNullBriefingTypeWhenIdNotFound() {
         // Mocking BriefingForm com ID de briefing type que não existe
         BriefingForm form = new BriefingForm(
-                LocalDateTime.of(2024, 9, 19, 12, 0), 
+                LocalDate.of(2024, 9, 19),
                 faker.lorem().sentence(), 
                 new HashSet<>(), 
                 faker.company().name(), 
@@ -115,7 +116,7 @@ class BriefingFormMapperTest {
 
         // Mocking BriefingForm com Measurement
         BriefingForm form = new BriefingForm(
-                LocalDateTime.of(2024, 9, 19, 12, 0), 
+                LocalDate.of(2024, 9, 19),
                 faker.lorem().sentence(), 
                 new HashSet<>(), 
                 faker.company().name(), 
@@ -145,7 +146,7 @@ class BriefingFormMapperTest {
     void shouldHandleBriefingFormWithoutMeasurementCorrectly() {
         // Mocking BriefingForm sem Measurement
         BriefingForm form = new BriefingForm(
-                LocalDateTime.of(2024, 9, 19, 12, 0), 
+                LocalDate.of(2024, 9, 19),
                 faker.lorem().sentence(), 
                 new HashSet<>(), 
                 faker.company().name(), 

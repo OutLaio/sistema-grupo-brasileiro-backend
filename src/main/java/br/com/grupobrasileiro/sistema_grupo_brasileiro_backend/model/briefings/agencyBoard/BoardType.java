@@ -8,8 +8,6 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 @Entity
 @Table(name = "\"Tb_BoardTypes\"")
 public class BoardType {
@@ -21,5 +19,24 @@ public class BoardType {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BoardType boardType)) return false;
+        return Objects.equals(id, boardType.id) &&
+                Objects.equals(description, boardType.description);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, description);
+    }
+
+    @Override
+    public String toString() {
+        return "BoardType{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

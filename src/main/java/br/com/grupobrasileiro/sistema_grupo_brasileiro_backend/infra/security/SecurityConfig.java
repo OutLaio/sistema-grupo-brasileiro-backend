@@ -36,11 +36,11 @@ public class SecurityConfig {
 
                         // Restrição de acesso para Supervisores
                         .requestMatchers(HttpMethod.PUT, "/api/v1/projects/{id}/assignCollaborator").hasRole("SUPERVISOR")
-                        .requestMatchers(HttpMethod.GET, "/api/vi/employees/allCollaborators").hasRole("SUPERVISOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/vi/employees/approve/supervisor").hasRole("SUPERVISOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/vi/employees/{id}/hasProduction").hasRole("SUPERVISOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/vi/employees/{id}/finish").hasRole("SUPERVISOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/vi/employees/{id}/standby").hasRole("SUPERVISOR")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/employees/allCollaborators").hasRole("SUPERVISOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/employees/approve/supervisor").hasRole("SUPERVISOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/employees/{id}/hasProduction").hasRole("SUPERVISOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/employees/{id}/finish").hasRole("SUPERVISOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/employees/{id}/standby").hasRole("SUPERVISOR")
 
                         // Restrição de acesso para Colaboradores
 

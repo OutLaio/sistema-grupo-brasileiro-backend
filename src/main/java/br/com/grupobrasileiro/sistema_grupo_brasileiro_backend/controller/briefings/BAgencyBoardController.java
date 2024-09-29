@@ -1,7 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardRegisterView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.form.RegisterAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
@@ -34,7 +34,6 @@ import java.net.URI;
 @Tag(name = "AgencyBoard", description = "API for managing signposts")
 public class BAgencyBoardController {
 
-
     @Autowired
     private ProjectService projectService;
 
@@ -55,13 +54,13 @@ public class BAgencyBoardController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    public ResponseEntity<BAgencyBoardRegisterView> registerSignpost(
+    public ResponseEntity<BAgencyBoardDetailedView> registerSignpost(
             @Valid @RequestBody RegisterAgencyBoard registerAgencyBoard,
             UriComponentsBuilder uriBuilder
     ) {
         Project project = projectService.register(registerAgencyBoard.projectForm());
         Briefing briefing = briefingService.register(registerAgencyBoard.briefingForm(),project);
-        BAgencyBoardRegisterView bAgencyBoardRegisterView = bAgencyBoardService.register(registerAgencyBoard.bAgencyBoardsForm(),briefing);
+        BAgencyBoardDetailedView bAgencyBoardRegisterView = bAgencyBoardService.register(registerAgencyBoard.bAgencyBoardsForm(),briefing);
         URI uri = uriBuilder.path("/api/v1/agency-boards/{id}").buildAndExpand(bAgencyBoardRegisterView.bAgencyBoardView().id()).toUri();
         return ResponseEntity.created(uri).body(bAgencyBoardRegisterView);
     }

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -14,8 +15,6 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 @Entity
 @Table(name = "\"Tb_Employees\"")
 public class Employee {
@@ -89,4 +88,38 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<DialogBox> dialogs = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return Objects.equals(id, employee.id) &&
+                Objects.equals(name, employee.name) &&
+                Objects.equals(lastName, employee.lastName) &&
+                Objects.equals(phoneNumber, employee.phoneNumber) &&
+                Objects.equals(sector, employee.sector) &&
+                Objects.equals(occupation, employee.occupation) &&
+                Objects.equals(agency, employee.agency) &&
+                Objects.equals(avatar, employee.avatar);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, lastName, phoneNumber, sector, occupation, agency, avatar);
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", sector='" + sector + '\'' +
+                ", occupation='" + occupation + '\'' +
+                ", agency='" + agency + '\'' +
+                ", avatar=" + avatar +
+                '}';
+    }
 }
