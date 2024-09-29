@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * Representa um token desabilitado.
@@ -11,8 +12,6 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 @Entity
 @Table(name = "\"Tb_RecoveryTokens\"")
 public class RecoveryToken {
@@ -35,5 +34,27 @@ public class RecoveryToken {
 
     public RecoveryToken(String token) {
         this.token = token;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RecoveryToken that = (RecoveryToken) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(token, that.token);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, token);
+    }
+
+    @Override
+    public String toString() {
+        return "RecoveryToken{" +
+                "id=" + id +
+                ", token='" + token + '\'' +
+                '}';
     }
 }

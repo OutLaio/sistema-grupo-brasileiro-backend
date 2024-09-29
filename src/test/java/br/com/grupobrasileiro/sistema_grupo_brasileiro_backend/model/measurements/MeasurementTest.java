@@ -1,18 +1,12 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.meansurements;
-
-import static org.junit.jupiter.api.Assertions.*;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.measurements;
 
 import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.math.BigDecimal;
 
 public class MeasurementTest {
 

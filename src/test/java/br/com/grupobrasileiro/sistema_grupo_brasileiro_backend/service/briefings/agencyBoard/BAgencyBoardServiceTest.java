@@ -16,9 +16,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -28,7 +26,7 @@ import com.github.javafaker.Faker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.form.BAgencyBoardsForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.form.RoutesForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.AgencyBoardTypeView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardRegisterView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BoardTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CityView;
@@ -43,7 +41,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.E
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.form.BAgencyBoardFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.form.OtherRouteFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.form.RouteFormMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.BAgencyBoardRegisterViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.BAgencyBoardDetailedViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.AgencyBoardType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BoardType;
@@ -86,7 +84,7 @@ class BAgencyBoardServiceTest {
     private BAgencyBoardRepository bAgencyBoardRepository;
 
     @Mock
-    private BAgencyBoardRegisterViewMapper bAgencyBoardRegisterViewMapper;
+    private BAgencyBoardDetailedViewMapper bAgencyBoardRegisterViewMapper;
 
     @InjectMocks
     private BAgencyBoardService bAgencyBoardService;
@@ -174,11 +172,11 @@ class BAgencyBoardServiceTest {
         );
 
         when(bAgencyBoardRegisterViewMapper.map(any(BAgencyBoard.class))).thenReturn(
-            new BAgencyBoardRegisterView(bAgencyBoardView, projectView, briefingView)
+            new BAgencyBoardDetailedView(bAgencyBoardView, projectView, briefingView)
         );
 
         // Act
-        BAgencyBoardRegisterView result = bAgencyBoardService.register(form, briefing);
+        BAgencyBoardDetailedView result = bAgencyBoardService.register(form, briefing);
 
         // Assert
         assertNotNull(result);

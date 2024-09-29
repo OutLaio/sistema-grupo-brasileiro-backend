@@ -3,14 +3,14 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
+
 /**
  * Representa uma versão de um briefing no sistema.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 @Entity
 @Table(name = "\"Tb_Version\"")
 public class Version {
@@ -61,4 +61,35 @@ public class Version {
      */
     @Column(name = "feedback")
     private String feedback;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Version version = (Version) o;
+        return Objects.equals(id, version.id) &&
+                Objects.equals(numVersion, version.numVersion) &&
+                Objects.equals(productLink, version.productLink) &&
+                Objects.equals(clientApprove, version.clientApprove) &&
+                Objects.equals(supervisorApprove, version.supervisorApprove) &&
+                Objects.equals(feedback, version.feedback);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, numVersion, productLink, clientApprove, supervisorApprove, feedback);
+    }
+
+    @Override
+    public String toString() {
+        return "Version{" +
+                "id=" + id +
+                ", briefing=" + (briefing != null ? briefing.getId() : "null") +
+                ", numVersion=" + numVersion +
+                ", productLink='" + productLink + '\'' +
+                ", clientApprove=" + clientApprove +
+                ", supervisorApprove=" + supervisorApprove +
+                ", feedback='" + feedback + '\'' +
+                '}';
+    }
 }

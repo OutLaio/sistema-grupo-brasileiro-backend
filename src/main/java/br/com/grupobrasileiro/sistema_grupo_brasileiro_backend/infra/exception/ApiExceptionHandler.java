@@ -30,7 +30,7 @@ public class ApiExceptionHandler {
                         .status(HttpStatus.BAD_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST,
-                                        "Usuário inexistente ou senha inválida"));
+                                ex.getMessage()));
     }
 
     @ApiResponses(value = {
@@ -42,7 +42,7 @@ public class ApiExceptionHandler {
         return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, "Token inválido"));
+                        .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
     @ApiResponses(value = {
@@ -55,7 +55,7 @@ public class ApiExceptionHandler {
                         .status(HttpStatus.BAD_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST,
-                                        "O valor fornecido é inválido. Por favor, verifique os valores e tente novamente"));
+                                        ex.getMessage()));
     }
 
     @ApiResponses(value = {
@@ -68,7 +68,7 @@ public class ApiExceptionHandler {
                         .status(HttpStatus.BAD_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST,
-                                        "O valor fornecido é inválido. Por favor, verifique os valores e tente novamente"));
+                                        ex.getMessage()));
     }
 
     @ApiResponses(value = {
@@ -81,7 +81,7 @@ public class ApiExceptionHandler {
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(new ErrorMessage(request, HttpStatus.INTERNAL_SERVER_ERROR,
-                                        "Internal server error"));
+                                        ex.getMessage()));
     }
 
     @ApiResponses(value = {
@@ -135,7 +135,7 @@ public class ApiExceptionHandler {
         return ResponseEntity
                         .status(HttpStatus.UNPROCESSABLE_ENTITY)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(new ErrorMessage(request, HttpStatus.UNPROCESSABLE_ENTITY, "Campo(s) invalido(s)",
+                        .body(new ErrorMessage(request, HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(),
                                         result));
 
     }
@@ -151,7 +151,7 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.INTERNAL_SERVER_ERROR,
-                                "Internal server error"));
+                                ex.getMessage()));
     }
 
     @ApiResponses(value = {
@@ -164,7 +164,7 @@ public class ApiExceptionHandler {
                         .status(HttpStatus.BAD_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST,
-                                        "Role do usuário inválida para o projeto"));
+                                        ex.getMessage()));
     }
 
     @ApiResponses(value = {
@@ -177,7 +177,7 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST,
-                        "Colaborador atribuído ao projeto com sucesso."));
+                        ex.getMessage()));
     }
 
     @ApiResponses(value = {

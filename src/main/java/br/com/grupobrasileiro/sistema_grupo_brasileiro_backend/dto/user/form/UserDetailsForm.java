@@ -1,5 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 /**
  * Representa um formulário de registro de usuário completo, incluindo informações de
  * empregado e informações de usuário, agrupadas em um único objeto.
@@ -16,6 +18,7 @@ public record UserDetailsForm(
          * setor de trabalho, ocupação e número de operações (NOP). Estas informações são
          * fornecidas através do record {@link EmployeeForm}.</p>
          */
+        @JsonAlias({"employee"})
         EmployeeForm employeeForm,
 
         /**
@@ -25,6 +28,7 @@ public record UserDetailsForm(
          * código do perfil (profile). Estas informações são fornecidas através do record
          * {@link UserForm}.</p>
          */
+        @JsonAlias({"user"})
         UserForm userForm
 ) {
 

@@ -3,7 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.ag
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 
-public record BAgencyBoardRegisterView(
+public record BAgencyBoardDetailedView(
 
         BAgencyBoardView bAgencyBoardView,
 

@@ -28,7 +28,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.companiesB
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.measurement.form.MeasurementFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.form.BriefingFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.companies.CompaniesBriefing;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.meansurements.Measurement;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.measurements.Measurement;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;

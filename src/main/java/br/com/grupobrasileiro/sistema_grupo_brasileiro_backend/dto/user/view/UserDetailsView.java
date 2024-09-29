@@ -22,15 +22,6 @@ public record UserDetailsView(
          * setor de trabalho, ocupação e número de operações (NOP). Estas informações
          * são extraídas do record {@link EmployeeView}.</p>
          */
-        EmployeeView employeeView,
-
-        /**
-         * Informações de usuário (excluindo a senha).
-         *
-         * <p>Contém as credenciais do usuário, como o e-mail e o código do perfil (profile),
-         * sem incluir a senha. Estas informações são extraídas do record {@link UserView}.</p>
-         */
-        UserView userView
-
+        EmployeeView employeeView
 ) {
 }

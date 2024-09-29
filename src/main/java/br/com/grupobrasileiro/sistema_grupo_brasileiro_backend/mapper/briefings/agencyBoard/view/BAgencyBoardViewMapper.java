@@ -47,7 +47,7 @@ public class BAgencyBoardViewMapper implements Mapper<BAgencyBoard, BAgencyBoard
         return new BAgencyBoardView(
                 bAgencyBoard.getId(),
                 agencyBoardTypeViewMapper.map(bAgencyBoard.getAgencyBoardType()),
-                boardTypeViewMapper.map(bAgencyBoard.getBoardType()),
+                bAgencyBoard.getBoardType() != null ? boardTypeViewMapper.map(bAgencyBoard.getBoardType()) : null,
                 routeViews,
                 otherRouteViews,
                 bAgencyBoard.getBoardLocation(),

@@ -16,10 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.github.javafaker.Faker;
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.AgencyBoardTypeView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardRegisterView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BoardTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CityView;
@@ -38,43 +36,6 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Pr
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardRegisterView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BoardTypeView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CityView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.OtherRouteView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.RouteView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingTypeView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view.BriefingViewMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view.ProjectViewMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 public class BAgencyBoardRegisterViewMapperTest {
 
@@ -88,7 +49,7 @@ public class BAgencyBoardRegisterViewMapperTest {
     private BriefingViewMapper briefingViewMapper;
 
     @InjectMocks
-    private BAgencyBoardRegisterViewMapper mapper;
+    private BAgencyBoardDetailedViewMapper mapper;
 
     @BeforeEach
     void setUp() {
@@ -150,7 +111,7 @@ public class BAgencyBoardRegisterViewMapperTest {
         bAgencyBoard.setBriefing(briefing);
 
         // Mapeamento
-        BAgencyBoardRegisterView result = mapper.map(bAgencyBoard);
+        BAgencyBoardDetailedView result = mapper.map(bAgencyBoard);
 
         // Verificação dos resultados
         assertThat(result).isNotNull();
@@ -184,7 +145,7 @@ public class BAgencyBoardRegisterViewMapperTest {
         bAgencyBoard.setBriefing(briefing);
 
         // Mapeamento
-        BAgencyBoardRegisterView result = mapper.map(bAgencyBoard);
+        BAgencyBoardDetailedView result = mapper.map(bAgencyBoard);
 
         // Verificação dos resultados
         assertThat(result).isNotNull();
@@ -199,7 +160,7 @@ public class BAgencyBoardRegisterViewMapperTest {
         BAgencyBoard bAgencyBoard = null;
 
         // Mapeamento: chamando o método map com o valor nulo
-        BAgencyBoardRegisterView result = mapper.map(bAgencyBoard);
+        BAgencyBoardDetailedView result = mapper.map(bAgencyBoard);
 
         // Verificação dos resultados: result deve ser nulo
         assertThat(result).isNull();
@@ -246,7 +207,7 @@ public class BAgencyBoardRegisterViewMapperTest {
         bAgencyBoard.setBriefing(null);
 
         // Mapeamento
-        BAgencyBoardRegisterView result = mapper.map(bAgencyBoard);
+        BAgencyBoardDetailedView result = mapper.map(bAgencyBoard);
 
         // Verificação dos resultados
         assertThat(result).isNotNull();

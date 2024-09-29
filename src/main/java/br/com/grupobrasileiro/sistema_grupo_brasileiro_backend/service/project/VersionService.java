@@ -10,13 +10,16 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Ve
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.VersionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class VersionService {
 
+    @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
     private VersionRepository versionRepository;
 
     public void supervisorApprove(ApproveForm form) {
