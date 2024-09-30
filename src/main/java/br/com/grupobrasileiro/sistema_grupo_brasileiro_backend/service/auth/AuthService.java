@@ -4,6 +4,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.Log
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.RecoveryPasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.ResetPasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.view.TokenView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view.EmployeeViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view.UserDetailsViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.email.PasswordRequest;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
@@ -38,7 +39,7 @@ public class AuthService implements UserDetailsService {
     private  PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserDetailsViewMapper userDetailsViewMapper;
+    private EmployeeViewMapper employeeViewMapper;
 
     public TokenView doLogin(LoginForm form, AuthenticationManager authenticationManager) {
         User user = userRepository.findByEmail(form.email()).orElseThrow(
@@ -52,7 +53,7 @@ public class AuthService implements UserDetailsService {
     }
 
     private TokenView tokenResponse(String token, User user){
-        return new TokenView(token, userDetailsViewMapper.map(user));
+        return new TokenView(token, employeeViewMapper.map(user.getEmployee()));
     }
 
     public void requestRecoveryPassword(RecoveryPasswordForm form) {

@@ -11,8 +11,6 @@ public class CompanyViewMapper implements Mapper<Company, CompanyView> {
 
     @Override
     public CompanyView map(Company company) {
-
-
         return new CompanyView(
                 company.getId(),
                 company.getName()

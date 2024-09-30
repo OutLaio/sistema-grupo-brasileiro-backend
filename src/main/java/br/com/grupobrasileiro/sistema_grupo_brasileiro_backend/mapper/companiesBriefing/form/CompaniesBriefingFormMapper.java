@@ -1,4 +1,4 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.companiesBrienfing.form;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.companiesBriefing.form;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.companiesBriefing.form.CompaniesBriefingsForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;

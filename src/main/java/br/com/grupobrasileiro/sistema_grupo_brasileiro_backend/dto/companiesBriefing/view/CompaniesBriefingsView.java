@@ -2,7 +2,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.companiesBri
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Objeto de Transferência de Dados (DTO) para visualização de Briefings de Empresas.
@@ -12,7 +12,7 @@ import java.util.List;
  */
 public record CompaniesBriefingsView(
 
-        List<CompanyView> companies
+        Set<CompanyView> companies
 
 ) {
 }
