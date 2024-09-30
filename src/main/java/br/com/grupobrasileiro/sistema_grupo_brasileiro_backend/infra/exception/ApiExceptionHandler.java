@@ -234,5 +234,19 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.INTERNAL_SERVER_ERROR,
                                 "Internal server error: " + ex.getMessage()));
     }
+    
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "File not found")
+    })
+    @ExceptionHandler(MyFileNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleMyFileNotFoundException(MyFileNotFoundException ex,
+                                                                     HttpServletRequest request) {
+        log.error("Api Error - " + ex.getMessage(), ex);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND,
+                        "File not found: " + ex.getMessage()));
+    }
 
 }
