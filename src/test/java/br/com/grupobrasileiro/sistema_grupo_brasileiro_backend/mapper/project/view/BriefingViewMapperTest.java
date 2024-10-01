@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,9 +26,9 @@ class BriefingViewMapperTest {
         // Inicializa o briefing com valores fictícios
         briefing = new Briefing();
         briefing.setId(1L);  // ID fictício
-        briefing.setStartTime(LocalDateTime.now());  // Tempo de início atual
-        briefing.setExpectedTime(LocalDateTime.now().plusDays(1));  // Tempo esperado para o dia seguinte
-        briefing.setFinishTime(LocalDateTime.now().plusDays(2));  // Tempo de finalização para dois dias depois
+        briefing.setStartTime(LocalDate.now());  // Tempo de início atual
+        briefing.setExpectedTime(LocalDate.now().plusDays(1));  // Tempo esperado para o dia seguinte
+        briefing.setFinishTime(LocalDate.now().plusDays(2));  // Tempo de finalização para dois dias depois
         briefing.setDetailedDescription("Test description");  // Descrição de teste
 
         // Criando e associando um tipo de briefing
@@ -47,7 +48,6 @@ class BriefingViewMapperTest {
         briefingTypeMapperField.setAccessible(true); // Permite o acesso ao campo privado
         briefingTypeMapperField.set(briefingViewMapper, briefingTypeViewMapper); // Define o valor do campo
     }
-
     /**
      * Testa o método map do BriefingViewMapper.
      * Verifica se ele mapeia um briefing corretamente para um BriefingView.

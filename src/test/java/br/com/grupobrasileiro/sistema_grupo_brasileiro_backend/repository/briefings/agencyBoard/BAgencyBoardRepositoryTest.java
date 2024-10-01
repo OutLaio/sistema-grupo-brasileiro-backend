@@ -2,49 +2,185 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.brief
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.AgencyBoardType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BoardType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingTypeRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProfileRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
+import jakarta.transaction.Transactional;
 
-@DataJpaTest
+@SpringBootTest
+@ActiveProfiles("test")
+@Transactional
 public class BAgencyBoardRepositoryTest {
 
     @Autowired
     private BAgencyBoardRepository bAgencyBoardRepository;
 
+    @Autowired
+    private AgencyBoardTypeRepository agencyBoardTypeRepository;
+
+    @Autowired
+    private BoardTypeRepository boardTypeRepository;
+
+    @Autowired
+    private BriefingRepository briefingRepository;
+
+    @Autowired
+    private BriefingTypeRepository briefingTypeRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private ProfileRepository profileRepository;
+    
+    @Autowired
+    private ProjectRepository projectRepository;
+
     // Objetos mock
     private AgencyBoardType agencyBoardType;
     private BoardType boardType;
     private Briefing briefing;
+    private BriefingType briefingType;
 
     @BeforeEach
     void setUp() {
-        // Configura os objetos mock para os testes
+        // Criar e salvar um novo perfil
+        Profile profile = new Profile();
+        profile.setDescription("Perfil de Exemplo");
+        profile = profileRepository.save(profile); // Salvar o perfil de exemplo
+
+        // Verificar se o usuário já existe
+        Optional<User> existingUserOpt = userRepository.findByEmail("usuario@example.com");
+        User user;
+
+        // Usar o usuário existente ou criar um novo
+        if (existingUserOpt.isPresent()) {
+            user = existingUserOpt.get();
+        } else {
+            // Criar e salvar um novo usuário de teste
+            user = new User();
+            user.setProfile(profile); // Usar o perfil recém-criado
+            user.setEmail("usuario@example.com");
+            user.setPassword("senha");
+            user.setDisabled(false);
+            user = userRepository.save(user); // Salvar o novo usuário
+        }
+
+        // Criar e salvar um colaborador de teste
+        Employee collaborator = new Employee();
+        collaborator.setName("Colaborador de Teste");
+        collaborator.setLastName("Sobrenome do Colaborador");
+        collaborator.setPhoneNumber("123456789");
+        collaborator.setSector("Setor do Colaborador");
+        collaborator.setOccupation("Ocupação do Colaborador");
+        collaborator.setAgency("Agência do Colaborador");
+        collaborator.setAvatar(1L);
+        collaborator.setUser(user); // Associar o usuário ao colaborador
+        employeeRepository.save(collaborator);
+        
+        // Criar e salvar um cliente de teste
+        Employee client = new Employee();
+        client.setName("Cliente de Teste");
+        client.setLastName("Sobrenome do Cliente");
+        client.setPhoneNumber("987654321");
+        client.setSector("Setor do Cliente");
+        client.setOccupation("Ocupação do Cliente");
+        client.setAgency("Agência do Cliente");
+        client.setAvatar(2L);
+        client.setUser(user); // Também associar o mesmo usuário
+        employeeRepository.save(client);
+        
+        // Criar e salvar um projeto de teste
+        Project project = new Project();
+        project.setTitle("Projeto de Teste"); 
+        project.setDisabled(false); 
+        project.setClient(client); 
+        project.setCollaborator(collaborator); 
+        project = projectRepository.save(project); 
+
+        // Criar e salvar um briefing associando ao projeto
+        Briefing briefing = new Briefing();
+        briefing.setProject(project); 
+        briefing.setBriefingType(briefingType); 
+        briefing.setStartTime(LocalDateTime.now());
+        briefing.setExpectedTime(LocalDateTime.now().plusDays(7));
+        briefing.setDetailedDescription("Descrição detalhada do briefing");
+        briefingRepository.save(briefing);
+
+        // Criar e salvar um empregado de teste
+        Employee employee = new Employee();
+        employee.setAgency("Agência Teste");
+        employee.setAvatar(3L);
+        employee.setLastName("Sobrenome Teste");
+        employee.setName("Nome Teste");
+        employee.setOccupation("Ocupação Teste");
+        employee.setPhoneNumber("123456789");
+        employee.setSector("Setor Teste");
+        employee.setUser(user); // Associar o usuário ao empregado
+        employeeRepository.save(employee);
+
+        // Inicializar AgencyBoardType e BoardType
         agencyBoardType = new AgencyBoardType();
-        agencyBoardType.setDescription("Tipo de Placa de Agência");
+        agencyBoardType.setDescription("Tipo de Quadro de Agência");
+        agencyBoardTypeRepository.save(agencyBoardType);
 
         boardType = new BoardType();
         boardType.setDescription("Tipo de Quadro");
+        boardTypeRepository.save(boardType);
+
+        // Inicializar BriefingType e Briefing
+        briefingType = new BriefingType();
+        briefingType.setDescription("Tipo de Briefing");
+        briefingTypeRepository.save(briefingType);
 
         briefing = new Briefing();
-        // Configure outros atributos necessários para o Briefing, se necessário
+        briefing.setProject(null); 
+        briefing.setBriefingType(briefingType);
+        briefing.setStartTime(LocalDateTime.now());
+        briefing.setExpectedTime(LocalDateTime.now().plusDays(7));
+        briefing.setDetailedDescription("Descrição detalhada do briefing");
+        briefingRepository.save(briefing);
     }
 
-    /**
-     * Testa a criação e recuperação de um BAgencyBoard.
-     */
+
     @Test
-    @Rollback(false) // Ajuste para true se não quiser persistir no banco de dados
+    void testInsertEmployee() {
+        // Verifica se um empregado foi salvo corretamente
+        List<Employee> employees = employeeRepository.findAll();
+        assertThat(employees).isNotEmpty();
+        assertThat(employees.get(0).getName()).isEqualTo("Nome Teste");
+    }
+
+    @Test
+    @Rollback(false)
     @DisplayName("Should create and retrieve a BAgencyBoard")
     void testCreateAndRetrieveBAgencyBoard() {
         // Arrange
@@ -66,9 +202,6 @@ public class BAgencyBoardRepositoryTest {
         assertThat(retrievedBAgencyBoard.getObservations()).isEqualTo("Observações do Quadro");
     }
 
-    /**
-     * Testa a deleção de um BAgencyBoard.
-     */
     @Test
     @Rollback(false)
     @DisplayName("Should delete a BAgencyBoard")
@@ -80,7 +213,7 @@ public class BAgencyBoardRepositoryTest {
         bAgencyBoard.setBriefing(briefing);
         bAgencyBoard.setBoardLocation("Localização do Quadro");
         bAgencyBoard.setObservations("Observações do Quadro");
-        
+
         // Salvando o BAgencyBoard
         BAgencyBoard savedBAgencyBoard = bAgencyBoardRepository.save(bAgencyBoard);
 
@@ -89,12 +222,9 @@ public class BAgencyBoardRepositoryTest {
         BAgencyBoard retrievedBAgencyBoard = bAgencyBoardRepository.findById(savedBAgencyBoard.getId()).orElse(null);
 
         // Assert
-        assertThat(retrievedBAgencyBoard).isNull(); // Deve ser nulo após a deleção
+        assertThat(retrievedBAgencyBoard).isNull();
     }
 
-    /**
-     * Testa a atualização de um BAgencyBoard.
-     */
     @Test
     @Rollback(false)
     @DisplayName("Should update a BAgencyBoard")
@@ -122,9 +252,6 @@ public class BAgencyBoardRepositoryTest {
         assertThat(updatedBAgencyBoard.getObservations()).isEqualTo("Observações Atualizadas");
     }
 
-    /**
-     * Testa a recuperação de todos os BAgencyBoards.
-     */
     @Test
     @Rollback(false)
     @DisplayName("Should retrieve all BAgencyBoards")
@@ -153,9 +280,6 @@ public class BAgencyBoardRepositoryTest {
         assertThat(allBAgencyBoards).hasSize(2); // Deve encontrar 2 BAgencyBoards
     }
 
-    /**
-     * Testa a recuperação de um BAgencyBoard inexistente.
-     */
     @Test
     @Rollback(false)
     @DisplayName("Should return null for a non-existent BAgencyBoard")

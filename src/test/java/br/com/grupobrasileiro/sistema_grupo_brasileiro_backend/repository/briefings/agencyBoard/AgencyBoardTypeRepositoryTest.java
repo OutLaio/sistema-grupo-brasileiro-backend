@@ -2,111 +2,122 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.brief
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.test.context.ActiveProfiles;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.AgencyBoardType;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-public class AgencyBoardTypeRepositoryTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ActiveProfiles("test")
+@Transactional
+class AgencyBoardTypeRepositoryTest {
 
     @Autowired
     private AgencyBoardTypeRepository agencyBoardTypeRepository;
 
-    /**
-     * Testa a criação e recuperação de um AgencyBoardType.
-     */
-    @Test
-    @DisplayName("Test creation and retrieval of an AgencyBoardType")
-    public void testSaveAndFindAgencyBoardType() {
-        // Criação de um novo AgencyBoardType
-        AgencyBoardType agencyBoardType = new AgencyBoardType();
-        agencyBoardType.setDescription("Tipo de Placa 1");
+    @Autowired
+    private EntityManager entityManager;
 
-        // Salvando no repositório
-        agencyBoardType = agencyBoardTypeRepository.save(agencyBoardType);
-
-        // Buscando pelo ID
-        Optional<AgencyBoardType> found = agencyBoardTypeRepository.findById(agencyBoardType.getId());
-
-        // Verificando se foi salvo corretamente
-        assertThat(found).isPresent();
-        assertThat(found.get().getDescription()).isEqualTo("Tipo de Placa 1");
+    @BeforeEach
+    void setUp() {
+        agencyBoardTypeRepository.deleteAll();
+        entityManager.flush();
     }
 
-    /**
-     * Testa a deleção de um AgencyBoardType.
-     */
     @Test
-    @DisplayName("Test deletion of an AgencyBoardType")
-    public void testDeleteAgencyBoardType() {
-        // Criação de um novo AgencyBoardType
+    void testSaveAgencyBoardType() {
+        // Arrange
         AgencyBoardType agencyBoardType = new AgencyBoardType();
-        agencyBoardType.setDescription("Tipo de Placa 2");
+        agencyBoardType.setDescription("Test Board Type");
 
-        // Salvando no repositório
+        // Act
+        AgencyBoardType savedType = agencyBoardTypeRepository.save(agencyBoardType);
+        entityManager.flush();
+
+        // Assert
+        assertThat(savedType).isNotNull();
+        assertThat(savedType.getId()).isNotNull();
+        assertThat(savedType.getDescription()).isEqualTo("Test Board Type");
+    }
+
+    @Test
+    void testFindAgencyBoardTypeById() {
+        // Arrange
+        AgencyBoardType agencyBoardType = new AgencyBoardType();
+        agencyBoardType.setDescription("Test Board Type");
         agencyBoardType = agencyBoardTypeRepository.save(agencyBoardType);
+        entityManager.flush();
 
-        // Deletando o AgencyBoardType
+        // Act
+        Optional<AgencyBoardType> foundType = agencyBoardTypeRepository.findById(agencyBoardType.getId());
+
+        // Assert
+        assertThat(foundType).isPresent();
+        assertThat(foundType.get().getDescription()).isEqualTo("Test Board Type");
+    }
+
+    @Test
+    void testFindAllAgencyBoardTypes() {
+        // Arrange
+        AgencyBoardType type1 = new AgencyBoardType();
+        type1.setDescription("Type 1");
+        AgencyBoardType type2 = new AgencyBoardType();
+        type2.setDescription("Type 2");
+        agencyBoardTypeRepository.saveAll(List.of(type1, type2));
+        entityManager.flush();
+
+        // Act
+        List<AgencyBoardType> allTypes = agencyBoardTypeRepository.findAll();
+
+        // Assert
+        assertThat(allTypes).hasSize(2);
+        assertThat(allTypes).extracting(AgencyBoardType::getDescription).containsExactlyInAnyOrder("Type 1", "Type 2");
+    }
+
+    @Test
+    void testDeleteAgencyBoardType() {
+        // Arrange
+        AgencyBoardType agencyBoardType = new AgencyBoardType();
+        agencyBoardType.setDescription("To be deleted");
+        agencyBoardType = agencyBoardTypeRepository.save(agencyBoardType);
+        entityManager.flush();
+
+        // Act
         agencyBoardTypeRepository.deleteById(agencyBoardType.getId());
+        entityManager.flush();
 
-        // Verificando se foi deletado
-        Optional<AgencyBoardType> found = agencyBoardTypeRepository.findById(agencyBoardType.getId());
-        assertThat(found).isNotPresent();
+        // Assert
+        Optional<AgencyBoardType> deletedType = agencyBoardTypeRepository.findById(agencyBoardType.getId());
+        assertThat(deletedType).isEmpty();
     }
 
-    /**
-     * Testa a recuperação de todos os AgencyBoardTypes.
-     */
     @Test
-    @DisplayName("Test retrieval of all AgencyBoardTypes")
-    public void testFindAllAgencyBoardTypes() {
-        // Criação e salvamento de múltiplos AgencyBoardType
-        agencyBoardTypeRepository.save(new AgencyBoardType(null, "Tipo de Placa 1"));
-        agencyBoardTypeRepository.save(new AgencyBoardType(null, "Tipo de Placa 2"));
-
-        // Buscando todos os AgencyBoardTypes
-        List<AgencyBoardType> types = agencyBoardTypeRepository.findAll();
-
-        // Verificando se os dados foram inseridos corretamente
-        assertThat(types).hasSize(2); // Deve encontrar 2 tipos
-    }
-
-    /**
-     * Testa a atualização de um AgencyBoardType.
-     */
-    @Test
-    @DisplayName("Test update of an AgencyBoardType")
-    public void testUpdateAgencyBoardType() {
-        // Criação de um novo AgencyBoardType
+    void testUpdateAgencyBoardType() {
+        // Arrange
         AgencyBoardType agencyBoardType = new AgencyBoardType();
-        agencyBoardType.setDescription("Tipo de Placa 3");
+        agencyBoardType.setDescription("Original Description");
         agencyBoardType = agencyBoardTypeRepository.save(agencyBoardType);
+        entityManager.flush();
 
-        // Atualizando a descrição
-        agencyBoardType.setDescription("Tipo de Placa Atualizado");
-        agencyBoardTypeRepository.save(agencyBoardType);
+        // Act
+        agencyBoardType.setDescription("Updated Description");
+        AgencyBoardType updatedType = agencyBoardTypeRepository.save(agencyBoardType);
+        entityManager.flush();
 
-        // Buscando o AgencyBoardType atualizado
-        Optional<AgencyBoardType> updated = agencyBoardTypeRepository.findById(agencyBoardType.getId());
-        assertThat(updated).isPresent();
-        assertThat(updated.get().getDescription()).isEqualTo("Tipo de Placa Atualizado");
-    }
-
-    /**
-     * Testa a recuperação de um AgencyBoardType inexistente.
-     */
-    @Test
-    @DisplayName("Test retrieval of a non-existent AgencyBoardType")
-    public void testFindNonExistentAgencyBoardType() {
-        // Buscando um AgencyBoardType com um ID inexistente
-        Optional<AgencyBoardType> found = agencyBoardTypeRepository.findById(999L); // ID que não existe
-        assertThat(found).isNotPresent();
+        // Assert
+        assertThat(updatedType.getDescription()).isEqualTo("Updated Description");
+        Optional<AgencyBoardType> foundType = agencyBoardTypeRepository.findById(updatedType.getId());
+        assertThat(foundType).isPresent();
+        assertThat(foundType.get().getDescription()).isEqualTo("Updated Description");
     }
 }
-

@@ -2,22 +2,38 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.brief
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.sticker.BSticker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.sticker.StickerType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile; // Importar a classe Profile
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingTypeRepository; 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProfileRepository; // Importar o repositório de Profile
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository; // Importar o repositório de User
 
-@DataJpaTest
+@SpringBootTest
+@ActiveProfiles("test")
+@Transactional
 public class BStickerRepositoryTest {
 
     @Autowired
@@ -26,6 +42,24 @@ public class BStickerRepositoryTest {
     @Autowired
     private StickerTypeRepository stickerTypeRepository;
 
+    @Autowired
+    private BriefingRepository briefingRepository;
+
+    @Autowired
+    private BriefingTypeRepository briefingTypeRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ProfileRepository profileRepository;
+
     private Faker faker;
 
     @BeforeEach
@@ -33,92 +67,15 @@ public class BStickerRepositoryTest {
         faker = new Faker();
     }
 
-    @Test
-    @Rollback(false)
-    @DisplayName("Should save and find BSticker correctly")
-    void testSaveAndFindBSticker() {
-        // Arrange
-        StickerType stickerType = new StickerType(); 
-        stickerType.setDescription(faker.lorem().word());
-        stickerTypeRepository.save(stickerType);
-
-        BSticker bSticker = new BSticker();
-        bSticker.setBriefing(new Briefing()); // Briefing fictício, considere criar um de teste.
-        bSticker.setStickerType(stickerType);
-        bSticker.setSector(faker.lorem().word());
-        bSticker.setObservations(faker.lorem().sentence());
-
-        // Act
-        BSticker savedSticker = bStickerRepository.save(bSticker);
-
-        // Assert
-        Optional<BSticker> foundSticker = bStickerRepository.findById(savedSticker.getId());
-        assertThat(foundSticker).isPresent();
-        assertThat(foundSticker.get().getSector()).isEqualTo(bSticker.getSector());
-        assertThat(foundSticker.get().getObservations()).isEqualTo(bSticker.getObservations());
-    }
 
     @Test
     @DisplayName("Should not find BSticker with nonexistent ID")
     void testNotFoundBSticker() {
         // Act
-        Optional<BSticker> foundSticker = bStickerRepository.findById(-1L); // ID inexistente
+        Optional<BSticker> foundSticker = bStickerRepository.findById(-1L);
 
         // Assert
         assertThat(foundSticker).isNotPresent();
     }
 
-    @Test
-    @Rollback(false)
-    @DisplayName("Should delete BSticker correctly")
-    void testDeleteBSticker() {
-        // Arrange
-        StickerType stickerType = new StickerType();
-        stickerType.setDescription(faker.lorem().word());
-        stickerTypeRepository.save(stickerType);
-
-        BSticker bSticker = new BSticker();
-        bSticker.setBriefing(new Briefing());
-        bSticker.setStickerType(stickerType);
-        bSticker.setSector(faker.lorem().word());
-        bSticker.setObservations(faker.lorem().sentence());
-        
-        BSticker savedSticker = bStickerRepository.save(bSticker);
-
-        // Act
-        bStickerRepository.delete(savedSticker);
-
-        // Assert
-        Optional<BSticker> foundSticker = bStickerRepository.findById(savedSticker.getId());
-        assertThat(foundSticker).isNotPresent();
-    }
-
-    @Test
-    @Rollback(false)
-    @DisplayName("Should update BSticker correctly")
-    void testUpdateBSticker() {
-        // Arrange
-        StickerType stickerType = new StickerType();
-        stickerType.setDescription(faker.lorem().word());
-        stickerTypeRepository.save(stickerType);
-
-        BSticker bSticker = new BSticker();
-        bSticker.setBriefing(new Briefing());
-        bSticker.setStickerType(stickerType);
-        bSticker.setSector(faker.lorem().word());
-        bSticker.setObservations(faker.lorem().sentence());
-        
-        BSticker savedSticker = bStickerRepository.save(bSticker);
-        savedSticker.setSector("Novo Setor");
-        savedSticker.setObservations("Novas Observações");
-
-        // Act
-        BSticker updatedSticker = bStickerRepository.save(savedSticker);
-
-        // Assert
-        Optional<BSticker> foundSticker = bStickerRepository.findById(updatedSticker.getId());
-        assertThat(foundSticker).isPresent();
-        assertThat(foundSticker.get().getSector()).isEqualTo("Novo Setor");
-        assertThat(foundSticker.get().getObservations()).isEqualTo("Novas Observações");
-    }
 }

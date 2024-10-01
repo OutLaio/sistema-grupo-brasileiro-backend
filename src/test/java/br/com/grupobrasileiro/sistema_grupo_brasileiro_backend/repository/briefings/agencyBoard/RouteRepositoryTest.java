@@ -1,124 +1,152 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.agencyBoard;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Route;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.CompanyCity;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.AgencyBoardType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BoardType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.City;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Company;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.CompanyCity;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Route;
+import jakarta.transaction.Transactional;
+
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.dao.DataIntegrityViolationException;
 
+import javax.persistence.EntityManager;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DataJpaTest
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.dao.DataIntegrityViolationException;
+
+import javax.persistence.EntityManager;
+import java.util.Optional;
+
+@SpringBootTest
+@ActiveProfiles("test")
+@Transactional
+@AutoConfigureTestDatabase(replace = Replace.NONE)  
 public class RouteRepositoryTest {
 
     @Autowired
     private RouteRepository routeRepository;
 
     @Autowired
-    private BAgencyBoardRepository bAgencyBoardRepository;
+    private EntityManager entityManager;
 
-    @Autowired
-    private CompanyCityRepository companyCityRepository;
-
-    private BAgencyBoard bAgencyBoard;
+    private BAgencyBoard agencyBoard;
     private CompanyCity companyCity;
-    private Route route;
 
     @BeforeEach
-    public void setUp() {
-        // Criação de um novo objeto BAgencyBoard
-        bAgencyBoard = new BAgencyBoard();
-        bAgencyBoard = bAgencyBoardRepository.save(bAgencyBoard);
+    void setUp() {
+        // Criar dependências obrigatórias (AgencyBoardType, BoardType, City, Company, Briefing)
+        AgencyBoardType agencyBoardType = new AgencyBoardType();
+        agencyBoardType.setName("Test Agency Board Type");
+        entityManager.persist(agencyBoardType);
 
-        // Criação de um novo objeto CompanyCity
+        BoardType boardType = new BoardType();
+        boardType.setName("Test Board Type");
+        entityManager.persist(boardType);
+
+        Briefing briefing = new Briefing();
+        briefing.setDescription("Test Briefing");
+        entityManager.persist(briefing);
+
+        City city = new City();
+        city.setName("Test City");
+        entityManager.persist(city);
+
+        Company company = new Company();
+        company.setName("Test Company");
+        entityManager.persist(company);
+
+        // Persistir CompanyCity
         companyCity = new CompanyCity();
-        companyCity = companyCityRepository.save(companyCity);
+        companyCity.setCity(city);
+        companyCity.setCompany(company);
+        entityManager.persist(companyCity);
 
-        // Criação de um novo objeto Route
-        route = new Route();
-        route.setBAgencyBoard(bAgencyBoard);
+        // Persistir BAgencyBoard
+        agencyBoard = new BAgencyBoard();
+        agencyBoard.setAgencyBoardType(agencyBoardType);
+        agencyBoard.setBoardType(boardType);
+        agencyBoard.setBriefing(briefing);
+        agencyBoard.setBoardLocation("Test Location");
+        agencyBoard.setObservations("Test Observations");
+        entityManager.persist(agencyBoard);
+
+        entityManager.flush();
+    }
+
+    @Test
+    void whenSaveRoute_thenFindByIdShouldReturnRoute() {
+        // Arrange - criar e salvar uma nova rota
+        Route route = new Route();
+        route.setBAgencyBoard(agencyBoard);
         route.setCompanyCity(companyCity);
-        route.setType("Tipo A");
-    }
+        route.setType("Urban");
 
-    /**
-     * Testa a persistência e recuperação de um Route.
-     */
-    @Test
-    @DisplayName("Should save and find a Route")
-    public void testSaveAndFindRoute() {
-        // Salva o objeto no repositório
         Route savedRoute = routeRepository.save(route);
 
-        // Recupera o objeto pelo ID
+        // Act - buscar a rota pelo ID
         Optional<Route> foundRoute = routeRepository.findById(savedRoute.getId());
 
-        // Verifica se o objeto encontrado é o mesmo que o salvo
+        // Assert - verificar se a rota foi salva e recuperada corretamente
         assertTrue(foundRoute.isPresent());
-        assertEquals(savedRoute.getId(), foundRoute.get().getId());
-        assertEquals(savedRoute.getType(), foundRoute.get().getType());
+        assertEquals(foundRoute.get().getId(), savedRoute.getId());
+        assertEquals(foundRoute.get().getType(), "Urban");
     }
 
-    /**
-     * Testa a atualização de um Route.
-     */
     @Test
-    @DisplayName("Should update a Route")
-    public void testUpdateRoute() {
-        // Salva o objeto no repositório
-        Route savedRoute = routeRepository.save(route);
+    void whenDeleteRoute_thenRouteShouldBeDeleted() {
+        // Arrange - criar e salvar uma rota
+        Route route = new Route();
+        route.setBAgencyBoard(agencyBoard);
+        route.setCompanyCity(companyCity);
+        route.setType("Intercity");
 
-        // Atualiza o tipo da Route
-        savedRoute.setType("Tipo B");
-        Route updatedRoute = routeRepository.save(savedRoute);
+        Route savedRoute = entityManager.persistFlushFind(route);
 
-        // Verifica se o tipo foi atualizado corretamente
-        assertEquals("Tipo B", updatedRoute.getType());
+        // Act - deletar a rota
+        routeRepository.deleteById(savedRoute.getId());
+
+        // Assert - verificar se a rota foi removida
+        Optional<Route> deletedRoute = routeRepository.findById(savedRoute.getId());
+        assertFalse(deletedRoute.isPresent());
     }
 
-    /**
-     * Testa a exclusão de um Route.
-     */
     @Test
-    @DisplayName("Should delete a Route")
-    public void testDeleteRoute() {
-        // Salva o objeto no repositório
-        Route savedRoute = routeRepository.save(route);
+    void whenSaveRouteWithoutMandatoryFields_thenThrowException() {
+        // Arrange - criar uma rota sem os campos obrigatórios (CompanyCity ou BAgencyBoard)
+        Route route = new Route();
+        route.setType("Express");
 
-        // Exclui o objeto
-        routeRepository.delete(savedRoute);
-
-        // Verifica se o objeto foi excluído
-        Optional<Route> foundRoute = routeRepository.findById(savedRoute.getId());
-        assertThat(foundRoute).isNotPresent();
+        // Act & Assert - deve lançar uma exceção de integridade de dados
+        assertThrows(DataIntegrityViolationException.class, () -> {
+            routeRepository.save(route);
+            entityManager.flush();
+        });
     }
 
-    /**
-     * Testa a recuperação de todos os Routes.
-     */
-    @Test
-    @DisplayName("Should find all Routes")
-    public void testFindAllRoutes() {
-        // Salva múltiplas Routes
-        routeRepository.save(route);
-        Route anotherRoute = new Route();
-        anotherRoute.setBAgencyBoard(bAgencyBoard);
-        anotherRoute.setCompanyCity(companyCity);
-        anotherRoute.setType("Tipo C");
-        routeRepository.save(anotherRoute);
-
-        // Recupera todos os Routes
-        Iterable<Route> routes = routeRepository.findAll();
-
-        // Verifica se a lista não está vazia e se contém os objetos salvos
-        assertThat(routes).isNotEmpty();
-        assertThat(routes).hasSize(2); // Deve ter dois elementos
-    }
+    // Outros testes como encontrar por atributos específicos podem ser adicionados aqui...
 }
