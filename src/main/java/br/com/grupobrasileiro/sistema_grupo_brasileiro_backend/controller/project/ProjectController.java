@@ -3,6 +3,11 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.proje
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ApproveForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.NewVersionForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.VersionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,10 +17,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -23,13 +31,14 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/v1/projects")
-@RequiredArgsConstructor
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Projects", description = "Project and Version Management")
 public class ProjectController {
 
-    private final ProjectService projectService;
-    private final VersionService versionService;
+    @Autowired
+    private ProjectService projectService;
+    @Autowired
+    private VersionService versionService;
 
     /**
      * Atribui um colaborador a um projeto.
@@ -86,7 +95,7 @@ public class ProjectController {
         @ApiResponse(responseCode = "200", description = "Approval successful", content = @Content),
         @ApiResponse(responseCode = "400", description = "Validation error", content = @Content)
     })
-    @PostMapping("/approve/supervisor")
+    @PutMapping("/approve/supervisor")
     @Transactional
     public ResponseEntity<?> supervisorApprove(
             @Valid @RequestBody ApproveForm form) {
@@ -105,7 +114,7 @@ public class ProjectController {
         @ApiResponse(responseCode = "200", description = "Approval successful", content = @Content),
         @ApiResponse(responseCode = "400", description = "Validation error", content = @Content)
     })
-    @PostMapping("/approve/client")
+    @PutMapping("/approve/client")
     @Transactional
     public ResponseEntity<?> clientApprove(
             @Valid @RequestBody ApproveForm form) {
@@ -170,5 +179,17 @@ public class ProjectController {
             @Parameter(description = "ID do projeto") @PathVariable Long id) {
         projectService.setStandby(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping
+    @Transactional
+    public ResponseEntity<?> getAll(Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return ResponseEntity.ok(projectService.getAll(user.getId()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable Long id){
+        return projectService.getById(id);
     }
 }

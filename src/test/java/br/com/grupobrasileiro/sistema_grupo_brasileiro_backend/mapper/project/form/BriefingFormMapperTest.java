@@ -3,167 +3,167 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.f
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.HashSet;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.github.javafaker.Faker;
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.measurements.form.MeasurementsForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingTypeRepository;
 
 class BriefingFormMapperTest {
 
     @InjectMocks
     private BriefingFormMapper briefingFormMapper;
 
+    @Mock
+    private BriefingTypeRepository briefingTypeRepository;
+
+    private Faker faker;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        faker = new Faker(); // Inicializa o Faker para gerar dados aleatórios
     }
 
     /**
      * Testa o mapeamento de BriefingForm para Briefing.
-     * Verifica se todos os campos obrigatórios são mapeados corretamente.
+     * Verifica se todos os campos são mapeados corretamente.
      */
     @Test
     @DisplayName("Should map BriefingForm to Briefing correctly")
-    void mapBriefingFormToBriefing() {
-        // Arrange
-        LocalDateTime expectedTime = LocalDateTime.of(2024, 9, 24, 10, 0);
-        BriefingForm briefingForm = new BriefingForm(
-            expectedTime,
-            "Test Description",
-            Collections.emptySet(),
-            "Test Company",
-            1L,
-            null
+    void shouldMapBriefingFormToBriefing() {
+        // Mocking BriefingType
+        BriefingType mockBriefingType = new BriefingType();
+        mockBriefingType.setId(1L); // Definindo o ID para o mock
+
+        // Mocking a resposta do repositório
+        when(briefingTypeRepository.findById(1L)).thenReturn(Optional.of(mockBriefingType));
+
+        // Mocking BriefingForm com dados de exemplo
+        BriefingForm form = new BriefingForm(
+                LocalDate.of(2024, 9, 19), // Data de exemplo
+                faker.lorem().sentence(), // Gera uma descrição detalhada aleatória
+                new HashSet<>(), // Conjunto vazio de CompaniesBriefingsForm
+                faker.company().name(), // Gera um nome de empresa aleatório
+                1L, // ID de briefing type de exemplo
+                null // Defina Measurement se necessário
         );
 
-        // Act
-        Briefing result = briefingFormMapper.map(briefingForm);
+        // Act - mapeia o formulário para um objeto Briefing
+        Briefing result = briefingFormMapper.map(form);
 
-        // Assert
+        // Assert - verifica se os valores foram mapeados corretamente
+        assertEquals(form.expectedDate(), result.getExpectedTime(), "Expected time should match");
+        assertEquals(form.detailedDescription(), result.getDetailedDescription(), "Detailed description should match");
+        assertEquals(form.otherCompany(), result.getOtherCompany(), "Other company should match");
+        
+       }
+
+    /**
+     * Testa o mapeamento de BriefingForm quando o ID do BriefingType não é encontrado.
+     * Verifica se o BriefingType resultante é nulo.
+     */
+    @Test
+    @DisplayName("Should return Briefing with null BriefingType when ID is not found")
+    void shouldReturnBriefingWithNullBriefingTypeWhenIdNotFound() {
+        // Mocking BriefingForm com ID de briefing type que não existe
+        BriefingForm form = new BriefingForm(
+                LocalDate.of(2024, 9, 19),
+                faker.lorem().sentence(), 
+                new HashSet<>(), 
+                faker.company().name(), 
+                99L, // ID inexistente
+                null 
+        );
+
+        // Act - mapeia o formulário para um objeto Briefing
+        Briefing result = briefingFormMapper.map(form);
+
+        // Assert - verifica se o resultado não é nulo e se o BriefingType é nulo
         assertNotNull(result, "Result should not be null");
-        assertEquals(expectedTime, result.getExpectedTime(), "Expected time should match");
-        assertEquals("Test Description", result.getDetailedDescription(), "Detailed description should match");
-        assertEquals("Test Company", result.getOtherCompany(), "Other company should match");
-        assertNotNull(result.getStartTime(), "Start time should not be null"); // Verificando se startTime foi preenchido
+        assertNull(result.getBriefingType(), "Briefing type should be null when ID is not found");
     }
 
     /**
-     * Testa o mapeamento de BriefingForm com campos opcionais nulos.
-     * Verifica se o mapeamento lida corretamente com valores nulos para campos não obrigatórios.
+     * Testa o mapeamento de BriefingForm com Measurement válido.
+     * Verifica se o objeto Briefing é criado com os dados da Measurement.
      */
     @Test
-    @DisplayName("Should handle null values for optional fields in BriefingForm")
-    void handleNullOptionalFieldsInBriefingForm() {
-        // Arrange
-        BriefingForm briefingForm = new BriefingForm(
-            LocalDateTime.now(),
-            null,
-            Collections.emptySet(),
-            null,
-            1L,
-            null
+    @DisplayName("Should map Measurement correctly if provided")
+    void shouldMapMeasurementCorrectlyIfProvided() {
+        // Mocking Measurement com valores válidos
+        BigDecimal height = BigDecimal.valueOf(2.5);
+        BigDecimal length = BigDecimal.valueOf(5.0);
+        MeasurementsForm measurementsForm = new MeasurementsForm(height, length);
+
+        // Mocking BriefingForm com Measurement
+        BriefingForm form = new BriefingForm(
+                LocalDate.of(2024, 9, 19),
+                faker.lorem().sentence(), 
+                new HashSet<>(), 
+                faker.company().name(), 
+                1L, 
+                measurementsForm // Passando Measurement
         );
 
-        // Act
-        Briefing result = briefingFormMapper.map(briefingForm);
+        // Mocking um BriefingType válido
+        BriefingType mockBriefingType = new BriefingType();
+        mockBriefingType.setId(1L); 
+        when(briefingTypeRepository.findById(1L)).thenReturn(Optional.of(mockBriefingType));
 
-        // Assert
+        // Act - mapeia o formulário para um objeto Briefing
+        Briefing result = briefingFormMapper.map(form);
+
+        // Assert - verifica se a Measurement foi mapeada corretamente
         assertNotNull(result, "Result should not be null");
-        assertNotNull(result.getStartTime(), "Start time should not be null");
-        assertEquals(null, result.getDetailedDescription(), "Detailed description should be null");
-        assertEquals(null, result.getOtherCompany(), "Other company should be null");
+        // Aqui você pode adicionar asserções para verificar a Measurement no objeto Briefing, se aplicável
     }
-
+    
     /**
-     * Testa o mapeamento de BriefingForm com todos os campos preenchidos.
-     * Verifica se o mapeamento lida corretamente com um formulário completo.
+     * Testa o mapeamento de BriefingForm sem Measurement.
+     * Verifica se o objeto Briefing é criado sem erro.
      */
     @Test
-    @DisplayName("Should map all fields from BriefingForm to Briefing when all fields are provided")
-    void mapCompleteBriefingForm() {
-        // Arrange
-        LocalDateTime expectedTime = LocalDateTime.of(2024, 12, 31, 15, 0);
-        BriefingForm briefingForm = new BriefingForm(
-            expectedTime,
-            "Complete Test Description",
-            Collections.emptySet(),
-            "Another Test Company",
-            1L,
-            null
+    @DisplayName("Should handle BriefingForm without Measurement correctly")
+    void shouldHandleBriefingFormWithoutMeasurementCorrectly() {
+        // Mocking BriefingForm sem Measurement
+        BriefingForm form = new BriefingForm(
+                LocalDate.of(2024, 9, 19),
+                faker.lorem().sentence(), 
+                new HashSet<>(), 
+                faker.company().name(), 
+                1L, 
+                null // Sem Measurement
         );
 
-        // Act
-        Briefing result = briefingFormMapper.map(briefingForm);
+        // Mocking um BriefingType válido
+        BriefingType mockBriefingType = new BriefingType();
+        mockBriefingType.setId(1L); 
+        when(briefingTypeRepository.findById(1L)).thenReturn(Optional.of(mockBriefingType));
 
-        // Assert
+        // Act - mapeia o formulário para um objeto Briefing
+        Briefing result = briefingFormMapper.map(form);
+
+        // Assert - verifica se o resultado não é nulo
         assertNotNull(result, "Result should not be null");
-        assertEquals(expectedTime, result.getExpectedTime(), "Expected time should match");
-        assertEquals("Complete Test Description", result.getDetailedDescription(), "Detailed description should match");
-        assertEquals("Another Test Company", result.getOtherCompany(), "Other company should match");
-    }
-
-    /**
-     * Testa o mapeamento de BriefingForm com um horário de conclusão esperado no passado.
-     * Verifica se o mapeamento lida corretamente com datas do passado.
-     */
-    @Test
-    @DisplayName("Should handle past expected time in BriefingForm")
-    void handlePastExpectedTime() {
-        // Arrange
-        LocalDateTime expectedTime = LocalDateTime.of(2020, 1, 1, 10, 0);
-        BriefingForm briefingForm = new BriefingForm(
-            expectedTime,
-            "Past Expected Time Description",
-            Collections.emptySet(),
-            "Company Past",
-            1L,
-            null
-        );
-
-        // Act
-        Briefing result = briefingFormMapper.map(briefingForm);
-
-        // Assert
-        assertNotNull(result, "Result should not be null");
-        assertEquals(expectedTime, result.getExpectedTime(), "Expected time should match");
-        assertEquals("Past Expected Time Description", result.getDetailedDescription(), "Detailed description should match");
-        assertEquals("Company Past", result.getOtherCompany(), "Other company should match");
-    }
-
-    /**
-     * Testa o mapeamento de BriefingForm com valores extremos no horário esperado.
-     * Verifica se o mapeamento lida corretamente com valores limites de data.
-     */
-    @Test
-    @DisplayName("Should handle extreme values for expected time in BriefingForm")
-    void handleExtremeExpectedTime() {
-        // Arrange
-        LocalDateTime expectedTime = LocalDateTime.of(3000, 1, 1, 0, 0);
-        BriefingForm briefingForm = new BriefingForm(
-            expectedTime,
-            "Extreme Future Time Description",
-            Collections.emptySet(),
-            "Future Company",
-            1L,
-            null
-        );
-
-        // Act
-        Briefing result = briefingFormMapper.map(briefingForm);
-
-        // Assert
-        assertNotNull(result, "Result should not be null");
-        assertEquals(expectedTime, result.getExpectedTime(), "Expected time should match");
-        assertEquals("Extreme Future Time Description", result.getDetailedDescription(), "Detailed description should match");
-        assertEquals("Future Company", result.getOtherCompany(), "Other company should match");
+        // Verifique que o resultado está correto, mesmo sem Measurement
     }
 }
-

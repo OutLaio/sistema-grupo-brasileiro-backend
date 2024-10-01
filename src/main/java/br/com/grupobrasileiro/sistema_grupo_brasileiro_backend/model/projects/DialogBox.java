@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
@@ -13,8 +14,6 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 @Entity
 @Table(name = "\"Tb_DialogBoxes\"")
 public class DialogBox {
@@ -58,4 +57,37 @@ public class DialogBox {
     @Lob
     @Column(name = "dialog", nullable = false)
     private String dialog;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DialogBox dialogBox = (DialogBox) o;
+        return Objects.equals(id, dialogBox.id) &&
+                Objects.equals(employee != null ? employee.getId() : null, dialogBox.employee != null ? dialogBox.employee.getId() : null) &&
+                Objects.equals(briefing != null ? briefing.getId() : null, dialogBox.briefing != null ? dialogBox.briefing.getId() : null) &&
+                Objects.equals(time, dialogBox.time) &&
+                Objects.equals(dialog, dialogBox.dialog);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id,
+                employee != null ? employee.getId() : null,
+                briefing != null ? briefing.getId() : null,
+                time,
+                dialog);
+    }
+
+    @Override
+    public String toString() {
+        return "DialogBox{" +
+                "id=" + id +
+                ", employee=" + (employee != null ? employee.getId() : "null") +
+                ", briefing=" + (briefing != null ? briefing.getId() : "null") +
+                ", time=" + time +
+                ", dialog='" + dialog + '\'' +
+                '}';
+    }
+
 }

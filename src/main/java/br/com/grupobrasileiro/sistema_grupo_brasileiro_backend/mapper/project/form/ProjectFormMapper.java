@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProjectFormMapper implements Mapper<ProjectForm, Project> {
 
-
-
     @Override
     public Project map(ProjectForm projectForm) {
         return new Project(

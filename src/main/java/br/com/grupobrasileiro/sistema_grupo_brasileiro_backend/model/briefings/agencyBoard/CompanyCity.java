@@ -10,8 +10,6 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 @Entity
 @Table(name = "\"Tb_CompaniesCities\"")
 public class CompanyCity {
@@ -27,6 +25,27 @@ public class CompanyCity {
     @JoinColumn(name = "id_company", nullable = false)
     private Company company;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CompanyCity that)) return false;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(city, that.city) &&
+                Objects.equals(company, that.company);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, city, company);
+    }
+
+    @Override
+    public String toString() {
+        return "CompanyCity{" +
+                "id=" + id +
+                ", city=" + (city != null ? city.getId() : "null") +
+                ", company=" + (company != null ? company.getId() : "null") +
+                '}';
+    }
 
 }

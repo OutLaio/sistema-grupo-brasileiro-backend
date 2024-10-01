@@ -1,13 +1,19 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view;
 
-import java.time.LocalDateTime;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.companiesBriefing.view.CompaniesBriefingsView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.measurements.view.MeasurementsView;
+
+import java.time.LocalDate;
 
 public record BriefingView(
         Long id,
         BriefingTypeView briefingType,
-        LocalDateTime startTime,
-        LocalDateTime expectedTime,
-        LocalDateTime finishTime,
-        String detailedDescription
+        LocalDate startTime,
+        LocalDate expectedTime,
+        LocalDate finishTime,
+        String detailedDescription,
+        MeasurementsView measurements,
+        CompaniesBriefingsView companies,
+        String otherCompanies
 ) {
 }

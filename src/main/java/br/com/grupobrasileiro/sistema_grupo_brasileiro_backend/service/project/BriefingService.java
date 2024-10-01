@@ -3,11 +3,11 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.companiesBrienfing.form.CompaniesBriefingFormMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.companiesBriefing.form.CompaniesBriefingFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.measurement.form.MeasurementFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.form.BriefingFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.companies.CompaniesBriefing;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.meansurements.Measurement;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.measurements.Measurement;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
@@ -16,23 +16,37 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.measur
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingTypeRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class BriefingService {
 
+    @Autowired
     private BriefingRepository briefingRepository;
+
+    @Autowired
     private BriefingTypeRepository briefingTypeRepository;
+
+    @Autowired
     private BriefingFormMapper briefingFormMapper;
+
+    @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
     private MeasurementFormMapper measurementFormMapper;
+
+    @Autowired
     private MeasurementRepository measurementRepository;
+
+    @Autowired
     private CompaniesBriefingRepository companiesBriefingRepository;
+
+    @Autowired
     private CompaniesBriefingFormMapper companiesBriefingFormMapper;
     
 
@@ -52,9 +66,6 @@ public class BriefingService {
                     companyBriefing.setBriefing(briefing);
                     return companyBriefing;
                 }).collect(Collectors.toSet()) : Set.of();
-
-        briefing.setCompanies(companies);
-        briefing.setMeasurement(measurement);
 
         briefingRepository.saveAndFlush(briefing);
         measurementRepository.save(measurement);

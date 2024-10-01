@@ -1,24 +1,24 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.view;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.SignpostRegisterView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.Mapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view.BriefingViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view.ProjectViewMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BSignpostRegisterViewMapper implements Mapper<BSignpost, SignpostRegisterView> {
+public class BAgencyBoardDetailedViewMapper implements Mapper<BAgencyBoard, BAgencyBoardDetailedView> {
 
     @Autowired
-    private BSignpostViewMapper bSignpostViewMapper;
+    private BAgencyBoardViewMapper bAgencyBoardViewMapper;
 
     @Autowired
     private ProjectViewMapper projectViewMapper;
@@ -27,16 +27,19 @@ public class BSignpostRegisterViewMapper implements Mapper<BSignpost, SignpostRe
     private BriefingViewMapper briefingViewMapper;
 
     @Override
-    public SignpostRegisterView map(BSignpost bSignpost) {
-        Briefing briefing = bSignpost.getBriefing();
+    public BAgencyBoardDetailedView map(BAgencyBoard bAgencyBoard) {
+
+
+        Briefing briefing = bAgencyBoard.getBriefing();
+
         Project project = briefing != null ? briefing.getProject() : null;
 
-        BSignpostView bSignpostView = bSignpostViewMapper.map(bSignpost);
+        BAgencyBoardView bAgencyBoardView = bAgencyBoardViewMapper.map(bAgencyBoard);
         ProjectView projectView = project != null ? projectViewMapper.map(project) : null;
         BriefingView briefingView = briefing != null ? briefingViewMapper.map(briefing) : null;
 
-        return new SignpostRegisterView(
-                bSignpostView,
+        return new BAgencyBoardDetailedView(
+                bAgencyBoardView,
                 projectView,
                 briefingView
         );

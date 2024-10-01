@@ -4,17 +4,16 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.Log
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.RecoveryPasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.ResetPasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.view.TokenView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view.EmployeeViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view.UserDetailsViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.email.PasswordRequest;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.InvalidTokenException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.UserIsNotActiveException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view.UserViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.email.EmailService;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,7 +39,7 @@ public class AuthService implements UserDetailsService {
     private  PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserViewMapper userViewMapper;
+    private EmployeeViewMapper employeeViewMapper;
 
     public TokenView doLogin(LoginForm form, AuthenticationManager authenticationManager) {
         User user = userRepository.findByEmail(form.email()).orElseThrow(
@@ -54,7 +53,7 @@ public class AuthService implements UserDetailsService {
     }
 
     private TokenView tokenResponse(String token, User user){
-        return new TokenView(token, userViewMapper.map(user));
+        return new TokenView(token, employeeViewMapper.map(user.getEmployee()));
     }
 
     public void requestRecoveryPassword(RecoveryPasswordForm form) {

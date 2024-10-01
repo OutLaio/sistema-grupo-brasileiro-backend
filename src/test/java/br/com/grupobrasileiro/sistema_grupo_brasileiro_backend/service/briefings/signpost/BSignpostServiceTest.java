@@ -24,13 +24,13 @@ import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.BSignpostForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.SignpostRegisterView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.form.BSignpostFormMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.view.BSignpostRegisterViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.view.BSignpostDetailedViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.Material;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
@@ -50,7 +50,7 @@ class BSignpostServiceTest {
     private BSignpostFormMapper bSignpostFormMapper;
 
     @Mock
-    private BSignpostRegisterViewMapper bSignpostRegisterViewMapper;
+    private BSignpostDetailedViewMapper bSignpostRegisterViewMapper;
 
     @InjectMocks
     private BSignpostService bSignpostService;
@@ -81,7 +81,7 @@ class BSignpostServiceTest {
             null, form.boardLocation(),
             form.sector()
         );
-        SignpostRegisterView signpostRegisterView = new SignpostRegisterView(
+        BSignpostDetailedView signpostRegisterView = new BSignpostDetailedView(
             bSignpostView,
             new ProjectView(
                 faker.number().randomNumber(),
@@ -108,7 +108,7 @@ class BSignpostServiceTest {
         when(bSignpostRegisterViewMapper.map(any(BSignpost.class))).thenReturn(signpostRegisterView);
 
         // Act
-        SignpostRegisterView result = bSignpostService.register(form, briefing);
+        BSignpostDetailedView result = bSignpostService.register(form, briefing);
 
         // Assert
         assertNotNull(result);
