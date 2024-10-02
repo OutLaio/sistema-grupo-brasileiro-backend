@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -89,23 +90,31 @@ class AuthControllerTest {
             () -> "The response body should be the expected EmployeeView");
     }
 
+    @Mock
+    private AuthenticationManager authenticationManager;
+
     @Test
     @DisplayName("Should login successfully and return a token")
     void shouldLoginSuccessfullyAndReturnToken() {
         // Arrange
         LoginForm loginForm = new LoginForm(faker.internet().emailAddress(), faker.internet().password());
-        String mockToken = faker.internet().uuid(); // Gerando token dinâmico com o Faker
+        String mockToken = faker.internet().uuid();
+        EmployeeView mockEmployeeView = new EmployeeView(
+            faker.number().randomNumber(), null, faker.name().fullName(),
+            faker.company().name(), null, null, null, null, null
+        );
         
-        when(authService.doLogin(any())).thenReturn(mockToken);
+        when(authService.doLogin(any(LoginForm.class), any(AuthenticationManager.class)))
+            .thenReturn(new TokenView(mockToken, mockEmployeeView));
 
         // Act
         ResponseEntity<?> response = authController.login(loginForm);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode(),
-            () -> "Should return HTTP 200 OK status");
-        assertEquals(new TokenView(mockToken), response.getBody(),
-            () -> "The response body should be a TokenView with the generated token");
+            () -> "Deve retornar o status HTTP 200 OK");
+        assertEquals(new TokenView(mockToken, mockEmployeeView), response.getBody(),
+            () -> "O corpo da resposta deve ser um TokenView com o token gerado e a visualização do funcionário");
     }
 
     @Test

@@ -3,7 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.brief
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.AgencyBoardType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
@@ -21,17 +22,19 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Br
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingTypeRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProfileRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 import jakarta.transaction.Transactional;
-
 
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // Use a configuração do seu banco de dados real
 public class OtherRouteRepositoryTest {
 
     @Autowired
@@ -49,162 +52,180 @@ public class OtherRouteRepositoryTest {
     @Autowired
     private BriefingTypeRepository briefingTypeRepository;
 
-    
     @Autowired
-    private ProjectRepository projectRepository; 
+    private ProjectRepository projectRepository;
 
     @Autowired
     private EmployeeRepository employeeRepository;
+    
+    @Autowired
+    private ProfileRepository profileRepository; 
 
+    @Autowired
+    private UserRepository userRepository;
 
     private BAgencyBoard bAgencyBoard;
 
     @BeforeEach
     public void setUp() {
+        Profile userProfile = findOrCreateProfile();
+        User user1 = createUser("user1@example.com", "password1", userProfile);
+        User user2 = createUser("user2@example.com", "password2", userProfile);
 
-    	    // Criação de um colaborador
-    	    Employee collaborator = new Employee();
-    	    collaborator.setName("Colaborador 1");
-    	    // Salve o colaborador para que ele tenha um ID
-    	    collaborator = employeeRepository.save(collaborator);
+        Employee collaborator = createEmployee("Colaborador", "Um", "123456789", "Setor A", "Desenvolvedor", "Agência X", 1L, user1);
+        Employee client = createEmployee("Cliente", "Um", "987654321", "Setor B", "Gerente", "Agência Y", 2L, user2);
 
-    	    // Criação de um cliente (que é também um Employee no seu caso)
-    	    Employee client = new Employee();
-    	    client.setName("Cliente 1");
-    	    // Salve o cliente para que ele tenha um ID
-    	    client = employeeRepository.save(client);
+        Project project = createProject(client);
+        AgencyBoardType agencyBoardType = createAgencyBoardType();
+        BriefingType briefingType = createBriefingType();
+        Briefing briefing = createBriefing(project, briefingType);
 
-    	    // Criação de um projeto
-    	    Project project = new Project();
-    	    project.setClient(client); // Aqui garantimos que estamos passando um cliente válido
-    	    project.setCollaborator(collaborator); // Atribuindo um colaborador
-    	    project.setTitle("Project Title Example");
-    	    project.setStatus("Em andamento");
-    	    project.setDisabled(false); // Definindo se o projeto está desativado
-
-    	    // Salve o projeto
-    	    projectRepository.save(project);
-    	    
-        // Inicialize o AgencyBoardType
-        AgencyBoardType agencyBoardType = new AgencyBoardType();
-        agencyBoardType.setDescription("Type Example");
-        agencyBoardType = agencyBoardTypeRepository.save(agencyBoardType);
-
-        // Inicialize o BriefingType
-        BriefingType briefingType = new BriefingType();
-        briefingType.setDescription("Briefing Type Example");
-        briefingType = briefingTypeRepository.save(briefingType);
-
-                
-        // Inicialize o Briefing
-        Briefing briefing = new Briefing();
-        briefing.setProject(project);
-        briefing.setBriefingType(briefingType);
-        briefing.setStartTime(LocalDateTime.now());
-        briefing.setExpectedTime(LocalDateTime.now().plusDays(7));
-        briefing.setDetailedDescription("Descrição detalhada do briefing");
-        briefing = briefingRepository.save(briefing); // Salva o briefing
-
-        // Inicialize o BAgencyBoard
-        bAgencyBoard = new BAgencyBoard();
-        bAgencyBoard.setAgencyBoardType(agencyBoardType);
-        bAgencyBoard.setBriefing(briefing);
-        bAgencyBoard.setBoardLocation("Location Example");
-        bAgencyBoard.setObservations("Observations Example");
-        bAgencyBoard = bAgencyBoardRepository.save(bAgencyBoard);
+        bAgencyBoard = createBAgencyBoard(agencyBoardType, briefing);
     }
 
     @Test
-    @DisplayName("Should save and find an OtherRoute")
+    @DisplayName("Must save and find an OtherRoute")
     public void testSaveAndFindOtherRoute() {
-        // Inicialize o OtherRoute
-        OtherRoute otherRoute = new OtherRoute();
-        otherRoute.setBAgencyBoard(bAgencyBoard); // Associar o BAgencyBoard
-        otherRoute.setCompany("Example Company");
-        otherRoute.setCity("Example City");
-        otherRoute.setType("Example Type");
-
-        // Salvar a entidade OtherRoute
+        OtherRoute otherRoute = createOtherRoute("Example Company", "Example City", "Example Type");
         OtherRoute savedOtherRoute = otherRouteRepository.save(otherRoute);
 
-        // Verifique se a entidade foi salva corretamente
         assertNotNull(savedOtherRoute);
-        assertNotNull(savedOtherRoute.getId()); // Verifique se o ID foi gerado
+        assertNotNull(savedOtherRoute.getId());
 
-        // Teste a recuperação
         OtherRoute foundOtherRoute = otherRouteRepository.findById(savedOtherRoute.getId()).orElse(null);
         assertNotNull(foundOtherRoute);
         assertThat(foundOtherRoute.getCompany()).isEqualTo("Example Company");
     }
 
+    @Test
+    @DisplayName("Must delete an OtherRoute")
+    public void testDeleteOtherRoute() {
+        OtherRoute otherRoute = createOtherRoute("Example Company", "Example City", "Example Type");
+        OtherRoute savedOtherRoute = otherRouteRepository.save(otherRoute);
 
+        otherRouteRepository.delete(savedOtherRoute);
 
-	 
-	    @Test
-	    @DisplayName("Should delete an OtherRoute")
-	    public void testDeleteOtherRoute() {
-	        // Salva o objeto no repositório
-	        OtherRoute otherRoute = new OtherRoute();
-	        otherRoute.setBAgencyBoard(bAgencyBoard); // Associar o BAgencyBoard
-	        otherRoute.setCompany("Example Company");
-	        otherRoute.setCity("Example City");
-	        otherRoute.setType("Example Type");
+        Optional<OtherRoute> foundOtherRoute = otherRouteRepository.findById(savedOtherRoute.getId());
+        assertThat(foundOtherRoute).isNotPresent();
+    }
 
-	        OtherRoute savedOtherRoute = otherRouteRepository.save(otherRoute);
+    @Test
+    @DisplayName("Must update an OtherRoute")
+    public void testUpdateOtherRoute() {
+        OtherRoute otherRoute = createOtherRoute("Example Company", "Example City", "Example Type");
+        OtherRoute savedOtherRoute = otherRouteRepository.save(otherRoute);
+        
+        assertThat(savedOtherRoute.getId()).isNotNull();
+        assertThat(savedOtherRoute.getCompany()).isEqualTo("Example Company");
+        assertThat(savedOtherRoute.getCity()).isEqualTo("Example City");
 
-	        // Exclui o objeto
-	        otherRouteRepository.delete(savedOtherRoute);
+        savedOtherRoute.setCity("Nova Cidade");
+        savedOtherRoute.setCompany("Nova Empresa");
+        otherRouteRepository.save(savedOtherRoute);
 
-	        // Verifica se o objeto foi excluído
-	        Optional<OtherRoute> foundOtherRoute = otherRouteRepository.findById(savedOtherRoute.getId());
-	        assertThat(foundOtherRoute).isNotPresent();
-	    }
+        OtherRoute updatedOtherRoute = otherRouteRepository.findById(savedOtherRoute.getId())
+                .orElseThrow(() -> new AssertionError("OtherRoute não encontrada após atualização"));
 
-	    @Test
-	    @DisplayName("Should update an OtherRoute")
-	    public void testUpdateOtherRoute() {
-	        // Salva o objeto no repositório
-	        OtherRoute otherRoute = new OtherRoute();
-	        otherRoute.setBAgencyBoard(bAgencyBoard); // Associar o BAgencyBoard
-	        otherRoute.setCompany("Example Company");
-	        otherRoute.setCity("Example City");
-	        otherRoute.setType("Example Type");
+        assertThat(updatedOtherRoute.getCity()).isEqualTo("Nova Cidade");
+        assertThat(updatedOtherRoute.getCompany()).isEqualTo("Nova Empresa");
+        assertThat(updatedOtherRoute.getType()).isEqualTo("Example Type"); 
+    }
+    
+    @Test
+    @DisplayName("Must find all OtherRoutes")
+    public void testFindAllOtherRoutes() {
+        OtherRoute otherRoute1 = createOtherRoute("Example Company", "Example City", "Example Type");
+        otherRouteRepository.save(otherRoute1);
 
-	        OtherRoute savedOtherRoute = otherRouteRepository.save(otherRoute);
+        OtherRoute otherRoute2 = createOtherRoute("Outra Empresa", "Outra Cidade", "Outro Tipo");
+        otherRouteRepository.save(otherRoute2);
 
-	        // Atualiza a cidade e a empresa da OtherRoute
-	        savedOtherRoute.setCity("Nova Cidade B");
-	        savedOtherRoute.setCompany("Nova Empresa B");
-	        OtherRoute updatedOtherRoute = otherRouteRepository.save(savedOtherRoute);
+        Iterable<OtherRoute> otherRoutes = otherRouteRepository.findAll();
 
-	        // Verifica se os dados foram atualizados corretamente
-	        assertThat(updatedOtherRoute.getCity()).isEqualTo("Nova Cidade B");
-	        assertThat(updatedOtherRoute.getCompany()).isEqualTo("Nova Empresa B");
-	    }
+        assertThat(otherRoutes).isNotEmpty();
+        assertThat(otherRoutes).hasSize(2);
+    }
 
-	    @Test
-	    @DisplayName("Should find all OtherRoutes")
-	    public void testFindAllOtherRoutes() {
-	        // Salva múltiplas OtherRoutes
-	        OtherRoute otherRoute = new OtherRoute();
-	        otherRoute.setBAgencyBoard(bAgencyBoard); // Associar o BAgencyBoard
-	        otherRoute.setCompany("Example Company");
-	        otherRoute.setCity("Example City");
-	        otherRoute.setType("Example Type");
-	        otherRouteRepository.save(otherRoute);
+    // Métodos auxiliares para criar entidades
 
-	        OtherRoute anotherRoute = new OtherRoute();
-	        anotherRoute.setBAgencyBoard(bAgencyBoard); // Associar o BAgencyBoard
-	        anotherRoute.setCompany("Outra Empresa B");
-	        anotherRoute.setCity("Outra Cidade B");
-	        anotherRoute.setType("Outro Tipo B");
-	        otherRouteRepository.save(anotherRoute);
+    private Profile findOrCreateProfile() {
+        Optional<Profile> existingProfile = profileRepository.findById(1L);
+        if (existingProfile.isPresent()) {
+            return existingProfile.get();
+        } else {
+            Profile newProfile = new Profile();
+            newProfile.setDescription("Perfil de Teste");
+            return profileRepository.save(newProfile);
+        }
+    }
 
-	        // Recupera todas as OtherRoutes
-	        Iterable<OtherRoute> otherRoutes = otherRouteRepository.findAll();
+    private User createUser(String email, String password, Profile profile) {
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setDisabled(false);
+        user.setProfile(profile);
+        return userRepository.save(user);
+    }
 
-	        // Verifica se a lista não está vazia
-	        assertThat(otherRoutes).isNotEmpty();
-	        assertThat(otherRoutes).hasSize(2);
-	    }
-	}
+    private Employee createEmployee(String name, String lastName, String phoneNumber, String sector, String occupation, String agency, Long avatar, User user) {
+        Employee employee = new Employee();
+        employee.setName(name);
+        employee.setLastName(lastName);
+        employee.setPhoneNumber(phoneNumber);
+        employee.setSector(sector);
+        employee.setOccupation(occupation);
+        employee.setAgency(agency);
+        employee.setAvatar(avatar);
+        employee.setUser(user);
+        return employeeRepository.save(employee);
+    }
+
+    private Project createProject(Employee client) {
+        Project project = new Project();
+        project.setClient(client);
+        project.setTitle("Título do Projeto Exemplo");
+        project.setDisabled(false);
+        return projectRepository.save(project);
+    }
+
+    private AgencyBoardType createAgencyBoardType() {
+        AgencyBoardType agencyBoardType = new AgencyBoardType();
+        agencyBoardType.setDescription("Tipo Exemplo");
+        return agencyBoardTypeRepository.save(agencyBoardType);
+    }
+
+    private BriefingType createBriefingType() {
+        BriefingType briefingType = new BriefingType();
+        briefingType.setDescription("Tipo de Briefing Exemplo");
+        return briefingTypeRepository.save(briefingType);
+    }
+
+    private Briefing createBriefing(Project project, BriefingType briefingType) {
+        Briefing briefing = new Briefing();
+        briefing.setProject(project);
+        briefing.setBriefingType(briefingType);
+        briefing.setStartTime(LocalDate.now());
+        briefing.setExpectedTime(LocalDate.now().plusDays(7));
+        briefing.setDetailedDescription("Descrição detalhada do briefing");
+        return briefingRepository.save(briefing);
+    }
+
+    private BAgencyBoard createBAgencyBoard(AgencyBoardType agencyBoardType, Briefing briefing) {
+        BAgencyBoard bAgencyBoard = new BAgencyBoard();
+        bAgencyBoard.setAgencyBoardType(agencyBoardType);
+        bAgencyBoard.setBriefing(briefing);
+        bAgencyBoard.setBoardLocation("Localização Exemplo");
+        bAgencyBoard.setObservations("Observações Exemplo");
+        return bAgencyBoardRepository.save(bAgencyBoard);
+    }
+
+    private OtherRoute createOtherRoute(String company, String city, String type) {
+        OtherRoute otherRoute = new OtherRoute();
+        otherRoute.setBAgencyBoard(bAgencyBoard);
+        otherRoute.setCompany(company);
+        otherRoute.setCity(city);
+        otherRoute.setType(type);
+        return otherRoute;
+    }
+}

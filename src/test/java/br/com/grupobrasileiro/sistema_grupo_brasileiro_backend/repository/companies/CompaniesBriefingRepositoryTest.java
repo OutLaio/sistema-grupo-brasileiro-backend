@@ -2,7 +2,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.compa
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,108 +33,78 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class CompaniesBriefingRepositoryTest {
 
-	@Autowired
-	private CompaniesBriefingRepository companiesBriefingRepository;
+    @Autowired
+    private CompaniesBriefingRepository companiesBriefingRepository;
 
-	@Autowired
-	private BriefingRepository briefingRepository;
+    @Autowired
+    private BriefingRepository briefingRepository;
 
-	@Autowired
-	private ProjectRepository projectRepository;
+    @Autowired
+    private ProjectRepository projectRepository;
 
-	@Autowired
-	private BriefingTypeRepository briefingTypeRepository;
+    @Autowired
+    private BriefingTypeRepository briefingTypeRepository;
 
-	@Autowired
-	private CompanyRepository companyRepository; 
+    @Autowired
+    private CompanyRepository companyRepository; 
 
-	@Autowired
-	private EmployeeRepository employeeRepository; 
+    @Autowired
+    private EmployeeRepository employeeRepository; 
 
-	@Autowired 
-	private UserRepository userRepository;
+    @Autowired 
+    private UserRepository userRepository;
 
-	@Autowired
-	private ProfileRepository profileRepository; 
+    @Autowired
+    private ProfileRepository profileRepository; 
 
-	private Briefing briefing;
-	private Project project;
-	private BriefingType briefingType;
-	private Employee client;
-	private Employee collaborator;
+    private Briefing briefing;
+    private Project project;
+    private BriefingType briefingType;
+    private Employee client;
+    private Profile profile; 
 
-	private Profile profile; 
+    @BeforeEach
+    void setUp() {
+        profile = new Profile();
+        profile.setDescription("Standard User Profile");
+        profile = profileRepository.save(profile);
 
-	@BeforeEach
-	void setUp() {
-	    // Criação e persistência do perfil
-	    profile = new Profile();
-	    profile.setDescription("Standard User Profile");
-	    profile = profileRepository.save(profile); // Salve o perfil e obtenha a instância persistida
+        User clientUser = new User();
+        clientUser.setEmail("client@example.com");
+        clientUser.setPassword("securePasswordClient");
+        clientUser.setDisabled(false);
+        clientUser.setProfile(profile);
+        clientUser = userRepository.save(clientUser);
 
-	    // Criação e persistência de um usuário para o cliente
-	    User clientUser = new User();
-	    clientUser.setEmail("client@example.com");
-	    clientUser.setPassword("securePasswordClient");
-	    clientUser.setDisabled(false); // Preenchendo o campo 'disabled'
-	    clientUser.setProfile(profile); // Associando o perfil ao usuário
-	    clientUser = userRepository.save(clientUser); // Salve o usuário do cliente
+        client = new Employee();
+        client.setName("Client Name");
+        client.setLastName("Client LastName");
+        client.setPhoneNumber("123456789");
+        client.setSector("IT");
+        client.setOccupation("Developer");
+        client.setAgency("Agency 1");
+        client.setAvatar(1L);
+        client.setUser(clientUser);
+        client = employeeRepository.save(client);
 
-	    // Criação e persistência do cliente
-	    client = new Employee();
-	    client.setName("Client Name");
-	    client.setLastName("Client LastName");
-	    client.setPhoneNumber("123456789");
-	    client.setSector("IT");
-	    client.setOccupation("Developer");
-	    client.setAgency("Agency 1");
-	    client.setAvatar(1L); // Preenchendo o campo avatar
-	    client.setUser(clientUser); // Associando o usuário ao empregado
-	    client = employeeRepository.save(client); // Salve e obtenha a instância persistida
+        briefingType = new BriefingType();
+        briefingType.setDescription("Briefing Tipo A");
+        briefingType = briefingTypeRepository.save(briefingType);
 
-	    // Criação e persistência de um usuário para o colaborador
-	    User collaboratorUser = new User();
-	    collaboratorUser.setEmail("collaborator@example.com");
-	    collaboratorUser.setPassword("securePasswordCollaborator");
-	    collaboratorUser.setDisabled(false); // Preenchendo o campo 'disabled'
-	    collaboratorUser.setProfile(profile); // Associando o perfil ao usuário
-	    collaboratorUser = userRepository.save(collaboratorUser); // Salve o usuário do colaborador
+        project = new Project();
+        project.setTitle("Projeto Teste");
+        project.setDisabled(false);
+        project.setClient(client);
+        project = projectRepository.save(project);
 
-	    // Criação e persistência do colaborador
-	    collaborator = new Employee();
-	    collaborator.setName("Collaborator Name");
-	    collaborator.setLastName("Collaborator LastName");
-	    collaborator.setPhoneNumber("987654321");
-	    collaborator.setSector("Development");
-	    collaborator.setOccupation("Senior Developer");
-	    collaborator.setAgency("Agency 2");
-	    collaborator.setAvatar(2L); // Preenchendo o campo avatar
-	    collaborator.setUser(collaboratorUser); // Associando o usuário ao empregado
-	    collaborator = employeeRepository.save(collaborator); // Salve e obtenha a instância persistida
-
-	    // Criação de um tipo de briefing
-	    briefingType = new BriefingType();
-	    briefingType.setDescription("Briefing Tipo A");
-	    briefingType = briefingTypeRepository.save(briefingType); // Salve e obtenha a instância persistida
-
-	    // Criação de um projeto
-	    project = new Project();
-	    project.setTitle("Projeto Teste");
-	    project.setDisabled(false);
-	    project.setClient(client);
-	    project.setCollaborator(collaborator);
-	    project = projectRepository.save(project); // Salve e obtenha a instância persistida
-
-	    // Criação de um briefing
-	    briefing = new Briefing();
-	    briefing.setProject(project);
-	    briefing.setBriefingType(briefingType);
-	    briefing.setStartTime(LocalDateTime.now());
-	    briefing.setExpectedTime(LocalDateTime.now().plusDays(5));
-	    briefing.setDetailedDescription("Descrição detalhada do briefing");
-	    briefing = briefingRepository.save(briefing); // Salve e obtenha a instância persistida
-	}
-
+        briefing = new Briefing();
+        briefing.setProject(project);
+        briefing.setBriefingType(briefingType);
+        briefing.setStartTime(LocalDate.now());
+        briefing.setExpectedTime(LocalDate.now().plusDays(5));
+        briefing.setDetailedDescription("Descrição detalhada do briefing");
+        briefing = briefingRepository.save(briefing);
+    }
 
     @Test
     void testSaveCompaniesBriefing() {

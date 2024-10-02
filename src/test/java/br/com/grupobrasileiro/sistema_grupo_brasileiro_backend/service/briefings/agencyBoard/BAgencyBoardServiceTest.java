@@ -9,6 +9,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -30,9 +32,12 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.age
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BoardTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CityView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyCityView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.OtherRouteView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.RouteView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.companiesBriefing.view.CompaniesBriefingsView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.measurements.view.MeasurementsView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
@@ -41,7 +46,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.E
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.form.BAgencyBoardFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.form.OtherRouteFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.form.RouteFormMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.BAgencyBoardDetailedViewMapperTest;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.BAgencyBoardDetailedViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.AgencyBoardType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BoardType;
@@ -84,7 +89,7 @@ class BAgencyBoardServiceTest {
     private BAgencyBoardRepository bAgencyBoardRepository;
 
     @Mock
-    private BAgencyBoardDetailedViewMapperTest bAgencyBoardRegisterViewMapper;
+    private BAgencyBoardDetailedViewMapper bAgencyBoardDetailedViewMapper;
 
     @InjectMocks
     private BAgencyBoardService bAgencyBoardService;
@@ -132,11 +137,14 @@ class BAgencyBoardServiceTest {
         // Preencher dados fictícios para views
         RouteView routeView = new RouteView(
             faker.number().randomNumber(),
-            new CompanyView(faker.number().randomNumber(), faker.lorem().word()), 
-            List.of(new CityView(faker.number().randomNumber(), faker.lorem().word())), 
+            new CompanyCityView(
+                faker.number().randomNumber(),
+                new CityView(faker.number().randomNumber(), faker.address().city()),
+                new CompanyView(faker.number().randomNumber(), faker.company().name())
+            ),
             faker.lorem().word()
         );
-
+        
         OtherRouteView otherRouteView = new OtherRouteView(
             faker.number().randomNumber(),
             faker.lorem().word(),
@@ -163,17 +171,25 @@ class BAgencyBoardServiceTest {
         );
 
         BriefingView briefingView = new BriefingView(
-            faker.number().randomNumber(),
-            new BriefingTypeView(faker.number().randomNumber(), faker.lorem().word()),
-            LocalDateTime.now(),
-            LocalDateTime.now().plusDays(1),
-            LocalDateTime.now().plusDays(2),
-            faker.lorem().sentence()
-        );
+                faker.number().randomNumber(),
+                new BriefingTypeView(faker.number().randomNumber(), faker.lorem().word()),
+                LocalDate.now(),
+                LocalDate.now().plusDays(7),
+                LocalDate.now().plusDays(14),
+                faker.lorem().paragraph(),
+                new MeasurementsView(
+                    BigDecimal.valueOf(faker.number().randomDouble(2, 1, 100)),
+                    BigDecimal.valueOf(faker.number().randomDouble(2, 1, 100))
+                ),
+                new CompaniesBriefingsView(
+                    Set.of(new CompanyView(faker.number().randomNumber(), faker.company().name()))
+                ),
+                faker.company().name()
+            );
 
-        when(bAgencyBoardRegisterViewMapper.map(any(BAgencyBoard.class))).thenReturn(
-            new BAgencyBoardDetailedView(bAgencyBoardView, projectView, briefingView)
-        );
+        when(bAgencyBoardDetailedViewMapper.map(any(BAgencyBoard.class))).thenReturn(
+                new BAgencyBoardDetailedView(bAgencyBoardView, projectView, briefingView)
+            );
 
         // Act
         BAgencyBoardDetailedView result = bAgencyBoardService.register(form, briefing);

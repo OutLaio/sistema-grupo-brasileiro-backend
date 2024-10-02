@@ -7,7 +7,7 @@ import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project; // Certifique-se de que esta classe está presente
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 import jakarta.transaction.Transactional;
@@ -16,12 +16,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @SpringBootTest
@@ -48,79 +46,75 @@ public class BriefingRepositoryTest {
         faker = new Faker();
     }
 
-    
-
-    /**
-     * Testa a recuperação de um briefing que não existe.
-     */
     @Test
-    @DisplayName("Should return empty when retrieving non-existing briefing")
+    @DisplayName("Should return empty when searching for a briefing that does not exist")
     void testRetrieveNonExistingBriefing() {
-        // Act
-        Optional<Briefing> retrievedBriefing = briefingRepository.findById(999L); // ID que não existe
-
-        // Assert
+        Optional<Briefing> retrievedBriefing = briefingRepository.findById(999L);
         assertThat(retrievedBriefing).isNotPresent();
     }
 
-   
-
-    /**
-     * Testa a criação de um briefing com dados inválidos.
-     */
     @Test
     @DisplayName("Should throw exception when creating briefing with null fields")
     void testCreateBriefingWithNullFields() {
-        // Arrange
         Briefing briefing = new Briefing();
-        briefing.setProject(null); // Define projeto como null
-        briefing.setBriefingType(null); // Define tipo de briefing como null
-        briefing.setStartTime(null); // Define hora de início como null
-        briefing.setExpectedTime(null); // Define hora esperada como null
-        briefing.setDetailedDescription(null); // Define descrição como null
+        briefing.setProject(null);
+        briefing.setBriefingType(null);
+        briefing.setStartTime(null);
+        briefing.setExpectedTime(null);
+        briefing.setDetailedDescription(null);
 
-        // Act & Assert
         assertThrows(Exception.class, () -> {
-            briefingRepository.save(briefing); // Tenta salvar o briefing
+            briefingRepository.save(briefing);
         });
     }
 
     private Briefing createTestBriefing() {
-        // Criação do cliente
-        Employee client = createTestEmployee(); // Cria e salva um funcionário
+        Employee client = createTestEmployee();
 
-        // Criação e configuração do projeto
         Project project = new Project();
         project.setTitle("Test Project");
-        project.setStatus("In Progress");
         project.setDisabled(false);
-        project.setClient(client); // Defina o cliente que não pode ser nulo
+        project.setClient(client);
+        project = projectRepository.save(project);
 
-        project = projectRepository.save(project); // Salve o projeto no banco de dados
-
-        // Criação e configuração do tipo de briefing
         BriefingType briefingType = new BriefingType();
-        briefingType.setId(1L); // Verifique se o tipo com esse ID já existe no banco
+        briefingType.setId(1L);
+        briefingType.setDescription("Test Briefing Type");
+        briefingType = briefingTypeRepository.save(briefingType);
 
         Briefing briefing = new Briefing();
         briefing.setProject(project);
         briefing.setBriefingType(briefingType);
-        briefing.setStartTime(LocalDateTime.now());
-        briefing.setExpectedTime(LocalDateTime.now().plusDays(5));
+        briefing.setStartTime(LocalDate.now());
+        briefing.setExpectedTime(LocalDate.now().plusDays(5));
         briefing.setDetailedDescription(faker.lorem().paragraph());
         briefing.setOtherCompany(faker.company().name());
 
-        return briefing; // Retorna o briefing sem salvar
+        return briefing;
     }
-
     
     private Employee createTestEmployee() {
         Employee employee = new Employee();
         employee.setName("Test Employee");
-        employee.setId(1L); // Defina um ID fixo ou use um gerador de ID se apropriado
-
-        // Salve o empregado no banco de dados
+        employee.setLastName("Test LastName");
+        employee.setPhoneNumber("123456789");
+        employee.setSector("Test Sector");
+        employee.setOccupation("Test Occupation");
+        employee.setAgency("Test Agency");
+        employee.setAvatar(1L);
         return employeeRepository.save(employee);
     }
 
+    @Test
+    @DisplayName("Must create and retrieve a brief successfully")
+    void testCreateAndRetrieveBriefing() {
+        Briefing briefing = createTestBriefing();
+        Briefing savedBriefing = briefingRepository.save(briefing);
+
+        assertThat(savedBriefing.getId()).isNotNull();
+
+        Optional<Briefing> retrievedBriefing = briefingRepository.findById(savedBriefing.getId());
+        assertThat(retrievedBriefing).isPresent();
+        assertThat(retrievedBriefing.get().getDetailedDescription()).isEqualTo(briefing.getDetailedDescription());
+    }
 }

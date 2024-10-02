@@ -3,14 +3,18 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.measu
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.measurements.Measurement;
@@ -30,6 +34,9 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@TestMethodOrder(MethodOrderer.Random.class)
+@Sql(scripts = "/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class MeasurementRepositoryTest {
 
     @Autowired
@@ -58,20 +65,17 @@ public class MeasurementRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Criação do Profile
         Profile profile = new Profile();
         profile.setDescription("Perfil de Teste");
-        profile = profileRepository.save(profile); // Salvar o perfil no banco
+        profile = profileRepository.save(profile);
 
-        // Exemplo de criação do User
         User user = new User();
         user.setEmail("test@example.com");
         user.setPassword("password123");
         user.setDisabled(false);
-        user.setProfile(profile); // Associar o perfil ao usuário
-        user = userRepository.save(user); // Salvar o usuário no banco
+        user.setProfile(profile);
+        user = userRepository.save(user);
 
-        // Criação do Employee
         Employee employee = new Employee();
         employee.setName("Cliente Teste");
         employee.setLastName("Sobrenome Teste");
@@ -79,34 +83,28 @@ public class MeasurementRepositoryTest {
         employee.setSector("Vendas");
         employee.setOccupation("Gerente");
         employee.setAgency("Agência Central");
-        employee.setAvatar(1L); // Exemplo de valor
-        employee.setUser(user); // Associando o usuário
-        employee = employeeRepository.save(employee); // Salvar o empregado
+        employee.setAvatar(1L);
+        employee.setUser(user);
+        employee = employeeRepository.save(employee);
 
-        // Criação de um BriefingType
         BriefingType briefingType = new BriefingType();
         briefingType.setDescription("Tipo de briefing de teste");
         briefingType = briefingTypeRepository.save(briefingType);
 
-        // Criação do Project
         Project project = new Project();
         project.setTitle("Título do Projeto de Teste");
-        project.setStatus("Ativo");
         project.setDisabled(false);
-        project.setClient(employee); // Usar o Employee salvo como cliente
-        project.setCollaborator(employee); // Use o mesmo Employee como colaborador para simplificação
-        project = projectRepository.save(project); // Salvar o projeto
+        project.setClient(employee);
+        project = projectRepository.save(project);
 
-        // Criação do Briefing
         briefing = new Briefing();
         briefing.setBriefingType(briefingType);
-        briefing.setProject(project); // Associando o projeto ao briefing
-        briefing.setStartTime(LocalDateTime.now());
-        briefing.setExpectedTime(LocalDateTime.now().plusDays(7));
+        briefing.setProject(project);
+        briefing.setStartTime(LocalDate.now());
+        briefing.setExpectedTime(LocalDate.now().plusDays(7));
         briefing.setDetailedDescription("Descrição detalhada do briefing para teste");
-        briefing = briefingRepository.save(briefing); // Salvar o Briefing
+        briefing = briefingRepository.save(briefing);
 
-        // Criação da Measurement
         measurement = new Measurement();
         measurement.setBriefing(briefing);
         measurement.setHeight(BigDecimal.valueOf(1.75));
@@ -114,13 +112,11 @@ public class MeasurementRepositoryTest {
     }
 
     @Test
-    @DisplayName("Deve salvar e carregar uma Measurement")
+    @DisplayName("You must save and load a Measurement")
     void shouldSaveAndLoadMeasurement() {
-        // Salvar a Measurement
         Measurement savedMeasurement = measurementRepository.save(measurement);
         assertThat(savedMeasurement.getId()).isNotNull();
 
-        // Carregar a Measurement do banco
         Measurement foundMeasurement = measurementRepository.findById(savedMeasurement.getId()).orElse(null);
         assertThat(foundMeasurement).isNotNull();
         assertThat(foundMeasurement.getHeight()).isEqualTo(measurement.getHeight());
@@ -129,16 +125,13 @@ public class MeasurementRepositoryTest {
     }
 
     @Test
-    @DisplayName("Deve excluir uma Measurement")
+    @DisplayName("You must delete a Measurement")
     void shouldDeleteMeasurement() {
-        // Salvar a Measurement
         Measurement savedMeasurement = measurementRepository.save(measurement);
         assertThat(savedMeasurement.getId()).isNotNull();
 
-        // Excluir a Measurement
         measurementRepository.delete(savedMeasurement);
 
-        // Verificar se a Measurement foi excluída
         Measurement foundMeasurement = measurementRepository.findById(savedMeasurement.getId()).orElse(null);
         assertThat(foundMeasurement).isNull();
     }

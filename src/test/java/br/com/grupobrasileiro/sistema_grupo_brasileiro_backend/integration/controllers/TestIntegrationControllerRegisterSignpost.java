@@ -22,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 
@@ -69,14 +70,18 @@ public class TestIntegrationControllerRegisterSignpost extends AbstractIntegrati
                 BigDecimal.valueOf(2.50)
         );
 
+
+
         BriefingForm briefingForm = new BriefingForm(
-                LocalDateTime.now(),
+                LocalDate.now(),  
                 faker.lorem().sentence(),
                 new HashSet<>(),
-                null,
+                faker.company().name(),  
                 1L,
                 measurementsForm
         );
+
+
 
 
 

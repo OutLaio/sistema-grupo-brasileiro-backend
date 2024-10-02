@@ -1,6 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.auth;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,11 +30,18 @@ import com.github.javafaker.Faker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.LoginForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.RecoveryPasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.ResetPasswordForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.view.TokenView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.profile.view.ProfileView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.UserView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.email.PasswordRequest;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.InvalidTokenException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.UserIsNotActiveException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view.EmployeeViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.email.EmailService;
@@ -57,6 +66,9 @@ class AuthServiceTest {
 
     @InjectMocks
     private AuthService authService;
+    
+    @Mock
+    private EmployeeViewMapper employeeViewMapper;
 
     private Faker faker;
 
@@ -74,22 +86,83 @@ class AuthServiceTest {
         String password = faker.internet().password();
         LoginForm form = new LoginForm(email, password);
 
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setDescription("ROLE_USER");
+
         User user = new User();
+        user.setId(1L);
+        user.setEmail(email);
+        user.setPassword(password);
         user.setDisabled(false);
+        user.setProfile(profile);
+
+        Employee employee = new Employee();
+        employee.setId(1L);
+        employee.setName("John");
+        employee.setLastName("Doe");
+        employee.setPhoneNumber("1234567890");
+        employee.setSector("IT");
+        employee.setOccupation("Developer");
+        employee.setAgency("Main Branch");
+        employee.setAvatar(1L);
+        employee.setUser(user);
+        user.setEmployee(employee);
+
+        ProfileView profileView = new ProfileView(profile.getId(), profile.getDescription());
+        UserView userView = new UserView(user.getId(), user.getEmail(), profileView);
+
+        EmployeeView expectedEmployeeView = new EmployeeView(
+            employee.getId(),
+            userView,
+            employee.getName(),
+            employee.getLastName(),
+            employee.getPhoneNumber(),
+            employee.getSector(),
+            employee.getOccupation(),
+            employee.getAgency(),
+            employee.getAvatar()
+        );
 
         when(userRepository.findByEmail(form.email())).thenReturn(Optional.of(user));
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>()));
+                .thenReturn(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
 
-        when(tokenService.generateToken(any(User.class))).thenReturn("token");
+        String expectedToken = "token";
+        when(tokenService.generateToken(any(User.class))).thenReturn(expectedToken);
+
+        // Mock the employeeViewMapper
+        when(employeeViewMapper.map(any(Employee.class))).thenReturn(expectedEmployeeView);
 
         // Act
-        String result = authService.doLogin(form);
+        TokenView result = authService.doLogin(form, authenticationManager);
 
         // Assert
-        assertEquals("token", result, () -> "Expected the token to be 'token'");
+        assertNotNull(result, "TokenView should not be null");
+        assertEquals(expectedToken, result.token(), "Token should match");
+        
+        EmployeeView resultEmployeeView = result.employee();
+        assertNotNull(resultEmployeeView, "EmployeeView should not be null");
+        assertEquals(expectedEmployeeView.id(), resultEmployeeView.id(), "Employee ID should match");
+        assertEquals(expectedEmployeeView.name(), resultEmployeeView.name(), "Employee name should match");
+        assertEquals(expectedEmployeeView.lastname(), resultEmployeeView.lastname(), "Employee lastname should match");
+        assertEquals(expectedEmployeeView.phonenumber(), resultEmployeeView.phonenumber(), "Employee phone number should match");
+        assertEquals(expectedEmployeeView.sector(), resultEmployeeView.sector(), "Employee sector should match");
+        assertEquals(expectedEmployeeView.occupation(), resultEmployeeView.occupation(), "Employee occupation should match");
+        assertEquals(expectedEmployeeView.agency(), resultEmployeeView.agency(), "Employee agency should match");
+        assertEquals(expectedEmployeeView.avatar(), resultEmployeeView.avatar(), "Employee avatar should match");
+        
+        UserView resultUserView = resultEmployeeView.userView();
+        assertNotNull(resultUserView, "UserView should not be null");
+        assertEquals(userView.id(), resultUserView.id(), "User ID should match");
+        assertEquals(userView.email(), resultUserView.email(), "User email should match");
+        
+        ProfileView resultProfileView = resultUserView.profileView();
+        assertNotNull(resultProfileView, "ProfileView should not be null");
+        assertEquals(profileView.id(), resultProfileView.id(), "Profile ID should match");
+        assertEquals(profileView.description(), resultProfileView.description(), "Profile description should match");
     }
-
+    
     @Test
     @DisplayName("Should throw exception when user is not found")
     void doLogin_UserNotFound() {
@@ -102,7 +175,7 @@ class AuthServiceTest {
 
         // Act & Assert
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-                () -> authService.doLogin(form),
+                () -> authService.doLogin(form, authenticationManager),
                 () -> "Expected an EntityNotFoundException to be thrown");
 
         assertTrue(exception.getMessage().contains("User not found for email"),
@@ -124,12 +197,13 @@ class AuthServiceTest {
 
         // Act & Assert
         UserIsNotActiveException exception = assertThrows(UserIsNotActiveException.class,
-                () -> authService.doLogin(form),
+                () -> authService.doLogin(form, authenticationManager),
                 () -> "Expected a UserIsNotActiveException to be thrown");
 
         assertEquals("Acesso negado.", exception.getMessage(),
                 () -> "Expected message to be 'Acesso negado.'");
     }
+
     
     @Test
     @DisplayName("Should send recovery password email when user is found")

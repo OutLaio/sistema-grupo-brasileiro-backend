@@ -53,7 +53,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Deve registrar um projeto com sucesso")
+    @DisplayName("Must register a project successfully")
     void shouldRegisterProjectSuccessfully() {
         Long clientId = faker.number().randomNumber();
         String title = faker.lorem().word();
@@ -98,7 +98,7 @@ public class ProjectServiceTest {
 
 
     @Test
-    @DisplayName("Deve lançar exceção quando o cliente não for encontrado ao registrar um projeto")
+    @DisplayName("Should throw exception when client is not found when registering a project")
     void shouldThrowEntityNotFoundExceptionWhenClientNotFound() {
         Long clientId = faker.number().randomNumber();
         String title = faker.lorem().word();
@@ -114,7 +114,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção quando o projeto não for encontrado ao atribuir colaborador")
+    @DisplayName("Should throw exception when project not found when assigning collaborator")
     void shouldThrowEntityNotFoundExceptionWhenProjectNotFound() {
         Long projectId = 1L;
         Long collaboratorId = 2L;
@@ -129,7 +129,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção quando o colaborador não for encontrado ao atribuir colaborador")
+    @DisplayName("Should throw exception when collaborator is not found when assigning collaborator")
     void shouldThrowEntityNotFoundExceptionWhenEmployeeNotFound() {
         Long projectId = 1L;
         Long collaboratorId = 2L;
@@ -147,7 +147,7 @@ public class ProjectServiceTest {
 
 
     @Test
-    @DisplayName("Deve lançar exceção quando o projeto não for encontrado")
+    @DisplayName("Should throw exception when project not foundo")
     void shouldThrowExceptionWhenProjectNotFound() {
         Long projectId = faker.number().randomNumber();
 
@@ -160,7 +160,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Deve atualizar o status do projeto para COMPLETED com sucesso")
+    @DisplayName("Should update the project status to COMPLETED successfully")
     void shouldSetProjectStatusToCompletedSuccessfully() {
         Long projectId = faker.number().randomNumber();
         Project project = new Project();
@@ -177,7 +177,7 @@ public class ProjectServiceTest {
         );
     }
     @Test
-    @DisplayName("Deve lançar exceção quando o perfil do colaborador não for adequado")
+    @DisplayName("Should throw exception when employee profile is not suitable")
     void shouldThrowInvalidProfileExceptionWhenEmployeeProfileIsInvalid() {
         Long projectId = 1L;
         Long collaboratorId = 2L;
@@ -199,7 +199,7 @@ public class ProjectServiceTest {
         );
     }
     @Test
-    @DisplayName("Deve atualizar status do projeto para IN_PRODUCTION quando hasConfection for true")
+    @DisplayName("Should update project status to IN_PRODUCTION when hasConfection is true")
     void shouldSetProjectStatusToInProductionWhenHasConfectionIsTrue() {
         Long projectId = 1L;
         Project project = new Project();
@@ -217,7 +217,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Deve atualizar status do projeto para COMPLETED quando hasConfection for false")
+    @DisplayName("Should update project status to COMPLETED when hasConfection is false")
     void shouldSetProjectStatusToCompletedWhenHasConfectionIsFalse() {
         Long projectId = 1L;
         Project project = new Project();
@@ -235,7 +235,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Deve atualizar status do projeto para COMPLETED ao finalizar")
+    @DisplayName("Must update project status to COMPLETED upon completion")
     void shouldSetProjectStatusToCompletedWhenFinished() {
         Long projectId = 1L;
         Project project = new Project();
@@ -255,7 +255,7 @@ public class ProjectServiceTest {
 
 
     @Test
-    @DisplayName("Deve lançar exceção quando o colaborador não for encontrado")
+    @DisplayName("Should throw exception when collaborator is not found")
     void shouldThrowExceptionWhenEmployeeNotFound() {
         Long projectId = faker.number().randomNumber();
         Long collaboratorId = faker.number().randomNumber();
@@ -272,7 +272,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção quando o perfil do colaborador não for adequado")
+    @DisplayName("Should throw exception when employee profile is not suitable")
     void shouldThrowExceptionWhenEmployeeProfileIsInvalid() {
         Long projectId = faker.number().randomNumber();
         Long collaboratorId = faker.number().randomNumber();
@@ -295,7 +295,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Deve atribuir colaborador e atualizar status para IN_PROGRESS quando o projeto estiver em TO_DO")
+    @DisplayName("Must assign collaborator and update status to IN_PROGRESS when project is in TO_DO")
     void shouldAssignCollaboratorAndUpdateStatus() {
         Long projectId = faker.number().randomNumber();
         Long collaboratorId = faker.number().randomNumber();
@@ -339,7 +339,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Deve atualizar status do projeto para COMPLETED quando hasConfection for false")
+    @DisplayName("Should update project status to COMPLETED when hasConfection is false")
     void shouldSetProjectStatusToCompleted() {
         Long projectId = faker.number().randomNumber();
         Project project = new Project();
@@ -357,7 +357,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Deve atualizar status do projeto para STAND_BY")
+    @DisplayName("Must update project status to STAND_BY")
     void shouldSetProjectStatusToStandBy() {
         Long projectId = faker.number().randomNumber();
         Project project = new Project();
@@ -374,7 +374,7 @@ public class ProjectServiceTest {
     }
     
     @Test
-    @DisplayName("Deve atualizar o status do projeto para IN_PROGRESS quando o status é TO_DO e um colaborador é atribuído")
+    @DisplayName("Should update project status to IN_PROGRESS when status is TO_DO and a collaborator is assigned")
     void shouldUpdateProjectStatusToInProgressWhenStatusIsToDo() {
         Long projectId = 1L;
         Long collaboratorId = 2L;

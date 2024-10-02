@@ -10,6 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -93,10 +94,13 @@ class BSignpostServiceTest {
             new BriefingView(
                 faker.number().randomNumber(),
                 new BriefingTypeView(faker.number().randomNumber(), faker.lorem().word()),
-                LocalDateTime.now(),
-                LocalDateTime.now().plusDays(1),
-                LocalDateTime.now().plusDays(2),
-                faker.lorem().sentence()
+                LocalDate.now(),
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(2),
+                faker.lorem().sentence(),
+                null, // MeasurementsView
+                null, // CompaniesBriefingsView
+                faker.lorem().sentence() // otherCompanies
             )
         );
 

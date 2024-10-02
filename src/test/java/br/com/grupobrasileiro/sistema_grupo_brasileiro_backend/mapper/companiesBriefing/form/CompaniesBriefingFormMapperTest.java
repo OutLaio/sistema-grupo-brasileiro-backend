@@ -86,7 +86,7 @@ class CompaniesBriefingFormMapperTest {
      * Espera-se que o CompaniesBriefing mapeado contenha uma empresa nula.
      */
     @Test
-    @DisplayName("Deve lançar exceção ao tratar CompaniesBriefingsForm com companyId nulo")
+    @DisplayName("Should throw exception when handling CompaniesBriefingsForm with null companyId")
     void handleNullCompanyId() {
         companiesBriefingsForm = new CompaniesBriefingsForm(null); // Definindo companyId como nulo
 

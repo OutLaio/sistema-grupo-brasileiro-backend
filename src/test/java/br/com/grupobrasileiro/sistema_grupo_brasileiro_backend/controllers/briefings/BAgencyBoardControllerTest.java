@@ -26,9 +26,11 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.age
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.agencyBoard.BAgencyBoardService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
@@ -70,37 +72,47 @@ class BAgencyBoardControllerTest {
                 1L,                                      
                 null                                     
             ),
-            new BAgencyBoardsForm(null, null, faker.lorem().sentence(), faker.lorem().sentence(), null, null) // Preencha conforme necessário
-        );
+            new BAgencyBoardsForm(null, null, faker.lorem().sentence(), faker.lorem().sentence(), null, null)
+        	    );
 
-        Project mockProject = new Project(); 
-        Briefing mockBriefing = new Briefing(); 
-        
-        
-        BAgencyBoardDetailedView mockView = new BAgencyBoardDetailedView(
-            new BAgencyBoardView(1L, null, null, null, null, faker.address().fullAddress(), faker.lorem().sentence()),
-            new ProjectView(mockProject.getId(), mockProject.getTitle(), mockProject.getStatus(), null, null),
-            new BriefingView(
-                mockBriefing.getId(),                     
-                null,                                     
-                LocalDate.now(),                          
-                LocalDate.now().plusDays(10),            
-                LocalDate.now().plusDays(20),            
-                faker.lorem().sentence()                  
-            )
-        );
+        	    Project mockProject = new Project(); 
+        	    Briefing mockBriefing = new Briefing(); 
+        	    
+        	    // Criar um mock para BriefingType
+        	    BriefingType mockBriefingType = new BriefingType();
+        	    mockBriefingType.setId(1L);
+        	    mockBriefingType.setDescription("Tipo de Briefing Mockado");
+        	    
+        	    // Configurar o mockBriefing com o mockBriefingType
+        	    mockBriefing.setBriefingType(mockBriefingType);
+        	    
+        	    BAgencyBoardDetailedView mockView = new BAgencyBoardDetailedView(
+        	        new BAgencyBoardView(1L, null, null, null, null, faker.address().fullAddress(), faker.lorem().sentence()),
+        	        new ProjectView(mockProject.getId(), mockProject.getTitle(), mockProject.getStatus(), null, null),
+        	        new BriefingView(
+        	            mockBriefing.getId(),
+        	            new BriefingTypeView(mockBriefing.getBriefingType().getId(), mockBriefing.getBriefingType().getDescription()),
+        	            mockBriefing.getStartTime(),
+        	            mockBriefing.getExpectedTime(),
+        	            mockBriefing.getFinishTime(),
+        	            mockBriefing.getDetailedDescription(),
+        	            null, // MeasurementsView
+        	            null, // CompaniesBriefingsView
+        	            mockBriefing.getOtherCompany()
+        	        )
+        	    );
 
-        when(projectService.register(any())).thenReturn(mockProject);
-        when(briefingService.register(any(), any())).thenReturn(mockBriefing);
-        when(bAgencyBoardService.register(any(), any())).thenReturn(mockView);
+        	    when(projectService.register(any())).thenReturn(mockProject);
+        	    when(briefingService.register(any(), any())).thenReturn(mockBriefing);
+        	    when(bAgencyBoardService.register(any(), any())).thenReturn(mockView);
 
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
+        	    UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
 
-        // Act
-        ResponseEntity<BAgencyBoardDetailedView> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
+        	    // Act
+        	    ResponseEntity<BAgencyBoardDetailedView> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
 
-        // Assert
-        assertEquals(201, response.getStatusCodeValue());
-        assertEquals(mockView, response.getBody());
+        	    // Assert
+        	    assertEquals(201, response.getStatusCodeValue());
+        	    assertEquals(mockView, response.getBody());
     }
 }

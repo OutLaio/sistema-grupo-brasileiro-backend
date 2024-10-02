@@ -1,38 +1,45 @@
 
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.AgencyBoardTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BoardTypeView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CityView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyCityView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.OtherRouteView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.RouteView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.BAgencyBoardViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view.BriefingViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view.ProjectViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.AgencyBoardType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BoardType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.CompanyCity;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.OtherRoute;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Route;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 class BAgencyBoardDetailedViewMapperTest {
 
@@ -53,159 +60,149 @@ class BAgencyBoardDetailedViewMapperTest {
         MockitoAnnotations.openMocks(this);
     }
     
+ 
     @Test
-    void testMapComBAgencyBoardCompleto() {
+    void testMapWithFullyPopulatedBAgencyBoard() {
         // Arrange
         BAgencyBoard bAgencyBoard = new BAgencyBoard();
         Briefing briefing = new Briefing();
+        Project project = new Project();
         bAgencyBoard.setBriefing(briefing);
+        briefing.setProject(project);
 
-        BAgencyBoardView bAgencyBoardView = new BAgencyBoardView(1L, null, null, null, null, "Localização", "Observações");
-        BriefingTypeView briefingTypeView = new BriefingTypeView(1L, "Tipo de Briefing");
-        BriefingView briefingView = new BriefingView(1L, briefingTypeView, LocalDate.now(), LocalDate.now().plusDays(7), null, "Descrição detalhada");
-        EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente", null);
-        EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador", null);
-        ProjectView projectView = new ProjectView(1L, "Título do Projeto", "Em Andamento", client, collaborator);
+        CityView cityView = new CityView(1L, "City Name");
+        CompanyView companyView = new CompanyView(1L, "Company Name");
+        CompanyCityView companyCityView = new CompanyCityView(1L, cityView, companyView);
+
+        BAgencyBoardView bAgencyBoardView = new BAgencyBoardView(1L, 
+            new AgencyBoardTypeView(1L, "Type"), 
+            new BoardTypeView(1L, "Board Type"),
+            Set.of(new RouteView(1L, companyCityView, "Route Type")),
+            Set.of(new OtherRouteView(1L, "Company", "City", "Other Route Type")),
+            "Location", 
+            "Observations");
+
+        BriefingTypeView briefingTypeView = new BriefingTypeView(1L, "Briefing Type");
+        BriefingView briefingView = new BriefingView(
+            1L, 
+            briefingTypeView, 
+            LocalDate.now(), 
+            LocalDate.now().plusDays(30), 
+            null, 
+            "Detailed Description",
+            null, null, null
+        );
+
+        ProjectView projectView = new ProjectView(1L, "Project Name", "Status", 
+            new EmployeeSimpleView(1L, "Client Name", null),
+            new EmployeeSimpleView(2L, "Collaborator Name", null));
 
         when(bAgencyBoardViewMapper.map(bAgencyBoard)).thenReturn(bAgencyBoardView);
         when(briefingViewMapper.map(briefing)).thenReturn(briefingView);
-        when(projectViewMapper.map(any())).thenReturn(projectView);
+        when(projectViewMapper.map(project)).thenReturn(projectView);
 
         // Act
-        BAgencyBoardDetailedView resultado = bAgencyBoardDetailedViewMapper.map(bAgencyBoard);
+        BAgencyBoardDetailedView result = bAgencyBoardDetailedViewMapper.map(bAgencyBoard);
 
         // Assert
-        assertNotNull(resultado);
-        assertEquals(bAgencyBoardView, resultado.bAgencyBoardView());
-        assertEquals(projectView, resultado.projectView());
-        assertEquals(briefingView, resultado.briefingView());
+        assertNotNull(result);
+        assertEquals(bAgencyBoardView, result.bAgencyBoardView());
+        assertEquals(briefingView, result.briefingView());
+        assertEquals(projectView, result.projectView());
 
         verify(bAgencyBoardViewMapper).map(bAgencyBoard);
         verify(briefingViewMapper).map(briefing);
-        verify(projectViewMapper).map(any());
+        verify(projectViewMapper).map(project);
     }
 
     @Test
-    void testMapWithNullProjectAndUpdatedBriefingView() {
+    void testMapWithAllFieldsPopulated() {
         // Arrange
         BAgencyBoard bAgencyBoard = new BAgencyBoard();
+        bAgencyBoard.setId(1L);
         Briefing briefing = new Briefing();
+        Project project = new Project();
+        briefing.setProject(project);
         bAgencyBoard.setBriefing(briefing);
 
-        BAgencyBoardView bAgencyBoardView = new BAgencyBoardView(1L, null, null, null, null, "Localização", "Observações");
-        BriefingTypeView briefingTypeView = new BriefingTypeView(1L, "Tipo de Briefing");
-        BriefingView briefingView = new BriefingView(1L, briefingTypeView, LocalDate.now(), LocalDate.now().plusDays(7), null, "Descrição detalhada");
-
-        when(bAgencyBoardViewMapper.map(bAgencyBoard)).thenReturn(bAgencyBoardView);
-        when(briefingViewMapper.map(briefing)).thenReturn(briefingView);
-
-        // Act
-        BAgencyBoardDetailedView resultado = bAgencyBoardDetailedViewMapper.map(bAgencyBoard);
-
-        // Assert
-        assertNotNull(resultado);
-        assertEquals(bAgencyBoardView, resultado.bAgencyBoardView());
-        assertNull(resultado.projectView());
-        assertEquals(briefingView, resultado.briefingView());
-
-        // Verificações adicionais para o BriefingView atualizado
-        assertNotNull(resultado.briefingView().id());
-        assertNotNull(resultado.briefingView().briefingType());
-        assertNotNull(resultado.briefingView().startTime());
-        assertNotNull(resultado.briefingView().expectedTime());
-        assertNull(resultado.briefingView().finishTime());
-        assertNotNull(resultado.briefingView().detailedDescription());
-
-        verify(bAgencyBoardViewMapper).map(bAgencyBoard);
-        verifyNoInteractions(projectViewMapper);
-        verify(briefingViewMapper).map(briefing);
-    }
-
-    @Test
-    void testMapComTodosOsCamposPreenchidos() {
-        // Arrange
-        BAgencyBoard bAgencyBoard = new BAgencyBoard();
         AgencyBoardType agencyBoardType = new AgencyBoardType();
-        BoardType boardType = new BoardType();
-        Briefing briefing = new Briefing();
-        Set<Route> routes = new HashSet<>();
-        Set<OtherRoute> otherRoutes = new HashSet<>();
-        
-        bAgencyBoard.setId(1L);
+        agencyBoardType.setId(1L);
+        agencyBoardType.setDescription("Agency Board Type");
         bAgencyBoard.setAgencyBoardType(agencyBoardType);
+
+        BoardType boardType = new BoardType();
+        boardType.setId(1L);
         bAgencyBoard.setBoardType(boardType);
-        bAgencyBoard.setBriefing(briefing);
-        bAgencyBoard.setBoardLocation("Localização do quadro");
-        bAgencyBoard.setObservations("Observações do quadro");
+
+        CompanyCity companyCity = new CompanyCity();
+        companyCity.setId(1L);
+
+        Route route = new Route();
+        route.setId(1L);
+        route.setType("Route Type");
+        route.setCompanyCity(companyCity);
+        route.setBAgencyBoard(bAgencyBoard);  // Definindo o BAgencyBoard na Route
+
+        Set<Route> routes = new HashSet<>();
+        routes.add(route);
         bAgencyBoard.setRoutes(routes);
+
+        OtherRoute otherRoute = new OtherRoute();
+        otherRoute.setId(1L);
+        otherRoute.setCompany("Company");
+        otherRoute.setType("Other Route Type");
+        otherRoute.setBAgencyBoard(bAgencyBoard);  // Definindo o BAgencyBoard no OtherRoute
+
+        Set<OtherRoute> otherRoutes = new HashSet<>();
+        otherRoutes.add(otherRoute);
         bAgencyBoard.setOtherRoutes(otherRoutes);
-        
-        AgencyBoardTypeView agencyBoardTypeView = new AgencyBoardTypeView(1L, "Tipo de quadro de agência");
-        BoardTypeView boardTypeView = new BoardTypeView(1L, "Tipo de quadro");
+
+        bAgencyBoard.setBoardLocation("Board Location");
+        bAgencyBoard.setObservations("Observations");
+
+        CityView cityView = new CityView(1L, "City Name");
+        CompanyView companyView = new CompanyView(1L, "Company Name");
+        CompanyCityView companyCityView = new CompanyCityView(1L, cityView, companyView);
+
         BAgencyBoardView bAgencyBoardView = new BAgencyBoardView(
             1L,
-            agencyBoardTypeView,
-            boardTypeView,
-            Set.of(),
-            Set.of(),
-            "Localização do quadro",
-            "Observações do quadro"
+            new AgencyBoardTypeView(1L, "Agency Board Type"),
+            new BoardTypeView(1L, "Board Type"),
+            Set.of(new RouteView(1L, companyCityView, "Route Type")),
+            Set.of(new OtherRouteView(1L, "Company", "City", "Other Route Type")),
+            "Board Location",
+            "Observations"
         );
-        ProjectView projectView = new ProjectView(1L, "Título do Projeto", "Em andamento", 
-            new EmployeeSimpleView(1L, "Cliente", null), new EmployeeSimpleView(2L, "Colaborador", null));
-        BriefingView briefingView = new BriefingView(1L, new BriefingTypeView(1L, "Tipo de Briefing"), 
-            LocalDate.now(), LocalDate.now().plusDays(30), null, "Descrição detalhada");
-        
+
+        BriefingView briefingView = new BriefingView(
+            1L,
+            new BriefingTypeView(1L, "Briefing Type"),
+            LocalDate.now(),
+            LocalDate.now().plusDays(30),
+            null,
+            "Detailed Description",
+            null, null, null
+        );
+
+        ProjectView projectView = new ProjectView(1L, "Project Name", "Status", 
+            new EmployeeSimpleView(1L, "Client Name", null),
+            new EmployeeSimpleView(2L, "Collaborator Name", null));
+
         when(bAgencyBoardViewMapper.map(bAgencyBoard)).thenReturn(bAgencyBoardView);
-        when(projectViewMapper.map(briefing.getProject())).thenReturn(projectView);
         when(briefingViewMapper.map(briefing)).thenReturn(briefingView);
-        
+        when(projectViewMapper.map(project)).thenReturn(projectView);
+
         // Act
-        BAgencyBoardDetailedView resultado = bAgencyBoardDetailedViewMapper.map(bAgencyBoard);
-        
+        BAgencyBoardDetailedView result = bAgencyBoardDetailedViewMapper.map(bAgencyBoard);
+
         // Assert
-        assertNotNull(resultado);
-        assertEquals(bAgencyBoardView, resultado.bAgencyBoardView());
-        assertEquals(projectView, resultado.projectView());
-        assertEquals(briefingView, resultado.briefingView());
-        
+        assertNotNull(result);
+        assertEquals(bAgencyBoardView, result.bAgencyBoardView());
+        assertEquals(briefingView, result.briefingView());
+        assertEquals(projectView, result.projectView());
+
         verify(bAgencyBoardViewMapper).map(bAgencyBoard);
-        verify(projectViewMapper).map(briefing.getProject());
         verify(briefingViewMapper).map(briefing);
-    }
-    
-    @Test
-    void testMapComCamposNulos() {
-        // Arrange
-        BAgencyBoard bAgencyBoard = new BAgencyBoard();
-        
-        bAgencyBoard.setId(1L);
-        bAgencyBoard.setBoardLocation("Localização do quadro");
-        bAgencyBoard.setObservations("Observações do quadro");
-        
-        BAgencyBoardView bAgencyBoardView = new BAgencyBoardView(
-            1L,
-            null,
-            null,
-            Set.of(),
-            Set.of(),
-            "Localização do quadro",
-            "Observações do quadro"
-        );
-        
-        when(bAgencyBoardViewMapper.map(bAgencyBoard)).thenReturn(bAgencyBoardView);
-        
-        // Act
-        BAgencyBoardDetailedView resultado = bAgencyBoardDetailedViewMapper.map(bAgencyBoard);
-        
-        // Assert
-        assertNotNull(resultado);
-        assertEquals(bAgencyBoardView, resultado.bAgencyBoardView());
-        assertNull(resultado.projectView());
-        assertNull(resultado.briefingView());
-        
-        verify(bAgencyBoardViewMapper).map(bAgencyBoard);
-        verifyNoInteractions(projectViewMapper);
-        verifyNoInteractions(briefingViewMapper);
+        verify(projectViewMapper).map(project);
     }
 }

@@ -68,7 +68,7 @@ public class UserRepositoryTest {
         user.setEmail("test@example.com");
         user.setPassword("password123");
         user.setDisabled(false);
-        user.setProfile(savedProfile); // Atribua o perfil salvo ao User
+        user.setProfile(savedProfile); 
 
         // Act
         User savedUser = userRepository.save(user);

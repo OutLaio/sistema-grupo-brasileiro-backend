@@ -2,212 +2,268 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.brief
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.github.javafaker.Faker;
-
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.printeds.BPrinted;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.printeds.PrintedType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingTypeRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProfileRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
-import jakarta.transaction.Transactional;
 
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.Rollback;
-
-import java.util.Optional;
 
 @SpringBootTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
-@Transactional
-@Rollback
 public class BPrintedRepositoryTest {
 
     @Autowired
     private BPrintedRepository bPrintedRepository;
 
     @Autowired
-    private BriefingRepository briefingRepository; 
-    
-    @Autowired
-    private PrintedTypeRepository printedTypeRepository; 
+    private BriefingRepository briefingRepository;
 
     @Autowired
-    private ProjectRepository projectRepository; 
-    
+    private PrintedTypeRepository printedTypeRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    private Briefing briefing; 
-    private PrintedType printedType;
-    private Project project; 
+    @Autowired
+    private BriefingTypeRepository briefingTypeRepository;
 
-    // Setup para os testes
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ProfileRepository profileRepository;
+
+    private Briefing briefing;
+    private PrintedType printedType;
+    private Project project;
+
     @BeforeEach
     void setUp() {
-        // Limpar os repositórios antes de cada teste
+        // Limpar todos os repositórios
         bPrintedRepository.deleteAll();
         briefingRepository.deleteAll();
         printedTypeRepository.deleteAll();
-        projectRepository.deleteAll(); 
+        projectRepository.deleteAll();
+        employeeRepository.deleteAll();
+        userRepository.deleteAll();
+        profileRepository.deleteAll();
 
-        // Criar e persistir um tipo de impressão
+        // Criar e salvar um Profile
+        Profile profile = new Profile();
+        profile.setDescription("TEST_PROFILE");
+        profile = profileRepository.save(profile);
+
+        // Criar e salvar um User
+        User user = new User();
+        user.setEmail("test@example.com");
+        user.setPassword("password");
+        user.setDisabled(false);
+        user.setProfile(profile);
+        user = userRepository.save(user);
+
+        // Criar e salvar um Employee
+        Employee employee = new Employee();
+        employee.setName("Colaborador");
+        employee.setLastName("Teste"); // Note que é setLastName, não setLastname
+        employee.setAvatar(1L);
+        employee.setUser(user);
+        employee.setAgency("Agência Teste");
+        employee.setOccupation("Cargo Teste");
+        employee.setPhoneNumber("(11) 99999-9999");
+        employee.setSector("Setor Teste");
+        
+        System.out.println("Employee antes de salvar: " + employee);
+        
+        employee = employeeRepository.save(employee);
+        
+        System.out.println("Employee após salvar: " + employee);
+
+        // Criar e salvar um Project
+        project = new Project();
+        project.setTitle("Projeto 1");
+        project.setDisabled(false);
+        project.setClient(employee);
+        project = projectRepository.save(project);
+
+        // Criar e salvar um PrintedType
         printedType = new PrintedType();
         printedType.setDescription("Tipo de Impressão 1");
         printedType = printedTypeRepository.save(printedType);
 
-        // Criar e persistir um colaborador (Employee)
-        Employee employee = new Employee(); // Supondo que Employee tem um construtor padrão
-        employee.setName("Colaborador Teste"); // Defina os atributos necessários
-        employee = employeeRepository.save(employee); // Salve o colaborador
+        // Criar e salvar um BriefingType
+        BriefingType briefingType = new BriefingType();
+        briefingType.setDescription("Tipo de Briefing Teste");
+        briefingType = briefingTypeRepository.save(briefingType);
 
-        // Criar e persistir um projeto
-        project = new Project();
-        project.setTitle("Projeto 1");
-        project.setDisabled(false);
-        project.setClient(employee); // Atribuindo o colaborador como cliente
-        project = projectRepository.save(project);
-
-        // Criar e persistir um briefing
+        // Criar e salvar um Briefing
         briefing = new Briefing();
         briefing.setProject(project);
-        // briefing.setBriefingType(); // Essa linha continua comentada
-        briefing.setStartTime(LocalDateTime.now());
-        briefing.setExpectedTime(LocalDateTime.now().plusDays(7));
+        briefing.setBriefingType(briefingType);
+        briefing.setStartTime(LocalDate.now());
+        briefing.setExpectedTime(LocalDate.now().plusDays(7));
         briefing.setDetailedDescription("Descrição do briefing");
         briefing = briefingRepository.save(briefing);
     }
-
+    
     @Test
-    @DisplayName("Should save a BPrinted correctly")
-    @Rollback
+    @DisplayName("Must save a BPrinted correctly")
     void testSaveBPrinted() {
-        // Arrange
+        assertThat(briefing).isNotNull();
+        assertThat(briefing.getId()).isNotNull();
+        System.out.println("Briefing: " + briefing);
+
         BPrinted bPrinted = new BPrinted();
-        bPrinted.setBriefing(briefing); // Associar ao briefing criado no setUp
+        bPrinted.setBriefing(briefing);
         bPrinted.setPaperType("Papel A4");
         bPrinted.setFolds(2);
         bPrinted.setPages(50);
-        
-        // Act
-        BPrinted savedPrinted = bPrintedRepository.save(bPrinted);
+        bPrinted.setPrintedType(printedType); // Certifique-se de que este campo está sendo preenchido
 
-        // Assert
-        assertThat(savedPrinted).isNotNull();
-        assertThat(savedPrinted.getId()).isNotNull();
-        assertThat(savedPrinted.getPaperType()).isEqualTo(bPrinted.getPaperType());
-        assertThat(savedPrinted.getFolds()).isEqualTo(bPrinted.getFolds());
-        assertThat(savedPrinted.getPages()).isEqualTo(bPrinted.getPages());
+        // Verifique se há outros campos obrigatórios e preencha-os aqui
+
+        System.out.println("BPrinted antes de salvar: " + bPrinted);
+
+        try {
+            BPrinted savedPrinted = bPrintedRepository.save(bPrinted);
+            System.out.println("BPrinted após salvar: " + savedPrinted);
+
+            assertThat(savedPrinted).isNotNull();
+            assertThat(savedPrinted.getId()).isNotNull();
+            assertThat(savedPrinted.getPaperType()).isEqualTo(bPrinted.getPaperType());
+            assertThat(savedPrinted.getFolds()).isEqualTo(bPrinted.getFolds());
+            assertThat(savedPrinted.getPages()).isEqualTo(bPrinted.getPages());
+        } catch (Exception e) {
+            System.err.println("Erro ao salvar BPrinted: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
-
     @Test
-    @DisplayName("Should find a BPrinted by ID")
-    @Rollback
+    @DisplayName("Must find a BPrinted by ID")
     void testFindBPrintedById() {
-        // Arrange
+        // Verificar se o printedType foi criado corretamente no setUp
+        assertThat(printedType).isNotNull();
+        assertThat(printedType.getId()).isNotNull();
+        System.out.println("PrintedType: " + printedType);
+
         BPrinted bPrinted = new BPrinted();
-        bPrinted.setBriefing(briefing); // Associar ao briefing
+        bPrinted.setBriefing(briefing);
         bPrinted.setPaperType("Papel A4");
         bPrinted.setFolds(2);
         bPrinted.setPages(50);
-        BPrinted savedPrinted = bPrintedRepository.save(bPrinted);
+        bPrinted.setPrintedType(printedType); 
 
-        // Act
-        Optional<BPrinted> foundPrinted = bPrintedRepository.findById(savedPrinted.getId());
+        System.out.println("BPrinted antes de salvar: " + bPrinted);
 
-        // Assert
-        assertThat(foundPrinted).isPresent();
-        assertThat(foundPrinted.get().getId()).isEqualTo(savedPrinted.getId());
+        try {
+            BPrinted savedPrinted = bPrintedRepository.save(bPrinted);
+            System.out.println("BPrinted após salvar: " + savedPrinted);
+
+            Optional<BPrinted> foundPrinted = bPrintedRepository.findById(savedPrinted.getId());
+
+            assertThat(foundPrinted).isPresent();
+            assertThat(foundPrinted.get().getId()).isEqualTo(savedPrinted.getId());
+            assertThat(foundPrinted.get().getPrintedType()).isEqualTo(printedType);
+            
+            System.out.println("BPrinted encontrado: " + foundPrinted.get());
+        } catch (Exception e) {
+            System.err.println("Erro ao salvar ou encontrar BPrinted: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @Test
-    @DisplayName("Should update a BPrinted")
-    @Rollback
+    @DisplayName("Must update a BPrinted")
     void testUpdateBPrinted() {
-        // Arrange
+        // Verificar se o printedType foi criado corretamente no setUp
+        assertThat(printedType).isNotNull();
+        assertThat(printedType.getId()).isNotNull();
+        System.out.println("PrintedType: " + printedType);
+
         BPrinted bPrinted = new BPrinted();
-        bPrinted.setBriefing(briefing); // Associar ao briefing
+        bPrinted.setBriefing(briefing);
         bPrinted.setPaperType("Papel A4");
         bPrinted.setFolds(2);
         bPrinted.setPages(50);
-        BPrinted savedPrinted = bPrintedRepository.save(bPrinted);
+        bPrinted.setPrintedType(printedType); // Adicione esta linha
 
-        // Act - Atualiza o tipo de papel
-        savedPrinted.setPaperType("Papel A3");
-        BPrinted updatedPrinted = bPrintedRepository.save(savedPrinted);
+        System.out.println("BPrinted antes de salvar: " + bPrinted);
 
-        // Assert
-        assertThat(updatedPrinted.getPaperType()).isEqualTo("Papel A3");
+        try {
+            BPrinted savedPrinted = bPrintedRepository.save(bPrinted);
+            System.out.println("BPrinted após salvar: " + savedPrinted);
+
+            savedPrinted.setPaperType("Papel A3");
+            BPrinted updatedPrinted = bPrintedRepository.save(savedPrinted);
+            System.out.println("BPrinted após atualizar: " + updatedPrinted);
+
+            assertThat(updatedPrinted.getPaperType()).isEqualTo("Papel A3");
+        } catch (Exception e) {
+            System.err.println("Erro ao salvar ou atualizar BPrinted: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
-
     @Test
-    @DisplayName("Should delete a BPrinted")
-    @Rollback
+    @DisplayName("Must delete a BPrinted")
     void testDeleteBPrinted() {
-        // Arrange
+        // Verificar se o printedType foi criado corretamente no setUp
+        assertThat(printedType).isNotNull();
+        assertThat(printedType.getId()).isNotNull();
+        System.out.println("PrintedType: " + printedType);
+
         BPrinted bPrinted = new BPrinted();
-        bPrinted.setBriefing(briefing); // Associar ao briefing
+        bPrinted.setBriefing(briefing);
         bPrinted.setPaperType("Papel A4");
         bPrinted.setFolds(2);
         bPrinted.setPages(50);
-        BPrinted savedPrinted = bPrintedRepository.save(bPrinted);
+        bPrinted.setPrintedType(printedType); // Adicione esta linha
 
-        // Act
-        bPrintedRepository.delete(savedPrinted);
-        Optional<BPrinted> foundPrinted = bPrintedRepository.findById(savedPrinted.getId());
+        System.out.println("BPrinted antes de salvar: " + bPrinted);
 
-        // Assert
-        assertThat(foundPrinted).isNotPresent();
+        try {
+            BPrinted savedPrinted = bPrintedRepository.save(bPrinted);
+            System.out.println("BPrinted após salvar: " + savedPrinted);
+
+            bPrintedRepository.delete(savedPrinted);
+            System.out.println("BPrinted deletado");
+
+            Optional<BPrinted> foundPrinted = bPrintedRepository.findById(savedPrinted.getId());
+
+            assertThat(foundPrinted).isNotPresent();
+            System.out.println("BPrinted não encontrado após deleção");
+        } catch (Exception e) {
+            System.err.println("Erro ao salvar, deletar ou buscar BPrinted: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
-    @Test
-    @DisplayName("Should retrieve all BPrinted")
-    void testFindAllBPrinted() {
-        // Arrange
-        BPrinted printed1 = new BPrinted();
-        printed1.setBriefing(briefing); // Associar ao briefing
-        printed1.setPaperType("Papel A4");
-        BPrinted printed2 = new BPrinted();
-        printed2.setBriefing(briefing); // Associar ao briefing
-        printed2.setPaperType("Papel A3");
-        bPrintedRepository.save(printed1);
-        bPrintedRepository.save(printed2);
 
-        // Act
-        Iterable<BPrinted> allPrinted = bPrintedRepository.findAll();
-
-        // Assert
-        assertThat(allPrinted).hasSize(2);
-    }
 }

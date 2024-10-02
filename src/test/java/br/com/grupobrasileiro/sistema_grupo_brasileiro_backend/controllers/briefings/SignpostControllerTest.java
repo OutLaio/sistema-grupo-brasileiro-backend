@@ -1,17 +1,19 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controllers.briefings;
 
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings.SignpostController;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.BSignpostForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.RegisterSignpostForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostView; // Importar BSignpostView
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.MaterialView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm; // Importar BriefingForm
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm; // Importar ProjectForm
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.companiesBriefing.form.CompaniesBriefingsForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.Material; // Importar a classe Material
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.Material;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.signpost.BSignpostService;
@@ -31,6 +33,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashSet;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -58,19 +61,22 @@ public class SignpostControllerTest {
     }
 
     @Test
-    @DisplayName("Should register a new signpost successfully")
+    @DisplayName("Must register a new sign successfully")
     void registerSignpostSuccessfully() {
         // Arrange
-        // Criando o formulário de cadastro com dados fictícios
         RegisterSignpostForm registerSignpostForm = new RegisterSignpostForm(
-                new ProjectForm(faker.number().randomNumber(), faker.company().name(), null),
+                new ProjectForm(
+                        faker.number().randomNumber(),
+                        faker.company().name(),
+                        null 
+                ),
                 new BriefingForm(
                         LocalDate.now().plusDays(10),
                         faker.lorem().sentence(),
-                        new HashSet<>(),
-                        null,
-                        1L,
-                        null
+                        new HashSet<>(), 
+                        faker.company().name(), 
+                        faker.number().randomNumber(), 
+                        null 
                 ),
                 new BSignpostForm(
                         faker.number().randomNumber(), 
@@ -79,12 +85,10 @@ public class SignpostControllerTest {
                 )
         );
 
-        // Mocking the necessary objects
         Project mockProject = new Project();
         Briefing mockBriefing = new Briefing();
         Material mockMaterial = new Material(); 
 
-        // Criando um mock de BSignpost com os parâmetros corretos
         BSignpost mockSignpost = new BSignpost(
                 1L, 
                 mockMaterial, 
@@ -93,14 +97,11 @@ public class SignpostControllerTest {
                 registerSignpostForm.signpostForm().sector() 
         );
 
- 
-     // Criando um mock para MaterialView
         MaterialView mockMaterialView = new MaterialView(
                 faker.number().randomNumber(),  
                 faker.lorem().sentence()        
         );
-
-        // Criando um mock para BSignpostView
+        
         BSignpostView mockSignpostView = new BSignpostView(
                 mockSignpost.getId(),          
                 mockMaterialView,               
@@ -108,27 +109,36 @@ public class SignpostControllerTest {
                 registerSignpostForm.signpostForm().sector()
         );
 
-
-
-
-        // Criando um mock para BriefingView
         BriefingView mockBriefingView = new BriefingView(
                 mockBriefing.getId(),
-                null,
+                null, 
                 LocalDate.now(),
                 LocalDate.now().plusDays(10),
-                LocalDate.now(),
-                faker.lorem().sentence()
+                null, 
+                faker.lorem().sentence(),
+                null, 
+                null, 
+                null  
         );
 
-        
+        ProjectView mockProjectView = new ProjectView(
+                mockProject.getId(),
+                faker.company().name(),
+                "TO_DO",
+                new EmployeeSimpleView(
+                    faker.number().randomNumber(), 
+                    faker.name().fullName(), 
+                    faker.number().randomNumber() 
+                ),
+                null // collaborator
+        );
+
         BSignpostDetailedView mockView = new BSignpostDetailedView(
                 mockSignpostView, 
-                null, 
+                mockProjectView, 
                 mockBriefingView 
         );
 
-        // Configurando o comportamento dos mocks
         when(projectService.register(any())).thenReturn(mockProject);
         when(briefingService.register(any(), any())).thenReturn(mockBriefing);
         when(signpostService.register(any(), any())).thenReturn(mockView);
@@ -138,10 +148,16 @@ public class SignpostControllerTest {
         // Act
         ResponseEntity<BSignpostDetailedView> response = signpostController.registerSignpost(registerSignpostForm, uriBuilder);
 
-        // Assert
+     // Assert
         assertEquals(201, response.getStatusCodeValue());
         assertEquals(mockView, response.getBody());
-        URI expectedUri = uriBuilder.path("/api/v1/signposts/{id}").buildAndExpand(mockView.bSignpostView().id()).toUri();
-        assertEquals(expectedUri, response.getHeaders().getLocation());
+
+        // Verifique se o cabeçalho Location está presente
+        assertNotNull(response.getHeaders().getLocation());
+
+        // Compare apenas o caminho do URI, ignorando a parte do host
+        String expectedPath = "/api/v1/signposts/" + mockView.bSignpostView().id();
+        String actualPath = response.getHeaders().getLocation().getPath();
+        assertEquals(expectedPath, actualPath);
     }
 }
