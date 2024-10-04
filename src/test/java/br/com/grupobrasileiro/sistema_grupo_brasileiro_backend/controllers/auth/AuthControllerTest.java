@@ -134,22 +134,22 @@ void shouldRequestPasswordResetSuccessfully() {
 }
 
 
-   @Test
-@DisplayName("Should reset password successfully")
-void shouldResetPasswordSuccessfully() {
-    // Arrange
-    ResetPasswordForm resetPasswordForm = new ResetPasswordForm(faker.internet().emailAddress(), faker.internet().password());
-    // Configurar o mock para não fazer nada ou retornar um valor adequado
-    doNothing().when(authService).resetPassword(any());
+    @Test
+    @DisplayName("Should reset password successfully")
+    void shouldResetPasswordSuccessfully() {
+        // Arrange
+        ResetPasswordForm resetPasswordForm = new ResetPasswordForm(faker.internet().emailAddress(), faker.internet().password());
+        
+        // Configurar o mock para não fazer nada ou retornar um valor adequado
+        doNothing().when(authService).resetPassword(any());
 
-    // Act
-    ResponseEntity<String> response = authController.resetPassword(resetPasswordForm);
+        // Act
+        ResponseEntity<String> response = authController.resetPassword(resetPasswordForm);
 
-    // Assert
-    assertEquals(HttpStatus.OK, response.getStatusCode(),
-        () -> "Should return HTTP 200 OK status");
-    assertEquals("Password successfully changed!", response.getBody(),
-        () -> "The success message should be 'Password successfully changed!'");
-}
-
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode(),
+            () -> "Should return HTTP 200 OK status");
+        assertEquals("Senha alterada com sucesso!", response.getBody(),
+            () -> "A mensagem de sucesso deveria ser 'Senha alterada com sucesso!'");
+    }
 }

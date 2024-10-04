@@ -3,6 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.integration.cont
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.config.TestConfig;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.RegisterSignpostForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.companiesBriefing.form.CompaniesBriefingsForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.BSignpostForm;
@@ -70,19 +71,14 @@ public class TestIntegrationControllerRegisterSignpost extends AbstractIntegrati
                 BigDecimal.valueOf(2.50)
         );
 
-
-
         BriefingForm briefingForm = new BriefingForm(
-                LocalDate.now(),  
+                LocalDate.now(), 
                 faker.lorem().sentence(),
-                new HashSet<>(),
-                faker.company().name(),  
-                1L,
+                new HashSet<CompaniesBriefingsForm>(),
+                null,
+                1L, 
                 measurementsForm
         );
-
-
-
 
 
         BSignpostForm signpostForm = new BSignpostForm(

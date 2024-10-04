@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -149,10 +150,12 @@ public class OtherRouteRepositoryTest {
     // Métodos auxiliares para criar entidades
 
     private Profile findOrCreateProfile() {
-        Optional<Profile> existingProfile = profileRepository.findById(1L);
-        if (existingProfile.isPresent()) {
-            return existingProfile.get();
+        // Tenta encontrar um perfil existente
+        List<Profile> existingProfiles = profileRepository.findAll();
+        if (!existingProfiles.isEmpty()) {
+            return existingProfiles.get(0);
         } else {
+            // Se não existir nenhum perfil, crie um novo
             Profile newProfile = new Profile();
             newProfile.setDescription("Perfil de Teste");
             return profileRepository.save(newProfile);

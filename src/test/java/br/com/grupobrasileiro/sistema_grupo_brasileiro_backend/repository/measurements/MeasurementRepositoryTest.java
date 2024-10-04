@@ -36,7 +36,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.
 @Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestMethodOrder(MethodOrderer.Random.class)
-@Sql(scripts = "/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//@Sql(scripts = "/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class MeasurementRepositoryTest {
 
     @Autowired

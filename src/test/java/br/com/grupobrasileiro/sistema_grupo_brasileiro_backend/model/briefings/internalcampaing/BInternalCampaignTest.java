@@ -1,6 +1,9 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.internalcampaing;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -137,13 +140,69 @@ public class BInternalCampaignTest {
     }
 
     /**
+     * Testa o método equals da classe BInternalCampaign.
+     * Verifica se o método equals retorna true para objetos iguais.
+     */
+    @Test
+    @DisplayName("Should return true for equal objects")
+    void testEquals() {
+        BInternalCampaign bInternalCampaign2 = new BInternalCampaign();
+        bInternalCampaign2.setId(1L);
+        bInternalCampaign2.setStationeryType(stationeryType);
+        bInternalCampaign2.setOtherItem(otherItem);
+        bInternalCampaign2.setBriefing(briefing);
+        bInternalCampaign2.setCampaignMotto("Innovative Campaign");
+
+        assertTrue(bInternalCampaign.equals(bInternalCampaign2));
+        assertTrue(bInternalCampaign2.equals(bInternalCampaign));
+    }
+
+    /**
+     * Testa o método equals da classe BInternalCampaign para objetos diferentes.
+     * Verifica se o método equals retorna false para objetos diferentes.
+     */
+    @Test
+    @DisplayName("Should return false for different objects")
+    void testNotEquals() {
+        BInternalCampaign bInternalCampaign2 = new BInternalCampaign();
+        bInternalCampaign2.setId(2L);
+
+        assertFalse(bInternalCampaign.equals(bInternalCampaign2));
+        assertFalse(bInternalCampaign2.equals(bInternalCampaign));
+    }
+
+    /**
+     * Testa o método hashCode da classe BInternalCampaign.
+     * Verifica se o método hashCode retorna o mesmo valor para objetos iguais.
+     */
+    @Test
+    @DisplayName("Should return same hashCode for equal objects")
+    void testHashCode() {
+        BInternalCampaign bInternalCampaign2 = new BInternalCampaign();
+        bInternalCampaign2.setId(1L);
+        bInternalCampaign2.setStationeryType(stationeryType);
+        bInternalCampaign2.setOtherItem(otherItem);
+        bInternalCampaign2.setBriefing(briefing);
+        bInternalCampaign2.setCampaignMotto("Innovative Campaign");
+
+        assertEquals(bInternalCampaign.hashCode(), bInternalCampaign2.hashCode());
+    }
+
+    /**
      * Testa o método toString da classe BInternalCampaign.
      * Verifica se o método toString retorna a representação correta da instância.
      */
     @Test
     @DisplayName("Should return correct string representation")
     void testToString() {
-        String expected = "BInternalCampaign(id=1, campaignMotto=Innovative Campaign)";
-        //assertThat(bInternalCampaign.toString()).isEqualTo(expected);
+        String expectedToString = "BInternalCampaign{" +
+                "id=1" +
+                ", stationeryType=" + stationeryType +
+                ", otherItem=" + otherItem +
+                ", briefing=" + briefing +
+                ", campaignMotto='Innovative Campaign'" +
+                '}';
+
+        assertEquals(expectedToString, bInternalCampaign.toString());
     }
 }
