@@ -15,7 +15,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.Int
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.internalcampaign.BInternalCampaign;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.internalCampaigns.InternalCampaignsService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.internalCampaigns.InternalCampaignsService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
