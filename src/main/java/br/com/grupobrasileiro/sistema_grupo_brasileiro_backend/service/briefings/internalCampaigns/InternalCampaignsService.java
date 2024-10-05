@@ -1,4 +1,4 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.internalCampaigns;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.internalCampaigns;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
