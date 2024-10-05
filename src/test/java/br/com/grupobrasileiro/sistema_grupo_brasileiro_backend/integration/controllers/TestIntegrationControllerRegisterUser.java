@@ -9,10 +9,13 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.integration.conta
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
+
+import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +24,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import static io.restassured.RestAssured.given;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -37,6 +41,7 @@ public class TestIntegrationControllerRegisterUser extends AbstractIntegrationTe
     private static ObjectMapper objectMapper;
     private static final Faker faker = new Faker();
 
+    
 
     @BeforeAll
     static void setup() {
@@ -87,21 +92,45 @@ public class TestIntegrationControllerRegisterUser extends AbstractIntegrationTe
         );
 
         UserDetailsForm userDetailsForm = new UserDetailsForm(employeeForm, userForm);
+        
+        int port = TestConfig.SERVE_PORT;
 
-        String response = given().spec(specificationRegister)
+        System.out.println("Tentando registrar usuário na porta: " + port);
+       
+        Response response = given().spec(specificationRegister)
                 .contentType(TestConfig.CONTENT_TYPE_JSON)
                 .body(userDetailsForm)
+                .log().all()  
                 .when()
                 .post()
                 .then()
-                .statusCode(201)
+                .log().all()  
                 .extract()
-                .body()
-                .asString();
+                .response();
 
-        assertNotNull(response);
+        int statusCode = response.getStatusCode();
+        String responseBody = response.getBody().asString();
+
+        System.out.println("Status Code: " + statusCode);
+        System.out.println("Response Body: " + responseBody);
+
+        // Verificar o status code e agir de acordo
+        if (statusCode == 201) {
+            assertNotNull(responseBody, "O corpo da resposta não deve ser nulo");
+            // Adicione mais asserções aqui se necessário
+        } else {
+            String errorMessage = switch (statusCode) {
+                case 400 -> "Bad Request. Verifique os dados enviados.";
+                case 403 -> "Acesso negado. Verifique as permissões do usuário.";
+                case 404 -> "Endpoint não encontrado. Verifique a URL e o mapeamento do controlador.";
+                default -> "Resposta inesperada.";
+            };
+            fail(errorMessage + " Status code: " + statusCode + ". Corpo da resposta: " + responseBody);
+        }
+
+        assertEquals(201, statusCode, "O status da resposta deve ser 201 Created");
     }
-
+    
     @Test
     @DisplayName("Test login with registered user")
     @Order(2)

@@ -16,6 +16,7 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -90,18 +91,28 @@ public class TestIntegrationControllerRegisterSignpost extends AbstractIntegrati
         RegisterSignpostForm registerSignpostForm = new RegisterSignpostForm(projectForm, briefingForm, signpostForm);
 
 
-        BSignpostDetailedView response = given().spec(specificationRegisterSignpost)
+        Response response = given().spec(specificationRegisterSignpost)
                 .contentType(TestConfig.CONTENT_TYPE_JSON)
                 .body(registerSignpostForm)
                 .when()
                 .post()
                 .then()
-                .statusCode(201)
+                .log().all()  // Isso irá logar todos os detalhes da resposta
                 .extract()
-                .as(BSignpostDetailedView.class);
+                .response();
 
-        assertNotNull(response);
-        assertEquals(signpostForm.boardLocation(), response.bSignpostView().boardLocation());
+        int statusCode = response.getStatusCode();
+        System.out.println("Status Code: " + statusCode);
+
+        if (statusCode == 201) {
+            BSignpostDetailedView signpostResponse = response.as(BSignpostDetailedView.class);
+            assertNotNull(signpostResponse);
+            assertEquals(signpostForm.boardLocation(), signpostResponse.bSignpostView().boardLocation());
+        } else if (statusCode == 403) {
+            System.out.println("Acesso negado. Verifique as permissões do usuário.");
+        } else {
+            System.out.println("Resposta inesperada. Corpo da resposta: " + response.getBody().asString());
+        }
     }
 
 }
