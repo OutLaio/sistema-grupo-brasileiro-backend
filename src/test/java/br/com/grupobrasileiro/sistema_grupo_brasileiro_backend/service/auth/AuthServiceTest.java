@@ -237,10 +237,9 @@ class AuthServiceTest {
                 () -> authService.requestRecoveryPassword(form),
                 () -> "Expected an EntityNotFoundException to be thrown");
 
-        assertEquals("Usuário não encontrado com e-mail: " + form.email(), exception.getMessage(),
-                () -> "Expected exception message to be 'Usuário não encontrado com e-mail: " + form.email() + "'");
+        assertEquals("User not found for email: " + form.email(), exception.getMessage(),
+                () -> "Expected exception message to be 'User not found for email: " + form.email() + "'");
     }
-
 
     
     

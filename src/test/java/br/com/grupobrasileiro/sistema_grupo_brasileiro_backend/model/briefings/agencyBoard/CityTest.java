@@ -82,8 +82,8 @@ public class CityTest {
         Long id = faker.number().randomNumber();
         String name = faker.address().city();
         City city = new City(id, name);
-        String expectedToString = "City(id=" + id + ", name=" + name + ")";
-        assertThat(city.toString()).contains(expectedToString);
+        String expectedToString = "City{id=" + id + ", name='" + name + "'}";
+        assertThat(city.toString()).isEqualTo(expectedToString);
     }
 
     /**
@@ -109,7 +109,7 @@ public class CityTest {
     void testToStringWithNullName() {
         Long id = faker.number().randomNumber();
         City city = new City(id, null);
-        String expectedToString = "City(id=" + id + ", name=null)";
+        String expectedToString = "City{id=" + id + ", name='null'}";
         assertThat(city.toString()).isEqualTo(expectedToString);
     }
 }

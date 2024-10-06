@@ -89,8 +89,13 @@ public class AgencyBoardTypeTest {
         Long id = faker.number().randomNumber();
         String description = faker.lorem().word();
         AgencyBoardType agencyBoardType = new AgencyBoardType(id, description);
-        String expectedToString = "AgencyBoardType(id=" + id + ", description=" + description + ")";
-        assertThat(agencyBoardType.toString()).contains(expectedToString);
+        
+        String toStringResult = agencyBoardType.toString();
+        
+        assertThat(toStringResult).startsWith("AgencyBoardType{");
+        assertThat(toStringResult).contains("id=" + id);
+        assertThat(toStringResult).contains("description='" + description + "'");
+        assertThat(toStringResult).endsWith("}");
     }
 
     /**
@@ -102,8 +107,13 @@ public class AgencyBoardTypeTest {
     void testToStringWithNullDescription() {
         Long id = faker.number().randomNumber();
         AgencyBoardType agencyBoardType = new AgencyBoardType(id, null);
-        String expectedToString = "AgencyBoardType(id=" + id + ", description=null)";
-        assertThat(agencyBoardType.toString()).contains(expectedToString);
+        
+        String toStringResult = agencyBoardType.toString();
+        
+        assertThat(toStringResult).startsWith("AgencyBoardType{");
+        assertThat(toStringResult).contains("id=" + id);
+        assertThat(toStringResult).contains("description='null'");
+        assertThat(toStringResult).endsWith("}");
     }
 
     /**

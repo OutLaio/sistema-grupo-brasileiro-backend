@@ -114,10 +114,15 @@ public class OtherRouteTest {
     @DisplayName("Should consider OtherRoutes with the same id and null bAgencyBoard as equal")
     void testEqualsWithNullBAgencyBoard() {
         Long id = faker.number().randomNumber();
-        OtherRoute otherRoute1 = new OtherRoute(id, null, faker.company().name(), faker.address().city(), faker.lorem().word());
-        OtherRoute otherRoute2 = new OtherRoute(id, null, faker.company().name(), faker.address().city(), faker.lorem().word());
+        String company = faker.company().name();
+        String city = faker.address().city();
+        String type = faker.lorem().word();
+        
+        OtherRoute otherRoute1 = new OtherRoute(id, null, company, city, type);
+        OtherRoute otherRoute2 = new OtherRoute(id, null, company, city, type);
 
         assertThat(otherRoute1).isEqualTo(otherRoute2);
+        assertThat(otherRoute1.hashCode()).isEqualTo(otherRoute2.hashCode());
     }
 
     /**

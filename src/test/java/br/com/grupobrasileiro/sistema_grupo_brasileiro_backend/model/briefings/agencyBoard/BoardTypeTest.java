@@ -82,10 +82,14 @@ public class BoardTypeTest {
         Long id = faker.number().randomNumber();
         String description = faker.lorem().word();
         BoardType boardType = new BoardType(id, description);
-        String expectedToString = "BoardType(id=" + id + ", description=" + description + ")";
-        assertThat(boardType.toString()).contains(expectedToString);
+        
+        String toStringResult = boardType.toString();
+        
+        assertThat(toStringResult).startsWith("BoardType{");
+        assertThat(toStringResult).contains("id=" + id);
+        assertThat(toStringResult).contains("description='" + description + "'");
+        assertThat(toStringResult).endsWith("}");
     }
-
     /**
      * Testa o comportamento do método equals quando a descrição é nula.
      * Verifica se duas instâncias com o mesmo id e descrição nula são consideradas iguais.
@@ -109,7 +113,7 @@ public class BoardTypeTest {
     void testToStringWithNullDescription() {
         Long id = faker.number().randomNumber();
         BoardType boardType = new BoardType(id, null);
-        String expectedToString = "BoardType(id=" + id + ", description=null)";
+        String expectedToString = String.format("BoardType{id=%d, description='null'}", id);
         assertThat(boardType.toString()).isEqualTo(expectedToString);
     }
 }

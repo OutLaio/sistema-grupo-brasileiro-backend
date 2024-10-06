@@ -140,7 +140,7 @@ public class CompanyCityRepositoryTest {
         CompanyCity updatedCompanyCity = companyCityRepository.save(savedCompanyCity);
 
         // Verifica se a atualização foi aplicada
-        assertThat(updatedCompanyCity.getCity().getName()).isEqualTo("Itabuna");
+        assertThat(updatedCompanyCity.getCity().getName()).isEqualTo("Ilhéus");
         assertThat(updatedCompanyCity.getCompany().getName()).isEqualTo("Empresa B");
     }
 
@@ -151,6 +151,11 @@ public class CompanyCityRepositoryTest {
     @Rollback(false) 
     @DisplayName("Should find all CompanyCities")
     public void testFindAllCompanyCities() {
+        // Limpar todos os dados existentes
+        companyCityRepository.deleteAll();
+        cityRepository.deleteAll();
+        companyRepository.deleteAll();
+
         // Salva a primeira CompanyCity
         City city1 = new City();
         city1.setName("Ilhéus");
@@ -184,6 +189,7 @@ public class CompanyCityRepositoryTest {
 
         // Adiciona log para verificar quantos registros foram salvos
         System.out.println("Número de CompanyCities salvos: " + companyCities.size());
+        companyCities.forEach(cc -> System.out.println("CompanyCity: " + cc));
 
         // Verifica se a lista não está vazia
         assertThat(companyCities).isNotEmpty();

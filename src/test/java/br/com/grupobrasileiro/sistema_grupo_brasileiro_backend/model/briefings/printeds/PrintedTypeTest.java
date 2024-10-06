@@ -46,15 +46,30 @@ public class PrintedTypeTest {
      * Verifica se instâncias com o mesmo ID são consideradas iguais.
      */
     @Test
-    @DisplayName("Should consider PrintedType instances with the same ID as equal")
+    @DisplayName("Should consider PrintedType instances with the same ID and description as equal")
     void testPrintedTypeEquality() {
-        // Criando uma segunda instância com o mesmo ID
+        // Criando uma segunda instância com o mesmo ID e description
         PrintedType anotherPrintedType = new PrintedType();
         anotherPrintedType.setId(printedType.getId());
-        anotherPrintedType.setDescription(faker.commerce().productName());
+        anotherPrintedType.setDescription(printedType.getDescription());
 
-        // Verifica se as instâncias com o mesmo ID são consideradas iguais
+        // Verifica se as instâncias com o mesmo ID e description são consideradas iguais
         assertThat(printedType).isEqualTo(anotherPrintedType);
+        assertThat(printedType.hashCode()).isEqualTo(anotherPrintedType.hashCode());
+
+        // Criando uma instância com o mesmo ID mas description diferente
+        PrintedType differentDescriptionType = new PrintedType();
+        differentDescriptionType.setId(printedType.getId());
+        differentDescriptionType.setDescription(faker.commerce().productName());
+
+        // Verifica que instâncias com o mesmo ID mas descriptions diferentes não são iguais
+        assertThat(printedType).isNotEqualTo(differentDescriptionType);
+
+        // Verifica que instâncias com IDs diferentes não são iguais
+        PrintedType differentIdType = new PrintedType();
+        differentIdType.setId(printedType.getId() + 1);
+        differentIdType.setDescription(printedType.getDescription());
+        assertThat(printedType).isNotEqualTo(differentIdType);
     }
 
     /**

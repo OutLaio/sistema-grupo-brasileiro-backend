@@ -2,6 +2,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.brief
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -101,6 +102,8 @@ public class CalendarTypeRepositoryTest {
     @DisplayName("Should retrieve all CalendarTypes")
     void testFindAllCalendarTypes() {
         // Arrange
+        calendarTypeRepository.deleteAll(); // Limpa todos os tipos existentes
+
         CalendarType calendarType1 = new CalendarType();
         calendarType1.setDescription(faker.lorem().sentence());
         CalendarType calendarType2 = new CalendarType();
@@ -109,9 +112,11 @@ public class CalendarTypeRepositoryTest {
         calendarTypeRepository.save(calendarType2);
 
         // Act
-        Iterable<CalendarType> allCalendarTypes = calendarTypeRepository.findAll();
+        List<CalendarType> allCalendarTypes = (List<CalendarType>) calendarTypeRepository.findAll();
 
         // Assert
         assertThat(allCalendarTypes).hasSize(2);
+        assertThat(allCalendarTypes).extracting(CalendarType::getDescription)
+                                    .containsExactlyInAnyOrder(calendarType1.getDescription(), calendarType2.getDescription());
     }
 }

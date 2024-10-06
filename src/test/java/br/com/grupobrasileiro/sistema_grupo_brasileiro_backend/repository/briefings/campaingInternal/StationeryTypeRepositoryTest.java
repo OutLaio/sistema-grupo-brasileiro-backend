@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -91,6 +92,8 @@ public class StationeryTypeRepositoryTest {
     @DisplayName("Should retrieve all StationeryTypes")
     void testFindAllStationeryTypes() {
         // Arrange
+        stationeryTypeRepository.deleteAll(); // Limpa todos os tipos existentes
+
         StationeryType type1 = new StationeryType();
         type1.setDescription("Tipo de papel 1");
         stationeryTypeRepository.save(type1);
@@ -100,10 +103,12 @@ public class StationeryTypeRepositoryTest {
         stationeryTypeRepository.save(type2);
 
         // Act
-        Iterable<StationeryType> types = stationeryTypeRepository.findAll();
+        List<StationeryType> types = (List<StationeryType>) stationeryTypeRepository.findAll();
 
         // Assert
         assertThat(types).hasSize(2);
+        assertThat(types).extracting(StationeryType::getDescription)
+                         .containsExactlyInAnyOrder("Tipo de papel 1", "Tipo de papel 2");
     }
 }
 

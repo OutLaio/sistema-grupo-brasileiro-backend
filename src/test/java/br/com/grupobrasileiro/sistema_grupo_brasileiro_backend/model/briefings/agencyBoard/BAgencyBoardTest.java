@@ -120,7 +120,7 @@ public class BAgencyBoardTest {
         Long id = faker.number().randomNumber();
         AgencyBoardType agencyBoardType = new AgencyBoardType(id, faker.lorem().word());
         BoardType boardType = new BoardType(id, faker.lorem().word());
-        Briefing briefing = new Briefing(); 
+        Briefing briefing = null; // Alterado para null
         String boardLocation = faker.address().city();
         String observations = faker.lorem().paragraph();
 
@@ -128,17 +128,15 @@ public class BAgencyBoardTest {
         BAgencyBoard bAgencyBoard = new BAgencyBoard(id, agencyBoardType, boardType, briefing, boardLocation, observations, new HashSet<>(), new HashSet<>());
 
         // Monta a representação esperada do toString()
-        String expectedToString = String.format(
-            "BAgencyBoard(id=%d, agencyBoardType=%s, boardType=%s, briefing=%s, boardLocation=%s, observations=%s, routes=[], otherRoutes=[])",
-            id,
-            agencyBoardType.toString(),
-            boardType.toString(),
-            briefing.toString(),
-            boardLocation,
-            observations
-        );
+        String expectedToString = String.format("BAgencyBoard{id=%d, agencyBoardType=%d, boardType=%d, briefing=%s, boardLocation='%s', observations='%s'}",
+            bAgencyBoard.getId(),
+            bAgencyBoard.getAgencyBoardType().getId(),
+            bAgencyBoard.getBoardType().getId(),
+            bAgencyBoard.getBriefing(),
+            bAgencyBoard.getBoardLocation(),
+            bAgencyBoard.getObservations());
 
-        // Assegura que a representação do objeto é igual à esperada
+        
         assertThat(bAgencyBoard.toString()).isEqualTo(expectedToString);
     }
 

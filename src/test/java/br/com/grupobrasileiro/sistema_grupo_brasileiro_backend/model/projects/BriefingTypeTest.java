@@ -98,7 +98,7 @@ public class BriefingTypeTest {
         Long id = faker.number().randomNumber();
         String description = faker.lorem().word();
         BriefingType briefingType = new BriefingType(id, description);
-        String expectedToString = "BriefingType(id=" + id + ", description=" + description + ")";
+        String expectedToString = String.format("BriefingType{id=%d, description='%s'}", id, description);
         
         assertThat(briefingType.toString()).isEqualTo(expectedToString);
     }

@@ -117,7 +117,7 @@ public class TestIntegrationControllerRegisterUser extends AbstractIntegrationTe
         // Verificar o status code e agir de acordo
         if (statusCode == 201) {
             assertNotNull(responseBody, "O corpo da resposta não deve ser nulo");
-            // Adicione mais asserções aqui se necessário
+            
         } else {
             String errorMessage = switch (statusCode) {
                 case 400 -> "Bad Request. Verifique os dados enviados.";

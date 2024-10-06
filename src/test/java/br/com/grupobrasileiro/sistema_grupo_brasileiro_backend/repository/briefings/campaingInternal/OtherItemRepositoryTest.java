@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,6 +93,8 @@ public class OtherItemRepositoryTest {
     @DisplayName("Should retrieve all OtherItems")
     void testFindAllOtherItems() {
         // Arrange
+        otherItemRepository.deleteAll(); // Limpa todos os itens existentes
+
         OtherItem item1 = new OtherItem();
         item1.setDescription("Item 1");
         otherItemRepository.save(item1);
@@ -101,10 +104,12 @@ public class OtherItemRepositoryTest {
         otherItemRepository.save(item2);
 
         // Act
-        Iterable<OtherItem> items = otherItemRepository.findAll();
+        List<OtherItem> items = (List<OtherItem>) otherItemRepository.findAll();
 
         // Assert
         assertThat(items).hasSize(2);
+        assertThat(items).extracting(OtherItem::getDescription)
+                         .containsExactlyInAnyOrder("Item 1", "Item 2");
     }
 }
 

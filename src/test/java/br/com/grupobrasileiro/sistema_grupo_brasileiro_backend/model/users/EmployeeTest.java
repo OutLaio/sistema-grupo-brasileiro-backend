@@ -143,11 +143,10 @@ public class EmployeeTest {
         employee.setSector("Entertainment");
         employee.setOccupation("Hospitality Orchestrator");
         employee.setAgency("Littel, Bartolletti and Macejkovic");
-        employee.setAvatar(883762062L); // Corrigido para Long
-        employee.setUser(new User()); // Supondo que User tem uma implementação básica ou mockada
+        employee.setAvatar(883762062L);
+        employee.setUser(new User());
 
-        // A representação esperada deve corresponder aos valores configurados
-        String expectedToString = "Employee(id=123, name=Marquis, lastName=Willms, phoneNumber=876.979.4516 x852, sector=Entertainment, occupation=Hospitality Orchestrator, agency=Littel, Bartolletti and Macejkovic, avatar=883762062, user=User(id=null, profile=null, email=null, password=null, disabled=null, employee=null), ownedProjects=[], assignedProjects=[], dialogs=[])";
+        String expectedToString = "Employee{id=123, name='Marquis', lastName='Willms', phoneNumber='876.979.4516 x852', sector='Entertainment', occupation='Hospitality Orchestrator', agency='Littel, Bartolletti and Macejkovic', avatar=883762062}";
         
         assertThat(employee.toString()).isEqualTo(expectedToString);
     }

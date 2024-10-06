@@ -46,17 +46,34 @@ public class PrintingTypeTest {
      * Verifica se instâncias com o mesmo ID são consideradas iguais.
      */
     @Test
-    @DisplayName("Should consider PrintingType instances with the same ID as equal")
+    @DisplayName("Should consider PrintingType instances with the same ID and description as equal")
     void testPrintingTypeEquality() {
-        // Criando uma segunda instância com o mesmo ID
+        // Criando uma segunda instância com o mesmo ID e descrição
         PrintingType anotherPrintingType = new PrintingType();
         anotherPrintingType.setId(printingType.getId());
-        anotherPrintingType.setDescription(faker.commerce().material());
+        anotherPrintingType.setDescription(printingType.getDescription());
 
-        // Verifica se as instâncias com o mesmo ID são consideradas iguais
+        // Verifica se as instâncias com o mesmo ID e descrição são consideradas iguais
         assertThat(printingType).isEqualTo(anotherPrintingType);
-    }
+        assertThat(printingType.hashCode()).isEqualTo(anotherPrintingType.hashCode());
 
+        // Cria uma instância com ID diferente
+        PrintingType differentIdType = new PrintingType();
+        differentIdType.setId(printingType.getId() + 1); // Garante um ID diferente
+        differentIdType.setDescription(printingType.getDescription());
+
+        // Verifica que instâncias com IDs diferentes não são iguais
+        assertThat(printingType).isNotEqualTo(differentIdType);
+
+        // Cria uma instância com descrição diferente
+        PrintingType differentDescriptionType = new PrintingType();
+        differentDescriptionType.setId(printingType.getId());
+        differentDescriptionType.setDescription("Diferente " + printingType.getDescription());
+
+        // Verifica que instâncias com descrições diferentes não são iguais
+        assertThat(printingType).isNotEqualTo(differentDescriptionType);
+    }
+    
     /**
      * Testa o método toString da classe PrintingType.
      * Verifica se o método toString retorna uma representação correta da instância.

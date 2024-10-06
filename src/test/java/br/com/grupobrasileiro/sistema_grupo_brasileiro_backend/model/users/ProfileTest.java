@@ -83,12 +83,12 @@ public class ProfileTest {
         // Obtenha a string real do método toString
         String actualToString = profile.toString();
 
-        String expectedToString = "Profile(id=123, description=Admin, users=[])";
+        String expectedToString = "Profile{id=123, description='Admin'}";
 
         // Compare a string real com a esperada
         assertThat(actualToString).isEqualTo(expectedToString);
     }
-
+    
     /**
      * Testa a criação de um Profile com valores nulos.
      * Verifica se a instância pode ser criada e não é nula.

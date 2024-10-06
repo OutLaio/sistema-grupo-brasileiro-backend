@@ -133,11 +133,8 @@ public class DialogBoxTest {
 
         DialogBox dialogBox = new DialogBox(id, employee, briefing, time, dialogContent);
 
-        String expectedToString = "DialogBox(id=" + id +
-                                  ", employee=" + employee +
-                                  ", briefing=" + briefing +
-                                  ", time=" + time +
-                                  ", dialog=" + dialogContent + ")";
+        String expectedToString = String.format("DialogBox{id=%d, employee=%d, briefing=%d, time=%s, dialog='%s'}",
+                                                id, employee.getId(), briefing.getId(), time, dialogContent);
         assertThat(dialogBox.toString()).isEqualTo(expectedToString);
     }
 

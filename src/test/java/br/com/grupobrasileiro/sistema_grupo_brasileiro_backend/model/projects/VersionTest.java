@@ -124,14 +124,9 @@ public class VersionTest {
 
         Version version = new Version(id, briefing, numVersion, productLink, clientApprove, supervisorApprove, feedback);
 
-        String expectedToString = "Version(id=" + id +
-                                  ", briefing=" + briefing +
-                                  ", numVersion=" + numVersion +
-                                  ", productLink=" + productLink +
-                                  ", clientApprove=" + clientApprove +
-                                  ", supervisorApprove=" + supervisorApprove +
-                                  ", feedback=" + feedback + ")";
-        assertThat(version.toString()).contains(expectedToString);
+        String expectedToString = String.format("Version{id=%d, briefing=%d, numVersion=%d, productLink='%s', clientApprove=%b, supervisorApprove=%b, feedback='%s'}",
+                                                id, briefing.getId(), numVersion, productLink, clientApprove, supervisorApprove, feedback);
+        assertThat(version.toString()).isEqualTo(expectedToString);
     }
 
     /**
@@ -143,7 +138,7 @@ public class VersionTest {
     void testToStringWithNullValues() {
         Version version = new Version();
 
-        String expectedToString = "Version(id=null, briefing=null, numVersion=null, productLink=null, clientApprove=null, supervisorApprove=null, feedback=null)";
+        String expectedToString = "Version{id=null, briefing=null, numVersion=null, productLink='null', clientApprove=null, supervisorApprove=null, feedback='null'}";
         assertThat(version.toString()).isEqualTo(expectedToString);
     }
 

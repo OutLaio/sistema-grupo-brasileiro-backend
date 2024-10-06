@@ -2,6 +2,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.brief
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -101,6 +102,8 @@ public class PrintingShirtTypeRepositoryTest {
     @DisplayName("Should retrieve all PrintingShirtTypes")
     void testFindAllPrintingShirtTypes() {
         // Arrange
+        printingShirtTypeRepository.deleteAll(); // Limpa todos os tipos existentes
+
         PrintingShirtType shirtType1 = new PrintingShirtType();
         shirtType1.setDescription(faker.lorem().word());
         PrintingShirtType shirtType2 = new PrintingShirtType();
@@ -109,9 +112,11 @@ public class PrintingShirtTypeRepositoryTest {
         printingShirtTypeRepository.save(shirtType2);
 
         // Act
-        Iterable<PrintingShirtType> allShirtTypes = printingShirtTypeRepository.findAll();
+        List<PrintingShirtType> allShirtTypes = (List<PrintingShirtType>) printingShirtTypeRepository.findAll();
 
         // Assert
         assertThat(allShirtTypes).hasSize(2);
+        assertThat(allShirtTypes).extracting(PrintingShirtType::getDescription)
+                                 .containsExactlyInAnyOrder(shirtType1.getDescription(), shirtType2.getDescription());
     }
 }

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -119,7 +120,7 @@ public class StickerTypeRepositoryTest {
      * Verifica se lança uma exceção conforme esperado.
      */
     @Test
-    @Rollback(false)
+    @Transactional
     @DisplayName("Should throw exception when saving null description")
     void testSaveStickerTypeWithNullDescription() {
         // Arrange
@@ -127,8 +128,8 @@ public class StickerTypeRepositoryTest {
         stickerType.setDescription(null); // Valor nulo para campo não nulo
 
         // Act & Assert
-        assertThrows(javax.persistence.PersistenceException.class, () -> {
-            stickerTypeRepository.save(stickerType);
+        assertThrows(DataIntegrityViolationException.class, () -> {
+            stickerTypeRepository.saveAndFlush(stickerType);
         });
     }
 }

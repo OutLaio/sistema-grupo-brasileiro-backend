@@ -39,7 +39,7 @@ public class RecoveryTokenTest {
         String actualToString = recoveryToken.toString();
 
         // Gere a string esperada com base na implementação atual
-        String expectedToString = "RecoveryToken(id=123, token=abc123)";
+        String expectedToString = "RecoveryToken{id=123, token='abc123'}";
 
         // Compare a string real com a esperada
         assertThat(actualToString).isEqualTo(expectedToString);

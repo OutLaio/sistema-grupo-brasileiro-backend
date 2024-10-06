@@ -130,11 +130,9 @@ public class MeasurementTest {
 
         Measurement measurement = new Measurement(id, briefing, height, length);
 
-        String expectedToString = "Measurement(id=" + id +
-                                  ", briefing=" + briefing +
-                                  ", height=" + height +
-                                  ", length=" + length + ")";
-        assertThat(measurement.toString()).contains(expectedToString);
+        String expectedToString = String.format("Measurement{id=%d, briefing=%d, height=%s, length=%s}",
+                                                id, briefing.getId(), height, length);
+        assertThat(measurement.toString()).isEqualTo(expectedToString);
     }
 
     /**

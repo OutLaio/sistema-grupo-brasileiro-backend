@@ -138,14 +138,9 @@ public class ProjectTest {
 
         Project project = new Project(id, collaborator, client, title, status, disabled, briefing);
 
-        String expectedToString = "Project(id=" + id +
-                                  ", collaborator=" + collaborator +
-                                  ", client=" + client +
-                                  ", title=" + title +
-                                  ", status=" + status +
-                                  ", disabled=" + disabled +
-                                  ", briefing=" + briefing + ")";
-        assertThat(project.toString()).contains(expectedToString);
+        String expectedToString = String.format("Project{id=%d, collaborator=%d, client=%d, title='%s', status='%s', disabled=%b}",
+                                                id, collaborator.getId(), client.getId(), title, status, disabled);
+        assertThat(project.toString()).isEqualTo(expectedToString);
     }
 
     /**
@@ -157,7 +152,7 @@ public class ProjectTest {
     void testToStringWithNullValues() {
         Project project = new Project();
 
-        String expectedToString = "Project(id=null, collaborator=null, client=null, title=null, status=null, disabled=null, briefing=null)";
+        String expectedToString = "Project{id=null, collaborator=null, client=null, title='null', status='null', disabled=null}";
         assertThat(project.toString()).isEqualTo(expectedToString);
     }
 

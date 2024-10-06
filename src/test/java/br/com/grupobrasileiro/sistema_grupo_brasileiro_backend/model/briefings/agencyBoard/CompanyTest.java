@@ -82,10 +82,15 @@ public class CompanyTest {
         Long id = faker.number().randomNumber();
         String name = faker.company().name();
         Company company = new Company(id, name);
-        String expectedToString = "Company(id=" + id + ", name=" + name + ")";
-        assertThat(company.toString()).contains(expectedToString);
+        
+        String toStringResult = company.toString();
+        
+        assertThat(toStringResult).startsWith("Company{");
+        assertThat(toStringResult).contains("id=" + id);
+        assertThat(toStringResult).contains("name='" + name + "'");
+        assertThat(toStringResult).endsWith("}");
     }
-
+    
     /**
      * Testa o comportamento do método equals quando o nome é nulo.
      * Verifica se duas instâncias com o mesmo id e nome nulo são consideradas iguais.
@@ -109,7 +114,7 @@ public class CompanyTest {
     void testToStringWithNullName() {
         Long id = faker.number().randomNumber();
         Company company = new Company(id, null);
-        String expectedToString = "Company(id=" + id + ", name=null)";
+        String expectedToString = "Company{id=" + id + ", name='null'}";
         assertThat(company.toString()).isEqualTo(expectedToString);
     }
 }
