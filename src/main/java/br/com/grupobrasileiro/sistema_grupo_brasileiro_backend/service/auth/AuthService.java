@@ -14,6 +14,8 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.To
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.email.EmailService;
+import lombok.extern.java.Log;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +24,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
 
 @Service
 public class AuthService implements UserDetailsService {
@@ -40,6 +45,9 @@ public class AuthService implements UserDetailsService {
 
     @Autowired
     private EmployeeViewMapper employeeViewMapper;
+    
+    @Autowired
+    private TemplateEngine templateEngine;
 
     public TokenView doLogin(LoginForm form, AuthenticationManager authenticationManager) {
         User user = userRepository.findByEmail(form.email()).orElseThrow(
@@ -63,14 +71,13 @@ public class AuthService implements UserDetailsService {
 
         String token = tokenService.generateToken(user);
         String resetUrl = "http://localhost:4200/resetPassword?token=" + token;
+        String userName = user.getEmployee().getName() + " " + user.getEmployee().getLastName();
 
-        String body = String.format(
-                "Olá!<br><br>" +
-                        "Você solicitou uma redefinição de senha. Para redefinir sua senha, clique no link abaixo:<br><br>" +
-                        "<a href=\"%s\">Redefinir Senha</a><br><br>" +
-                        "Se você não solicitou isso, ignore este e-mail. Sua senha permanecerá inalterada e nenhuma ação adicional será necessária.<br><br>" +
-                        "Atenciosamente,<br>" +
-                        "Grupo Brasileiro", resetUrl);
+        Context context = new Context();
+        context.setVariable("resetUrl", resetUrl);
+        context.setVariable("userName", userName);
+
+        String body = templateEngine.process("request-password", context);
 
         PasswordRequest sendEmailForm = new PasswordRequest("no-reply@everdev.com", form.email(), "Password Reset", body);
         emailService.send(sendEmailForm);
