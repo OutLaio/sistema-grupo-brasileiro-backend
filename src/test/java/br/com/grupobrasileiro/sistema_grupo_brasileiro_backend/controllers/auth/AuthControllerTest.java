@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -89,23 +90,31 @@ class AuthControllerTest {
             () -> "The response body should be the expected EmployeeView");
     }
 
+    @Mock
+    private AuthenticationManager authenticationManager;
+
     @Test
     @DisplayName("Should login successfully and return a token")
     void shouldLoginSuccessfullyAndReturnToken() {
         // Arrange
         LoginForm loginForm = new LoginForm(faker.internet().emailAddress(), faker.internet().password());
-        String mockToken = faker.internet().uuid(); // Gerando token dinâmico com o Faker
+        String mockToken = faker.internet().uuid();
+        EmployeeView mockEmployeeView = new EmployeeView(
+            faker.number().randomNumber(), null, faker.name().fullName(),
+            faker.company().name(), null, null, null, null, null
+        );
         
-        when(authService.doLogin(any())).thenReturn(mockToken);
+        when(authService.doLogin(any(LoginForm.class), any(AuthenticationManager.class)))
+            .thenReturn(new TokenView(mockToken, mockEmployeeView));
 
         // Act
         ResponseEntity<?> response = authController.login(loginForm);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode(),
-            () -> "Should return HTTP 200 OK status");
-        assertEquals(new TokenView(mockToken), response.getBody(),
-            () -> "The response body should be a TokenView with the generated token");
+            () -> "Deve retornar o status HTTP 200 OK");
+        assertEquals(new TokenView(mockToken, mockEmployeeView), response.getBody(),
+            () -> "O corpo da resposta deve ser um TokenView com o token gerado e a visualização do funcionário");
     }
 
     @Test
@@ -125,22 +134,22 @@ void shouldRequestPasswordResetSuccessfully() {
 }
 
 
-   @Test
-@DisplayName("Should reset password successfully")
-void shouldResetPasswordSuccessfully() {
-    // Arrange
-    ResetPasswordForm resetPasswordForm = new ResetPasswordForm(faker.internet().emailAddress(), faker.internet().password());
-    // Configurar o mock para não fazer nada ou retornar um valor adequado
-    doNothing().when(authService).resetPassword(any());
+    @Test
+    @DisplayName("Should reset password successfully")
+    void shouldResetPasswordSuccessfully() {
+        // Arrange
+        ResetPasswordForm resetPasswordForm = new ResetPasswordForm(faker.internet().emailAddress(), faker.internet().password());
+        
+        // Configurar o mock para não fazer nada ou retornar um valor adequado
+        doNothing().when(authService).resetPassword(any());
 
-    // Act
-    ResponseEntity<String> response = authController.resetPassword(resetPasswordForm);
+        // Act
+        ResponseEntity<String> response = authController.resetPassword(resetPasswordForm);
 
-    // Assert
-    assertEquals(HttpStatus.OK, response.getStatusCode(),
-        () -> "Should return HTTP 200 OK status");
-    assertEquals("Password successfully changed!", response.getBody(),
-        () -> "The success message should be 'Password successfully changed!'");
-}
-
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode(),
+            () -> "Should return HTTP 200 OK status");
+        assertEquals("Senha alterada com sucesso!", response.getBody(),
+            () -> "A mensagem de sucesso deveria ser 'Senha alterada com sucesso!'");
+    }
 }

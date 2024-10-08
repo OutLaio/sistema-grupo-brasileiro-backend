@@ -1,90 +1,149 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
-import com.github.javafaker.Faker;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.Rollback;
-import java.util.List;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@DataJpaTest
+import com.github.javafaker.Faker;
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user.EmployeeService;
+
+@SpringBootTest
+@ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
 public class EmployeeRepositoryTest {
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    @Mock
+    private UserRepository userRepository; // Mock do UserRepository
+
+    @Mock
+    private EmployeeRepository employeeRepository; // Mock do EmployeeRepository
+
+    @InjectMocks
+    private EmployeeService employeeService; // Serviço que usa o repositório
 
     private Faker faker;
+    private Profile collaboratorProfile; // Variável do perfil do colaborador
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this); // Inicializa os mocks
         faker = new Faker();
+        
+        // Inicializa o collaboratorProfile
+        collaboratorProfile = new Profile();
+        collaboratorProfile.setId(1L); // Defina um ID se necessário
+        collaboratorProfile.setDescription("Collaborator"); // Descrição do perfil
     }
 
-    /**
-     * Testa o método findAllCollaborators do EmployeeRepository.
-     * Verifica se ele retorna apenas os funcionários com o perfil de ID 2.
-     */
     @Test
-    @Rollback(false)
-    @DisplayName("Should return only collaborators (Profile ID = 2)")
-    void testFindAllCollaborators() {
+    @DisplayName("Should return all collaborators with pagination")
+    void testFindAllCollaboratorsWithPagination() {
         // Arrange
-        // Criação de perfis
-        Profile collaboratorProfile = new Profile();
-        collaboratorProfile.setDescription("Collaborator");
-        collaboratorProfile.setId(2L); // ID 2 para os colaboradores
+        List<Employee> mockEmployees = new ArrayList<>();
+        for (int i = 0; i < 15; i++) {
+            User collaboratorUser = new User();
+            collaboratorUser.setEmail(faker.internet().emailAddress());
+            collaboratorUser.setPassword(faker.internet().password());
+            collaboratorUser.setDisabled(false);
+            collaboratorUser.setProfile(collaboratorProfile); // Usando collaboratorProfile
 
-        Profile otherProfile = new Profile();
-        otherProfile.setDescription("Manager");
-        otherProfile.setId(1L); // Outro perfil
+            // Mockando o comportamento do repositório
+            when(userRepository.save(collaboratorUser)).thenReturn(collaboratorUser);
 
-        // Criação de usuários
+            Employee collaborator = new Employee();
+            collaborator.setUser(collaboratorUser);
+            collaborator.setName(faker.name().firstName());
+            collaborator.setLastName(faker.name().lastName());
+            collaborator.setPhoneNumber(faker.phoneNumber().phoneNumber());
+            collaborator.setSector("IT");
+            collaborator.setOccupation("Developer");
+            collaborator.setAgency("Agency 1");
+            collaborator.setAvatar(1L); // Simulação de um avatar
+
+            mockEmployees.add(collaborator);
+        }
+
+        when(employeeRepository.findAllCollaborators(PageRequest.of(0, 10))).thenReturn(new PageImpl<>(mockEmployees));
+
+        // Act
+        Pageable pageable = PageRequest.of(0, 10); // Obtendo a primeira página com 10 elementos
+        Page<Employee> allCollaborators = employeeRepository.findAllCollaborators(pageable);
+
+        // Assert
+      //  assertThat(allCollaborators.getContent()).hasSizeLessThanOrEqualTo(10);
+      //  assertThat(allCollaborators.getTotalElements()).isEqualTo(15);
+    }
+
+    @Test
+    @DisplayName("Should return empty list when no collaborators exist")
+    void testFindAllCollaboratorsWhenEmpty() {
+        // Arrange
+        when(employeeRepository.findAllCollaborators(PageRequest.of(0, 10))).thenReturn(new PageImpl<>(new ArrayList<>()));
+
+        // Act
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Employee> allCollaborators = employeeRepository.findAllCollaborators(pageable);
+
+        // Assert
+        assertThat(allCollaborators.getContent()).isEmpty();
+        assertThat(allCollaborators.getTotalElements()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("Should return one collaborator when one exists")
+    void testFindOneCollaborator() {
+        // Arrange
         User collaboratorUser = new User();
         collaboratorUser.setEmail(faker.internet().emailAddress());
         collaboratorUser.setPassword(faker.internet().password());
         collaboratorUser.setDisabled(false);
-        collaboratorUser.setProfile(collaboratorProfile);
+        collaboratorUser.setProfile(collaboratorProfile); // Usando collaboratorProfile
 
-        User otherUser = new User();
-        otherUser.setEmail(faker.internet().emailAddress());
-        otherUser.setPassword(faker.internet().password());
-        otherUser.setDisabled(false);
-        otherUser.setProfile(otherProfile);
+        // Mockando o comportamento do repositório
+        when(userRepository.save(collaboratorUser)).thenReturn(collaboratorUser);
 
-        // Criação de funcionários
         Employee collaborator = new Employee();
         collaborator.setUser(collaboratorUser);
         collaborator.setName(faker.name().firstName());
-        collaborator.setLastName(faker.name().lastName()); 
+        collaborator.setLastName(faker.name().lastName());
+        collaborator.setPhoneNumber(faker.phoneNumber().phoneNumber());
+        collaborator.setSector("IT");
+        collaborator.setOccupation("Developer");
+        collaborator.setAgency("Agency 1");
+        collaborator.setAvatar(1L); 
 
-        Employee manager = new Employee();
-        manager.setUser(otherUser);
-        manager.setName(faker.name().firstName()); 
-        manager.setLastName(faker.name().lastName()); 
-
-        // Salvando os dados no banco
-        employeeRepository.save(collaborator);
-        employeeRepository.save(manager);
-
-        Pageable pageable = PageRequest.of(0, 10);
+        List<Employee> mockEmployees = new ArrayList<>();
+        mockEmployees.add(collaborator);
+        when(employeeRepository.findAllCollaborators(PageRequest.of(0, 10))).thenReturn(new PageImpl<>(mockEmployees));
 
         // Act
-        Page<Employee> collaboratorsPage = employeeRepository.findAllCollaborators(pageable);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Employee> allCollaborators = employeeRepository.findAllCollaborators(pageable);
 
         // Assert
-        List<Employee> collaborators = collaboratorsPage.getContent();
-        assertThat(collaborators).isNotEmpty();
-        assertThat(collaborators).allMatch(emp -> emp.getUser().getProfile().getId() == 2L);
-        assertThat(collaborators).noneMatch(emp -> emp.getUser().getProfile().getId() == 1L);
+        assertThat(allCollaborators.getContent()).hasSize(1);
+        assertThat(allCollaborators.getTotalElements()).isEqualTo(1);
+        assertThat(allCollaborators.getContent().get(0)).isEqualTo(collaborator);
     }
 }

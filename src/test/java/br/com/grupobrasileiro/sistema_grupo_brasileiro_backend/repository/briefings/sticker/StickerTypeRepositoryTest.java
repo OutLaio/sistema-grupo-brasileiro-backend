@@ -10,13 +10,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.sticker.StickerType;
+import jakarta.transaction.Transactional;
 
-@DataJpaTest
+@SpringBootTest
+@ActiveProfiles("test")
+@Transactional
 public class StickerTypeRepositoryTest {
 
     @Autowired
@@ -64,13 +70,14 @@ public class StickerTypeRepositoryTest {
         StickerType savedType = stickerTypeRepository.save(stickerType);
 
         // Act
-        savedType.setDescription(faker.lorem().word());
+        String newDescription = faker.lorem().word(); // Nova descrição
+        savedType.setDescription(newDescription);
         StickerType updatedType = stickerTypeRepository.save(savedType);
 
         // Assert
         Optional<StickerType> foundType = stickerTypeRepository.findById(updatedType.getId());
         assertThat(foundType).isPresent();
-        assertThat(foundType.get().getDescription()).isEqualTo(updatedType.getDescription());
+        assertThat(foundType.get().getDescription()).isEqualTo(newDescription);
     }
 
     /**
@@ -102,7 +109,7 @@ public class StickerTypeRepositoryTest {
     @DisplayName("Should not find non-existent StickerType")
     void testFindNonExistentStickerType() {
         // Act
-        Optional<StickerType> foundType = stickerTypeRepository.findById(Long.MAX_VALUE);
+        Optional<StickerType> foundType = stickerTypeRepository.findById(Long.MAX_VALUE); // ID que não existe
 
         // Assert
         assertThat(foundType).isNotPresent();
@@ -113,16 +120,17 @@ public class StickerTypeRepositoryTest {
      * Verifica se lança uma exceção conforme esperado.
      */
     @Test
-    @Rollback(false)
+    @Transactional
     @DisplayName("Should throw exception when saving null description")
     void testSaveStickerTypeWithNullDescription() {
         // Arrange
         StickerType stickerType = new StickerType();
-        stickerType.setDescription(null); // Null value for non-nullable field
+        stickerType.setDescription(null); // Valor nulo para campo não nulo
 
         // Act & Assert
-        assertThrows(javax.persistence.EntityExistsException.class, () -> {
-            stickerTypeRepository.save(stickerType);
+        assertThrows(DataIntegrityViolationException.class, () -> {
+            stickerTypeRepository.saveAndFlush(stickerType);
         });
     }
 }
+

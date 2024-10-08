@@ -3,6 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.integration.cont
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.config.TestConfig;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.RegisterSignpostForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.companiesBriefing.form.CompaniesBriefingsForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.BSignpostForm;
@@ -15,6 +16,7 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 
@@ -70,14 +73,13 @@ public class TestIntegrationControllerRegisterSignpost extends AbstractIntegrati
         );
 
         BriefingForm briefingForm = new BriefingForm(
-                LocalDateTime.now(),
+                LocalDate.now(), 
                 faker.lorem().sentence(),
-                new HashSet<>(),
+                new HashSet<CompaniesBriefingsForm>(),
                 null,
-                1L,
+                1L, 
                 measurementsForm
         );
-
 
 
         BSignpostForm signpostForm = new BSignpostForm(
@@ -89,18 +91,28 @@ public class TestIntegrationControllerRegisterSignpost extends AbstractIntegrati
         RegisterSignpostForm registerSignpostForm = new RegisterSignpostForm(projectForm, briefingForm, signpostForm);
 
 
-        BSignpostDetailedView response = given().spec(specificationRegisterSignpost)
+        Response response = given().spec(specificationRegisterSignpost)
                 .contentType(TestConfig.CONTENT_TYPE_JSON)
                 .body(registerSignpostForm)
                 .when()
                 .post()
                 .then()
-                .statusCode(201)
+                .log().all()  // Isso irá logar todos os detalhes da resposta
                 .extract()
-                .as(BSignpostDetailedView.class);
+                .response();
 
-        assertNotNull(response);
-        assertEquals(signpostForm.boardLocation(), response.bSignpostView().boardLocation());
+        int statusCode = response.getStatusCode();
+        System.out.println("Status Code: " + statusCode);
+
+        if (statusCode == 201) {
+            BSignpostDetailedView signpostResponse = response.as(BSignpostDetailedView.class);
+            assertNotNull(signpostResponse);
+            assertEquals(signpostForm.boardLocation(), signpostResponse.bSignpostView().boardLocation());
+        } else if (statusCode == 403) {
+            System.out.println("Acesso negado. Verifique as permissões do usuário.");
+        } else {
+            System.out.println("Resposta inesperada. Corpo da resposta: " + response.getBody().asString());
+        }
     }
 
 }

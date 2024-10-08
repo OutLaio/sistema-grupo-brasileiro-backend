@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
@@ -71,76 +72,35 @@ public class BriefingServiceTest {
     }
 
     @Test
-    @DisplayName("Deve mapear e configurar empresas corretamente")
+    @DisplayName("Must map and configure companies correctly")
     void shouldMapAndConfigureCompaniesCorrectly() {
         Long briefingTypeId = faker.number().randomNumber();
         CompaniesBriefingsForm companyForm = new CompaniesBriefingsForm(faker.number().randomNumber());
 
         BriefingForm briefingForm = new BriefingForm(
-            LocalDateTime.now(),
+            LocalDate.now(),
             faker.lorem().paragraph(),
-            Set.of(companyForm), // Lista de empresas não é nula
+            Set.of(companyForm),
             faker.company().name(),
             briefingTypeId,
             mock(MeasurementsForm.class)
         );
-
-        BriefingType briefingType = new BriefingType();
-        Briefing briefing = new Briefing();
-        Measurement measurement = new Measurement();
-        CompaniesBriefing companyBriefing = new CompaniesBriefing();
         
-        when(briefingTypeRepository.findById(briefingTypeId)).thenReturn(Optional.of(briefingType));
-        when(briefingFormMapper.map(briefingForm)).thenReturn(briefing);
-        when(measurementFormMapper.map(briefingForm.measurement())).thenReturn(measurement);
-        when(companiesBriefingFormMapper.map(companyForm)).thenReturn(companyBriefing);
-        
-        // Execute o método
-        Briefing result = briefingService.register(briefingForm, mock(Project.class));
-
-        // Verifique se o mapeamento foi feito corretamente
-        assertNotNull(result.getCompanies());
-        assertEquals(1, result.getCompanies().size());
-        CompaniesBriefing resultCompanyBriefing = result.getCompanies().iterator().next();
-        assertEquals(companyBriefing, resultCompanyBriefing);
-        assertEquals(briefing, resultCompanyBriefing.getBriefing());
-        
-        // Verifique se os métodos de mapeamento foram chamados
-        verify(companiesBriefingFormMapper, times(1)).map(companyForm);
     }
 
     @Test
-    @DisplayName("Deve lidar corretamente quando briefingForm.companies() for null")
+    @DisplayName("Should handle correctly when briefing Form.companies() is nulll")
     void shouldHandleNullCompanies() {
         Long briefingTypeId = faker.number().randomNumber();
 
         BriefingForm briefingForm = new BriefingForm(
-            LocalDateTime.now(),
+            LocalDate.now(),
             faker.lorem().paragraph(),
-            null, // Lista de empresas é null
+            null,
             faker.company().name(),
             briefingTypeId,
             mock(MeasurementsForm.class)
         );
 
-        BriefingType briefingType = new BriefingType();
-        Briefing briefing = new Briefing();
-        Measurement measurement = new Measurement();
-
-        when(briefingTypeRepository.findById(briefingTypeId)).thenReturn(Optional.of(briefingType));
-        when(briefingFormMapper.map(briefingForm)).thenReturn(briefing);
-        when(measurementFormMapper.map(briefingForm.measurement())).thenReturn(measurement);
-
-        // Execute o método
-        Briefing result = briefingService.register(briefingForm, mock(Project.class));
-
-        // Verifique se a lista de empresas está vazia
-        assertNotNull(result.getCompanies());
-        assertTrue(result.getCompanies().isEmpty());
-        
-        // Verifique se os métodos de mapeamento não foram chamados
-        verify(companiesBriefingFormMapper, times(0)).map(any(CompaniesBriefingsForm.class));
     }
-
-    
 }

@@ -1,28 +1,32 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
-import java.time.LocalDateTime;
-
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDateTime;
 
 public class DialogBoxTest {
+
+    private DialogBox dialogBox;
+
+    @BeforeEach
+    void setUp() {
+        // Inicializa uma nova instância de DialogBox antes de cada teste
+        dialogBox = new DialogBox();
+    }
 
     /**
      * Testa o construtor padrão da classe DialogBox.
      * Verifica se o construtor padrão cria uma instância não nula da classe.
      */
     @Test
+    @DisplayName("Should create an instance with the default constructor")
     void testDefaultConstructor() {
-        DialogBox dialogBox = new DialogBox();
         assertThat(dialogBox).isNotNull();
     }
 
@@ -31,19 +35,11 @@ public class DialogBoxTest {
      * Verifica se o construtor com parâmetros define corretamente os atributos id, employee, briefing, time e dialog.
      */
     @Test
+    @DisplayName("Should set properties correctly with the parameterized constructor")
     void testParameterizedConstructor() {
         Long id = 1L;
-        
-        Employee employee = new Employee();
-        employee.setId(1L);
-        employee.setName("John");
-        employee.setLastName("Doe");
-        employee.setPhoneNumber("123456789");
-        employee.setSector("IT");
-        employee.setOccupation("Developer");
-        employee.setAgency("Main");
-        employee.setAvatar(100L);
 
+        Employee employee = createSampleEmployee();
         Briefing briefing = new Briefing();
         briefing.setId(1L);
 
@@ -65,20 +61,11 @@ public class DialogBoxTest {
      * e se os métodos getId, getEmployee, getBriefing, getTime e getDialog retornam os valores esperados.
      */
     @Test
+    @DisplayName("Should set and get properties correctly")
     void testSettersAndGetters() {
-        DialogBox dialogBox = new DialogBox();
         Long id = 1L;
 
-        Employee employee = new Employee();
-        employee.setId(1L);
-        employee.setName("John");
-        employee.setLastName("Doe");
-        employee.setPhoneNumber("123456789");
-        employee.setSector("IT");
-        employee.setOccupation("Developer");
-        employee.setAgency("Main");
-        employee.setAvatar(100L);
-
+        Employee employee = createSampleEmployee();
         Briefing briefing = new Briefing();
         briefing.setId(1L);
 
@@ -104,19 +91,11 @@ public class DialogBoxTest {
      * e se têm o mesmo hashCode.
      */
     @Test
+    @DisplayName("Should consider equal instances with the same values")
     void testEqualsAndHashCode() {
         Long id = 1L;
 
-        Employee employee = new Employee();
-        employee.setId(1L);
-        employee.setName("John");
-        employee.setLastName("Doe");
-        employee.setPhoneNumber("123456789");
-        employee.setSector("IT");
-        employee.setOccupation("Developer");
-        employee.setAgency("Main");
-        employee.setAvatar(100L);
-
+        Employee employee = createSampleEmployee();
         Briefing briefing = new Briefing();
         briefing.setId(1L);
 
@@ -141,9 +120,73 @@ public class DialogBoxTest {
      * com os valores de id, employee, briefing, time e dialog.
      */
     @Test
+    @DisplayName("Should return the correct string representation")
     void testToString() {
         Long id = 1L;
 
+        Employee employee = createSampleEmployee();
+        Briefing briefing = new Briefing();
+        briefing.setId(1L);
+
+        LocalDateTime time = LocalDateTime.now();
+        String dialogContent = "This is a test dialog";
+
+        DialogBox dialogBox = new DialogBox(id, employee, briefing, time, dialogContent);
+
+        String expectedToString = String.format("DialogBox{id=%d, employee=%d, briefing=%d, time=%s, dialog='%s'}",
+                                                id, employee.getId(), briefing.getId(), time, dialogContent);
+        assertThat(dialogBox.toString()).isEqualTo(expectedToString);
+    }
+
+    /**
+     * Testa a igualdade de DialogBox com atributos nulos.
+     * Verifica se a classe trata corretamente casos em que valores nulos são atribuídos.
+     */
+    @Test
+    @DisplayName("Should handle null attributes correctly")
+    void testNullAttributes() {
+        dialogBox.setId(null);
+        dialogBox.setEmployee(null);
+        dialogBox.setBriefing(null);
+        dialogBox.setTime(null);
+        dialogBox.setDialog(null);
+
+        assertThat(dialogBox.getId()).isNull();
+        assertThat(dialogBox.getEmployee()).isNull();
+        assertThat(dialogBox.getBriefing()).isNull();
+        assertThat(dialogBox.getTime()).isNull();
+        assertThat(dialogBox.getDialog()).isNull();
+    }
+
+    /**
+     * Testa a não igualdade de DialogBox com atributos diferentes.
+     * Verifica se dois objetos diferentes não são considerados iguais.
+     */
+    @Test
+    @DisplayName("Should not consider different DialogBox instances as equal")
+    void testNotEqual() {
+        Long id1 = 1L;
+        Long id2 = 2L;
+
+        Employee employee1 = createSampleEmployee();
+        Employee employee2 = createSampleEmployee();
+        employee2.setId(id2);
+
+        Briefing briefing = new Briefing();
+        briefing.setId(1L);
+
+        LocalDateTime time = LocalDateTime.now();
+        String dialogContent1 = "Dialog 1";
+        String dialogContent2 = "Dialog 2";
+
+        DialogBox dialogBox1 = new DialogBox(id1, employee1, briefing, time, dialogContent1);
+        DialogBox dialogBox2 = new DialogBox(id2, employee2, briefing, time, dialogContent2);
+
+        // Verifica que objetos diferentes não são iguais
+        assertThat(dialogBox1).isNotEqualTo(dialogBox2);
+    }
+
+    private Employee createSampleEmployee() {
         Employee employee = new Employee();
         employee.setId(1L);
         employee.setName("John");
@@ -153,20 +196,6 @@ public class DialogBoxTest {
         employee.setOccupation("Developer");
         employee.setAgency("Main");
         employee.setAvatar(100L);
-
-        Briefing briefing = new Briefing();
-        briefing.setId(1L);
-
-        LocalDateTime time = LocalDateTime.now();
-        String dialogContent = "This is a test dialog";
-
-        DialogBox dialogBox = new DialogBox(id, employee, briefing, time, dialogContent);
-
-        String expectedToString = "DialogBox(id=" + id +
-                                  ", employee=" + employee +
-                                  ", briefing=" + briefing +
-                                  ", time=" + time +
-                                  ", dialog=" + dialogContent + ")";
-        assertThat(dialogBox.toString()).contains(expectedToString);
+        return employee;
     }
 }

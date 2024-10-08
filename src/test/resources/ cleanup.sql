@@ -1,0 +1,9 @@
+DELETE FROM measurement;
+DELETE FROM briefing;
+DELETE FROM project;
+DELETE FROM employee;
+DELETE FROM user;
+DELETE FROM profile;
+DELETE FROM briefing_type;
+
+TRUNCATE TABLE "Tb_Profiles" RESTART IDENTITY CASCADE;

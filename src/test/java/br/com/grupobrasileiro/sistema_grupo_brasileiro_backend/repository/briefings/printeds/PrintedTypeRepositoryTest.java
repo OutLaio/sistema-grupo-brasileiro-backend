@@ -9,13 +9,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.printeds.PrintedType;
+import jakarta.transaction.Transactional;
 
-@DataJpaTest
+@SpringBootTest
+@ActiveProfiles("test")
+@Transactional
 public class PrintedTypeRepositoryTest {
 
     @Autowired
@@ -47,5 +52,66 @@ public class PrintedTypeRepositoryTest {
         Optional<PrintedType> foundType = printedTypeRepository.findById(savedType.getId());
         assertThat(foundType).isPresent();
         assertThat(foundType.get().getDescription()).isEqualTo(printedType.getDescription());
+    }
+
+    /**
+     * Testa a atualização de um PrintedType.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should update a PrintedType")
+    void testUpdatePrintedType() {
+        // Arrange
+        PrintedType printedType = new PrintedType();
+        printedType.setDescription(faker.lorem().sentence());
+        PrintedType savedType = printedTypeRepository.save(printedType);
+
+        // Act - Atualiza a descrição
+        savedType.setDescription("Nova descrição do tipo impresso");
+        PrintedType updatedType = printedTypeRepository.save(savedType);
+
+        // Assert
+        assertThat(updatedType.getDescription()).isEqualTo("Nova descrição do tipo impresso");
+    }
+
+    /**
+     * Testa a exclusão de um PrintedType.
+     */
+    @Test
+    @Rollback(false)
+    @DisplayName("Should delete a PrintedType")
+    void testDeletePrintedType() {
+        // Arrange
+        PrintedType printedType = new PrintedType();
+        printedType.setDescription(faker.lorem().sentence());
+        PrintedType savedType = printedTypeRepository.save(printedType);
+
+        // Act
+        printedTypeRepository.delete(savedType);
+        Optional<PrintedType> foundType = printedTypeRepository.findById(savedType.getId());
+
+        // Assert
+        assertThat(foundType).isNotPresent();
+    }
+
+    /**
+     * Testa a recuperação de todos os PrintedType.
+     */
+    @Test
+    @DisplayName("Should retrieve all PrintedTypes")
+    void testFindAllPrintedTypes() {
+        // Arrange
+        PrintedType type1 = new PrintedType();
+        type1.setDescription(faker.lorem().sentence());
+        PrintedType type2 = new PrintedType();
+        type2.setDescription(faker.lorem().sentence());
+        printedTypeRepository.save(type1);
+        printedTypeRepository.save(type2);
+
+        // Act
+        Iterable<PrintedType> allTypes = printedTypeRepository.findAll();
+
+        // Assert
+        assertThat(allTypes).hasSize(2);
     }
 }

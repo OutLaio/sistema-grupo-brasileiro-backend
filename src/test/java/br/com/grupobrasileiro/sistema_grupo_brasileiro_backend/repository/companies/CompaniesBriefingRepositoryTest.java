@@ -2,85 +2,139 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.compa
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.Rollback;
-
-import com.github.javafaker.Faker;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Company;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.companies.CompaniesBriefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.agencyBoard.CompanyRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingTypeRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProfileRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
+import jakarta.transaction.Transactional;
 
-@DataJpaTest
+@SpringBootTest
+@ActiveProfiles("test")
+@Transactional
 public class CompaniesBriefingRepositoryTest {
 
     @Autowired
     private CompaniesBriefingRepository companiesBriefingRepository;
 
-    private Faker faker;
-    private Company testCompany;
-    private Briefing testBriefing;
-    private CompaniesBriefing companiesBriefing;
+    @Autowired
+    private BriefingRepository briefingRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private BriefingTypeRepository briefingTypeRepository;
+
+    @Autowired
+    private CompanyRepository companyRepository; 
+
+    @Autowired
+    private EmployeeRepository employeeRepository; 
+
+    @Autowired 
+    private UserRepository userRepository;
+
+    @Autowired
+    private ProfileRepository profileRepository; 
+
+    private Briefing briefing;
+    private Project project;
+    private BriefingType briefingType;
+    private Employee client;
+    private Profile profile; 
 
     @BeforeEach
     void setUp() {
-        faker = new Faker();
+        profile = new Profile();
+        profile.setDescription("Standard User Profile");
+        profile = profileRepository.save(profile);
 
-        // Criando um objeto Company fictício
-        testCompany = new Company();
-        testCompany.setName(faker.company().name()); // Ajuste conforme os métodos disponíveis na classe Company
+        User clientUser = new User();
+        clientUser.setEmail("client@example.com");
+        clientUser.setPassword("securePasswordClient");
+        clientUser.setDisabled(false);
+        clientUser.setProfile(profile);
+        clientUser = userRepository.save(clientUser);
 
-        // Criando um objeto Briefing fictício
-        testBriefing = new Briefing();
-        testBriefing.setDetailedDescription(faker.lorem().paragraph()); // Ajuste conforme os métodos disponíveis na classe Briefing
-        testBriefing.setStartTime(LocalDateTime.now());
-        testBriefing.setExpectedTime(LocalDateTime.now().plusDays(7));
+        client = new Employee();
+        client.setName("Client Name");
+        client.setLastName("Client LastName");
+        client.setPhoneNumber("123456789");
+        client.setSector("IT");
+        client.setOccupation("Developer");
+        client.setAgency("Agency 1");
+        client.setAvatar(1L);
+        client.setUser(clientUser);
+        client = employeeRepository.save(client);
 
-        // Criando o objeto CompaniesBriefing
-        companiesBriefing = new CompaniesBriefing();
-        companiesBriefing.setCompany(testCompany);
-        companiesBriefing.setBriefing(testBriefing);
+        briefingType = new BriefingType();
+        briefingType.setDescription("Briefing Tipo A");
+        briefingType = briefingTypeRepository.save(briefingType);
+
+        project = new Project();
+        project.setTitle("Projeto Teste");
+        project.setDisabled(false);
+        project.setClient(client);
+        project = projectRepository.save(project);
+
+        briefing = new Briefing();
+        briefing.setProject(project);
+        briefing.setBriefingType(briefingType);
+        briefing.setStartTime(LocalDate.now());
+        briefing.setExpectedTime(LocalDate.now().plusDays(5));
+        briefing.setDetailedDescription("Descrição detalhada do briefing");
+        briefing = briefingRepository.save(briefing);
     }
 
-    /**
-     * Testa a persistência e recuperação de um CompaniesBriefing.
-     * Verifica se o objeto é salvo e pode ser recuperado corretamente.
-     */
     @Test
-    @Rollback(false)
-    @DisplayName("Should save and find CompaniesBriefing correctly")
-    void testSaveAndFindCompaniesBriefing() {
-        // Act
-        CompaniesBriefing savedBriefing = companiesBriefingRepository.save(companiesBriefing);
+    void testSaveCompaniesBriefing() {
+        Company company = new Company();
+        company.setName("Company Name");
+        companyRepository.save(company); 
+
+        CompaniesBriefing companiesBriefing = new CompaniesBriefing();
+        companiesBriefing.setCompany(company); 
+        companiesBriefing.setBriefing(briefing); 
         
-        // Assert
-        Optional<CompaniesBriefing> foundBriefing = companiesBriefingRepository.findById(savedBriefing.getId());
-        assertThat(foundBriefing).isPresent();
-        assertThat(foundBriefing.get().getCompany()).isEqualTo(companiesBriefing.getCompany());
-        assertThat(foundBriefing.get().getBriefing()).isEqualTo(companiesBriefing.getBriefing());
+        CompaniesBriefing savedCompaniesBriefing = companiesBriefingRepository.save(companiesBriefing);
+        assertThat(savedCompaniesBriefing).isNotNull();
+        assertThat(savedCompaniesBriefing.getId()).isGreaterThan(0);
     }
 
-    /**
-     * Testa a exclusão de um CompaniesBriefing.
-     * Verifica se o objeto é excluído corretamente do repositório.
-     */
     @Test
-    @Rollback(false)
-    @DisplayName("Should delete CompaniesBriefing correctly")
-    void testDeleteCompaniesBriefing() {
-        // Act
-        CompaniesBriefing savedBriefing = companiesBriefingRepository.save(companiesBriefing);
-        companiesBriefingRepository.delete(savedBriefing);
+    void testFindByBriefing() {
+        Company company = new Company();
+        company.setName("Company Name");
+        companyRepository.save(company); 
 
-        // Assert
-        Optional<CompaniesBriefing> foundBriefing = companiesBriefingRepository.findById(savedBriefing.getId());
-        assertThat(foundBriefing).isNotPresent();
+        CompaniesBriefing companiesBriefing = new CompaniesBriefing();
+        companiesBriefing.setCompany(company); 
+        companiesBriefing.setBriefing(briefing); 
+        
+        companiesBriefingRepository.save(companiesBriefing); 
+
+        Optional<CompaniesBriefing> found = companiesBriefingRepository.findById(companiesBriefing.getId());
+        assertThat(found).isPresent();
+        assertThat(found.get().getBriefing()).isEqualTo(briefing); 
     }
 }

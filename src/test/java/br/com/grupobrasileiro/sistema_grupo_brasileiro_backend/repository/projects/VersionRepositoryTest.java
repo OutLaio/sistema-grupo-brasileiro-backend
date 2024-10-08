@@ -2,19 +2,31 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.proje
 
 import com.github.javafaker.Faker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Version;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProfileRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Optional;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+@SpringBootTest
+@ActiveProfiles("test")
+@Transactional
 public class VersionRepositoryTest {
 
     @Autowired
@@ -23,6 +35,24 @@ public class VersionRepositoryTest {
     @Autowired
     private BriefingRepository briefingRepository;
 
+    @Autowired
+    private BriefingTypeRepository briefingTypeRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ProfileRepository profileRepository;
+    
+    @Autowired
+    private EntityManager entityManager;
+
     private Faker faker;
 
     @BeforeEach
@@ -30,57 +60,88 @@ public class VersionRepositoryTest {
         faker = new Faker();
     }
 
-    /**
-     * Testa a contagem de versões associadas a um briefing.
-     */
     @Test
-    @Rollback(false)
-    @DisplayName("Should count versions by briefing ID")
-    void testCountVersionsByBriefingId() {
-        // Arrange
-        Briefing briefing = new Briefing();
-        // Configura o briefing (defina os campos necessários)
-        briefing.setDetailedDescription(faker.lorem().sentence());
-        // Salva o briefing
-        briefingRepository.save(briefing);
-
-        // Cria e salva versões
-        Version version1 = new Version();
-        version1.setBriefing(briefing);
-        version1.setNumVersion(1);
-        version1.setProductLink(faker.internet().url());
-        version1.setClientApprove(true);
-        version1.setSupervisorApprove(false);
-        version1.setFeedback("Initial feedback");
-        
-        Version version2 = new Version();
-        version2.setBriefing(briefing);
-        version2.setNumVersion(2);
-        version2.setProductLink(faker.internet().url());
-        version2.setClientApprove(true);
-        version2.setSupervisorApprove(true);
-        version2.setFeedback("Approved version");
-        
-        versionRepository.save(version1);
-        versionRepository.save(version2);
-
-        // Act
-        long count = versionRepository.countVersionsByBriefingId(briefing.getId());
-
-        // Assert
-        assertThat(count).isEqualTo(2); // Verifica se a contagem é igual a 2
+    @DisplayName("Should return 0 when no version is associated with the briefingg")
+    void testCountVersionsByNonExistingBriefingId() {
+        long count = versionRepository.countVersionsByBriefingId(999L);
+        assertThat(count).isEqualTo(0);
     }
 
-    /**
-     * Testa a contagem de versões para um briefing que não possui versões.
-     */
-    @Test
-    @DisplayName("Should return 0 when no versions are associated with briefing")
-    void testCountVersionsByNonExistingBriefingId() {
-        // Act
-        long count = versionRepository.countVersionsByBriefingId(999L); // ID que não existe
+    private Briefing createTestBriefing() {
+        Project project = createOrFetchProject();
+        BriefingType briefingType = createOrFetchBriefingType();
 
-        // Assert
-        assertThat(count).isEqualTo(0); // Verifica se a contagem é igual a 0
+        Briefing briefing = new Briefing();
+        briefing.setProject(project);
+        briefing.setBriefingType(briefingType);
+        briefing.setStartTime(LocalDate.now());
+        briefing.setExpectedTime(LocalDate.now().plusDays(5));
+        briefing.setDetailedDescription(faker.lorem().sentence());
+
+        return briefingRepository.save(briefing);
+    }
+
+    private BriefingType createOrFetchBriefingType() {
+        BriefingType briefingType = new BriefingType();
+        briefingType.setDescription("Tipo de Briefing Teste");
+        return briefingTypeRepository.save(briefingType);
+    }
+
+    private Project createOrFetchProject() {
+        Employee client = createTestClient();
+
+        Project project = new Project();
+        project.setTitle("Projeto Teste");
+        project.setDisabled(false);
+        project.setClient(client);
+        return projectRepository.save(project);
+    }
+
+    private Employee createTestClient() {
+        Profile profile = new Profile();
+        profile.setDescription("Perfil de Teste");
+        profile = profileRepository.save(profile);
+
+        User user = new User();
+        user.setEmail("test@example.com");
+        user.setPassword("password123");
+        user.setDisabled(false);
+        user.setProfile(profile);
+        user = userRepository.save(user);
+
+        Employee client = new Employee();
+        client.setName("Cliente Teste");
+        client.setLastName("Sobrenome Teste");
+        client.setPhoneNumber("123456789");
+        client.setSector("Setor Teste");
+        client.setOccupation("Ocupação Teste");
+        client.setAgency("Agência Teste");
+        client.setAvatar(1L);
+        client.setUser(user);
+        return employeeRepository.save(client);
+    }
+
+    private Version saveTestVersion(Briefing briefing, int versionNumber, String feedback, boolean clientApprove, boolean supervisorApprove) {
+        Version version = new Version();
+        version.setBriefing(briefing);
+        version.setNumVersion(versionNumber);
+        version.setProductLink(faker.internet().url());
+        version.setClientApprove(clientApprove);
+        version.setSupervisorApprove(supervisorApprove);
+        version.setFeedback(feedback);
+        return versionRepository.save(version);
+    }
+
+    @Test
+    @DisplayName("You must create and count versions of a brief correctly")
+    void testCreateAndCountVersions() {
+        Briefing briefing = createTestBriefing();
+        
+        saveTestVersion(briefing, 1, "Feedback 1", false, false);
+        saveTestVersion(briefing, 2, "Feedback 2", true, false);
+        saveTestVersion(briefing, 3, "Feedback 3", true, true);
+
+        long count = versionRepository.countVersionsByBriefingId(briefing.getId());
+        assertThat(count).isEqualTo(3);
     }
 }

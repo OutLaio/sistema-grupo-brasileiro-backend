@@ -1,7 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.github.javafaker.Faker;
 
@@ -18,6 +18,7 @@ public class AgencyBoardTypeTest {
      * Verifica se o construtor padrão cria uma instância não nula da classe.
      */
     @Test
+    @DisplayName("Should create a non-null AgencyBoardType using the default constructor")
     void testDefaultConstructor() {
         AgencyBoardType agencyBoardType = new AgencyBoardType();
         assertThat(agencyBoardType).isNotNull();
@@ -28,6 +29,7 @@ public class AgencyBoardTypeTest {
      * Verifica se o construtor com parâmetros define corretamente os atributos id e description.
      */
     @Test
+    @DisplayName("Should set id and description using the parameterized constructor")
     void testParameterizedConstructor() {
         Long id = faker.number().randomNumber();
         String description = faker.lorem().word();
@@ -42,6 +44,7 @@ public class AgencyBoardTypeTest {
      * e se os métodos getId e getDescription retornam os valores esperados.
      */
     @Test
+    @DisplayName("Should set and get id and description correctly")
     void testSettersAndGetters() {
         AgencyBoardType agencyBoardType = new AgencyBoardType();
         Long id = faker.number().randomNumber();
@@ -59,6 +62,7 @@ public class AgencyBoardTypeTest {
      * e se têm o mesmo hashCode.
      */
     @Test
+    @DisplayName("Should verify equals and hashCode methods")
     void testEqualsAndHashCode() {
         Long id = faker.number().randomNumber();
         String description = faker.lorem().word();
@@ -80,11 +84,49 @@ public class AgencyBoardTypeTest {
      * com os valores de id e description.
      */
     @Test
+    @DisplayName("Should return the correct string representation of AgencyBoardType")
     void testToString() {
         Long id = faker.number().randomNumber();
         String description = faker.lorem().word();
         AgencyBoardType agencyBoardType = new AgencyBoardType(id, description);
-        String expectedToString = "AgencyBoardType(id=" + id + ", description=" + description + ")";
-        assertThat(agencyBoardType.toString()).contains(expectedToString);
+        
+        String toStringResult = agencyBoardType.toString();
+        
+        assertThat(toStringResult).startsWith("AgencyBoardType{");
+        assertThat(toStringResult).contains("id=" + id);
+        assertThat(toStringResult).contains("description='" + description + "'");
+        assertThat(toStringResult).endsWith("}");
+    }
+
+    /**
+     * Testa o comportamento do método toString quando a descrição é nula.
+     * Verifica se o método toString ainda retorna uma representação correta.
+     */
+    @Test
+    @DisplayName("Should handle null description in toString method")
+    void testToStringWithNullDescription() {
+        Long id = faker.number().randomNumber();
+        AgencyBoardType agencyBoardType = new AgencyBoardType(id, null);
+        
+        String toStringResult = agencyBoardType.toString();
+        
+        assertThat(toStringResult).startsWith("AgencyBoardType{");
+        assertThat(toStringResult).contains("id=" + id);
+        assertThat(toStringResult).contains("description='null'");
+        assertThat(toStringResult).endsWith("}");
+    }
+
+    /**
+     * Testa o comportamento do método equals quando a descrição é nula.
+     * Verifica se dois objetos com a mesma id e descrição nula são considerados iguais.
+     */
+    @Test
+    @DisplayName("Should consider AgencyBoardTypes with the same id and null description as equal")
+    void testEqualsWithNullDescription() {
+        Long id = faker.number().randomNumber();
+        AgencyBoardType agencyBoardType1 = new AgencyBoardType(id, null);
+        AgencyBoardType agencyBoardType2 = new AgencyBoardType(id, null);
+
+        assertThat(agencyBoardType1).isEqualTo(agencyBoardType2);
     }
 }

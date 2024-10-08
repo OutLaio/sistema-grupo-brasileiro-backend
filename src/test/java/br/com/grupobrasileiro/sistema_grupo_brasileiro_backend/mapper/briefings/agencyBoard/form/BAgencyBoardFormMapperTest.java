@@ -14,7 +14,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.age
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
 
 /**
- * Tests the BAgencyBoardFormMapper class.
+ * Tests the BAgencyBoardsFormMapper class.
  * Verifies that the class correctly maps instances of BAgencyBoardsForm to BAgencyBoard.
  */
 public class BAgencyBoardFormMapperTest {
@@ -22,10 +22,6 @@ public class BAgencyBoardFormMapperTest {
     private BAgencyBoardFormMapper mapper;
     private Faker faker;
 
-    /**
-     * Sets up the testing environment before each test.
-     * Initializes the mapper and the Faker.
-     */
     @BeforeEach
     void setUp() {
         mapper = new BAgencyBoardFormMapper();
@@ -33,119 +29,176 @@ public class BAgencyBoardFormMapperTest {
     }
 
     /**
-     * Tests the map method of the BAgencyBoardFormMapper class.
-     * Verifies that the method correctly maps a BAgencyBoardsForm to a BAgencyBoard.
+     * Testa a conversão de um BAgencyBoardsForm para BAgencyBoard.
+     * Verifica se o valor de entrada gerado pelo Faker é mapeado corretamente.
      */
     @Test
-    @DisplayName("Should correctly map BAgencyBoardsForm to BAgencyBoard")
-    void shouldMapBAgencyBoardsFormToBAgencyBoard() {
-        // Generate fake data for form fields using Java Faker
-        String fakeLocation = faker.address().streetAddress();
-        String fakeObservation = faker.lorem().sentence();
-
-        // Create an instance of BAgencyBoardsForm with the generated data
-        BAgencyBoardsForm form = new BAgencyBoardsForm(
-            1L, // idAgencyBoardType
-            null, // idBoardType can be null
-            fakeLocation, // Board location
-            fakeObservation, // Observations
-            new ArrayList<>(), // List of other routes
-            new ArrayList<>()  // List of routes
-        );
-
-        // Map BAgencyBoardsForm to BAgencyBoard
-        BAgencyBoard result = mapper.map(form);
-
-        // Verify that the result is not null
-        assertThat(result).isNotNull();
-
-        // Verify that the board location was mapped correctly
-        assertThat(result.getBoardLocation()).isEqualTo(fakeLocation);
-
-        // Verify that the observations were mapped correctly
-        assertThat(result.getObservations()).isEqualTo(fakeObservation);
-    }
-
-    /**
-     * Tests the map method of the BAgencyBoardFormMapper with null values.
-     * Verifies that the method correctly maps a BAgencyBoardsForm with null values to a BAgencyBoard.
-     */
-    @Test
-    @DisplayName("Should correctly map BAgencyBoardsForm with null values to BAgencyBoard")
-    void shouldMapBAgencyBoardsFormWithNullValuesToBAgencyBoard() {
-        // Create an instance of BAgencyBoardsForm with null values for optional fields
-        BAgencyBoardsForm form = new BAgencyBoardsForm(
-            null, // idAgencyBoardType can be null
-            null, // idBoardType can be null
-            null, // Board location
-            null, // Observations
-            new ArrayList<>(), // List of other routes
-            new ArrayList<>()  // List of routes
-        );
-
-        // Map BAgencyBoardsForm to BAgencyBoard
-        BAgencyBoard result = mapper.map(form);
-
-        // Verify that the result is not null
-        assertThat(result).isNotNull();
-
-        // Verify that the fields were mapped correctly, including null values
-        assertThat(result.getBoardLocation()).isNull();
-        assertThat(result.getObservations()).isNull();
-    }
-
-    /**
-     * Tests the map method of the BAgencyBoardFormMapper with empty lists.
-     * Verifies that the method correctly maps a BAgencyBoardsForm with empty lists to a BAgencyBoard.
-     */
-    @Test
-    @DisplayName("Should correctly map BAgencyBoardsForm with empty lists to BAgencyBoard")
-    void shouldMapBAgencyBoardsFormWithEmptyListsToBAgencyBoard() {
-        BAgencyBoardsForm form = new BAgencyBoardsForm(
-            1L, // idAgencyBoardType
-            null, // idBoardType can be null
-            "Some Location", // Board location
-            "Some observation", // Observations
-            new ArrayList<>(), // Empty list of other routes
-            new ArrayList<>()  // Empty list of routes
-        );
-
-        // Map BAgencyBoardsForm to BAgencyBoard
-        BAgencyBoard result = mapper.map(form);
-
-        // Verify that the result is not null
-        assertThat(result).isNotNull();
-
-        // Verify that other routes and routes lists are initialized
-       // assertThat(result.getOtherRoutes()).isNotNull().isEmpty();
-      //  assertThat(result.getRoutes()).isNotNull().isEmpty();
-    }
-
-    /**
-     * Tests the map method of the BAgencyBoardFormMapper with various data.
-     * Verifies that the method correctly maps a BAgencyBoardsForm with varied data to a BAgencyBoard.
-     */
-    @Test
-    @DisplayName("Should correctly map BAgencyBoardsForm with varied data to BAgencyBoard")
-    void shouldMapBAgencyBoardsFormWithVariedDataToBAgencyBoard() {
+    @DisplayName("Should map BAgencyBoardsForm to BAgencyBoard")
+    void shouldMapToBAgencyBoard() {
         String fakeLocation = faker.address().streetAddress();
         String fakeObservation = faker.lorem().sentence();
 
         BAgencyBoardsForm form = new BAgencyBoardsForm(
-            2L, // idAgencyBoardType
-            3L, // idBoardType
-            fakeLocation, // Board location
-            fakeObservation, // Observations
-            new ArrayList<>(), // List of other routes
+            1L, 
+            null, 
+            fakeLocation, 
+            fakeObservation, 
+            new ArrayList<>(), 
             new ArrayList<>()
         );
 
         BAgencyBoard result = mapper.map(form);
 
-        // Verify that the result is not null
         assertThat(result).isNotNull();
         assertThat(result.getBoardLocation()).isEqualTo(fakeLocation);
         assertThat(result.getObservations()).isEqualTo(fakeObservation);
+    }
+
+    /**
+     * Testa a conversão de um BAgencyBoardsForm com valores nulos.
+     * Verifica se os campos opcionais são mapeados corretamente como nulos.
+     */
+    @Test
+    @DisplayName("Should map BAgencyBoardsForm with null values")
+    void shouldMapWithNullValues() {
+        BAgencyBoardsForm form = new BAgencyBoardsForm(
+            null, 
+            null, 
+            null, 
+            null, 
+            new ArrayList<>(), 
+            new ArrayList<>()
+        );
+
+        BAgencyBoard result = mapper.map(form);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getBoardLocation()).isNull();
+        assertThat(result.getObservations()).isNull();
+    }
+
+    /**
+     * Testa a conversão de um BAgencyBoardsForm com listas vazias.
+     * Verifica se as listas de rotas são inicializadas corretamente.
+     */
+    @Test
+    @DisplayName("Should map BAgencyBoardsForm with empty lists")
+    void shouldMapWithEmptyLists() {
+        BAgencyBoardsForm form = new BAgencyBoardsForm(
+            1L, 
+            null, 
+            "Some Location", 
+            "Some observation", 
+            new ArrayList<>(), 
+            new ArrayList<>()
+        );
+
+        BAgencyBoard result = mapper.map(form);
+
+        assertThat(result).isNotNull();
+        //assertThat(result.getOtherRoutes()).isNotNull().isEmpty();
+       // assertThat(result.getRoutes()).isNotNull().isEmpty();
+    }
+
+    /**
+     * Testa a conversão de um BAgencyBoardsForm com dados variados.
+     * Verifica se os campos são mapeados corretamente com dados gerados pelo Faker.
+     */
+    @Test
+    @DisplayName("Should map BAgencyBoardsForm with varied data")
+    void shouldMapWithVariedData() {
+        String fakeLocation = faker.address().streetAddress();
+        String fakeObservation = faker.lorem().sentence();
+
+        BAgencyBoardsForm form = new BAgencyBoardsForm(
+            2L, 
+            3L, 
+            fakeLocation, 
+            fakeObservation, 
+            new ArrayList<>(), 
+            new ArrayList<>()
+        );
+
+        BAgencyBoard result = mapper.map(form);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getBoardLocation()).isEqualTo(fakeLocation);
+        assertThat(result.getObservations()).isEqualTo(fakeObservation);
+    }
+
+    /**
+     * Testa a conversão de um BAgencyBoardsForm com strings de comprimento máximo.
+     * Verifica se os valores são mapeados corretamente.
+     */
+    @Test
+    @DisplayName("Should map with maximum length strings")
+    void shouldMapWithMaxLengthStrings() {
+        String maxLengthLocation = faker.lorem().characters(255); // Assuming 255 is the max length
+        String maxLengthObservation = faker.lorem().characters(500); // Assuming 500 is the max length
+
+        BAgencyBoardsForm form = new BAgencyBoardsForm(
+            1L, 
+            null, 
+            maxLengthLocation, 
+            maxLengthObservation, 
+            new ArrayList<>(), 
+            new ArrayList<>()
+        );
+
+        BAgencyBoard result = mapper.map(form);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getBoardLocation()).isEqualTo(maxLengthLocation);
+        assertThat(result.getObservations()).isEqualTo(maxLengthObservation);
+    }
+
+    /**
+     * Testa a conversão de um BAgencyBoardsForm com idAgencyBoardType negativo.
+     * Verifica se o valor é mapeado corretamente.
+     */
+    @Test
+    @DisplayName("Should handle negative idAgencyBoardType")
+    void shouldHandleNegativeId() {
+        BAgencyBoardsForm form = new BAgencyBoardsForm(
+            -1L, 
+            null, 
+            "Negative ID Location", 
+            "Observation with negative ID", 
+            new ArrayList<>(), 
+            new ArrayList<>()
+        );
+
+        BAgencyBoard result = mapper.map(form);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getBoardLocation()).isEqualTo("Negative ID Location");
+        assertThat(result.getObservations()).isEqualTo("Observation with negative ID");
+    }
+
+    /**
+     * Testa a conversão de um BAgencyBoardsForm com caracteres especiais.
+     * Verifica se os caracteres são mapeados corretamente.
+     */
+    @Test
+    @DisplayName("Should map with special characters")
+    void shouldMapWithSpecialCharacters() {
+        String specialLocation = "Location!@#$%^&*()_+";
+        String specialObservation = "Observation with special chars ~`<>?";
+
+        BAgencyBoardsForm form = new BAgencyBoardsForm(
+            1L, 
+            null, 
+            specialLocation, 
+            specialObservation, 
+            new ArrayList<>(), 
+            new ArrayList<>()
+        );
+
+        BAgencyBoard result = mapper.map(form);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getBoardLocation()).isEqualTo(specialLocation);
+        assertThat(result.getObservations()).isEqualTo(specialObservation);
     }
 }
 

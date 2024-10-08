@@ -1,21 +1,10 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.util.HashSet;
-import java.util.Set;
-
-/**
- * Testa a classe Profile.
- * Verifica o funcionamento dos métodos gerados pelo Lombok, construtores e métodos toString.
- */
 public class ProfileTest {
 
     /**
@@ -37,6 +26,7 @@ public class ProfileTest {
      * Verifica se o construtor padrão cria uma instância não nula da classe.
      */
     @Test
+    @DisplayName("Should create a Profile instance using the default constructor")
     void testDefaultConstructor() {
         Profile profile = new Profile();
         assertThat(profile).isNotNull();
@@ -48,6 +38,7 @@ public class ProfileTest {
      * da instância de Profile.
      */
     @Test
+    @DisplayName("Should correctly set and get Profile attributes")
     void testSettersAndGetters() {
         Profile profile = createSampleProfile(1L, "Admin");
 
@@ -61,6 +52,7 @@ public class ProfileTest {
      * e se têm o mesmo hashCode.
      */
     @Test
+    @DisplayName("Should consider equal instances with the same id")
     void testEqualsAndHashCode() {
         // Cria dois perfis idênticos com o mesmo ID
         Profile profile1 = createSampleProfile(123L, "Admin");
@@ -84,16 +76,39 @@ public class ProfileTest {
      * com os valores de id e description.
      */
     @Test
+    @DisplayName("Should return a correct string representation of the Profile instance")
     void testToString() {
         Profile profile = createSampleProfile(123L, "Admin");
 
         // Obtenha a string real do método toString
         String actualToString = profile.toString();
 
-       
-        String expectedToString = "Profile(id=123, description=Admin, users=[])";
+        String expectedToString = "Profile{id=123, description='Admin'}";
 
         // Compare a string real com a esperada
         assertThat(actualToString).isEqualTo(expectedToString);
+    }
+    
+    /**
+     * Testa a criação de um Profile com valores nulos.
+     * Verifica se a instância pode ser criada e não é nula.
+     */
+    @Test
+    @DisplayName("Should create a Profile instance with null values and not be null")
+    void testCreateProfileWithNullValues() {
+        Profile profile = createSampleProfile(null, null);
+        assertThat(profile).isNotNull();
+    }
+
+    /**
+     * Testa a alteração da descrição de um Profile.
+     * Verifica se o método setDescription altera corretamente o valor.
+     */
+    @Test
+    @DisplayName("Should correctly set the description attribute")
+    void testSetDescription() {
+        Profile profile = createSampleProfile(1L, "Admin");
+        profile.setDescription("User");
+        assertThat(profile.getDescription()).isEqualTo("User");
     }
 }

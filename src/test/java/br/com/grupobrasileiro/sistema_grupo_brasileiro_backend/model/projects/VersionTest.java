@@ -1,11 +1,9 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
-
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 public class VersionTest {
 
@@ -14,6 +12,7 @@ public class VersionTest {
      * Verifica se o construtor padrão cria uma instância não nula da classe.
      */
     @Test
+    @DisplayName("Test Default Constructor")
     void testDefaultConstructor() {
         Version version = new Version();
         assertThat(version).isNotNull();
@@ -24,12 +23,10 @@ public class VersionTest {
      * Verifica se o construtor com parâmetros define corretamente os atributos id, briefing, numVersion, productLink, clientApprove, supervisorApprove e feedback.
      */
     @Test
+    @DisplayName("Test Parameterized Constructor")
     void testParameterizedConstructor() {
         Long id = 1L;
-
-        Briefing briefing = new Briefing();
-        briefing.setId(1L);
-
+        Briefing briefing = createBriefing(1L);
         Integer numVersion = 2;
         String productLink = "http://example.com/product";
         Boolean clientApprove = true;
@@ -53,13 +50,11 @@ public class VersionTest {
      * e se os métodos getId, getBriefing, getNumVersion, getProductLink, getClientApprove, getSupervisorApprove e getFeedback retornam os valores esperados.
      */
     @Test
+    @DisplayName("Test Setters and Getters")
     void testSettersAndGetters() {
         Version version = new Version();
         Long id = 1L;
-
-        Briefing briefing = new Briefing();
-        briefing.setId(1L);
-
+        Briefing briefing = createBriefing(1L);
         Integer numVersion = 2;
         String productLink = "http://example.com/product";
         Boolean clientApprove = true;
@@ -89,12 +84,10 @@ public class VersionTest {
      * e se têm o mesmo hashCode.
      */
     @Test
+    @DisplayName("Test Equals and HashCode")
     void testEqualsAndHashCode() {
         Long id = 1L;
-
-        Briefing briefing = new Briefing();
-        briefing.setId(1L);
-
+        Briefing briefing = createBriefing(1L);
         Integer numVersion = 2;
         String productLink = "http://example.com/product";
         Boolean clientApprove = true;
@@ -119,12 +112,10 @@ public class VersionTest {
      * com os valores de id, briefing, numVersion, productLink, clientApprove, supervisorApprove e feedback.
      */
     @Test
+    @DisplayName("Test ToString Method")
     void testToString() {
         Long id = 1L;
-
-        Briefing briefing = new Briefing();
-        briefing.setId(1L);
-
+        Briefing briefing = createBriefing(1L);
         Integer numVersion = 2;
         String productLink = "http://example.com/product";
         Boolean clientApprove = true;
@@ -133,13 +124,60 @@ public class VersionTest {
 
         Version version = new Version(id, briefing, numVersion, productLink, clientApprove, supervisorApprove, feedback);
 
-        String expectedToString = "Version(id=" + id +
-                                  ", briefing=" + briefing +
-                                  ", numVersion=" + numVersion +
-                                  ", productLink=" + productLink +
-                                  ", clientApprove=" + clientApprove +
-                                  ", supervisorApprove=" + supervisorApprove +
-                                  ", feedback=" + feedback + ")";
-        assertThat(version.toString()).contains(expectedToString);
+        String expectedToString = String.format("Version{id=%d, briefing=%d, numVersion=%d, productLink='%s', clientApprove=%b, supervisorApprove=%b, feedback='%s'}",
+                                                id, briefing.getId(), numVersion, productLink, clientApprove, supervisorApprove, feedback);
+        assertThat(version.toString()).isEqualTo(expectedToString);
+    }
+
+    /**
+     * Testa o método toString da classe Version com valores nulos.
+     * Verifica se o método toString lida corretamente com atributos nulos.
+     */
+    @Test
+    @DisplayName("Test ToString Method with Null Values")
+    void testToStringWithNullValues() {
+        Version version = new Version();
+
+        String expectedToString = "Version{id=null, briefing=null, numVersion=null, productLink='null', clientApprove=null, supervisorApprove=null, feedback='null'}";
+        assertThat(version.toString()).isEqualTo(expectedToString);
+    }
+
+    /**
+     * Testa o método equals da classe Version com valores nulos.
+     * Verifica se a comparação com uma instância nula é tratada corretamente.
+     */
+    @Test
+    @DisplayName("Test Equals with Null Values")
+    void testEqualsWithNull() {
+        Version version = new Version();
+        assertThat(version).isNotEqualTo(null);
+    }
+
+    /**
+     * Testa a criação de duas versões com atributos diferentes.
+     * Verifica se as versões com atributos diferentes são tratadas como diferentes.
+     */
+    @Test
+    @DisplayName("Test Different Versions Are Not Equal")
+    void testDifferentVersionsAreNotEqual() {
+        Long id = 1L;
+        Briefing briefing = createBriefing(1L);
+        Integer numVersion = 1;
+        String productLink = "http://example.com/product";
+        Boolean clientApprove = true;
+        Boolean supervisorApprove = false;
+        String feedback = "Feedback 1";
+
+        Version version1 = new Version(id, briefing, numVersion, productLink, clientApprove, supervisorApprove, feedback);
+        Version version2 = new Version(id + 1, briefing, numVersion, productLink, clientApprove, supervisorApprove, "Feedback 2"); // Diferente feedback e id
+
+        assertThat(version1).isNotEqualTo(version2);
+    }
+
+    // Método auxiliar para criar um Briefing
+    private Briefing createBriefing(Long id) {
+        Briefing briefing = new Briefing();
+        briefing.setId(id);
+        return briefing;
     }
 }
