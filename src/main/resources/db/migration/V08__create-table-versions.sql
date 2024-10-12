@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_Version" (
+CREATE TABLE IF NOT EXISTS "Tb_Version" (
     id BIGSERIAL PRIMARY KEY,
     id_briefing BIGINT NOT NULL,
     num_version INT NOT NULL,

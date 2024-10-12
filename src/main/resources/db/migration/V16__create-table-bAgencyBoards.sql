@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_BAgencyBoards" (
+CREATE TABLE IF NOT EXISTS "Tb_BAgencyBoards" (
     id BIGSERIAL PRIMARY KEY,
     id_agency_board_type BIGINT NOT NULL,
     id_board_type BIGINT,

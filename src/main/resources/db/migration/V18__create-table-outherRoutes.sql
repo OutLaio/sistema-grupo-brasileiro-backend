@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_OtherRoutes" (
+CREATE TABLE IF NOT EXISTS "Tb_OtherRoutes" (
     id BIGSERIAL PRIMARY KEY,
     id_b_agency_board BIGINT NOT NULL,
     company VARCHAR(255) NOT NULL,

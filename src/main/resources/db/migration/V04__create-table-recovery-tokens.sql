@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_RecoveryTokens" (
+CREATE TABLE IF NOT EXISTS "Tb_RecoveryTokens" (
     id BIGSERIAL PRIMARY KEY,
     token VARCHAR(255) NOT NULL
 );

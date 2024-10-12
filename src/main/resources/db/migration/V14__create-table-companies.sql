@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_Companies" (
+CREATE TABLE IF NOT EXISTS "Tb_Companies" (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );

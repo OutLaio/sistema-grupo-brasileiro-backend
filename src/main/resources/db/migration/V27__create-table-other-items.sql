@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_OtherItems"(
+CREATE TABLE IF NOT EXISTS "Tb_OtherItems"(
     id BIGSERIAL PRIMARY KEY,
     description VARCHAR(255)
 );

@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_Projects" (
+CREATE TABLE IF NOT EXISTS "Tb_Projects" (
     id BIGSERIAL PRIMARY KEY,
     id_collaborator BIGINT,
     id_client BIGINT NOT NULL,

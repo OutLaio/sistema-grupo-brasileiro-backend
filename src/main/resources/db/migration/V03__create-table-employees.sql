@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_Employees" (
+CREATE TABLE IF NOT EXISTS "Tb_Employees" (
     id BIGSERIAL PRIMARY KEY,
     id_user BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,

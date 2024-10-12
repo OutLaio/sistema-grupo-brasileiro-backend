@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_BStickers" (
+CREATE TABLE IF NOT EXISTS "Tb_BStickers" (
     id BIGSERIAL PRIMARY KEY,
     id_briefing BIGINT NOT NULL,
     id_sticker_type BIGINT NOT NULL,

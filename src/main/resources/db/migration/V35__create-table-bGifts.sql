@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_BGifts" (
+CREATE TABLE IF NOT EXISTS "Tb_BGifts" (
     id BIGSERIAL PRIMARY KEY,
     id_briefing BIGINT NOT NULL,
     id_gift_type BIGINT NOT NULL,

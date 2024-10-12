@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_BriefingTypes" (
+CREATE TABLE IF NOT EXISTS "Tb_BriefingTypes" (
     id BIGSERIAL PRIMARY KEY,
     description VARCHAR(255) NOT NULL
 );

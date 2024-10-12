@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_Materials"(
+CREATE TABLE IF NOT EXISTS "Tb_Materials"(
     id BIGSERIAL PRIMARY KEY,
     description VARCHAR(255)
 );

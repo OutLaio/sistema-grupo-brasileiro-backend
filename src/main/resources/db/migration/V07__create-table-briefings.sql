@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_Briefings" (
+CREATE TABLE IF NOT EXISTS "Tb_Briefings" (
     id BIGSERIAL PRIMARY KEY,
     id_project BIGINT NOT NULL,
     id_briefing_type BIGINT NOT NULL,

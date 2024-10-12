@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_BPrinteds" (
+CREATE TABLE IF NOT EXISTS "Tb_BPrinteds" (
     id BIGSERIAL PRIMARY KEY,
     id_briefing BIGINT NOT NULL,
     id_printed_type BIGINT NOT NULL,

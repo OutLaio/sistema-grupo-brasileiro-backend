@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_StickerTypes"(
+CREATE TABLE IF NOT EXISTS "Tb_StickerTypes"(
     id BIGSERIAL PRIMARY KEY,
     description VARCHAR(255) NOT NULL
 );

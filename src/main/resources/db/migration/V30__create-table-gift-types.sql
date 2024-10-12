@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_GiftTypes"(
+CREATE TABLE IF NOT EXISTS "Tb_GiftTypes"(
     id BIGSERIAL PRIMARY KEY,
     description VARCHAR(255)
 );

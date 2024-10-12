@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_BInternalCampaigns" (
+CREATE TABLE IF NOT EXISTS "Tb_BInternalCampaigns" (
     id BIGSERIAL PRIMARY KEY,
     id_stationery_type BIGINT NOT NULL,
     id_other_items BIGINT NOT NULL,

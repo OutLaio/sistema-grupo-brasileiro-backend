@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_DialogBoxes" (
+CREATE TABLE IF NOT EXISTS "Tb_DialogBoxes" (
     id BIGSERIAL PRIMARY KEY,
     id_employee BIGINT NOT NULL,
     id_briefing BIGINT NOT NULL,

@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_BHandouts" (
+CREATE TABLE IF NOT EXISTS "Tb_BHandouts" (
     id BIGSERIAL PRIMARY KEY,
     id_handout_type BIGINT NOT NULL,
     id_briefing BIGINT NOT NULL,

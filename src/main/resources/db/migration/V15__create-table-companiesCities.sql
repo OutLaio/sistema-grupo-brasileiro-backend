@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_CompaniesCities" (
+CREATE TABLE IF NOT EXISTS "Tb_CompaniesCities" (
     id BIGSERIAL PRIMARY KEY,
     id_company INT NOT NULL,
     id_city INT NOT NULL,

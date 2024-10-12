@@ -1,4 +1,4 @@
-CREATE TABLE "Tb_BSignposts" (
+CREATE TABLE IF NOT EXISTS "Tb_BSignposts" (
     id BIGSERIAL PRIMARY KEY,
     id_material BIGINT NOT NULL,
     id_briefing BIGINT NOT NULL,
