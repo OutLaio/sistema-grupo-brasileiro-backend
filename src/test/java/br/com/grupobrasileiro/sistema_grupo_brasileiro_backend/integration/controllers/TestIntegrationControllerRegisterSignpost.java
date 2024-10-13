@@ -19,6 +19,8 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -28,19 +30,26 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 
+import org.thymeleaf.TemplateEngine;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 import static io.restassured.RestAssured.given;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootApplication(exclude = {ThymeleafAutoConfiguration.class})
 @ActiveProfiles("test-integration")
 @TestPropertySource(locations = "classpath:application-test-integration.properties")
+
 public class TestIntegrationControllerRegisterSignpost extends AbstractIntegrationTest {
 
     private static RequestSpecification specificationRegisterSignpost;
     private static ObjectMapper objectMapper;
     private static final Faker faker = new Faker();
+    
+    @MockBean
+    private TemplateEngine templateEngine;
 
     @BeforeAll
     static void setup() {
