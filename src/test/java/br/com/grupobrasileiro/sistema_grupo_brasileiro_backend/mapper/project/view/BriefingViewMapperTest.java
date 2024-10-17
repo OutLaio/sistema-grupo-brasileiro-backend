@@ -1,16 +1,22 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.companiesBriefing.view.CompaniesBriefingsView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.measurements.view.MeasurementsView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingTypeView;
@@ -24,19 +30,25 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.measurement
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.companiesBriefing.view.CompaniesBriefingsView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
-import java.util.Set;
-import java.util.HashSet;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.companies.CompaniesBriefingRepository; // Import do repositório
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.measurements.MeasurementRepository;
 
 class BriefingViewMapperTest {
 
+    @InjectMocks
     private BriefingViewMapper briefingViewMapper;
+
+    @Mock
+    private MeasurementRepository measurementRepository; // Mock do MeasurementRepository
+
+    @Mock
+    private CompaniesBriefingRepository companiesBriefingRepository; // Mock do CompaniesBriefingRepository
+
     private Briefing briefing;
 
     @BeforeEach
     void setUp() throws Exception {
-        briefingViewMapper = new BriefingViewMapper(); 
+        MockitoAnnotations.openMocks(this); // Inicializa os mocks
 
         Project project = new Project();
         project.setId(1L);
@@ -59,6 +71,11 @@ class BriefingViewMapperTest {
         measurement.setHeight(new BigDecimal("180.5"));
         measurement.setLength(new BigDecimal("90.0"));
         briefing.setMeasurement(measurement);
+
+        // Configurando o comportamento do mock
+        when(measurementRepository.findByBriefingId(anyLong())).thenReturn(measurement);
+        // Configurando o comportamento do mock para CompaniesBriefingRepository
+        when(companiesBriefingRepository.findByBriefingId(anyLong())).thenReturn(new HashSet<>()); // Retorna um conjunto vazio por padrão
 
         Set<CompaniesBriefing> companies = new HashSet<>();
         // Adicione alguns CompaniesBriefing ao set, se necessário
@@ -106,6 +123,7 @@ class BriefingViewMapperTest {
         companiesBriefingsMapperField.setAccessible(true);
         companiesBriefingsMapperField.set(briefingViewMapper, companiesBriefingsViewMapper);
     }
+
     @Test
     @DisplayName("Must map Briefing to BriefingView")
     void mapBriefingToBriefingView() {
@@ -141,7 +159,6 @@ class BriefingViewMapperTest {
         }
     }
            
-
     @Test
     @DisplayName("Must map Briefing with valid data to BriefingView")
     void mapBriefingWithValidData() {
@@ -168,5 +185,12 @@ class BriefingViewMapperTest {
 
         assertNotNull(result, "O BriefingView mapeado não deve ser nulo");
         assertEquals("", result.detailedDescription(), "A descrição detalhada deve estar vazia");
+    }
+
+    @Test
+    @DisplayName("Should return null when briefing is null")
+    void mapNullBriefingToNullView() {
+        BriefingView result = briefingViewMapper.map(null);
+        assertNull(result, "O resultado deve ser nulo quando o briefing é nulo");
     }
 }

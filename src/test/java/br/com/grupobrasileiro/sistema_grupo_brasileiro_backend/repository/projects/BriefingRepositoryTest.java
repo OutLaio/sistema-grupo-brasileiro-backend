@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue; 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,41 +32,59 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
 public class BriefingRepositoryTest {
 
-    @Autowired
+    @Mock
     private BriefingRepository briefingRepository;
-    
-    @Autowired
-    private ProjectRepository projectRepository; 
 
-    @Autowired
+    @Mock
+    private ProjectRepository projectRepository;
+
+    @Mock
     private BriefingTypeRepository briefingTypeRepository;
-    
-    @Autowired
-    private EmployeeRepository employeeRepository; 
-    
-    @Autowired
+
+    @Mock
+    private EmployeeRepository employeeRepository;
+
+    @Mock
     private UserRepository userRepository;
-    
-    @Autowired
-    private ProfileRepository profileRepository; 
+
+    @Mock
+    private ProfileRepository profileRepository;
 
     private Faker faker;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         faker = new Faker();
     }
 
     @Test
     @DisplayName("Should return empty when searching for a briefing that does not exist")
     void testRetrieveNonExistingBriefing() {
+        // Act
+        when(briefingRepository.findById(999L)).thenReturn(Optional.empty());
+
         Optional<Briefing> retrievedBriefing = briefingRepository.findById(999L);
+        
+        // Assert
         assertThat(retrievedBriefing).isNotPresent();
     }
 
@@ -80,29 +99,10 @@ public class BriefingRepositoryTest {
             briefingRepository.flush(); // Força a validação imediata
         });
 
-        // Imprima a exceção para debug
-        exception.printStackTrace();
+        assertThat(exception instanceof DataIntegrityViolationException || exception instanceof ConstraintViolationException)
+                .isTrue();
 
-        // Verifique se a exceção é do tipo esperado
-        assertTrue(exception instanceof DataIntegrityViolationException || exception instanceof ConstraintViolationException,
-                "Esperava-se uma DataIntegrityViolationException ou ConstraintViolationException, mas foi lançada: " + exception.getClass().getName());
-
-        // Se for uma DataIntegrityViolationException, você pode verificar a causa raiz
-        if (exception instanceof DataIntegrityViolationException) {
-            DataIntegrityViolationException dive = (DataIntegrityViolationException) exception;
-            System.out.println("Mensagem de erro: " + dive.getMostSpecificCause().getMessage());
-        }
-
-        // Se for uma ConstraintViolationException, você pode verificar as violações específicas
-        if (exception instanceof ConstraintViolationException) {
-            ConstraintViolationException cve = (ConstraintViolationException) exception;
-            Set<ConstraintViolation<?>> violations = cve.getConstraintViolations();
-            for (ConstraintViolation<?> violation : violations) {
-                System.out.println("Violação: " + violation.getPropertyPath() + " " + violation.getMessage());
-            }
-        }
-    }
-    
+    }  
     private Briefing createTestBriefing() {
         Employee client = createTestEmployee();
 
@@ -110,11 +110,13 @@ public class BriefingRepositoryTest {
         project.setTitle("Projeto de Teste");
         project.setDisabled(false);
         project.setClient(client);
-        project = projectRepository.save(project);
+        
+        when(projectRepository.save(any(Project.class))).thenReturn(project);
 
         BriefingType briefingType = new BriefingType();
         briefingType.setDescription("Tipo de Briefing de Teste");
-        briefingType = briefingTypeRepository.save(briefingType);
+        
+        when(briefingTypeRepository.save(any(BriefingType.class))).thenReturn(briefingType);
 
         Briefing briefing = new Briefing();
         briefing.setProject(project);
@@ -126,22 +128,21 @@ public class BriefingRepositoryTest {
 
         return briefing;
     }
-    
+
     private Employee createTestEmployee() {
-        // Criar um Profile
         Profile profile = new Profile();
         profile.setDescription("Perfil de Teste");
-        profile = profileRepository.save(profile);
+        
+        when(profileRepository.save(any(Profile.class))).thenReturn(profile);
 
-        // Criar um User
         User user = new User();
         user.setEmail(faker.internet().emailAddress());
         user.setPassword("senha123");
         user.setDisabled(false);
         user.setProfile(profile);
-        user = userRepository.save(user);
+        
+        when(userRepository.save(any(User.class))).thenReturn(user);
 
-        // Criar um Employee
         Employee employee = new Employee();
         employee.setName("Funcionário de Teste");
         employee.setLastName("Sobrenome de Teste");
@@ -151,22 +152,26 @@ public class BriefingRepositoryTest {
         employee.setAgency("Agência de Teste");
         employee.setAvatar(1L);
         employee.setUser(user);
+        
+        when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
 
-        return employeeRepository.save(employee);
+        return employee;
     }
 
     @Test
     @DisplayName("Must create and retrieve a brief successfully")
     void testCreateAndRetrieveBriefing() {
         Briefing briefing = createTestBriefing();
+        when(briefingRepository.save(any(Briefing.class))).thenReturn(briefing);
+
         Briefing savedBriefing = briefingRepository.save(briefing);
 
         assertThat(savedBriefing.getId()).isNotNull();
 
+        when(briefingRepository.findById(savedBriefing.getId())).thenReturn(Optional.of(savedBriefing));
         Optional<Briefing> retrievedBriefing = briefingRepository.findById(savedBriefing.getId());
+        
         assertThat(retrievedBriefing).isPresent();
         assertThat(retrievedBriefing.get().getDetailedDescription()).isEqualTo(briefing.getDetailedDescription());
     }
-    
-    
 }

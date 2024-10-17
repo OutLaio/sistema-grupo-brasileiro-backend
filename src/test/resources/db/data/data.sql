@@ -4,3 +4,4 @@ CREATE TABLE IF NOT EXISTS teste (
 );
 
 INSERT INTO teste (nome) VALUES ('Teste 1');
+

@@ -1,4 +1,4 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controllers.project;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.project.ProjectController;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ApproveForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;

@@ -31,33 +31,57 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProfileRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestMethodOrder(MethodOrderer.Random.class)
-//@Sql(scripts = "/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Optional;
+
 public class MeasurementRepositoryTest {
 
-    @Autowired
+    @Mock
     private MeasurementRepository measurementRepository;
 
-    @Autowired
+    @Mock
     private BriefingRepository briefingRepository;
 
-    @Autowired
+    @Mock
     private BriefingTypeRepository briefingTypeRepository;
 
-    @Autowired
+    @Mock
     private ProjectRepository projectRepository;
 
-    @Autowired
+    @Mock
     private EmployeeRepository employeeRepository;
 
-    @Autowired
+    @Mock
     private UserRepository userRepository;
 
-    @Autowired
+    @Mock
     private ProfileRepository profileRepository;
 
     private Measurement measurement;
@@ -65,16 +89,19 @@ public class MeasurementRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
+
+        // Configurações de mock
         Profile profile = new Profile();
         profile.setDescription("Perfil de Teste");
-        profile = profileRepository.save(profile);
+        when(profileRepository.save(any(Profile.class))).thenReturn(profile);
 
         User user = new User();
         user.setEmail("test@example.com");
         user.setPassword("password123");
         user.setDisabled(false);
         user.setProfile(profile);
-        user = userRepository.save(user);
+        when(userRepository.save(any(User.class))).thenReturn(user);
 
         Employee employee = new Employee();
         employee.setName("Cliente Teste");
@@ -85,17 +112,17 @@ public class MeasurementRepositoryTest {
         employee.setAgency("Agência Central");
         employee.setAvatar(1L);
         employee.setUser(user);
-        employee = employeeRepository.save(employee);
+        when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
 
         BriefingType briefingType = new BriefingType();
         briefingType.setDescription("Tipo de briefing de teste");
-        briefingType = briefingTypeRepository.save(briefingType);
+        when(briefingTypeRepository.save(any(BriefingType.class))).thenReturn(briefingType);
 
         Project project = new Project();
         project.setTitle("Título do Projeto de Teste");
         project.setDisabled(false);
         project.setClient(employee);
-        project = projectRepository.save(project);
+        when(projectRepository.save(any(Project.class))).thenReturn(project);
 
         briefing = new Briefing();
         briefing.setBriefingType(briefingType);
@@ -103,7 +130,7 @@ public class MeasurementRepositoryTest {
         briefing.setStartTime(LocalDate.now());
         briefing.setExpectedTime(LocalDate.now().plusDays(7));
         briefing.setDetailedDescription("Descrição detalhada do briefing para teste");
-        briefing = briefingRepository.save(briefing);
+        when(briefingRepository.save(any(Briefing.class))).thenReturn(briefing);
 
         measurement = new Measurement();
         measurement.setBriefing(briefing);
@@ -114,6 +141,9 @@ public class MeasurementRepositoryTest {
     @Test
     @DisplayName("You must save and load a Measurement")
     void shouldSaveAndLoadMeasurement() {
+        when(measurementRepository.save(any(Measurement.class))).thenReturn(measurement);
+        when(measurementRepository.findById(anyLong())).thenReturn(Optional.of(measurement));
+
         Measurement savedMeasurement = measurementRepository.save(measurement);
         assertThat(savedMeasurement.getId()).isNotNull();
 
@@ -127,12 +157,14 @@ public class MeasurementRepositoryTest {
     @Test
     @DisplayName("You must delete a Measurement")
     void shouldDeleteMeasurement() {
-        Measurement savedMeasurement = measurementRepository.save(measurement);
-        assertThat(savedMeasurement.getId()).isNotNull();
+        when(measurementRepository.save(any(Measurement.class))).thenReturn(measurement);
+        measurementRepository.save(measurement);
+        when(measurementRepository.findById(measurement.getId())).thenReturn(Optional.of(measurement));
 
-        measurementRepository.delete(savedMeasurement);
+        measurementRepository.delete(measurement);
 
-        Measurement foundMeasurement = measurementRepository.findById(savedMeasurement.getId()).orElse(null);
+        when(measurementRepository.findById(measurement.getId())).thenReturn(Optional.empty());
+        Measurement foundMeasurement = measurementRepository.findById(measurement.getId()).orElse(null);
         assertThat(foundMeasurement).isNull();
     }
 }

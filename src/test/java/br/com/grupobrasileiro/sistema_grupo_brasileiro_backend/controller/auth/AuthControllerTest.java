@@ -1,4 +1,4 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controllers.auth;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.auth;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.auth.AuthController;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.LoginForm;

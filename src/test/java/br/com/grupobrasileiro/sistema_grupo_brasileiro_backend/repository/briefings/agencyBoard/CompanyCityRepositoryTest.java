@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.City;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Company;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.CompanyCity;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.gift.PrintingTypeRepository; // Importação do repositório
 import jakarta.transaction.Transactional;
 
 @SpringBootTest
@@ -32,7 +33,10 @@ public class CompanyCityRepositoryTest {
 
     @Autowired
     private CompanyRepository companyRepository; 
-    
+
+    @Autowired
+    private PrintingTypeRepository printingTypeRepository; 
+
     private CompanyCity companyCity; 
 
     @BeforeEach
@@ -59,13 +63,15 @@ public class CompanyCityRepositoryTest {
         companyCityRepository.save(companyCity); 
     }
 
+
+    /**
+     * Testa a persistência e recuperação de um CompanyCity.
+     */
     @Test
     void testCompanyCityAssociation() {
         // Verificar se a associação foi criada corretamente
         assertNotNull(companyCity); // A associação não deve ser nula
-
     }
-
 
     /**
      * Testa a persistência e recuperação de um CompanyCity.
@@ -84,6 +90,7 @@ public class CompanyCityRepositoryTest {
         assertThat(foundCompanyCity).isPresent();
         assertThat(foundCompanyCity.get()).isEqualTo(savedCompanyCity);
     }
+
 
     /**
      * Testa a busca de um CompanyCity inexistente pelo ID.
@@ -195,6 +202,4 @@ public class CompanyCityRepositoryTest {
         assertThat(companyCities).isNotEmpty();
         assertThat(companyCities).hasSize(2); // Verifica se o total é 2
     }
-
-
 }

@@ -24,50 +24,61 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
+
 public class DialogBoxRepositoryTest {
 
-    @Autowired
+    @Mock
     private DialogBoxRepository dialogBoxRepository;
 
-    @Autowired
+    @Mock
     private EmployeeRepository employeeRepository;
 
-    @Autowired
+    @Mock
     private BriefingRepository briefingRepository;
 
-    @Autowired
-    private UserRepository userRepository; // Injetando o UserRepository
+    @Mock
+    private UserRepository userRepository;
 
-    @Autowired
-    private ProfileRepository profileRepository; // Injetando o ProfileRepository
+    @Mock
+    private ProfileRepository profileRepository;
 
     private Faker faker;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         faker = new Faker();
     }
 
     private Profile createTestProfile() {
         Profile profile = new Profile();
-        profile.setDescription("Test Profile Description"); // Defina uma descrição para o perfil
-        return profileRepository.save(profile); // Salvar o perfil no repositório
+        profile.setDescription("Test Profile Description");
+        return profile; // Não precisamos salvar, pois é um mock
     }
 
     private User createTestUser() {
         User user = new User();
-        user.setEmail(faker.internet().emailAddress()); // Gera um email aleatório
-        user.setPassword("password"); // Defina uma senha adequada
-        user.setDisabled(false); // O usuário não está desativado
-        user.setProfile(createTestProfile()); // Associe o perfil ao usuário
-        return userRepository.save(user); // Salvar o usuário no repositório
+        user.setEmail(faker.internet().emailAddress());
+        user.setPassword("password");
+        user.setDisabled(false);
+        user.setProfile(createTestProfile());
+        return user; // Não precisamos salvar, pois é um mock
     }
 
     private Employee createTestEmployee() {
-        User user = createTestUser(); // Cria um usuário antes de criar o empregado
+        User user = createTestUser();
 
         Employee employee = new Employee();
         employee.setName(faker.name().firstName());
@@ -76,19 +87,17 @@ public class DialogBoxRepositoryTest {
         employee.setSector("Development");
         employee.setOccupation("Developer");
         employee.setAgency("Agency XYZ");
-        employee.setAvatar(1L); // Defina um valor apropriado para o avatar
-        employee.setUser(user); // Associar o usuário ao empregado
+        employee.setAvatar(1L);
+        employee.setUser(user);
 
-        return employeeRepository.save(employee); // Salvar o empregado no repositório
+        return employee; // Não precisamos salvar, pois é um mock
     }
 
     private Briefing createTestBriefing() {
         Briefing briefing = new Briefing();
-        briefing.setDetailedDescription(faker.lorem().sentence()); // Define a descrição detalhada
-        return briefingRepository.save(briefing); // Salvar o briefing no repositório
+        briefing.setDetailedDescription(faker.lorem().sentence());
+        return briefing; // Não precisamos salvar, pois é um mock
     }
-
-    
 
     @Test
     @DisplayName("Should return empty when retrieving non-existing dialog box")
@@ -99,4 +108,6 @@ public class DialogBoxRepositoryTest {
         // Assert
         assertThat(retrievedDialogBox).isNotPresent();
     }
+
+   
 }

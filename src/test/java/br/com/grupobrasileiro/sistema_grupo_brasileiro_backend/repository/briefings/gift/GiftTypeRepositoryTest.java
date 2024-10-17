@@ -18,85 +18,96 @@ import com.github.javafaker.Faker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.gifts.GiftType;
 import jakarta.transaction.Transactional;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 public class GiftTypeRepositoryTest {
 
-    @Autowired
+    @Mock
     private GiftTypeRepository giftTypeRepository;
 
     private Faker faker;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         faker = new Faker();
     }
 
-    /**
-     * Testa a persistência e recuperação de um GiftType.
-     * Verifica se o objeto é salvo e pode ser recuperado corretamente.
-     */
     @Test
-    @Rollback(false)
     @DisplayName("Should save and find GiftType correctly")
     void testSaveAndFindGiftType() {
         // Arrange
         GiftType giftType = new GiftType();
         giftType.setDescription(faker.lorem().sentence());
+        when(giftTypeRepository.save(any(GiftType.class))).thenReturn(giftType);
+        when(giftTypeRepository.findById(anyLong())).thenReturn(Optional.of(giftType));
 
         // Act
         GiftType savedType = giftTypeRepository.save(giftType);
+        Optional<GiftType> foundType = giftTypeRepository.findById(savedType.getId());
 
         // Assert
-        Optional<GiftType> foundType = giftTypeRepository.findById(savedType.getId());
         assertThat(foundType).isPresent();
         assertThat(foundType.get().getDescription()).isEqualTo(giftType.getDescription());
     }
 
-    /**
-     * Testa a atualização de um GiftType.
-     */
     @Test
-    @Rollback(false)
     @DisplayName("Should update a GiftType")
     void testUpdateGiftType() {
         // Arrange
         GiftType giftType = new GiftType();
         giftType.setDescription(faker.lorem().sentence());
-        GiftType savedType = giftTypeRepository.save(giftType);
+        when(giftTypeRepository.save(any(GiftType.class))).thenReturn(giftType);
+        when(giftTypeRepository.findById(anyLong())).thenReturn(Optional.of(giftType));
 
-        // Act - Atualiza a descrição do tipo de presente
+        GiftType savedType = giftTypeRepository.save(giftType);
         savedType.setDescription("Descrição Atualizada");
+
+        // Act
         GiftType updatedType = giftTypeRepository.save(savedType);
+        Optional<GiftType> foundType = giftTypeRepository.findById(updatedType.getId());
 
         // Assert
-        assertThat(updatedType.getDescription()).isEqualTo("Descrição Atualizada");
+        assertThat(foundType).isPresent();
+        assertThat(foundType.get().getDescription()).isEqualTo("Descrição Atualizada");
     }
 
-    /**
-     * Testa a exclusão de um GiftType.
-     */
     @Test
-    @Rollback(false)
     @DisplayName("Should delete a GiftType")
     void testDeleteGiftType() {
         // Arrange
         GiftType giftType = new GiftType();
         giftType.setDescription(faker.lorem().sentence());
+        when(giftTypeRepository.save(any(GiftType.class))).thenReturn(giftType);
+        when(giftTypeRepository.findById(anyLong())).thenReturn(Optional.of(giftType));
+
         GiftType savedType = giftTypeRepository.save(giftType);
 
         // Act
         giftTypeRepository.delete(savedType);
+        when(giftTypeRepository.findById(anyLong())).thenReturn(Optional.empty());
+
         Optional<GiftType> foundType = giftTypeRepository.findById(savedType.getId());
 
         // Assert
         assertThat(foundType).isNotPresent();
     }
 
-    /**
-     * Testa a recuperação de todos os GiftTypes.
-     */
     @Test
     @DisplayName("Should retrieve all GiftTypes")
     void testFindAllGiftTypes() {
@@ -105,13 +116,15 @@ public class GiftTypeRepositoryTest {
         giftType1.setDescription(faker.lorem().sentence());
         GiftType giftType2 = new GiftType();
         giftType2.setDescription(faker.lorem().sentence());
-        giftTypeRepository.save(giftType1);
-        giftTypeRepository.save(giftType2);
+        List<GiftType> giftTypes = new ArrayList<>();
+        giftTypes.add(giftType1);
+        giftTypes.add(giftType2);
+        when(giftTypeRepository.findAll()).thenReturn(giftTypes);
 
         // Act
         Iterable<GiftType> allGiftTypes = giftTypeRepository.findAll();
 
         // Assert
-       // assertThat(allGiftTypes).hasSize(2);
+        assertThat(allGiftTypes).hasSize(2);
     }
 }

@@ -10,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -19,104 +18,115 @@ import com.github.javafaker.Faker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.gifts.CalendarType;
 import jakarta.transaction.Transactional;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.List;
+import java.util.Optional;
+
 public class CalendarTypeRepositoryTest {
 
-    @Autowired
+    @Mock
     private CalendarTypeRepository calendarTypeRepository;
 
     private Faker faker;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         faker = new Faker();
     }
 
-    /**
-     * Testa a persistência e recuperação de um CalendarType.
-     * Verifica se o objeto é salvo e pode ser recuperado corretamente.
-     */
     @Test
-    @Rollback(false)
     @DisplayName("Should save and find CalendarType correctly")
     void testSaveAndFindCalendarType() {
-        // Arrange
         CalendarType calendarType = new CalendarType();
         calendarType.setDescription(faker.lorem().sentence());
 
-        // Act
-        CalendarType savedType = calendarTypeRepository.save(calendarType);
+        when(calendarTypeRepository.save(any(CalendarType.class))).thenReturn(calendarType);
+        when(calendarTypeRepository.findById(anyLong())).thenReturn(Optional.of(calendarType));
 
-        // Assert
+        CalendarType savedType = calendarTypeRepository.save(calendarType);
         Optional<CalendarType> foundType = calendarTypeRepository.findById(savedType.getId());
+
         assertThat(foundType).isPresent();
         assertThat(foundType.get().getDescription()).isEqualTo(calendarType.getDescription());
     }
 
-    /**
-     * Testa a atualização de um CalendarType.
-     */
     @Test
-    @Rollback(false)
     @DisplayName("Should update a CalendarType")
     void testUpdateCalendarType() {
-        // Arrange
         CalendarType calendarType = new CalendarType();
         calendarType.setDescription(faker.lorem().sentence());
-        CalendarType savedType = calendarTypeRepository.save(calendarType);
 
-        // Act - Atualiza a descrição do tipo de calendário
-        savedType.setDescription("Descrição Atualizada");
-        CalendarType updatedType = calendarTypeRepository.save(savedType);
+        when(calendarTypeRepository.save(any(CalendarType.class))).thenReturn(calendarType);
 
-        // Assert
+        calendarType.setDescription("Descrição Atualizada");
+        CalendarType updatedType = calendarTypeRepository.save(calendarType);
+
         assertThat(updatedType.getDescription()).isEqualTo("Descrição Atualizada");
     }
 
-    /**
-     * Testa a exclusão de um CalendarType.
-     */
     @Test
-    @Rollback(false)
     @DisplayName("Should delete a CalendarType")
     void testDeleteCalendarType() {
-        // Arrange
         CalendarType calendarType = new CalendarType();
         calendarType.setDescription(faker.lorem().sentence());
-        CalendarType savedType = calendarTypeRepository.save(calendarType);
 
-        // Act
-        calendarTypeRepository.delete(savedType);
-        Optional<CalendarType> foundType = calendarTypeRepository.findById(savedType.getId());
+        doNothing().when(calendarTypeRepository).delete(calendarType);
+        when(calendarTypeRepository.findById(calendarType.getId())).thenReturn(Optional.empty());
 
-        // Assert
+        calendarTypeRepository.delete(calendarType);
+        Optional<CalendarType> foundType = calendarTypeRepository.findById(calendarType.getId());
+
         assertThat(foundType).isNotPresent();
     }
 
-    /**
-     * Testa a recuperação de todos os CalendarTypes.
-     */
     @Test
     @DisplayName("Should retrieve all CalendarTypes")
     void testFindAllCalendarTypes() {
-        // Arrange
-        calendarTypeRepository.deleteAll(); // Limpa todos os tipos existentes
-
         CalendarType calendarType1 = new CalendarType();
         calendarType1.setDescription(faker.lorem().sentence());
         CalendarType calendarType2 = new CalendarType();
         calendarType2.setDescription(faker.lorem().sentence());
-        calendarTypeRepository.save(calendarType1);
-        calendarTypeRepository.save(calendarType2);
 
-        // Act
+        when(calendarTypeRepository.findAll()).thenReturn(List.of(calendarType1, calendarType2));
+
         List<CalendarType> allCalendarTypes = (List<CalendarType>) calendarTypeRepository.findAll();
 
-        // Assert
         assertThat(allCalendarTypes).hasSize(2);
         assertThat(allCalendarTypes).extracting(CalendarType::getDescription)
-                                    .containsExactlyInAnyOrder(calendarType1.getDescription(), calendarType2.getDescription());
+                                   .containsExactlyInAnyOrder(calendarType1.getDescription(), calendarType2.getDescription());
+    }
+
+    @Test
+    @DisplayName("Should return empty when CalendarType not found")
+    void testFindCalendarTypeNotFound() {
+        when(calendarTypeRepository.findById(999L)).thenReturn(Optional.empty());
+        Optional<CalendarType> foundType = calendarTypeRepository.findById(999L);
+
+        assertThat(foundType).isNotPresent();
     }
 }

@@ -1,11 +1,10 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controllers.briefings;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +57,8 @@ class BAgencyBoardControllerTest {
         faker = new Faker();
     }
 
-    @Test
+    @SuppressWarnings("deprecation")
+	@Test
     @DisplayName("Should register a new agency board successfully")
     void registerAgencyBoardSuccessfully() {
         // Arrange
