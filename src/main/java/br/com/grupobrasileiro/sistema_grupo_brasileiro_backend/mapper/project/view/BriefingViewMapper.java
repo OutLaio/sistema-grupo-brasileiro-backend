@@ -8,6 +8,8 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Br
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
 @Component
 public class BriefingViewMapper implements Mapper<Briefing, BriefingView> {
 
@@ -20,6 +22,8 @@ public class BriefingViewMapper implements Mapper<Briefing, BriefingView> {
     @Autowired
     private CompaniesBriefingsViewMapper companiesBriefingsViewMapper;
 
+    @Autowired
+    private VersionViewMapper versionViewMapper;
     @Override
     public BriefingView map(Briefing briefing) {
         return new BriefingView(
@@ -31,7 +35,8 @@ public class BriefingViewMapper implements Mapper<Briefing, BriefingView> {
                 briefing.getDetailedDescription(),
                 measurementsViewMapper.map(briefing.getMeasurement()),
                 companiesBriefingsViewMapper.map(briefing.getCompanies()),
-                briefing.getOtherCompany()
+                briefing.getOtherCompany(),
+                briefing.getVersions().stream().map(versionViewMapper::map).collect(Collectors.toSet())
         );
     }
 }

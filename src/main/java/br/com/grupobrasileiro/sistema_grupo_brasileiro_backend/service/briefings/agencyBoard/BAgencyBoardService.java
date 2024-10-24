@@ -10,6 +10,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.*;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.agencyBoard.*;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +50,7 @@ public class BAgencyBoardService {
     @Autowired
     private BAgencyBoardDetailedViewMapper bAgencyBoardRegisterViewMapper;
 
-    public BAgencyBoardDetailedView register(BAgencyBoardsForm bAgencyBoardsForm, Briefing briefing) {
+    public void register(BAgencyBoardsForm bAgencyBoardsForm, Briefing briefing) {
         BAgencyBoard bAgencyBoard = bAgencyBoardFormMapper.map(bAgencyBoardsForm);
 
         AgencyBoardType agencyBoardType = agencyBoardTypeRepository.findById(bAgencyBoardsForm.idAgencyBoardType()).orElseThrow(
@@ -79,10 +80,6 @@ public class BAgencyBoardService {
                         .collect(Collectors.toSet()) : Set.of();
         bAgencyBoard.setRoutes(routes);
 
-        System.out.println("Cadastro de RotasForm: " + bAgencyBoardsForm.routes());
-        System.out.println("Cadastro de Rotas: " + routes.size());
-
-
         Set<OtherRoute> otherRoutes = bAgencyBoardsForm.otherRoutes() != null ?
                 bAgencyBoardsForm.otherRoutes().stream()
                         .map(otherRoutesForm -> {
@@ -97,7 +94,5 @@ public class BAgencyBoardService {
         bAgencyBoardRepository.saveAndFlush(bAgencyBoard);
         routeRepository.saveAll(routes);
         otherRouteRepository.saveAll(otherRoutes);
-
-        return bAgencyBoardRegisterViewMapper.map(bAgencyBoard);
     }
 }
