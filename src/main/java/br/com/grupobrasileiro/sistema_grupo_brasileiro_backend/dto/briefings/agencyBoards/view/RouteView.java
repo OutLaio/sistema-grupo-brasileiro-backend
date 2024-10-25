@@ -2,7 +2,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.ag
 
 public record RouteView(
         Long id,
-        CompanyCityView companyCityView,
+        CompanyCityView companyCity,
         String type
 ) {
 }

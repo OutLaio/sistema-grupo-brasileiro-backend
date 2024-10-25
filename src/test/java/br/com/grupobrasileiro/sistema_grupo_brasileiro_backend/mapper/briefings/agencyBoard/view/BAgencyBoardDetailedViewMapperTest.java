@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -106,9 +105,9 @@ class BAgencyBoardDetailedViewMapperTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(bAgencyBoardView, result.bAgencyBoardView());
-        assertEquals(briefingView, result.briefingView());
-        assertEquals(projectView, result.projectView());
+        assertEquals(bAgencyBoardView, result.bAgencyBoard());
+        assertEquals(briefingView, result.briefing());
+        assertEquals(projectView, result.project());
 
         verify(bAgencyBoardViewMapper).map(bAgencyBoard);
         verify(briefingViewMapper).map(briefing);
@@ -197,9 +196,9 @@ class BAgencyBoardDetailedViewMapperTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(bAgencyBoardView, result.bAgencyBoardView());
-        assertEquals(briefingView, result.briefingView());
-        assertEquals(projectView, result.projectView());
+        assertEquals(bAgencyBoardView, result.bAgencyBoard());
+        assertEquals(briefingView, result.briefing());
+        assertEquals(projectView, result.project());
 
         verify(bAgencyBoardViewMapper).map(bAgencyBoard);
         verify(briefingViewMapper).map(briefing);

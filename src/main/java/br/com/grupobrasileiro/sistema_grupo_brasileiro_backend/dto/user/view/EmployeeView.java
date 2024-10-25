@@ -19,7 +19,7 @@ public record EmployeeView(
          * Identificador único do usuário associado ao funcionário.
          * Este campo é obrigatório e não pode ser nulo.
          */
-        UserView userView,
+        UserView user,
 
         /**
          * Nome do funcionário.

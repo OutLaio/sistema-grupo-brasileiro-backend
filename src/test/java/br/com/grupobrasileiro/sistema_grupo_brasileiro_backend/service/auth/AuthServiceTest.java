@@ -10,14 +10,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -152,7 +149,7 @@ class AuthServiceTest {
         assertEquals(expectedEmployeeView.agency(), resultEmployeeView.agency(), "Employee agency should match");
         assertEquals(expectedEmployeeView.avatar(), resultEmployeeView.avatar(), "Employee avatar should match");
         
-        UserView resultUserView = resultEmployeeView.userView();
+        UserView resultUserView = resultEmployeeView.user();
         assertNotNull(resultUserView, "UserView should not be null");
         assertEquals(userView.id(), resultUserView.id(), "User ID should match");
         assertEquals(userView.email(), resultUserView.email(), "User email should match");
