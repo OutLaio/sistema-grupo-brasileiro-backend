@@ -143,7 +143,7 @@ class AuthServiceTest {
         assertEquals(expectedEmployeeView.id(), resultEmployeeView.id(), "Employee ID should match");
         assertEquals(expectedEmployeeView.name(), resultEmployeeView.name(), "Employee name should match");
         assertEquals(expectedEmployeeView.lastname(), resultEmployeeView.lastname(), "Employee lastname should match");
-        assertEquals(expectedEmployeeView.phonenumber(), resultEmployeeView.phonenumber(), "Employee phone number should match");
+        assertEquals(expectedEmployeeView.phoneNumber(), resultEmployeeView.phoneNumber(), "Employee phone number should match");
         assertEquals(expectedEmployeeView.sector(), resultEmployeeView.sector(), "Employee sector should match");
         assertEquals(expectedEmployeeView.occupation(), resultEmployeeView.occupation(), "Employee occupation should match");
         assertEquals(expectedEmployeeView.agency(), resultEmployeeView.agency(), "Employee agency should match");

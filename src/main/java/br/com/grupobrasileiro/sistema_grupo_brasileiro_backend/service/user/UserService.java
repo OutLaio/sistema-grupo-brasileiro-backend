@@ -9,7 +9,6 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.form.
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProfileRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -75,7 +74,7 @@ public class UserService {
     }
 
     public void changePassword(PasswordForm passwordForm) {
-        User user = userRepository.findById(passwordForm.id())
+        User user = userRepository.findById(passwordForm.idUser())
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
         String currentPassword = passwordEncoder.encode(passwordForm.currentPassword());
         if(!user.getPassword().equals(currentPassword)) throw new IncorrectPasswordException("A senha atual está incorreta!");

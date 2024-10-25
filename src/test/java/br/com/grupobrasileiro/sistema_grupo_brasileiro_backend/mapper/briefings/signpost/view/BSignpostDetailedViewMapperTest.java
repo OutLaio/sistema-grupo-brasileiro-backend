@@ -72,7 +72,7 @@ class BSignpostDetailedViewMapperTest {
         
         // Verificações detalhadas para project
         assertNotNull(resultado.projectView(), "ProjectView não deve ser nulo");
-        assertEquals(projectView.idProject(), resultado.projectView().idProject(), "ID do ProjectView deve ser igual");
+        assertEquals(projectView.id(), resultado.projectView().idProject(), "ID do ProjectView deve ser igual");
         assertEquals(projectView.title(), resultado.projectView().title(), "Título do ProjectView deve ser igual");
         assertEquals(projectView.status(), resultado.projectView().status(), "Status do ProjectView deve ser igual");
         assertEquals(projectView.client(), resultado.projectView().client(), "Cliente do ProjectView deve ser igual");

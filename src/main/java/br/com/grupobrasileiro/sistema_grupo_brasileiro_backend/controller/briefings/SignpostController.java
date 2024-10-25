@@ -58,10 +58,10 @@ public class SignpostController {
             @Valid @RequestBody RegisterSignpostForm registerSignpost,
             UriComponentsBuilder uriBuilder
     ) {
-        Project project = projectService.register(registerSignpost.projectForm());
-        Briefing briefing = briefingService.register(registerSignpost.briefingForm(),project);
-        BSignpostDetailedView signpostRegisterView = signpostService.register(registerSignpost.signpostForm(),briefing);
-        URI uri = uriBuilder.path("/api/v1/signposts/{id}").buildAndExpand(signpostRegisterView.bSignpostView().id()).toUri();
+        Project project = projectService.register(registerSignpost.project());
+        Briefing briefing = briefingService.register(registerSignpost.briefing(),project);
+        BSignpostDetailedView signpostRegisterView = signpostService.register(registerSignpost.signpost(),briefing);
+        URI uri = uriBuilder.path("/api/v1/signposts/{id}").buildAndExpand(signpostRegisterView.signpost().id()).toUri();
         return ResponseEntity.created(uri).body(signpostRegisterView);
     }
     

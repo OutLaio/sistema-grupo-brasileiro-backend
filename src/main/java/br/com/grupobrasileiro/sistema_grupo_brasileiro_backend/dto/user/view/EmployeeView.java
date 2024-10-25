@@ -37,7 +37,7 @@ public record EmployeeView(
          * Número de telefone do funcionário.
          * Este campo exibe o número de telefone formatado do funcionário.
          */
-        String phonenumber,
+        String phoneNumber,
 
         /**
          * Setor de trabalho do funcionário.
