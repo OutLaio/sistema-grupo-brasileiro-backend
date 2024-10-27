@@ -60,9 +60,8 @@ public class SignpostController {
     ) {
         Project project = projectService.register(registerSignpost.project());
         Briefing briefing = briefingService.register(registerSignpost.briefing(),project);
-        BSignpostDetailedView signpostRegisterView = signpostService.register(registerSignpost.signpost(),briefing);
-        URI uri = uriBuilder.path("/api/v1/signposts/{id}").buildAndExpand(signpostRegisterView.signpost().id()).toUri();
-        return ResponseEntity.created(uri).body(signpostRegisterView);
+        signpostService.register(registerSignpost.signpost(),briefing);
+        return ResponseEntity.created(URI.create("/api/v1/signposts/" + briefing.getId())).body(null);
     }
     
 }

@@ -44,6 +44,9 @@ public class SecurityConfig {
 
                         // Restrição de acesso para Colaboradores
 
+                        .requestMatchers(HttpMethod.GET, "/api/v1/projects/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/dialogs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/dialogs/**").permitAll()
 
                         .anyRequest().authenticated()
                 )

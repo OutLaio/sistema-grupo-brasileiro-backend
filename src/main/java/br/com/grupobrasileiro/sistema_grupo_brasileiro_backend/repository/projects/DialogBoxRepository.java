@@ -8,5 +8,5 @@ import java.util.Set;
 
 @Repository
 public interface DialogBoxRepository extends JpaRepository<DialogBox,Long> {
-    Set<DialogBox> findByBriefingId(Long briefingId);
+    Set<DialogBox> findByBriefingId(Long idBriefing);
 }

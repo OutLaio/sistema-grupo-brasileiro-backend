@@ -31,12 +31,11 @@ public class BSignpostService {
     @Autowired
     private BSignpostDetailedViewMapper bSignpostRegisterViewMapper;
 
-    public BSignpostDetailedView register(BSignpostForm bSignpostForm, Briefing briefing) {
+    public void register(BSignpostForm bSignpostForm, Briefing briefing) {
         Material material = materialRepository.getReferenceById(bSignpostForm.idMaterial());
         BSignpost bSignpost = bSignpostFormMapper.map(bSignpostForm);
         bSignpost.setBriefing(briefing);
         bSignpost.setMaterial(material);
-        bSignpost = signpostRepository.save(bSignpost);
-        return bSignpostRegisterViewMapper.map(bSignpost);
+        signpostRepository.save(bSignpost);
     }
 }
