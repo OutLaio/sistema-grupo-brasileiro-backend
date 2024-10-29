@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("/api/v1/bgifts")
+@RequestMapping("/api/v1/gifts")
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Gift", description = "API for managing gifts")
 public class GiftController {
@@ -61,8 +61,7 @@ public class GiftController {
     ) {
         Project project = projectService.register(registerGiftForm.projectForm());
         Briefing briefing = briefingService.register(registerGiftForm.briefingForm(), project);
-        BGiftDetailedView giftDetailedView = giftService.register(registerGiftForm.giftForm(), briefing);
-        URI uri = uriBuilder.path("/api/v1/bgifts/{id}").buildAndExpand(giftDetailedView.bGiftView().id()).toUri();
-        return ResponseEntity.created(uri).body(giftDetailedView);
+        giftService.register(registerGiftForm.giftForm(), briefing);
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
 }

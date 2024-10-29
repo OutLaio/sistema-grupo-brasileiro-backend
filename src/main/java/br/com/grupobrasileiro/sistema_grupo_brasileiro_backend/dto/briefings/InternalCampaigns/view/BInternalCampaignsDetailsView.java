@@ -4,9 +4,8 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 
 public record BInternalCampaignsDetailsView(
-		BInternalCampaignsView bInternalCampaignsView,
-        ProjectView projectView,
-        BriefingView briefingView
+		BInternalCampaignsView bInternalCampaign,
+        ProjectView project,
+        BriefingView briefing
 ) {
-
 }

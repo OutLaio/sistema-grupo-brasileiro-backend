@@ -23,19 +23,11 @@ public class BSignpostService {
     private SignpostRepository signpostRepository;
 
     @Autowired
-    private MaterialRepository materialRepository;
-
-    @Autowired
     private BSignpostFormMapper bSignpostFormMapper;
 
-    @Autowired
-    private BSignpostDetailedViewMapper bSignpostRegisterViewMapper;
-
     public void register(BSignpostForm bSignpostForm, Briefing briefing) {
-        Material material = materialRepository.getReferenceById(bSignpostForm.idMaterial());
         BSignpost bSignpost = bSignpostFormMapper.map(bSignpostForm);
         bSignpost.setBriefing(briefing);
-        bSignpost.setMaterial(material);
         signpostRepository.save(bSignpost);
     }
 }

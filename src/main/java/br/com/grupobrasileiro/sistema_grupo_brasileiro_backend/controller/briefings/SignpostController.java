@@ -61,7 +61,7 @@ public class SignpostController {
         Project project = projectService.register(registerSignpost.project());
         Briefing briefing = briefingService.register(registerSignpost.briefing(),project);
         signpostService.register(registerSignpost.signpost(),briefing);
-        return ResponseEntity.created(URI.create("/api/v1/signposts/" + briefing.getId())).body(null);
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
     
 }

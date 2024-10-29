@@ -8,9 +8,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.In
  * @param description A descrição do tipo de papelaria.
  */
 public record StationeryTypeView(
-
         Long id,
         String description
-
 ) {
 }

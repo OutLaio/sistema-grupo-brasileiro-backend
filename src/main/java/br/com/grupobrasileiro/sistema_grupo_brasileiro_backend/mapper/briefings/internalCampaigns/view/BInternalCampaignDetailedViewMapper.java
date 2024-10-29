@@ -12,7 +12,9 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.vi
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.internalcampaign.BInternalCampaign;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
+import org.springframework.stereotype.Component;
 
+@Component
 public class BInternalCampaignDetailedViewMapper implements Mapper<BInternalCampaign, BInternalCampaignsDetailsView> {
 	
 	@Autowired

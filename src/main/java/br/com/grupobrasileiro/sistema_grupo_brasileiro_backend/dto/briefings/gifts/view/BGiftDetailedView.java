@@ -4,11 +4,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 
 public record BGiftDetailedView(
-        BGiftView bGiftView,
-        
-        ProjectView projectView,
-        
-        BriefingView briefingView
-		) {
-
-}
+	BGiftView bGift,
+	ProjectView project,
+	BriefingView briefing
+) { }
