@@ -15,6 +15,6 @@ public record BHandoutForm(
         @NotNull(message = "The handout type cannot be null")
         @JsonAlias("id_handout_type")
         Long idHandoutType
-
+        
 ) {
 }
