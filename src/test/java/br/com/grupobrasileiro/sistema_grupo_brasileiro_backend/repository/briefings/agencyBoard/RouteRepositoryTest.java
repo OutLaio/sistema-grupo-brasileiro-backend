@@ -10,41 +10,25 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Route;
-import jakarta.transaction.Transactional;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.CompanyCity;
 
 import java.util.Optional;
 
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.AgencyBoardType;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BoardType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.City;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Company;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.CompanyCity;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Route;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
-import jakarta.transaction.Transactional;
-import java.util.Optional;
+
 import java.time.LocalDate;
 
 @DataJpaTest
@@ -59,7 +43,7 @@ public class RouteRepositoryTest {
     private TestEntityManager testEntityManager;
 
     private BAgencyBoard agencyBoard;
-    private CompanyCity companyCity;
+    private RouteCity companyCity;
 
     @BeforeEach
     void setUp() {
@@ -135,7 +119,7 @@ public class RouteRepositoryTest {
         testEntityManager.persist(company);
 
         // Criar CompanyCity
-        companyCity = new CompanyCity();
+        companyCity = new RouteCity();
         companyCity.setCity(city);
         companyCity.setCompany(company);
         testEntityManager.persist(companyCity);
