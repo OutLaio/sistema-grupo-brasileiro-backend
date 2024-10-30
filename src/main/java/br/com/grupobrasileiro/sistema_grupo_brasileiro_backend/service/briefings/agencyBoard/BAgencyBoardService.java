@@ -51,60 +51,40 @@ public class BAgencyBoardService {
     @Autowired
     private BAgencyBoardDetailedViewMapper bAgencyBoardRegisterViewMapper;
 
-    public void register(BAgencyBoardsForm bAgencyBoardsForm, Briefing briefing) {
-        BAgencyBoard bAgencyBoard = bAgencyBoardFormMapper.map(bAgencyBoardsForm);
-
-        AgencyBoardType agencyBoardType = agencyBoardTypeRepository.findById(bAgencyBoardsForm.idAgencyBoardType()).orElseThrow(
-                () -> new EntityNotFoundException("Agency Board Type not found")
-        );
-        bAgencyBoard.setAgencyBoardType(agencyBoardType);
-
-        if (bAgencyBoardsForm.idBoardType() != null){
-            BoardType boardType = boardTypeRepository.findById(bAgencyBoardsForm.idAgencyBoardType()).orElseThrow(
-                    () -> new EntityNotFoundException("Board Type not found")
-            );
-            bAgencyBoard.setBoardType(boardType);
-        }
-
+    public void register(BAgencyBoardsForm form, Briefing briefing) {
+        BAgencyBoard bAgencyBoard = bAgencyBoardFormMapper.map(form);
         bAgencyBoard.setBriefing(briefing);
-        // TODO: Modularizar código para salvar rotas e outras rotas
-        // TODO: Mudar a ordem de salvar rotas e outras rotas para evitar dependências entre eles
-        Set<Route> routes = bAgencyBoardsForm.routes() != null ?
-            bAgencyBoardsForm.routes().stream()
-                .map(routesForm -> {
-                    Route route = routeFormMapper.map(routesForm);
-                    Set<RouteCity> routeCities = routesForm.idCities().stream().map(
-                            idCity -> {
-                                City city = cityRepository.findById(idCity).orElseThrow(
-                                        () -> new EntityNotFoundException("City not found with id: " + idCity)
-                                );
-                                return new RouteCity(
-                                        null,
-                                        city,
-                                        route
-                                        );
-                            }
-                    ).collect(Collectors.toSet());
-                    routeCityRepository.saveAll(routeCities);
-                    route.setBAgencyBoard(bAgencyBoard); // Associa BAgencyBoard
-                    return route;
-                })
-                .collect(Collectors.toSet()) : Set.of();
-        bAgencyBoard.setRoutes(routes);
-
-        Set<OtherRoute> otherRoutes = bAgencyBoardsForm.otherRoutes() != null ?
-                bAgencyBoardsForm.otherRoutes().stream()
-                        .map(otherRoutesForm -> {
-                            OtherRoute otherRoute = otherRouteFormMapper.map(otherRoutesForm);
-                            otherRoute.setBAgencyBoard(bAgencyBoard); // Associa BAgencyBoard
-                            return otherRoute;
-                        })
-                        .collect(Collectors.toSet()) : Set.of();
-
-        bAgencyBoard.setOtherRoutes(otherRoutes);
-
         bAgencyBoardRepository.saveAndFlush(bAgencyBoard);
-        routeRepository.saveAll(routes);
+
+        form.routes().forEach(
+            routesForm -> {
+                Route route = routeFormMapper.map(routesForm);
+                route.setBAgencyBoard(bAgencyBoard);
+                routeRepository.saveAndFlush(route);
+
+                Set<RouteCity> routeCities = routesForm.idCities().stream().map(
+                    idCity -> {
+                        City city = cityRepository.findById(idCity).orElseThrow(
+                            () -> new EntityNotFoundException("City not found with id: " + idCity)
+                        );
+                        return new RouteCity(
+                            null,
+                            city,
+                            route
+                        );
+                    }
+                ).collect(Collectors.toSet());
+                routeCityRepository.saveAll(routeCities);
+            }
+        );
+
+        Set<OtherRoute> otherRoutes = form.otherRoutes().stream().map(
+            otherRoutesForm -> {
+                OtherRoute otherRoute = otherRouteFormMapper.map(otherRoutesForm);
+                otherRoute.setBAgencyBoard(bAgencyBoard);
+                return otherRoute;
+            }
+        ).collect(Collectors.toSet());
         otherRouteRepository.saveAll(otherRoutes);
     }
 }
