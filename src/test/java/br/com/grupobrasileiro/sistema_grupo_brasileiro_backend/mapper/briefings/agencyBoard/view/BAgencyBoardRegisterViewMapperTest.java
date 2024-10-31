@@ -2,6 +2,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.*;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.AgencyBoardTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
@@ -26,9 +26,6 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.vi
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 
 public class BAgencyBoardRegisterViewMapperTest {
 
@@ -82,9 +79,9 @@ public class BAgencyBoardRegisterViewMapperTest {
 
         // Result verification
         assertThat(result).isNotNull();
-        assertThat(result.bAgencyBoard()).isEqualTo(bAgencyBoardView);
-        assertThat(result.project()).isNull();
-        assertThat(result.briefing()).isNull();
+        assertThat(result.bAgencyBoardView()).isEqualTo(bAgencyBoardView);
+        assertThat(result.projectView()).isNull();
+        assertThat(result.briefingView()).isNull();
 
         // Verify that only bAgencyBoardViewMapper was called
         verify(bAgencyBoardViewMapper, times(1)).map(any(BAgencyBoard.class));
@@ -127,9 +124,9 @@ public class BAgencyBoardRegisterViewMapperTest {
 
         // Verificação dos resultados
         assertThat(result).isNotNull();
-        assertThat(result.bAgencyBoard()).isEqualTo(bAgencyBoardView);
-        assertThat(result.project()).isNull();
-        assertThat(result.briefing()).isNull();
+        assertThat(result.bAgencyBoardView()).isEqualTo(bAgencyBoardView);
+        assertThat(result.projectView()).isNull();
+        assertThat(result.briefingView()).isNull();
 
         // Verificar que apenas o bAgencyBoardViewMapper foi chamado
         verify(bAgencyBoardViewMapper, times(1)).map(any(BAgencyBoard.class));
@@ -184,9 +181,9 @@ public class BAgencyBoardRegisterViewMapperTest {
 
         // Verificações
         assertThat(result).isNotNull();
-        assertThat(result.bAgencyBoard()).isEqualTo(bAgencyBoardView);
-        assertThat(result.project()).isEqualTo(projectView);
-        assertThat(result.briefing()).isNull();
+        assertThat(result.bAgencyBoardView()).isEqualTo(bAgencyBoardView);
+        assertThat(result.projectView()).isEqualTo(projectView);
+        assertThat(result.briefingView()).isNull();
 
         // Verificar que os mappers foram chamados corretamente
         verify(bAgencyBoardViewMapper, times(1)).map(any(BAgencyBoard.class));

@@ -31,7 +31,7 @@ public class RouteTest {
     void testParameterizedConstructor() {
         Long id = faker.number().randomNumber();
         BAgencyBoard bAgencyBoard = new BAgencyBoard(); 
-        RouteCity companyCity = new RouteCity();
+        CompanyCity companyCity = new CompanyCity(); 
         String type = faker.lorem().word();
         Route route = new Route(id, bAgencyBoard, companyCity, type);
 
@@ -52,7 +52,7 @@ public class RouteTest {
         Route route = new Route();
         Long id = faker.number().randomNumber();
         BAgencyBoard bAgencyBoard = new BAgencyBoard(); 
-        RouteCity companyCity = new RouteCity();
+        CompanyCity companyCity = new CompanyCity(); 
         String type = faker.lorem().word();
         route.setId(id);
         route.setBAgencyBoard(bAgencyBoard);
@@ -74,7 +74,7 @@ public class RouteTest {
     void testEqualsAndHashCode() {
         Long id = faker.number().randomNumber();
         BAgencyBoard bAgencyBoard = new BAgencyBoard(); 
-        RouteCity companyCity = new RouteCity();
+        CompanyCity companyCity = new CompanyCity(); 
         String type = faker.lorem().word();
         Route route1 = new Route(id, bAgencyBoard, companyCity, type);
         Route route2 = new Route(id, bAgencyBoard, companyCity, type);
@@ -92,7 +92,7 @@ public class RouteTest {
     void testToString() {
         Long id = faker.number().randomNumber();
         BAgencyBoard bAgencyBoard = new BAgencyBoard(); 
-        RouteCity companyCity = new RouteCity();
+        CompanyCity companyCity = new CompanyCity(); 
         String type = faker.lorem().word();
         Route route = new Route(id, bAgencyBoard, companyCity, type);
         String expectedToString = "Route(id=" + id + ", type=" + type + ", companyCity=" + companyCity + ")";
@@ -107,7 +107,7 @@ public class RouteTest {
     @DisplayName("Should consider Routes with the same id and null bAgencyBoard as equal")
     void testEqualsWithNullBAgencyBoard() {
         Long id = faker.number().randomNumber();
-        RouteCity companyCity = new RouteCity();
+        CompanyCity companyCity = new CompanyCity(); 
         String type = faker.lorem().word();
         Route route1 = new Route(id, null, companyCity, type);
         Route route2 = new Route(id, null, companyCity, type);

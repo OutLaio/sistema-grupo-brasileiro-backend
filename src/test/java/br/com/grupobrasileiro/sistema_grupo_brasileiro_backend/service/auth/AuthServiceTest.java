@@ -1,6 +1,5 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.auth;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -143,13 +142,13 @@ class AuthServiceTest {
         assertEquals(expectedEmployeeView.id(), resultEmployeeView.id(), "Employee ID should match");
         assertEquals(expectedEmployeeView.name(), resultEmployeeView.name(), "Employee name should match");
         assertEquals(expectedEmployeeView.lastname(), resultEmployeeView.lastname(), "Employee lastname should match");
-        assertEquals(expectedEmployeeView.phoneNumber(), resultEmployeeView.phoneNumber(), "Employee phone number should match");
+        assertEquals(expectedEmployeeView.phonenumber(), resultEmployeeView.phonenumber(), "Employee phone number should match");
         assertEquals(expectedEmployeeView.sector(), resultEmployeeView.sector(), "Employee sector should match");
         assertEquals(expectedEmployeeView.occupation(), resultEmployeeView.occupation(), "Employee occupation should match");
         assertEquals(expectedEmployeeView.agency(), resultEmployeeView.agency(), "Employee agency should match");
         assertEquals(expectedEmployeeView.avatar(), resultEmployeeView.avatar(), "Employee avatar should match");
         
-        UserView resultUserView = resultEmployeeView.user();
+        UserView resultUserView = resultEmployeeView.userView();
         assertNotNull(resultUserView, "UserView should not be null");
         assertEquals(userView.id(), resultUserView.id(), "User ID should match");
         assertEquals(userView.email(), resultUserView.email(), "User email should match");

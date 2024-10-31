@@ -14,9 +14,11 @@ import org.mockito.MockitoAnnotations;
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CityView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyCityView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.City;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Company;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.CompanyCity;
 
 /**
  * Testa a classe CompanyCityViewMapper.
@@ -57,7 +59,7 @@ public class CompanyCityViewMapperTest {
         company.setId(faker.number().randomNumber());
         company.setName(faker.company().name());
 
-        RouteCity companyCity = new RouteCity();
+        CompanyCity companyCity = new CompanyCity();
         companyCity.setId(faker.number().randomNumber());
         companyCity.setCity(city);
         companyCity.setCompany(company);
@@ -97,7 +99,7 @@ public class CompanyCityViewMapperTest {
     @Test
     @DisplayName("Should map CompanyCity with null fields to CompanyCityView with null fields")
     void mapCompanyCityWithNullFields() {
-        RouteCity companyCity = new RouteCity();
+        CompanyCity companyCity = new CompanyCity();
         companyCity.setId(faker.number().randomNumber());
         companyCity.setCity(null);
         companyCity.setCompany(null);
@@ -127,7 +129,7 @@ public class CompanyCityViewMapperTest {
         company.setId(faker.number().randomNumber());
         company.setName(faker.company().name());
 
-        RouteCity companyCity = new RouteCity();
+        CompanyCity companyCity = new CompanyCity();
         companyCity.setId(null);
         companyCity.setCity(city);
         companyCity.setCompany(company);
@@ -153,7 +155,7 @@ public class CompanyCityViewMapperTest {
     @Test
     @DisplayName("Should map CompanyCity with non-null ID and null city and company")
     void mapCompanyCityWithNonNullId() {
-        RouteCity companyCity = new RouteCity();
+        CompanyCity companyCity = new CompanyCity();
         companyCity.setId(faker.number().randomNumber());
         companyCity.setCity(null);
         companyCity.setCompany(null);
@@ -183,7 +185,7 @@ public class CompanyCityViewMapperTest {
         company.setId(faker.number().randomNumber());
         company.setName(faker.company().name());
 
-        RouteCity companyCity = new RouteCity();
+        CompanyCity companyCity = new CompanyCity();
         companyCity.setId(faker.number().randomNumber());
         companyCity.setCity(city);
         companyCity.setCompany(company);

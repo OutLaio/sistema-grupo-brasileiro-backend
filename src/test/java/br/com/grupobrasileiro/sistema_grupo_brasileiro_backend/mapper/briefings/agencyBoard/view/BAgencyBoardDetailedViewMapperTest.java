@@ -21,6 +21,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.age
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BoardTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CityView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyCityView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.OtherRouteView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.RouteView;
@@ -33,6 +34,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.vi
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.AgencyBoardType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BoardType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.CompanyCity;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.OtherRoute;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Route;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
@@ -103,9 +105,9 @@ class BAgencyBoardDetailedViewMapperTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(bAgencyBoardView, result.bAgencyBoard());
-        assertEquals(briefingView, result.briefing());
-        assertEquals(projectView, result.project());
+        assertEquals(bAgencyBoardView, result.bAgencyBoardView());
+        assertEquals(briefingView, result.briefingView());
+        assertEquals(projectView, result.projectView());
 
         verify(bAgencyBoardViewMapper).map(bAgencyBoard);
         verify(briefingViewMapper).map(briefing);
@@ -131,7 +133,7 @@ class BAgencyBoardDetailedViewMapperTest {
         boardType.setId(1L);
         bAgencyBoard.setBoardType(boardType);
 
-        RouteCity companyCity = new RouteCity();
+        CompanyCity companyCity = new CompanyCity();
         companyCity.setId(1L);
 
         Route route = new Route();
@@ -194,9 +196,9 @@ class BAgencyBoardDetailedViewMapperTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(bAgencyBoardView, result.bAgencyBoard());
-        assertEquals(briefingView, result.briefing());
-        assertEquals(projectView, result.project());
+        assertEquals(bAgencyBoardView, result.bAgencyBoardView());
+        assertEquals(briefingView, result.briefingView());
+        assertEquals(projectView, result.projectView());
 
         verify(bAgencyBoardViewMapper).map(bAgencyBoard);
         verify(briefingViewMapper).map(briefing);

@@ -8,12 +8,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BoardType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.gift.PrintingTypeRepository; // Certifique-se de que esta importação está correta
 import jakarta.transaction.Transactional;
 
 @SpringBootTest
@@ -24,6 +24,9 @@ public class BoardTypeRepositoryTest {
     @Autowired
     private BoardTypeRepository boardTypeRepository;
 
+    @Autowired
+    private PrintingTypeRepository printingTypeRepository; // Verifique se este repositório está disponível
+
     @BeforeEach
     void setUp() {
         // Este método é executado antes de cada teste
@@ -33,7 +36,7 @@ public class BoardTypeRepositoryTest {
      * Testa a criação e recuperação de um BoardType.
      */
     @Test
-    @Rollback(false) // Ajuste para true se não quiser persistir no banco de dados
+    @Rollback(false) 
     @DisplayName("Should create and retrieve a BoardType")
     void testCreateAndRetrieveBoardType() {
         // Arrange
@@ -116,7 +119,7 @@ public class BoardTypeRepositoryTest {
         List<BoardType> allBoardTypes = boardTypeRepository.findAll();
 
         // Assert
-     //   assertThat(allBoardTypes).hasSize(2); // Deve encontrar 2 BoardTypes
+        assertThat(allBoardTypes).hasSize(2); // Deve encontrar 2 BoardTypes
     }
 
     /**

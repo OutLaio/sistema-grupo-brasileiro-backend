@@ -16,6 +16,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.City;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Company;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.CompanyCity;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.gift.PrintingTypeRepository; // Importação do repositório
 import jakarta.transaction.Transactional;
 
 @SpringBootTest
@@ -31,8 +33,11 @@ public class CompanyCityRepositoryTest {
 
     @Autowired
     private CompanyRepository companyRepository; 
-    
-    private RouteCity companyCity;
+
+    @Autowired
+    private PrintingTypeRepository printingTypeRepository; 
+
+    private CompanyCity companyCity; 
 
     @BeforeEach
     void setUp() {
@@ -52,19 +57,21 @@ public class CompanyCityRepositoryTest {
         company = companyRepository.save(company); 
 
         // Criar e salvar a associação entre empresa e cidade
-        companyCity = new RouteCity();
+        companyCity = new CompanyCity(); 
         companyCity.setCompany(company); 
         companyCity.setCity(city);
         companyCityRepository.save(companyCity); 
     }
 
+
+    /**
+     * Testa a persistência e recuperação de um CompanyCity.
+     */
     @Test
     void testCompanyCityAssociation() {
         // Verificar se a associação foi criada corretamente
         assertNotNull(companyCity); // A associação não deve ser nula
-
     }
-
 
     /**
      * Testa a persistência e recuperação de um CompanyCity.
@@ -74,15 +81,16 @@ public class CompanyCityRepositoryTest {
     @DisplayName("Should save and find a CompanyCity")
     public void testSaveAndFindCompanyCity() {
         // Salva o objeto no repositório
-        RouteCity savedCompanyCity = companyCityRepository.save(companyCity);
+        CompanyCity savedCompanyCity = companyCityRepository.save(companyCity);
 
         // Recupera o objeto pelo ID
-        Optional<RouteCity> foundCompanyCity = companyCityRepository.findById(savedCompanyCity.getId());
+        Optional<CompanyCity> foundCompanyCity = companyCityRepository.findById(savedCompanyCity.getId());
 
         // Verifica se o objeto encontrado é o mesmo que o salvo
         assertThat(foundCompanyCity).isPresent();
         assertThat(foundCompanyCity.get()).isEqualTo(savedCompanyCity);
     }
+
 
     /**
      * Testa a busca de um CompanyCity inexistente pelo ID.
@@ -90,7 +98,7 @@ public class CompanyCityRepositoryTest {
     @Test
     @DisplayName("Should return empty for a non-existing CompanyCity")
     public void testFindByIdNotFound() {
-        Optional<RouteCity> foundCompanyCity = companyCityRepository.findById(999L); // ID que não existe
+        Optional<CompanyCity> foundCompanyCity = companyCityRepository.findById(999L); // ID que não existe
         assertThat(foundCompanyCity).isNotPresent(); // Deve ser vazio
     }
 
@@ -102,13 +110,13 @@ public class CompanyCityRepositoryTest {
     @DisplayName("Should delete a CompanyCity")
     public void testDeleteCompanyCity() {
         // Salva o objeto no repositório
-        RouteCity savedCompanyCity = companyCityRepository.save(companyCity);
+        CompanyCity savedCompanyCity = companyCityRepository.save(companyCity);
 
         // Exclui o objeto
         companyCityRepository.delete(savedCompanyCity);
 
         // Verifica se o objeto foi excluído
-        Optional<RouteCity> foundCompanyCity = companyCityRepository.findById(savedCompanyCity.getId());
+        Optional<CompanyCity> foundCompanyCity = companyCityRepository.findById(savedCompanyCity.getId());
         assertThat(foundCompanyCity).isNotPresent();
     }
 
@@ -120,7 +128,7 @@ public class CompanyCityRepositoryTest {
     @DisplayName("Should update a CompanyCity")
     public void testUpdateCompanyCity() {
         // Salva o objeto no repositório
-        RouteCity savedCompanyCity = companyCityRepository.save(companyCity);
+        CompanyCity savedCompanyCity = companyCityRepository.save(companyCity);
 
         // Criar e salvar uma nova cidade e empresa para a atualização
         City newCity = new City();
@@ -136,7 +144,7 @@ public class CompanyCityRepositoryTest {
         savedCompanyCity.setCompany(newCompany);
 
         // Salva a atualização
-        RouteCity updatedCompanyCity = companyCityRepository.save(savedCompanyCity);
+        CompanyCity updatedCompanyCity = companyCityRepository.save(savedCompanyCity);
 
         // Verifica se a atualização foi aplicada
         assertThat(updatedCompanyCity.getCity().getName()).isEqualTo("Ilhéus");
@@ -164,7 +172,7 @@ public class CompanyCityRepositoryTest {
         company1.setName("Empresa A");
         company1 = companyRepository.save(company1); 
 
-        RouteCity companyCity1 = new RouteCity();
+        CompanyCity companyCity1 = new CompanyCity();
         companyCity1.setCity(city1);
         companyCity1.setCompany(company1);
         companyCityRepository.save(companyCity1); 
@@ -178,13 +186,13 @@ public class CompanyCityRepositoryTest {
         company2.setName("Empresa B");
         company2 = companyRepository.save(company2); 
 
-        RouteCity companyCity2 = new RouteCity();
+        CompanyCity companyCity2 = new CompanyCity();
         companyCity2.setCity(city2);
         companyCity2.setCompany(company2);
         companyCityRepository.save(companyCity2); 
 
         // Recupera todos os CompanyCities
-        List<RouteCity> companyCities = companyCityRepository.findAll();
+        List<CompanyCity> companyCities = companyCityRepository.findAll();
 
         // Adiciona log para verificar quantos registros foram salvos
         System.out.println("Número de CompanyCities salvos: " + companyCities.size());
@@ -194,6 +202,4 @@ public class CompanyCityRepositoryTest {
         assertThat(companyCities).isNotEmpty();
         assertThat(companyCities).hasSize(2); // Verifica se o total é 2
     }
-
-
 }

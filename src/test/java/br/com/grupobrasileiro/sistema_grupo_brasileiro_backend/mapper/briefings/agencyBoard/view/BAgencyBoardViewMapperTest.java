@@ -22,12 +22,14 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.age
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BoardTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CityView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyCityView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.OtherRouteView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.RouteView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.City;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Company;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.CompanyCity;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.OtherRoute;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Route;
 
@@ -270,14 +272,14 @@ public class BAgencyBoardViewMapperTest {
         Route route1 = new Route();
         route1.setId(faker.number().randomNumber());
         route1.setType(faker.lorem().word());
-        RouteCity companyCity1 = createCompanyCity();
+        CompanyCity companyCity1 = createCompanyCity(); 
         route1.setCompanyCity(companyCity1);
         route1.setBAgencyBoard(bAgencyBoard);
 
         Route route2 = new Route();
         route2.setId(faker.number().randomNumber());
         route2.setType(faker.lorem().word());
-        RouteCity companyCity2 = createCompanyCity();
+        CompanyCity companyCity2 = createCompanyCity(); 
         route2.setCompanyCity(companyCity2);
         route2.setBAgencyBoard(bAgencyBoard);
 
@@ -356,8 +358,8 @@ public class BAgencyBoardViewMapperTest {
     /**
      * Método auxiliar para criar CompanyCity.
      */
-    private RouteCity createCompanyCity() {
-        RouteCity companyCity = new RouteCity();
+    private CompanyCity createCompanyCity() {
+        CompanyCity companyCity = new CompanyCity();
         City city = new City();
         city.setId(faker.number().randomNumber());
         city.setName(faker.lorem().word());
