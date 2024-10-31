@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,26 +29,24 @@ public class RouteCity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RouteCity routeCity)) return false;
-        if (!id.equals(routeCity.id)) return false;
-        if (!city.equals(routeCity.city)) return false;
-        return route.equals(routeCity.route);
+        if (!(o instanceof RouteCity that)) return false;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(city, that.city) &&
+                Objects.equals(route, that.route);
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + city.hashCode();
-        result = 31 * result + route.hashCode();
-        return result;
+        return Objects.hash(id, city, route);
     }
 
     @Override
     public String toString() {
         return "RouteCity{" +
                 "id=" + id +
-                ", city='" + city + '\'' +
-                ", route=" + route +
+                ", city=" + (city != null ? city.getId() : "null") +
+                ", route=" + (route != null ? route.getId() : "null") +
                 '}';
     }
+
 }

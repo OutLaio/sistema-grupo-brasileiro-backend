@@ -41,15 +41,13 @@ public class Route {
         if (o == null || getClass() != o.getClass()) return false;
         Route route = (Route) o;
         return Objects.equals(id, route.id) &&
-                Objects.equals(bAgencyBoard, route.bAgencyBoard) &&
-                Objects.equals(routeCities, route.routeCities) &&
                 Objects.equals(company, route.company) &&
                 Objects.equals(type, route.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, bAgencyBoard, routeCities, company, type);
+        return Objects.hash(id, company, type);
     }
 
     @Override
