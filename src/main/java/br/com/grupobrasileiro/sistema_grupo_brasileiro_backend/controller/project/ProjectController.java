@@ -1,12 +1,22 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.project;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ApproveForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.NewVersionForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.VersionService;
@@ -18,13 +28,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * Controlador para gerenciamento de projetos e versões.
@@ -34,6 +37,8 @@ import org.springframework.web.bind.annotation.*;
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Projects", description = "Project and Version Management")
 public class ProjectController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
 
     @Autowired
     private ProjectService projectService;
@@ -58,7 +63,11 @@ public class ProjectController {
     public ResponseEntity<?> assignCollaborator(
             @Parameter(description = "ID do projeto") @PathVariable Long id,
             @Valid @RequestBody AssignCollaboratorForm form) {
+    	logger.info("Atribuindo colaborador ao projeto com ID: {}", id);
         projectService.assignCollaborator(id, form);
+        
+        logger.debug("Colaborador atribuído com sucesso ao projeto de ID: {}", id);
+        
         return ResponseEntity.ok().build();
     }
 
@@ -80,7 +89,10 @@ public class ProjectController {
     public ResponseEntity<?> newVersion(
             @Parameter(description = "ID do projeto") @PathVariable Long id,
             @Valid @RequestBody NewVersionForm form) {
+    	logger.info("Criando nova versão para o projeto com ID: {}", id);
         versionService.create(id, form);
+        logger.debug("Nova versão criada para o projeto de ID: {}", id);
+        
         return ResponseEntity.ok().build();
     }
 
@@ -99,7 +111,10 @@ public class ProjectController {
     @Transactional
     public ResponseEntity<?> supervisorApprove(
             @Valid @RequestBody ApproveForm form) {
+    	logger.info("Supervisor aprovando versão do projeto");
         versionService.supervisorApprove(form);
+        logger.debug("Versão do projeto aprovada pelo supervisor");
+        
         return ResponseEntity.ok().build();
     }
 
@@ -118,7 +133,10 @@ public class ProjectController {
     @Transactional
     public ResponseEntity<?> clientApprove(
             @Valid @RequestBody ApproveForm form) {
+    	logger.info("Cliente aprovando versão do projeto");
         versionService.clientApprove(form);
+        logger.debug("Versão do projeto aprovada pelo cliente");
+        
         return ResponseEntity.ok().build();
     }
 
@@ -139,7 +157,10 @@ public class ProjectController {
     public ResponseEntity<?> hasProduction(
             @Parameter(description = "ID do projeto") @PathVariable Long id,
             @Parameter(description = "Indica se o projeto está em produção") @RequestParam Boolean hasConfection) {
+    	logger.info("Atualizando status de produção para o projeto com ID: {}", id);
         projectService.setHasConfection(id, hasConfection);
+        logger.debug("Status de produção atualizado para o projeto de ID: {}", id);
+        
         return ResponseEntity.ok().build();
     }
 
@@ -158,7 +179,10 @@ public class ProjectController {
     @Transactional
     public ResponseEntity<?> finish(
             @Parameter(description = "ID do projeto") @PathVariable Long id) {
+    	logger.info("Finalizando projeto com ID: {}", id);
         projectService.setFinished(id);
+        logger.debug("Projeto finalizado com sucesso, ID: {}", id);
+        
         return ResponseEntity.ok().build();
     }
 
@@ -177,19 +201,24 @@ public class ProjectController {
     @Transactional
     public ResponseEntity<?> standby(
             @Parameter(description = "ID do projeto") @PathVariable Long id) {
+    	logger.info("Colocando projeto em espera com ID: {}", id);
         projectService.setStandby(id);
+        logger.debug("Projeto colocado em espera com sucesso, ID: {}", id);
+        
         return ResponseEntity.ok().build();
     }
 
     @GetMapping
     @Transactional
     public ResponseEntity<?> getAll(Authentication authentication){
-        User user = (User) authentication.getPrincipal();
+    	User user = (User) authentication.getPrincipal();
+        logger.info("Recuperando todos os projetos para o usuário com ID: {}", user.getId());
         return ResponseEntity.ok(projectService.getAll(user.getId()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id){
+    	logger.info("Recuperando projeto com ID: {}", id);
         return projectService.getById(id);
     }
 }

@@ -2,6 +2,8 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.brief
 
 import java.net.URI;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.printeds.form.RegisterPrintedForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.printeds.view.BPrintedsDetailedView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.internalcampaign.BInternalCampaign;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.printeds.BPrinted;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.printed.PrintedService;
@@ -31,8 +33,10 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/printed")
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Printed", description = "API for managing printed")
+@Tag(name = "Printed", description = "API for managing printed materials")
 public class PrintedController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrintedController.class);
 
     @Autowired
     private ProjectService projectService;
@@ -45,11 +49,11 @@ public class PrintedController {
 
     @PostMapping
     @Transactional
-    @Operation(summary = "Register a new printed", method = "POST")
+    @Operation(summary = "Register a new printed material", method = "POST")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Printed registered successfully",
+            @ApiResponse(responseCode = "201", description = "Printed material registered successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BInternalCampaign.class))),
+                            schema = @Schema(implementation = BPrinted.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
@@ -58,12 +62,18 @@ public class PrintedController {
             @Valid @RequestBody RegisterPrintedForm registerPrintedForm,
             UriComponentsBuilder uriBuilder
     ) {
+        LOGGER.info("Iniciando o registro de um novo material impresso para o projeto: {}", registerPrintedForm.projectForm().title());
+
         Project project = projectService.register(registerPrintedForm.projectForm());
-        Briefing briefing = briefingService.register(registerPrintedForm.briefingForm(),project);
-        
+        LOGGER.info("Projeto registrado com sucesso: {}", project.getId());
+
+        Briefing briefing = briefingService.register(registerPrintedForm.briefingForm(), project);
+        LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
+
         BPrintedsDetailedView bPrintedsDetailedView = printedService.register(registerPrintedForm.printedForm(), briefing);
+        LOGGER.info("Material impresso registrado com sucesso: {}", bPrintedsDetailedView.printedView().id());
+
         URI uri = uriBuilder.path("/api/v1/printed/{id}").buildAndExpand(bPrintedsDetailedView.printedView().id()).toUri();
         return ResponseEntity.created(uri).body(bPrintedsDetailedView);
     }
-    
 }

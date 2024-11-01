@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 /**
  * Controlador REST para autenticação e registro de usuários.
  * Este controlador expõe endpoints relacionados à autenticação e operações
@@ -71,8 +70,10 @@ public class AuthController {
     })
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserDetailsForm form) {
+        LOGGER.info("Iniciando registro de novo colaborador com email: {}", form.userForm().email());
         User user = userService.create(form.userForm());
         EmployeeView employeeView = employeeService.addEmployee(form.employeeForm(), user);
+        LOGGER.info("Colaborador registrado com sucesso: {}", employeeView.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(employeeView);
     }
 

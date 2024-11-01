@@ -1,5 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,12 +30,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("/api/v1/handouts")
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Handout", description = "API for managing handouts")
 public class HandoutController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HandoutController.class);
+
     @Autowired
     private ProjectService projectService;
 
@@ -58,9 +62,17 @@ public class HandoutController {
             @Valid @RequestBody RegisterHandoutForm registerHandoutForm,
             UriComponentsBuilder uriBuilder
     ) {
+        LOGGER.info("Iniciando registro de novo handout para o projeto: {}", registerHandoutForm.projectForm().title());
+
         Project project = projectService.register(registerHandoutForm.projectForm());
+        LOGGER.info("Projeto registrado com sucesso: {}", project.getId());
+
         Briefing briefing = briefingService.register(registerHandoutForm.briefingForm(), project);
+        LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
+
         BHandoutDetailedView handoutDetailedView = bHandoutService.register(registerHandoutForm.handoutForm(), briefing);
+        LOGGER.info("Handout registrado com sucesso: {}", handoutDetailedView.bHandoutView().id());
+
         URI uri = uriBuilder.path("/api/v1/bhandouts/{id}").buildAndExpand(handoutDetailedView.bHandoutView().id()).toUri();
         return ResponseEntity.created(uri).body(handoutDetailedView);
     }
