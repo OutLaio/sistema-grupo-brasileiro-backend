@@ -62,7 +62,6 @@ public class PrintedController {
         Briefing briefing = briefingService.register(registerPrintedForm.briefingForm(),project);
         printedService.register(registerPrintedForm.printedForm(), briefing);
         return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
-
     }
     
 }

@@ -38,6 +38,7 @@ public record RegisterGiftForm(
      */
     @NotNull(message = "giftForm form cannot be null.")
     @JsonAlias({"gift-form", "gift_form", "giftForm", "gift"})
+
     GiftForm giftForm
 ) {
 

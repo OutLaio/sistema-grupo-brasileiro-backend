@@ -3,6 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.In
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
 import com.fasterxml.jackson.annotation.JsonAlias;
+
 import jakarta.validation.constraints.NotNull;
 
 public record RegisterInternalCampaignsForm(
@@ -18,3 +19,4 @@ public record RegisterInternalCampaignsForm(
         @JsonAlias({"internal-campaign", "internal_campaign", "internalCampaign"})
         BInternalCampaignsForm internalCampaignsForm
 ) { }
+

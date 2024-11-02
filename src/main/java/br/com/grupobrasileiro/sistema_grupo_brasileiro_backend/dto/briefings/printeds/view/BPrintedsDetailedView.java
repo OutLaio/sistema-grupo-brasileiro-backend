@@ -8,4 +8,5 @@ public record BPrintedsDetailedView(
         ProjectView project,
         BriefingView briefing
 ) {
+
 }

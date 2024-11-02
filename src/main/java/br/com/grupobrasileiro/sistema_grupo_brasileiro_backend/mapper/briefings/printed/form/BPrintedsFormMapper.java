@@ -23,6 +23,7 @@ public class BPrintedsFormMapper implements Mapper<PrintedForm, BPrinted> {
 		if (i == null) {
             throw new NullPointerException("PrintedForm at Mapper is null");
         }
+
         
         return new BPrinted(
                 null,

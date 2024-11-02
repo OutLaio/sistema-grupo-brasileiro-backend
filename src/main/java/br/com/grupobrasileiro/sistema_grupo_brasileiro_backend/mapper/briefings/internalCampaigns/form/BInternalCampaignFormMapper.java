@@ -36,6 +36,7 @@ public class BInternalCampaignFormMapper implements Mapper<BInternalCampaignsFor
 			),
 			null,
 			i.campaignMotto()
+
         );
 	}
 }

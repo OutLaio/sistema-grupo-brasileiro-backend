@@ -8,3 +8,4 @@ public record BGiftDetailedView(
 	ProjectView project,
 	BriefingView briefing
 ) { }
+

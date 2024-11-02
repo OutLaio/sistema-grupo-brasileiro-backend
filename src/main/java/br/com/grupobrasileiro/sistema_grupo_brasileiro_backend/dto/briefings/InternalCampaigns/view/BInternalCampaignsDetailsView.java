@@ -8,4 +8,5 @@ public record BInternalCampaignsDetailsView(
         ProjectView project,
         BriefingView briefing
 ) {
+
 }
