@@ -30,7 +30,7 @@ public class BAgencyBoardViewMapper implements Mapper<BAgencyBoard, BAgencyBoard
     @Override
     public BAgencyBoardView map(BAgencyBoard bAgencyBoard) {
         if (bAgencyBoard == null) {
-            return null;
+            throw new NullPointerException("BAgencyBoard at Mapper is null");
         }
 
         Set<RouteView> routeViews = bAgencyBoard.getRoutes() != null ?
@@ -43,7 +43,6 @@ public class BAgencyBoardViewMapper implements Mapper<BAgencyBoard, BAgencyBoard
                         .map(otherRouteViewMapper::map)
                         .collect(Collectors.toSet()) : Set.of();
 
-
         return new BAgencyBoardView(
                 bAgencyBoard.getId(),
                 agencyBoardTypeViewMapper.map(bAgencyBoard.getAgencyBoardType()),
@@ -52,7 +51,6 @@ public class BAgencyBoardViewMapper implements Mapper<BAgencyBoard, BAgencyBoard
                 otherRouteViews,
                 bAgencyBoard.getBoardLocation(),
                 bAgencyBoard.getObservations()
-
         );
     }
 }

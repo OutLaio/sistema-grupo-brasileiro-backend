@@ -97,9 +97,9 @@ class EmployeeServiceTest {
 
         // Assert
         assertNotNull(result, () -> "Expected employee view to be not null");
-        assertEquals(employeeView.userView(), result.userView(), () -> "Expected UserView to match");
-        assertEquals(employeeView.userView().id(), result.userView().id(), () -> "Expected UserView ID to match");
-        assertEquals(employeeView.userView().email(), result.userView().email(), () -> "Expected UserView email to match");
+        assertEquals(employeeView.user(), result.user(), () -> "Expected UserView to match");
+        assertEquals(employeeView.user().id(), result.user().id(), () -> "Expected UserView ID to match");
+        assertEquals(employeeView.user().email(), result.user().email(), () -> "Expected UserView email to match");
     }
 
     @Test

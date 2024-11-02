@@ -60,10 +60,8 @@ public class InternalCampaignsController {
     ) {
         Project project = projectService.register(registerInternalCampaignsForm.projectForm());
         Briefing briefing = briefingService.register(registerInternalCampaignsForm.briefingForm(),project);
-        
-        BInternalCampaignsDetailsView bInternalCampaignDetailedViewMapper = internalCampaignsService.register(registerInternalCampaignsForm.internalCampaignsForm(), briefing);
-        URI uri = uriBuilder.path("/api/v1/internal-campaigns/{id}").buildAndExpand(bInternalCampaignDetailedViewMapper.bInternalCampaignsView().id()).toUri();
-        return ResponseEntity.created(uri).body(bInternalCampaignDetailedViewMapper);
+        internalCampaignsService.register(registerInternalCampaignsForm.internalCampaignsForm(), briefing);
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
     
 }

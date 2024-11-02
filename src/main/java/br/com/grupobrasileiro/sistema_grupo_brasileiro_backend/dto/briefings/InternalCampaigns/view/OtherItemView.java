@@ -8,9 +8,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.In
  * @param description A descrição do item.
  */
 public record OtherItemView(
-
         Long id,
         String description
-
 ) {
 }

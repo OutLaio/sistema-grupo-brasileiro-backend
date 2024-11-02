@@ -14,12 +14,10 @@ import org.mockito.MockitoAnnotations;
 import com.github.javafaker.Faker;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CityView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyCityView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.RouteView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.City;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Company;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.CompanyCity;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Route;
 
 public class RouteViewMapperTest {
@@ -60,7 +58,7 @@ public class RouteViewMapperTest {
         company.setName(faker.company().name());
 
         // Criando um CompanyCity para o teste
-        CompanyCity companyCity = new CompanyCity();
+        RouteCity companyCity = new RouteCity();
         companyCity.setId(faker.number().randomNumber());
         companyCity.setCity(city);
         companyCity.setCompany(company);
@@ -143,7 +141,7 @@ public class RouteViewMapperTest {
         company.setName(faker.company().name()); 
 
         // Criando um CompanyCity para o teste
-        CompanyCity companyCity = new CompanyCity();
+        RouteCity companyCity = new RouteCity();
         companyCity.setId(faker.number().randomNumber());
         companyCity.setCity(city);
         companyCity.setCompany(company);

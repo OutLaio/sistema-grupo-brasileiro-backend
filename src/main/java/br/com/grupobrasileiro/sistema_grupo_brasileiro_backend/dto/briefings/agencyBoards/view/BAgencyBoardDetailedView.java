@@ -5,10 +5,10 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view
 
 public record BAgencyBoardDetailedView(
 
-        BAgencyBoardView bAgencyBoardView,
+        BAgencyBoardView bAgencyBoard,
 
-        ProjectView projectView,
+        ProjectView project,
 
-        BriefingView briefingView
+        BriefingView briefing
 ) {
 }

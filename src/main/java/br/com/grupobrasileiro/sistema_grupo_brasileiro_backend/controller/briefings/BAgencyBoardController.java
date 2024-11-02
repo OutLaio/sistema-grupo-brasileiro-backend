@@ -61,7 +61,7 @@ public class BAgencyBoardController {
         Project project = projectService.register(registerAgencyBoard.projectForm());
         Briefing briefing = briefingService.register(registerAgencyBoard.briefingForm(),project);
         bAgencyBoardService.register(registerAgencyBoard.bAgencyBoardsForm(),briefing);
-        return ResponseEntity.created(URI.create("/api/v1/agency-boards/" + briefing.getId())).body(null);
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
 
 }

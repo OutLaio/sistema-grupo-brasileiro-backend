@@ -3,9 +3,11 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -23,9 +25,12 @@ public class Route {
     @JoinColumn(name = "id_b_agency_board", nullable = false)
     private BAgencyBoard bAgencyBoard;
 
-    @ManyToOne
-    @JoinColumn(name = "id_company_city", nullable = false)
-    private CompanyCity companyCity;
+    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<RouteCity> routeCities = new HashSet<>();
+
+    @OneToOne
+    @JoinColumn(name = "id_company", nullable = false)
+    private Company company;
 
     @Column(name = "type", nullable = false)
     private String type;
@@ -34,30 +39,26 @@ public class Route {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Route route = (Route) o;
-
-        // Comparação baseada em 'bAgencyBoard', 'companyCity', e 'type'
-        if (!bAgencyBoard.equals(route.bAgencyBoard)) return false;
-        if (!companyCity.equals(route.companyCity)) return false;
-        return type.equals(route.type);
+        return Objects.equals(id, route.id) &&
+                Objects.equals(company, route.company) &&
+                Objects.equals(type, route.type);
     }
 
     @Override
     public int hashCode() {
-        int result = bAgencyBoard.hashCode();
-        result = 31 * result + companyCity.hashCode();
-        result = 31 * result + type.hashCode();
-        return result;
+        return Objects.hash(id, company, type);
     }
 
     @Override
     public String toString() {
         return "Route{" +
                 "id=" + id +
-                ", bAgencyBoard=" + (bAgencyBoard != null ? bAgencyBoard.getId() : "null") +
-                ", companyCity=" + (companyCity != null ? companyCity.getId() : "null") +
+                ", bAgencyBoard=" + bAgencyBoard +
+                ", routeCities=" + routeCities +
+                ", company=" + company +
                 ", type='" + type + '\'' +
                 '}';
     }
+
 }

@@ -60,8 +60,7 @@ public class HandoutController {
     ) {
         Project project = projectService.register(registerHandoutForm.projectForm());
         Briefing briefing = briefingService.register(registerHandoutForm.briefingForm(), project);
-        BHandoutDetailedView handoutDetailedView = bHandoutService.register(registerHandoutForm.handoutForm(), briefing);
-        URI uri = uriBuilder.path("/api/v1/bhandouts/{id}").buildAndExpand(handoutDetailedView.bHandoutView().id()).toUri();
-        return ResponseEntity.created(uri).body(handoutDetailedView);
+        bHandoutService.register(registerHandoutForm.handoutForm(), briefing);
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
 }

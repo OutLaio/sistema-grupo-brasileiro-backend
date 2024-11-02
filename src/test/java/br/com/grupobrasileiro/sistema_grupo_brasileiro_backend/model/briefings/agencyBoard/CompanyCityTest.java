@@ -18,7 +18,7 @@ public class CompanyCityTest {
     @Test
     @DisplayName("Should create a non-null instance with default constructor")
     void testDefaultConstructor() {
-        CompanyCity companyCity = new CompanyCity();
+        RouteCity companyCity = new RouteCity();
         assertThat(companyCity).isNotNull();
     }
 
@@ -32,7 +32,7 @@ public class CompanyCityTest {
         Long id = faker.number().randomNumber();
         City city = new City(); // Consider using a real instance or mocking it if necessary
         Company company = new Company(); // Consider using a real instance or mocking it if necessary
-        CompanyCity companyCity = new CompanyCity(id, city, company);
+        RouteCity companyCity = new RouteCity(id, city, company);
 
         assertThat(companyCity.getId()).isEqualTo(id);
         assertThat(companyCity.getCity()).isEqualTo(city);
@@ -47,7 +47,7 @@ public class CompanyCityTest {
     @Test
     @DisplayName("Should correctly set and get id, city and company")
     void testSettersAndGetters() {
-        CompanyCity companyCity = new CompanyCity();
+        RouteCity companyCity = new RouteCity();
         Long id = faker.number().randomNumber();
         City city = new City(); // Consider using a real instance or mocking it if necessary
         Company company = new Company(); // Consider using a real instance or mocking it if necessary
@@ -71,8 +71,8 @@ public class CompanyCityTest {
         Long id = faker.number().randomNumber();
         City city = new City(); // Consider using a real instance or mocking it if necessary
         Company company = new Company(); // Consider using a real instance or mocking it if necessary
-        CompanyCity companyCity1 = new CompanyCity(id, city, company);
-        CompanyCity companyCity2 = new CompanyCity(id, city, company);
+        RouteCity companyCity1 = new RouteCity(id, city, company);
+        RouteCity companyCity2 = new RouteCity(id, city, company);
 
         assertThat(companyCity1).isEqualTo(companyCity2);
         assertThat(companyCity1.hashCode()).isEqualTo(companyCity2.hashCode());
@@ -89,7 +89,7 @@ public class CompanyCityTest {
         Long id = faker.number().randomNumber();
         City city = new City(); 
         Company company = new Company(); 
-        CompanyCity companyCity = new CompanyCity(id, city, company);
+        RouteCity companyCity = new RouteCity(id, city, company);
         
         String toStringResult = companyCity.toString();
         
@@ -108,8 +108,8 @@ public class CompanyCityTest {
     void testEqualsWithNullCity() {
         Long id = faker.number().randomNumber();
         Company company = new Company(); 
-        CompanyCity companyCity1 = new CompanyCity(id, null, company);
-        CompanyCity companyCity2 = new CompanyCity(id, null, company);
+        RouteCity companyCity1 = new RouteCity(id, null, company);
+        RouteCity companyCity2 = new RouteCity(id, null, company);
 
         assertThat(companyCity1).isEqualTo(companyCity2);
     }
@@ -122,7 +122,7 @@ public class CompanyCityTest {
     @DisplayName("Should handle null city in toString method")
     void testToStringWithNullCity() {
         Long id = faker.number().randomNumber();
-        CompanyCity companyCity = new CompanyCity(id, null, null);
+        RouteCity companyCity = new RouteCity(id, null, null);
         String expectedToString = String.format("CompanyCity{id=%d, city=null, company=null}", id);
         assertThat(companyCity.toString()).isEqualTo(expectedToString);
     }

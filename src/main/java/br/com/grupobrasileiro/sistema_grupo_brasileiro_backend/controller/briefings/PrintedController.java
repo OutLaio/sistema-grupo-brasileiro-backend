@@ -60,10 +60,8 @@ public class PrintedController {
     ) {
         Project project = projectService.register(registerPrintedForm.projectForm());
         Briefing briefing = briefingService.register(registerPrintedForm.briefingForm(),project);
-        
-        BPrintedsDetailedView bPrintedsDetailedView = printedService.register(registerPrintedForm.printedForm(), briefing);
-        URI uri = uriBuilder.path("/api/v1/printed/{id}").buildAndExpand(bPrintedsDetailedView.printedView().id()).toUri();
-        return ResponseEntity.created(uri).body(bPrintedsDetailedView);
+        printedService.register(registerPrintedForm.printedForm(), briefing);
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
     
 }
