@@ -218,7 +218,15 @@ public class ProjectController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id){
-    	logger.info("Recuperando projeto com ID: {}", id);
-        return projectService.getById(id);
+    	logger.info("Buscando projeto com ID: {}", id);
+    	ResponseEntity<?> response = projectService.getById(id);
+        
+        if (response.getStatusCode().is2xxSuccessful()) {
+            logger.debug("Projeto encontrado: ID {}", id);
+        } else {
+            logger.warn("Projeto com ID {} não foi encontrado", id);
+        }
+        
+        return response;
     }
 }
