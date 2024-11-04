@@ -13,7 +13,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BoardType;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.gift.PrintingTypeRepository; // Certifique-se de que esta importação está correta
 import jakarta.transaction.Transactional;
 
 @SpringBootTest
@@ -24,9 +23,7 @@ public class BoardTypeRepositoryTest {
     @Autowired
     private BoardTypeRepository boardTypeRepository;
 
-    @Autowired
-    private PrintingTypeRepository printingTypeRepository; // Verifique se este repositório está disponível
-
+   
     @BeforeEach
     void setUp() {
         // Este método é executado antes de cada teste

@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.gifts.view;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.gifts.view.BGiftView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.printed.view.PrintingTypeViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.gifts.BGift;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

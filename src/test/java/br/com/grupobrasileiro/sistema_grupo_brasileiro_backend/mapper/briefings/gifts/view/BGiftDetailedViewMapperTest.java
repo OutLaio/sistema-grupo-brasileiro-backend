@@ -35,6 +35,7 @@ public class BGiftDetailedViewMapperTest {
         MockitoAnnotations.openMocks(this);
     }
 
+ // ... código existente ...
     @Test
     public void testMap() {
         BGift bGift = new BGift();
@@ -47,17 +48,29 @@ public class BGiftDetailedViewMapperTest {
         // Atualizando a criação de BGiftView, ProjectView e BriefingView para usar os novos registros
         BGiftView bGiftView = new BGiftView(null, null, null, null, null, null, null, null);
         ProjectView projectView = new ProjectView(null, null, null, null, null);
-        BriefingView briefingView = new BriefingView(null, null, null, null, null, null, null, null, null);
+        // Criando BriefingView com a nova estrutura
+        BriefingView briefingView = new BriefingView(
+            null, // id
+            null, // briefingType
+            null, // startTime
+            null, // expectedTime
+            null, // finishTime
+            null, // detailedDescription
+            null, // measurements
+            null, // companies
+            null, // otherCompanies
+            null  // versions
+        );
 
         when(bGiftViewMapper.map(bGift)).thenReturn(bGiftView);
         when(projectViewMapper.map(project)).thenReturn(projectView);
         when(briefingViewMapper.map(briefing)).thenReturn(briefingView);
 
+        // Mapeando BGift para BGiftDetailedView
         BGiftDetailedView result = bGiftDetailedViewMapper.map(bGift);
 
-        
-        assertEquals(bGiftView, result.bGiftView(), "O BGiftView deve ser igual ao esperado");
-        assertEquals(projectView, result.projectView(), "O ProjectView deve ser igual ao esperado");
-        assertEquals(briefingView, result.briefingView(), "O BriefingView deve ser igual ao esperado");
+        assertEquals(bGiftView, result.bGift(), "O BGiftView deve ser igual ao esperado");
+        assertEquals(projectView, result.project(), "O ProjectView deve ser igual ao esperado");
+        assertEquals(briefingView, result.briefing(), "O BriefingView deve ser igual ao esperado");
     }
 }

@@ -3,6 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.brief
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,6 +45,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.VersionView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.ProjectStatusEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
@@ -53,6 +55,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.bHandout.BHandoutService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
+
 
 @WebMvcTest(HandoutController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -79,84 +82,78 @@ public class HandoutControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private RegisterHandoutForm registerHandoutForm;
-    private Project project;
-    private Briefing briefing;
-    private BHandoutDetailedView bHandoutDetailedView;
-
     @Test
     @WithMockUser
     public void testRegisterHandout() throws Exception {
+        
+        Project project = new Project(); 
+        project.setId(1L); 
+
+        Briefing briefing = new Briefing();
+        briefing.setId(1L); 
+
         // Configuração dos mocks
         ProjectForm projectForm = new ProjectForm(1L, "Projeto Exemplo", ProjectStatusEnum.TO_DO);
         MeasurementsForm measurementsForm = new MeasurementsForm(BigDecimal.valueOf(1.75), BigDecimal.valueOf(2.0));
         Set<CompaniesBriefingsForm> companies = new HashSet<>();
-        companies.add(new CompaniesBriefingsForm(1L)); // Adicione uma empresa com um ID válido
+        companies.add(new CompaniesBriefingsForm(1L)); 
 
         BriefingForm briefingForm = new BriefingForm(
-            LocalDate.now(), // expectedDate
-            "Descrição detalhada do briefing", // detailedDescription
-            companies, // companies
-            "Outra empresa", // otherCompany
-            1L, // idBriefingType
-            measurementsForm // measurement
+            LocalDate.now(), 
+            "Descrição detalhada do briefing", 
+            companies, 
+            "Outra empresa",
+            1L, 
+            measurementsForm
         );
 
-        BHandoutForm handoutForm = new BHandoutForm(1L); // idHandoutType
+        BHandoutForm handoutForm = new BHandoutForm(1L); 
         RegisterHandoutForm registerHandoutForm = new RegisterHandoutForm(projectForm, briefingForm, handoutForm);
 
         // Inicialize as instâncias necessárias para BHandoutDetailedView
-        HandoutTypeView handoutTypeView = new HandoutTypeView(1L, "Tipo de Comunicado"); // Exemplo de HandoutTypeView
+        HandoutTypeView handoutTypeView = new HandoutTypeView(1L, "Tipo de Comunicado");
         BHandoutView bHandoutView = new BHandoutView(1L, handoutTypeView);
 
-        EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente Exemplo", null); // Exemplo de EmployeeSimpleView
-        EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador Exemplo", null); // Exemplo de EmployeeSimpleView
+        EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente Exemplo", null);
+        EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador Exemplo", null);
         ProjectView projectView = new ProjectView(1L, "Projeto Exemplo", "TO_DO", client, collaborator);
 
-        BriefingTypeView briefingTypeView = new BriefingTypeView(1L, "Tipo de Briefing"); // Exemplo de BriefingTypeView
-        MeasurementsView measurementsView = new MeasurementsView(BigDecimal.valueOf(1.75), BigDecimal.valueOf(2.0)); // Exemplo de MeasurementsView
+        BriefingTypeView briefingTypeView = new BriefingTypeView(1L, "Tipo de Briefing");
+        MeasurementsView measurementsView = new MeasurementsView(BigDecimal.valueOf(1.75), BigDecimal.valueOf(2.0));
         Set<CompanyView> companyViews = new HashSet<>();
-        companyViews.add(new CompanyView(1L, "Empresa Exemplo")); // Exemplo de CompanyView
+        companyViews.add(new CompanyView(1L, "Empresa Exemplo"));
         CompaniesBriefingsView companiesBriefingsView = new CompaniesBriefingsView(companyViews);
 
+        Set<VersionView> versions = new HashSet<>(); 
         BriefingView briefingView = new BriefingView(
-            1L, // id
-            briefingTypeView, // briefingType
-            LocalDate.now(), // startTime
-            LocalDate.now().plusDays(1), // expectedTime
-            LocalDate.now().plusDays(2), // finishTime
-            "Descrição detalhada", // detailedDescription
-            measurementsView, // measurements
-            companiesBriefingsView, // companies
-            "Outras empresas" // otherCompanies
+            1L,
+            briefingTypeView,
+            LocalDate.now(),
+            LocalDate.now().plusDays(1),
+            LocalDate.now().plusDays(2),
+            "Descrição detalhada",
+            measurementsView,
+            companiesBriefingsView,
+            "Outras empresas",
+            versions 
         );
 
         // Crie a instância de BHandoutDetailedView
         BHandoutDetailedView bHandoutDetailedView = new BHandoutDetailedView(bHandoutView, projectView, briefingView);
-
+        
         // Configuração dos mocks
         when(projectService.register(any(ProjectForm.class))).thenReturn(project);
         when(briefingService.register(any(BriefingForm.class), any(Project.class))).thenReturn(briefing);
-        when(bHandoutService.register(any(BHandoutForm.class), any(Briefing.class))).thenReturn(bHandoutDetailedView);
+        
+        // Se o método register do bHandoutService for void, use doNothing()
+        doNothing().when(bHandoutService).register(any(BHandoutForm.class), any(Briefing.class));
 
-        // Executa a requisição e imprime a resposta para depuração
+        // Executa a requisição e verifica a resposta
         mockMvc.perform(post("/api/v1/handouts")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerHandoutForm)))
-                .andDo(result -> {
-                    System.out.println(result.getResponse().getContentAsString()); // Imprime a resposta no console
-                });
-     // Executa a requisição e imprime a resposta para depuração
-        mockMvc.perform(post("/api/v1/handouts")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(registerHandoutForm)))
-                .andDo(result -> {
-                    System.out.println(result.getResponse().getContentAsString()); // Imprime a resposta no console
-                })
                 .andExpect(status().isCreated()) // Verifica se o status é 201
-                .andExpect(header().string("Location", containsString("/api/v1/bhandouts/1"))) // Verifica o cabeçalho "Location"
-                .andExpect(jsonPath("$.bHandoutView.id").value(1L)) // Verifica o ID do bHandoutView
-                .andExpect(jsonPath("$.briefingView.companies.companies[0].id").value(1L)); // Verifica o ID da primeira empresa
+                .andExpect(header().string("Location", containsString("/api/v1/projects/1"))); // Verifica o cabeçalho "Location" para o projeto
 
         // Verifica se os serviços foram chamados corretamente
         verify(projectService, times(1)).register(any(ProjectForm.class));

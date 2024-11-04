@@ -75,9 +75,8 @@ public class CompanyRepositoryTest {
 
     @Test
     void testDeleteCompany() {
-        // Arrange
-        when(companyRepository.save(any(Company.class))).thenReturn(company);
-        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(company));
+        // Arrange - mark as lenient since `when` is not strictly necessary
+        lenient().when(companyRepository.findById(anyLong())).thenReturn(Optional.of(company));
 
         // Act
         companyRepository.delete(company);
@@ -89,16 +88,18 @@ public class CompanyRepositoryTest {
     @Test
     void testUpdateCompany() {
         // Arrange
-        when(companyRepository.save(any(Company.class))).thenReturn(company);
-        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(company));
+        when(companyRepository.save(any(Company.class))).thenReturn(company); // Ensure save is stubbed
 
         // Act
         company.setName("Updated Company");
         Company updatedCompany = companyRepository.save(company);
 
         // Assert
+        assertThat(updatedCompany).isNotNull(); // Check that updatedCompany is not null
         assertThat(updatedCompany.getName()).isEqualTo("Updated Company");
     }
+
+
 
     @Test
     void testFindAllCompanies() {

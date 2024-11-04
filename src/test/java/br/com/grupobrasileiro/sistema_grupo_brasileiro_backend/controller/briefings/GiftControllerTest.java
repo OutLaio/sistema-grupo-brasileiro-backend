@@ -3,6 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.brief
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -29,7 +30,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.javafaker.Faker;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings.GiftController;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.gifts.form.GiftForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.gifts.form.RegisterGiftForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.gifts.view.BGiftDetailedView;
@@ -77,6 +77,7 @@ class GiftControllerTest {
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         this.random = new Random();
     }
+
     private RegisterGiftForm mockRegisterGiftForm() {
         ProjectForm projectForm = new ProjectForm(
             random.nextLong(),
@@ -132,7 +133,7 @@ class GiftControllerTest {
 
     @Test
     @DisplayName("You must register a new gift successfully - 201 Created")
-    void RegisterPresentSuccessfully() throws Exception {
+    void registerGiftSuccessfully() throws Exception {
         RegisterGiftForm form = mockRegisterGiftForm();
 
         Project project = new Project();
@@ -157,9 +158,11 @@ class GiftControllerTest {
 
         when(projectService.register(any())).thenReturn(project);
         when(briefingService.register(any(), any(Project.class))).thenReturn(briefing);
-        when(giftService.register(any(), any(Briefing.class))).thenReturn(bGiftDetailedView);
+        
+  
+        doNothing().when(giftService).register(any(GiftForm.class), any(Briefing.class)); 
 
-        MvcResult result = mockMvc.perform(post("/api/v1/bgifts")
+        MvcResult result = mockMvc.perform(post("/api/v1/gifts") 
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(form)))
                 .andExpect(status().isCreated())
@@ -186,7 +189,7 @@ class GiftControllerTest {
     void ReturnUnprocessableEntityForInvalidData() throws Exception {
         RegisterGiftForm form = new RegisterGiftForm(null, null, null);
 
-        MvcResult result = mockMvc.perform(post("/api/v1/bgifts")
+        MvcResult result = mockMvc.perform(post("/api/v1/gifts") 
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(form)))
                 .andExpect(status().isUnprocessableEntity())
@@ -200,7 +203,6 @@ class GiftControllerTest {
                    !responseContent.isEmpty(),
             "A resposta deve conter uma mensagem de erro de validação ou indicar entrada inválida");
     }
-    
 
     /**
      * Testa o cenário onde ocorre um erro interno no servidor durante o registro de um presente.

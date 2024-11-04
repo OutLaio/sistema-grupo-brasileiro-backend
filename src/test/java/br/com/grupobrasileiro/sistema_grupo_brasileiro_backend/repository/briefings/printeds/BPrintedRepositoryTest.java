@@ -59,12 +59,12 @@ public class BPrintedRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Criar um Briefing e um PrintedType para os testes
+       
         briefing = new Briefing();
-        briefing.setId(1L); // Simula um ID
+        briefing.setId(1L); 
 
         printedType = new PrintedType();
-        printedType.setId(1L); // Simula um ID
+        printedType.setId(1L); 
     }
 
     @Test
@@ -82,7 +82,7 @@ public class BPrintedRepositoryTest {
         BPrinted savedPrinted = bPrintedRepository.save(bPrinted);
 
         assertThat(savedPrinted).isNotNull();
-        assertThat(savedPrinted.getId()).isNull(); // ID deve ser gerado na implementação real
+        assertThat(savedPrinted.getId()).isNull(); 
         assertThat(savedPrinted.getPaperType()).isEqualTo(bPrinted.getPaperType());
     }
 
@@ -117,7 +117,6 @@ public class BPrintedRepositoryTest {
         bPrinted.setPrintedType(printedType);
 
         when(bPrintedRepository.save(bPrinted)).thenReturn(bPrinted);
-        when(bPrintedRepository.findById(1L)).thenReturn(Optional.of(bPrinted));
 
         bPrintedRepository.save(bPrinted);
         bPrinted.setPaperType("Papel A3");

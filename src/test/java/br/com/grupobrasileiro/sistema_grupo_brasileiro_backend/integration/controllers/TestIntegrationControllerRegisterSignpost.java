@@ -32,46 +32,57 @@ import java.util.HashSet;
 
 import org.thymeleaf.TemplateEngine;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
 import static io.restassured.RestAssured.given;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootApplication(exclude = {ThymeleafAutoConfiguration.class})
 @ActiveProfiles("test-integration")
 @TestPropertySource(locations = "classpath:application-test-integration.properties")
-
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TestIntegrationControllerRegisterSignpost extends AbstractIntegrationTest {
 
-    private static RequestSpecification specificationRegisterSignpost;
-    private static ObjectMapper objectMapper;
+    private RequestSpecification specificationRegisterSignpost;
+    private ObjectMapper objectMapper;
     private static final Faker faker = new Faker();
     
     @MockBean
     private TemplateEngine templateEngine;
+    
+    @LocalServerPort
+    private int port;
 
-    @BeforeAll
-    static void setup() {
+    @BeforeEach
+    void setup() {
         objectMapper = new ObjectMapper();
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
+        // Use the injected port
         specificationRegisterSignpost = new RequestSpecBuilder()
                 .setBasePath("/api/v1/signposts")
-                .setPort(TestConfig.SERVE_PORT)
+                .setPort(port) // Use the injected port
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                 .build();
     }
-
     //TODO: PRIMEIRO O USUARIO DEVE LOGAR COMO ADMIN, O QUE AINDA NÃO TEM A CONTA DO SUPERVISOR
 
     @Test
     @DisplayName("Test register signpost")
     @Order(2)
     void registerSignpost() {
+        try {
+            Thread.sleep(2000); // Considere remover ou substituir por uma espera mais adequada.
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); 
+        }
+        
         ProjectForm projectForm = new ProjectForm(
-                1L,
+                1L, // Verifique se esse ID existe
                 faker.company().name(),
                 null
         );
@@ -84,44 +95,51 @@ public class TestIntegrationControllerRegisterSignpost extends AbstractIntegrati
         BriefingForm briefingForm = new BriefingForm(
                 LocalDate.now(), 
                 faker.lorem().sentence(),
-                new HashSet<CompaniesBriefingsForm>(),
+                new HashSet<>(),
                 null,
-                1L, 
+                1L, // Verifique se esse ID existe
                 measurementsForm
         );
 
-
         BSignpostForm signpostForm = new BSignpostForm(
-                1L,
+                1L, // Verifique se esse ID existe
                 faker.address().fullAddress(),
                 "Sector A"
         );
 
         RegisterSignpostForm registerSignpostForm = new RegisterSignpostForm(projectForm, briefingForm, signpostForm);
 
-
-        Response response = given().spec(specificationRegisterSignpost)
+        Response response = given()
+                .spec(specificationRegisterSignpost)
                 .contentType(TestConfig.CONTENT_TYPE_JSON)
                 .body(registerSignpostForm)
                 .when()
                 .post()
                 .then()
-                .log().all()  // Isso irá logar todos os detalhes da resposta
+                .log().all()  
                 .extract()
                 .response();
 
         int statusCode = response.getStatusCode();
         System.out.println("Status Code: " + statusCode);
 
-        if (statusCode == 201) {
-            BSignpostDetailedView signpostResponse = response.as(BSignpostDetailedView.class);
-            assertNotNull(signpostResponse);
-            assertEquals(signpostForm.boardLocation(), signpostResponse.bSignpostView().boardLocation());
-        } else if (statusCode == 403) {
-            System.out.println("Acesso negado. Verifique as permissões do usuário.");
-        } else {
-            System.out.println("Resposta inesperada. Corpo da resposta: " + response.getBody().asString());
+        switch (statusCode) {
+            case 201:
+                assertNotNull(response.getBody());
+                
+                BSignpostDetailedView signpostResponse = response.getBody().as(BSignpostDetailedView.class);
+                
+                assertNotNull(signpostResponse);
+                assertEquals(signpostForm.boardLocation(), signpostResponse.signpost().boardLocation());
+                break;
+
+            case 403:
+                System.out.println("Acesso negado. Verifique as permissões do usuário.");
+                break;
+
+            default:
+                System.out.println("Resposta inesperada. Corpo da resposta: " + response.getBody().asString());
+                fail("Resposta inesperada: " + statusCode);
         }
     }
-
 }

@@ -19,10 +19,15 @@ import org.mockito.MockitoAnnotations;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.dialogbox.form.DialogBoxForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.dialogbox.view.DialogBoxView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.dialogbox.form.DialogBoxFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.dialogbox.view.DialogBoxViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.DialogBox;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.DialogBoxRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 
 public class DialogBoxServiceTest {
 
@@ -31,6 +36,12 @@ public class DialogBoxServiceTest {
 
     @Mock
     private DialogBoxRepository dialogBoxRepository;
+
+    @Mock
+    private BriefingRepository briefingRepository;
+
+    @Mock
+    private EmployeeRepository employeeRepository;
 
     @Mock
     private DialogBoxFormMapper dialogBoxFormMapper;
@@ -45,51 +56,84 @@ public class DialogBoxServiceTest {
 
     @Test
     public void testCreateMessage() {
-        // Criando um objeto DialogBoxForm para testar
-        DialogBoxForm dialogBoxForm = new DialogBoxForm(1L, 1L, "Esta é uma mensagem de teste.");
-        
-        // Criando um objeto DialogBox simulado
-        DialogBox dialogBox = new DialogBox(/* parâmetros necessários */);
-        
-        // Criando um objeto DialogBoxView simulado
-        DialogBoxView dialogBoxView = new DialogBoxView(1L, "Nome do Funcionário", "Título do Briefing", LocalDateTime.now(), "Esta é uma mensagem de teste.");
+        // Dados de teste
+        Long briefingId = 1L;
+        Long employeeId = 1L;
+        Long avatarId = 123L; // ID fictício para o avatar
+        String message = "Esta é uma mensagem de teste.";
 
-        // Configurando o comportamento dos mocks
+        // Instâncias de Employee e Briefing necessárias para DialogBox
+        Employee employee = new Employee();
+        employee.setId(employeeId);
+        
+        Briefing briefing = new Briefing();
+        briefing.setId(briefingId);
+        
+        // Criação do DialogBoxForm
+        DialogBoxForm dialogBoxForm = new DialogBoxForm(employeeId, briefingId, message);
+        
+        // Criação do DialogBox
+        DialogBox dialogBox = new DialogBox(1L, employee, briefing, LocalDateTime.now(), message);
+        
+        // Criação de EmployeeSimpleView para o DialogBoxView
+        EmployeeSimpleView employeeSimpleView = new EmployeeSimpleView(employeeId, "Nome do Funcionário", avatarId);
+
+        // Criação do DialogBoxView simulado
+        DialogBoxView dialogBoxView = new DialogBoxView(1L, employeeSimpleView, LocalDateTime.now(), message);
+
+        // Configuração dos mocks
         when(dialogBoxFormMapper.map(dialogBoxForm)).thenReturn(dialogBox);
         when(dialogBoxRepository.save(dialogBox)).thenReturn(dialogBox);
         when(dialogBoxViewMapper.map(dialogBox)).thenReturn(dialogBoxView);
 
-        // Chamando o método a ser testado
+        // Execução do método a ser testado
         DialogBoxView result = dialogBoxService.createMessage(dialogBoxForm);
 
-        // Verificando se o resultado não é nulo
+        // Verificações
         assertNotNull(result, "O resultado não deve ser nulo");
-        
-        // Verificando se o método save foi chamado
+        assertEquals(dialogBoxView.dialog(), result.dialog(), "A mensagem retornada deve ser igual à esperada");
+
+        // Verificação das chamadas dos mocks
+        verify(dialogBoxFormMapper).map(dialogBoxForm);
         verify(dialogBoxRepository).save(dialogBox);
+        verify(dialogBoxViewMapper).map(dialogBox);
     }
 
     @Test
     public void testGetMessagesByBriefingId() {
         Long briefingId = 1L;
 
-        // Criando um conjunto de DialogBox simulados
+        // Criação de instâncias de Employee e Briefing
+        Employee employee = new Employee();
+        employee.setId(1L);
+
+        Briefing briefing = new Briefing();
+        briefing.setId(briefingId);
+
+        // Criação do DialogBox e conjunto de DialogBoxes
+        DialogBox dialogBox = new DialogBox(1L, employee, briefing, LocalDateTime.now(), "Mensagem de teste");
         Set<DialogBox> dialogBoxes = new HashSet<>();
-        dialogBoxes.add(new DialogBox(/* parâmetros necessários */));
+        dialogBoxes.add(dialogBox);
 
-        // Criando um objeto DialogBoxView simulado
-        DialogBoxView dialogBoxView = new DialogBoxView(1L, "Nome do Funcionário", "Título do Briefing", LocalDateTime.now(), "Esta é uma mensagem de teste.");
+        // Criação de EmployeeSimpleView para o DialogBoxView
+        EmployeeSimpleView employeeSimpleView = new EmployeeSimpleView(1L, "Nome do Funcionário", 123L);
 
-        // Configurando o comportamento dos mocks
+        // Criação do DialogBoxView simulado
+        DialogBoxView dialogBoxView = new DialogBoxView(1L, employeeSimpleView, LocalDateTime.now(), "Mensagem de teste");
+
+        // Configuração dos mocks
         when(dialogBoxRepository.findByBriefingId(briefingId)).thenReturn(dialogBoxes);
         when(dialogBoxViewMapper.map(any(DialogBox.class))).thenReturn(dialogBoxView);
 
-        // Chamando o método a ser testado
+        // Execução do método a ser testado
         Set<DialogBoxView> result = dialogBoxService.getMessagesByBriefingId(briefingId);
 
-        // Verificando se o resultado não é nulo e contém os elementos esperados
+        // Verificações do resultado
         assertNotNull(result, "O resultado não deve ser nulo");
         assertFalse(result.isEmpty(), "O resultado deve conter mensagens");
         assertEquals(1, result.size(), "O resultado deve conter uma mensagem mapeada");
+
+        // Verificação da consulta no repositório
+        verify(dialogBoxRepository).findByBriefingId(briefingId);
     }
 }

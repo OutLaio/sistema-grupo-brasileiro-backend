@@ -2,6 +2,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.dialo
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.dialogbox.form.DialogBoxForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.dialogbox.view.DialogBoxView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,11 +44,17 @@ public class DialogBoxControllerTest {
         // Criação do DialogBoxForm
         DialogBoxForm dialogBoxForm = new DialogBoxForm(idEmployee, idBriefing, message);
 
+        // Criação do EmployeeSimpleView
+        EmployeeSimpleView employeeSimpleView = new EmployeeSimpleView(
+                idEmployee, // ID do funcionário
+                faker.name().fullName(), // Nome do funcionário
+                faker.number().randomNumber() // Outro campo, se necessário
+        );
+
         // Criação do DialogBoxView
         DialogBoxView dialogBoxView = new DialogBoxView(
                 faker.number().randomNumber(), // id
-                faker.name().fullName(),       // employeeName
-                faker.lorem().sentence(),       // briefingTitle
+                employeeSimpleView,             // employee
                 LocalDateTime.now(),            // time
                 message                          // dialog
         );

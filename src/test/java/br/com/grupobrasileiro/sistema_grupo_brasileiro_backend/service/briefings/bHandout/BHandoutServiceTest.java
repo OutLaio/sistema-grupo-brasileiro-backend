@@ -1,6 +1,10 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.bHandout;
+
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +16,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.han
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.handout.view.BHandoutDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.handout.view.BHandoutView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.handout.view.HandoutTypeView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.handout.form.BHandoutFormMapper;
@@ -19,6 +24,9 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.handouts.BHandout;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.handouts.HandoutType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.handout.BHandoutRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.handout.HandoutTypeRepository;
 
@@ -39,9 +47,6 @@ public class BHandoutServiceTest {
     @Mock
     private BHandoutDetailedViewMapper bHandoutDetailedViewMapper;
 
-    @Mock
-    private Briefing briefing;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -58,13 +63,55 @@ public class BHandoutServiceTest {
         // Criando um objeto BHandout simulado
         BHandout bHandout = new BHandout();
         
-        // Criando objetos simulados para BHandoutView, ProjectView e BriefingView
+        // Criando objetos simulados para BHandoutView e ProjectView
         BHandoutView bHandoutView = new BHandoutView(1L, new HandoutTypeView(1L, "Tipo A"));
         ProjectView projectView = new ProjectView(1L, "Projeto A", "Em andamento", null, null);
-        BriefingView briefingView = new BriefingView(1L, null, null, null, null, null, null, null, null);
         
+        // Criando um objeto Employee simulado para o colaborador e cliente
+        Employee collaborator = new Employee(); // Ajuste conforme a estrutura da classe Employee
+        collaborator.setId(1L);
+        collaborator.setName("Colaborador A"); // Supondo que exista um método setName
+
+        Employee client = new Employee(); // Ajuste conforme a estrutura da classe Employee
+        client.setId(2L);
+        client.setName("Cliente A"); // Supondo que exista um método setName
+
+        // Criando um objeto Project simulado
+        Project project = new Project();
+        project.setId(1L);
+        project.setCollaborator(collaborator);
+        project.setClient(client);
+        project.setTitle("Projeto A");
+        project.setStatus("Em andamento");
+        project.setDisabled(false);
+
+        // Criando um objeto BriefingType simulado
+        BriefingType briefingType = new BriefingType(1L, "Tipo de Briefing"); // Usando o construtor definido
+
+        // Criando um objeto Briefing simulado e usando métodos set
+        Briefing briefing = new Briefing(); // Usando o construtor padrão
+        briefing.setId(1L);
+        briefing.setProject(project);
+        briefing.setBriefingType(briefingType);
+        briefing.setStartTime(LocalDate.now());
+        briefing.setExpectedTime(LocalDate.now().plusDays(7));
+        briefing.setFinishTime(null); // ou uma data válida, se necessário
+        briefing.setDetailedDescription("Descrição detalhada do briefing");
+        briefing.setOtherCompany("Outra empresa");
+
         // Criando um objeto BHandoutDetailedView com os objetos simulados
-        BHandoutDetailedView bHandoutDetailedView = new BHandoutDetailedView(bHandoutView, projectView, briefingView);
+        BHandoutDetailedView bHandoutDetailedView = new BHandoutDetailedView(bHandoutView, projectView, new BriefingView(
+            1L, // id
+            new BriefingTypeView(1L, "Tipo de Briefing"), // briefingType
+            LocalDate.now(), // startTime
+            LocalDate.now().plusDays(7), // expectedTime
+            null, // finishTime
+            "Descrição detalhada do briefing", // detailedDescription
+            null, // measurements
+            null, // companies
+            "Outra empresa", // otherCompanies
+            null // versions
+        ));
 
         // Configurando o comportamento dos mocks
         when(handoutTypeRepository.getReferenceById(1L)).thenReturn(handoutType);
@@ -73,16 +120,13 @@ public class BHandoutServiceTest {
         when(bHandoutDetailedViewMapper.map(bHandout)).thenReturn(bHandoutDetailedView);
 
         // Chamando o método a ser testado
-        BHandoutDetailedView result = bHandoutService.register(bHandoutForm, briefing);
+        bHandoutService.register(bHandoutForm, briefing); // Mantido para usar briefing
 
-        // Verificando se o resultado não é nulo
-        assertNotNull(result, "O resultado não deve ser nulo");
-        
         // Verificando se o método save foi chamado
         verify(bHandoutRepository).save(bHandout);
         
         // Verificando se o handoutType e briefing foram configurados corretamente
         assertEquals(handoutType, bHandout.getHandoutType(), "O tipo de handout deve ser o esperado");
-        assertEquals(briefing, bHandout.getBriefing(), "O briefing deve ser o esperado");
+        assertEquals(briefing, bHandout.getBriefing(), "O briefing deve ser o esperado"); // Mantido para usar briefing
     }
 }

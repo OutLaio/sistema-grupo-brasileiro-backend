@@ -1,14 +1,18 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.util.HashSet;
-
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.form.BAgencyBoardsForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.form.RegisterAgencyBoard;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.agencyBoard.BAgencyBoardService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,24 +20,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.github.javafaker.Faker;
+import java.net.URI;
+import java.util.HashSet;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings.BAgencyBoardController;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.form.BAgencyBoardsForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.form.RegisterAgencyBoard;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingTypeView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.agencyBoard.BAgencyBoardService;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
 
 class BAgencyBoardControllerTest {
 
@@ -57,62 +50,38 @@ class BAgencyBoardControllerTest {
         faker = new Faker();
     }
 
-    @SuppressWarnings("deprecation")
-	@Test
-    @DisplayName("Should register a new agency board successfully")
-    void registerAgencyBoardSuccessfully() {
-        // Arrange
+    @Test
+    void registerSignpostSuccessfully() {
+        // Teste para registrar um novo sinalizador com dados válidos
         RegisterAgencyBoard registerAgencyBoard = new RegisterAgencyBoard(
-            new ProjectForm(faker.number().randomNumber(), faker.company().name(), null), // idClient, title, status
+            new ProjectForm(faker.number().randomNumber(), faker.company().name(), null), 
             new BriefingForm(
-                LocalDate.now().plusDays(10),           
-                faker.lorem().sentence(),                
-                new HashSet<>(),                        
-                null,                                    
-                1L,                                      
-                null                                     
+                faker.date().future(10, java.util.concurrent.TimeUnit.DAYS).toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate(),
+                faker.lorem().sentence(),
+                new HashSet<>(),
+                null,
+                1L,
+                null
             ),
             new BAgencyBoardsForm(null, null, faker.lorem().sentence(), faker.lorem().sentence(), null, null)
-        	    );
+        );
 
-        	    Project mockProject = new Project(); 
-        	    Briefing mockBriefing = new Briefing(); 
-        	    
-        	    // Criar um mock para BriefingType
-        	    BriefingType mockBriefingType = new BriefingType();
-        	    mockBriefingType.setId(1L);
-        	    mockBriefingType.setDescription("Tipo de Briefing Mockado");
-        	    
-        	    // Configurar o mockBriefing com o mockBriefingType
-        	    mockBriefing.setBriefingType(mockBriefingType);
-        	    
-        	    BAgencyBoardDetailedView mockView = new BAgencyBoardDetailedView(
-        	        new BAgencyBoardView(1L, null, null, null, null, faker.address().fullAddress(), faker.lorem().sentence()),
-        	        new ProjectView(mockProject.getId(), mockProject.getTitle(), mockProject.getStatus(), null, null),
-        	        new BriefingView(
-        	            mockBriefing.getId(),
-        	            new BriefingTypeView(mockBriefing.getBriefingType().getId(), mockBriefing.getBriefingType().getDescription()),
-        	            mockBriefing.getStartTime(),
-        	            mockBriefing.getExpectedTime(),
-        	            mockBriefing.getFinishTime(),
-        	            mockBriefing.getDetailedDescription(),
-        	            null, // MeasurementsView
-        	            null, // CompaniesBriefingsView
-        	            mockBriefing.getOtherCompany()
-        	        )
-        	    );
+        Project mockProject = new Project();
+        mockProject.setId(faker.number().randomNumber());
 
-        	    when(projectService.register(any())).thenReturn(mockProject);
-        	    when(briefingService.register(any(), any())).thenReturn(mockBriefing);
-        	    when(bAgencyBoardService.register(any(), any())).thenReturn(mockView);
+        Briefing mockBriefing = new Briefing();
 
-        	    UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
+        when(projectService.register(any())).thenReturn(mockProject);
+        when(briefingService.register(any(), any())).thenReturn(mockBriefing);
+        doNothing().when(bAgencyBoardService).register(any(), any()); // Usando doNothing para métodos void
 
-        	    // Act
-        	    ResponseEntity<BAgencyBoardDetailedView> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
 
-        	    // Assert
-        	    assertEquals(201, response.getStatusCodeValue());
-        	    assertEquals(mockView, response.getBody());
+        // Act
+        ResponseEntity<BAgencyBoardDetailedView> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
+
+        // Assert
+        assertEquals(201, response.getStatusCodeValue());
+        assertEquals(URI.create("/api/v1/projects/" + mockProject.getId()), response.getHeaders().getLocation());
     }
 }

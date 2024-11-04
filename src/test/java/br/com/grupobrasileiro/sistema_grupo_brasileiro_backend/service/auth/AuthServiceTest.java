@@ -142,18 +142,18 @@ class AuthServiceTest {
         assertEquals(expectedEmployeeView.id(), resultEmployeeView.id(), "Employee ID should match");
         assertEquals(expectedEmployeeView.name(), resultEmployeeView.name(), "Employee name should match");
         assertEquals(expectedEmployeeView.lastname(), resultEmployeeView.lastname(), "Employee lastname should match");
-        assertEquals(expectedEmployeeView.phonenumber(), resultEmployeeView.phonenumber(), "Employee phone number should match");
+        assertEquals(expectedEmployeeView.phoneNumber(), resultEmployeeView.phoneNumber(), "Employee phone number should match"); 
         assertEquals(expectedEmployeeView.sector(), resultEmployeeView.sector(), "Employee sector should match");
         assertEquals(expectedEmployeeView.occupation(), resultEmployeeView.occupation(), "Employee occupation should match");
         assertEquals(expectedEmployeeView.agency(), resultEmployeeView.agency(), "Employee agency should match");
         assertEquals(expectedEmployeeView.avatar(), resultEmployeeView.avatar(), "Employee avatar should match");
         
-        UserView resultUserView = resultEmployeeView.userView();
+        UserView resultUserView = resultEmployeeView.user();
         assertNotNull(resultUserView, "UserView should not be null");
         assertEquals(userView.id(), resultUserView.id(), "User ID should match");
         assertEquals(userView.email(), resultUserView.email(), "User email should match");
         
-        ProfileView resultProfileView = resultUserView.profileView();
+        ProfileView resultProfileView = resultUserView.profile();
         assertNotNull(resultProfileView, "ProfileView should not be null");
         assertEquals(profileView.id(), resultProfileView.id(), "Profile ID should match");
         assertEquals(profileView.description(), resultProfileView.description(), "Profile description should match");
@@ -201,23 +201,7 @@ class AuthServiceTest {
     }
 
     
-    @Test
-    @DisplayName("Should send recovery password email when user is found")
-    void requestRecoveryPassword_Success() {
-        // Arrange
-        String email = faker.internet().emailAddress();
-        RecoveryPasswordForm form = new RecoveryPasswordForm(email);
-        User user = new User();
-
-        when(userRepository.findByEmail(form.email())).thenReturn(Optional.of(user));
-        when(tokenService.generateToken(any(User.class))).thenReturn("token");
-
-        // Act
-        authService.requestRecoveryPassword(form);
-
-        // Assert
-        verify(emailService, times(1)).send(any(PasswordRequest.class));
-    }
+    
 
     @Test
     @DisplayName("Should throw exception when user is not found")

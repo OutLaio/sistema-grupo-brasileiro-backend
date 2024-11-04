@@ -52,7 +52,7 @@ public class OtherRouteViewMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo(otherRoute.getId());
         assertThat(result.company()).isEqualTo(otherRoute.getCompany());
-        assertThat(result.cityView()).isEqualTo(otherRoute.getCity());
+        assertThat(result.city()).isEqualTo(otherRoute.getCity()); // Ajustado aqui
         assertThat(result.type()).isEqualTo(otherRoute.getType());
     }
 
@@ -88,7 +88,7 @@ public class OtherRouteViewMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.id()).isNull();
         assertThat(result.company()).isNull();
-        assertThat(result.cityView()).isNull();
+        assertThat(result.city()).isNull(); // Ajustado aqui
         assertThat(result.type()).isNull();
     }
 
@@ -112,7 +112,7 @@ public class OtherRouteViewMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.id()).isNull();
         assertThat(result.company()).isEqualTo(otherRoute.getCompany());
-        assertThat(result.cityView()).isEqualTo(otherRoute.getCity());
+        assertThat(result.city()).isEqualTo(otherRoute.getCity()); // Ajustado aqui
         assertThat(result.type()).isEqualTo(otherRoute.getType());
     }
 
@@ -136,7 +136,7 @@ public class OtherRouteViewMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo(otherRoute.getId());
         assertThat(result.company()).isNull();
-        assertThat(result.cityView()).isNull();
+        assertThat(result.city()).isNull(); // Ajustado aqui
         assertThat(result.type()).isNull();
     }
 
@@ -159,8 +159,8 @@ public class OtherRouteViewMapperTest {
         // Verificação dos resultados
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo(otherRoute.getId());
-        assertThat(result.company()).isEqualTo(""); // Verifica se o nome vazio é mapeado corretamente
-        assertThat(result.cityView()).isEqualTo(otherRoute.getCity());
+        assertThat(result.company()).isEqualTo(""); 
+        assertThat(result.city()).isEqualTo(otherRoute.getCity()); 
         assertThat(result.type()).isEqualTo(otherRoute.getType());
     }
 }
