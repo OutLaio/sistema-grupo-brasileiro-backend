@@ -15,12 +15,13 @@ import org.springframework.http.HttpHeaders;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.upload.UploadFileView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.upload.FileStorageService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.tuple.Pair;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,7 +32,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @RequestMapping("/api/v1/file")
 public class FileController {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileController.class);
 
     @Autowired
     private FileStorageService fileStorageService;
@@ -80,26 +80,14 @@ public class FileController {
         @ApiResponse(responseCode = "500", description = "Erro ao baixar arquivo")
     })
     @GetMapping("/downloadFile/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@Parameter(description = "Nome do arquivo a ser baixado", required = true)
-                                                 @PathVariable String fileName, HttpServletRequest request) {
-        Resource resource = fileStorageService.loadFileAsResource(fileName);
-
-        String contentType = null;
-
-        try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (Exception e) {
-            logger.info("Não foi possível determinar o tipo de arquivo!");
-        }
-
-        if (contentType == null) {
-            logger.info("Não foi possível determinar o tipo de arquivo!");
-            contentType = "application/octet-stream";
-        }
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
+        Pair<ByteArrayResource, String> fileData = fileStorageService.loadFileAsResource(fileName);
+        ByteArrayResource resource = fileData.getLeft();
+        String fileName_ = fileData.getRight();
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.parseMediaType(fileName_))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                 .body(resource);
     }
 }

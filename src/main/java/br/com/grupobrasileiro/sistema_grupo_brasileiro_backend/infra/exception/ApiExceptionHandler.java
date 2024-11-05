@@ -249,4 +249,15 @@ public class ApiExceptionHandler {
                         "File not found: " + ex.getMessage()));
     }
 
+    @ExceptionHandler(SShClientException.class)
+    public ResponseEntity<ErrorMessage> handleSShClientException(SShClientException ex,
+        HttpServletRequest request) {
+                log.error("Api Error - " + ex.getMessage(), ex);
+                return ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(new ErrorMessage(request, HttpStatus.INTERNAL_SERVER_ERROR,
+                                        "Internal server error: " + ex.getMessage()));
+            }
+
 }
