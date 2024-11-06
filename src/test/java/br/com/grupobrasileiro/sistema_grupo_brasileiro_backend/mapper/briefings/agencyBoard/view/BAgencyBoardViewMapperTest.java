@@ -2,99 +2,142 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.DisplayName;
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.github.javafaker.Faker;
-
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.AgencyBoardTypeView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BoardTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CityView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.City;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Company;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.OtherRouteView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.RouteView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.AgencyBoardType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BoardType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.OtherRoute;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Route;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.RouteCity;
 
-public class BAgencyBoardViewMapperTest {
-    private final Faker faker = new Faker();
+@ExtendWith(MockitoExtension.class)
+class BAgencyBoardViewMapperTest {
 
-    // Método auxiliar para criar um City
-    private City createCity() {
-        City city = new City();
-        city.setId(faker.number().randomNumber());
-        city.setName(faker.address().city());
-        return city;
+    @InjectMocks
+    private BAgencyBoardViewMapper bAgencyBoardViewMapper;
+
+    @Mock
+    private BoardTypeViewMapper boardTypeViewMapper;
+
+    @Mock
+    private AgencyBoardTypeViewMapper agencyBoardTypeViewMapper;
+
+    @Mock
+    private RouteViewMapper routeViewMapper;
+
+    @Mock
+    private OtherRouteViewMapper otherRouteViewMapper;
+
+    private BAgencyBoard bAgencyBoard;
+
+    @BeforeEach
+    void setup() {
+        // Inicializa um objeto BAgencyBoard com dados de teste
+        bAgencyBoard = new BAgencyBoard();
+        bAgencyBoard.setId(1L);
+        bAgencyBoard.setAgencyBoardType(mock(AgencyBoardType.class));
+        bAgencyBoard.setBoardType(mock(BoardType.class));
+        bAgencyBoard.setRoutes(Set.of(mock(Route.class)));
+        bAgencyBoard.setOtherRoutes(Set.of(mock(OtherRoute.class)));
+        bAgencyBoard.setBoardLocation("Localização de teste");
+        bAgencyBoard.setObservations("Observação de teste");
     }
 
-    // Método auxiliar para criar um Company
-    private Company createCompany() {
-        Company company = new Company();
-        company.setId(faker.number().randomNumber());
-        company.setName(faker.company().name());
-        return company;
-    }
-
-    // Método auxiliar para criar uma Route
-    private Route createRoute() {
-        Route route = new Route();
-        route.setId(faker.number().randomNumber());
-        route.setCompany(createCompany()); // Associando uma empresa
-        route.setType(faker.commerce().department());
-        return route;
-    }
-
-    // Método auxiliar para criar uma RouteCity
-    private RouteCity createRouteCity(Route route, City city) {
-        RouteCity routeCity = new RouteCity();
-        routeCity.setId(faker.number().randomNumber());
-        routeCity.setRoute(route);
-        routeCity.setCity(city);
-        return routeCity;
-    }
-
-    // Teste de mapeamento de Company para CompanyView
     @Test
-    @DisplayName("Should map Company to CompanyView correctly")
-    void mapCompanyToView() {
-        // Arrange
-        Company company = createCompany();
+    void shouldMapBAgencyBoardToBAgencyBoardViewSuccessfully() {
+        // Configura retornos simulados para os mapeadores
+        AgencyBoardTypeView agencyBoardTypeView = new AgencyBoardTypeView(1L, "Descrição tipo agência");
+        BoardTypeView boardTypeView = new BoardTypeView(1L, "Descrição tipo placa");
 
-        // Act
-        CompanyView companyView = new CompanyView(company.getId(), company.getName());
+        // Simula dados para RouteView e seus campos aninhados
+        CompanyView companyView = new CompanyView(1L, "Empresa Teste");
+        CityView cityView = new CityView(1L, "Cidade Teste");
+        RouteView routeView = new RouteView(1L, companyView, Set.of(cityView), "Tipo de Rota");
+        OtherRouteView otherRouteView = new OtherRouteView(1L, "Empresa Teste", "Cidade Teste", "Tipo Teste");
 
-        // Assert
-        assertNotNull(companyView);
-        assertEquals(company.getId(), companyView.id());
-        assertEquals(company.getName(), companyView.name());
+        when(agencyBoardTypeViewMapper.map(any())).thenReturn(agencyBoardTypeView);
+        when(boardTypeViewMapper.map(any())).thenReturn(boardTypeView);
+        when(routeViewMapper.map(any())).thenReturn(routeView);
+        when(otherRouteViewMapper.map(any())).thenReturn(otherRouteView);
+
+        // Executa o mapeamento
+        BAgencyBoardView result = bAgencyBoardViewMapper.map(bAgencyBoard);
+
+        // Verifica se os valores foram mapeados corretamente
+        assertNotNull(result);
+        assertEquals(bAgencyBoard.getId(), result.id());
+        assertEquals(agencyBoardTypeView, result.agencyBoardType());
+        assertEquals(boardTypeView, result.boardType());
+        assertEquals(Set.of(routeView), result.routes());
+        assertEquals(Set.of(otherRouteView), result.otherRoutes());
+        assertEquals(bAgencyBoard.getBoardLocation(), result.boardLocation());
+        assertEquals(bAgencyBoard.getObservations(), result.observations());
     }
 
-    // Teste de mapeamento de City para CityView
     @Test
-    @DisplayName("Should map City to CityView correctly")
-    void mapCityToView() {
-        // Arrange
-        City city = createCity();
-
-        // Act
-        CityView cityView = new CityView(city.getId(), city.getName());
-
-        // Assert
-        assertNotNull(cityView);
-        assertEquals(city.getId(), cityView.id());
-        assertEquals(city.getName(), cityView.name());
+    void shouldThrowNullPointerExceptionWhenBAgencyBoardIsNull() {
+        // Verifica se NullPointerException é lançada quando o BAgencyBoard é nulo
+        Exception exception = assertThrows(NullPointerException.class, () -> bAgencyBoardViewMapper.map(null));
+        assertEquals("BAgencyBoard at Mapper is null", exception.getMessage());
     }
 
-    // Teste de mapeamento de Route para uma representação de visualização
     @Test
-    @DisplayName("Should map Route to RouteView correctly")
-    void mapRouteToView() {
-        // Arrange
-        Route route = createRoute();
-        City city = createCity();
-        RouteCity routeCity = createRouteCity(route, city);
-        route.getRouteCities().add(routeCity); 
-     
+    void shouldMapWithNullRoutesAndOtherRoutes() {
+        // Configura BAgencyBoard com routes e otherRoutes nulos
+        bAgencyBoard.setRoutes(null);
+        bAgencyBoard.setOtherRoutes(null);
+
+        // Configura retornos simulados para mapeadores
+        AgencyBoardTypeView agencyBoardTypeView = new AgencyBoardTypeView(1L, "Descrição tipo agência");
+        BoardTypeView boardTypeView = new BoardTypeView(1L, "Descrição tipo placa");
+
+        when(agencyBoardTypeViewMapper.map(any())).thenReturn(agencyBoardTypeView);
+        when(boardTypeViewMapper.map(any())).thenReturn(boardTypeView);
+
+        // Executa o mapeamento
+        BAgencyBoardView result = bAgencyBoardViewMapper.map(bAgencyBoard);
+
+        // Verifica se os valores foram mapeados corretamente mesmo com routes e otherRoutes nulos
+        assertNotNull(result);
+        assertEquals(agencyBoardTypeView, result.agencyBoardType());
+        assertEquals(boardTypeView, result.boardType());
+        assertTrue(result.routes().isEmpty());
+        assertTrue(result.otherRoutes().isEmpty());
     }
 
+    @Test
+    void shouldMapWithNullAgencyBoardTypeAndBoardType() {
+        // Configura BAgencyBoard com agencyBoardType e boardType nulos
+        bAgencyBoard.setAgencyBoardType(null);
+        bAgencyBoard.setBoardType(null);
 
+        // Executa o mapeamento
+        BAgencyBoardView result = bAgencyBoardViewMapper.map(bAgencyBoard);
+
+        // Verifica se os valores foram mapeados corretamente mesmo com agencyBoardType e boardType nulos
+        assertNotNull(result);
+        assertNull(result.agencyBoardType());
+        assertNull(result.boardType());
+    }
 }

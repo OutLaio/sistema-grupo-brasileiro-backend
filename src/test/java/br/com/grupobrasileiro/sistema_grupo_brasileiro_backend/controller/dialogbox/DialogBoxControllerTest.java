@@ -15,8 +15,8 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class DialogBoxControllerTest {
 
@@ -68,5 +68,39 @@ public class DialogBoxControllerTest {
         // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(dialogBoxView, response.getBody());
+    }
+
+    @Test
+    public void testCreateMessage_WhenServiceThrowsException() {
+        // Arrange
+        Long idEmployee = faker.number().randomNumber();
+        Long idBriefing = faker.number().randomNumber();
+        String message = faker.lorem().sentence();
+
+        // Criação do DialogBoxForm
+        DialogBoxForm dialogBoxForm = new DialogBoxForm(idEmployee, idBriefing, message);
+
+        // Simulação de erro no serviço
+        when(dialogBoxService.createMessage(dialogBoxForm)).thenThrow(new RuntimeException("Erro ao criar mensagem"));
+
+        // Act
+        ResponseEntity<DialogBoxView> response = dialogBoxController.createMessage(dialogBoxForm);
+
+        // Assert: Verificar se retorna 500 e não é nulo
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    public void testCreateMessage_WhenInputIsInvalid() {
+        // Arrange
+        DialogBoxForm invalidForm = new DialogBoxForm(null, null, ""); // Valores nulos ou inválidos
+
+        // Act
+        ResponseEntity<DialogBoxView> response = dialogBoxController.createMessage(invalidForm);
+
+        // Assert: Verificar se retorna 400 (Bad Request) em caso de erro no input
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody());
     }
 }
