@@ -102,8 +102,8 @@ public class ProjectController {
     @Transactional
     public ResponseEntity<?> supervisorApprove(
             @Valid @RequestBody ApproveForm form) {
-        versionService.supervisorApprove(form);
-        return ResponseEntity.ok().build();
+        VersionView view = versionService.supervisorApprove(form);
+        return ResponseEntity.ok().body(view);
     }
 
     /**
@@ -121,8 +121,8 @@ public class ProjectController {
     @Transactional
     public ResponseEntity<?> clientApprove(
             @Valid @RequestBody ApproveForm form) {
-        versionService.clientApprove(form);
-        return ResponseEntity.ok().build();
+        VersionView view = versionService.clientApprove(form);
+        return ResponseEntity.ok().body(view);
     }
 
     /**

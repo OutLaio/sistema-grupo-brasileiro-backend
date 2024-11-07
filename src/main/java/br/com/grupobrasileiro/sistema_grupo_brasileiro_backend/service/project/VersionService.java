@@ -12,7 +12,6 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Pr
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Version;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.VersionRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +30,7 @@ public class VersionService {
     @Autowired
     private VersionFormMapper versionFormMapper;
 
-    public void supervisorApprove(ApproveForm form) {
+    public VersionView supervisorApprove(ApproveForm form) {
         Project project = projectRepository.findById(form.idProject()).orElseThrow(
                 () -> new EntityNotFoundException("Could not find project " + form.idProject() + " in repository")
         );
@@ -50,11 +49,11 @@ public class VersionService {
             project.setStatus(ProjectStatusEnum.APPROVED.toString());
             projectRepository.save(project);
         }
-
-        versionRepository.save(version);
+        version = versionRepository.save(version);
+        return versionViewMapper.map(version);
     }
 
-    public void clientApprove(ApproveForm form) {
+    public VersionView clientApprove(ApproveForm form) {
         Project project = projectRepository.findById(form.idProject()).orElseThrow(
                 () -> new EntityNotFoundException("Could not find project " + form.idProject() + " in repository")
         );
@@ -69,10 +68,12 @@ public class VersionService {
             project.setStatus(ProjectStatusEnum.APPROVED.toString());
             projectRepository.save(project);
         }else {
+            version.setSupervisorApprove(null);
             version.setFeedback(form.feedback());
         }
 
-        versionRepository.save(version);
+        version = versionRepository.save(version);
+        return versionViewMapper.map(version);
     }
 
     public VersionView create(Long idProject, NewVersionForm form) {
