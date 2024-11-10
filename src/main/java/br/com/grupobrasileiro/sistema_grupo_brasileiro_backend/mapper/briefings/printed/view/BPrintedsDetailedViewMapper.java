@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.printed.view;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.printeds.view.BPrintedsDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.printeds.view.PrintedView;
@@ -13,6 +14,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.p
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 
+@Component
 public class BPrintedsDetailedViewMapper implements Mapper<BPrinted, BPrintedsDetailedView> {
 	
 	@Autowired
