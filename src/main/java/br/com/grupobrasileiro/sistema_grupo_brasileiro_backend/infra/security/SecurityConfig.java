@@ -44,7 +44,6 @@ public class SecurityConfig {
 
                         // Restrição de acesso para Colaboradores
 
-
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

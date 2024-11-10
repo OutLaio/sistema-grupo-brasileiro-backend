@@ -8,23 +8,23 @@ import jakarta.validation.constraints.NotNull;
  * Registro que representa o cadastro de um ponto de sinalização, que inclui
  * detalhes do projeto, informações do briefing e dados específicos do formulário de sinalização.
  *
- * @param projectForm Detalhes do projeto associado ao ponto de sinalização.
+ * @param project Detalhes do projeto associado ao ponto de sinalização.
  *                    Não pode ser nulo. Veja {@link ProjectForm}.
- * @param briefingForm Informações do briefing para o ponto de sinalização.
+ * @param briefing Informações do briefing para o ponto de sinalização.
  *                     Não pode ser nulo. Veja {@link BriefingForm}.
- * @param signpostForm Formulário com dados específicos sobre o ponto de sinalização.
+ * @param signpost Formulário com dados específicos sobre o ponto de sinalização.
  *                     Não pode ser nulo. Veja {@link BSignpostForm}.
  */
 public record RegisterSignpostForm(
 
         @NotNull(message = "Project form cannot be null.")
-        ProjectForm projectForm,
+        ProjectForm project,
 
         @NotNull(message = "Briefing form cannot be null.")
-        BriefingForm briefingForm,
+        BriefingForm briefing,
 
         @NotNull(message = "Signpost form cannot be null.")
-        BSignpostForm signpostForm
+        BSignpostForm signpost
 
 ) {
 }

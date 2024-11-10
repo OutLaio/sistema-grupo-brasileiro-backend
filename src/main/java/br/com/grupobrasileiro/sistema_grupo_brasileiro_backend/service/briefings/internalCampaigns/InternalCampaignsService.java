@@ -19,30 +19,15 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefi
 public class InternalCampaignsService {
 	
 	@Autowired
-    private StationeryTypeRepository stationeryTypeRepository;
-	
-	@Autowired
-    private OtherItemRepository otherItemRepository;
-	
-	@Autowired
 	private BInternalCampaignRepository bInternalCampaignRepository;
 	
 	@Autowired
-    private BInternalCampaignDetailedViewMapper bInternalCampaignDetailedViewMapper;
+    private BInternalCampaignFormMapper bInternalCampaignFormMapper;
 	
-	public BInternalCampaignsDetailsView register(BInternalCampaignsForm form, Briefing briefing) {
-		BInternalCampaign bInternalCampaign = new BInternalCampaignFormMapper().map(form);
-		
-		StationeryType stationeryType = stationeryTypeRepository.getReferenceById(form.idStationeryType());
-		OtherItem otherItem = otherItemRepository.getReferenceById(form.idOtherItem());
-		
+	public void register(BInternalCampaignsForm form, Briefing briefing) {
+		BInternalCampaign bInternalCampaign = bInternalCampaignFormMapper.map(form);
 		bInternalCampaign.setBriefing(briefing);
-		bInternalCampaign.setStationeryType(stationeryType);
-		bInternalCampaign.setOtherItem(otherItem);
-		bInternalCampaign.setCampaignMotto(form.campaignMotto());
-		
-		bInternalCampaign = bInternalCampaignRepository.save(bInternalCampaign);
-		return bInternalCampaignDetailedViewMapper.map(bInternalCampaign);
+		bInternalCampaignRepository.save(bInternalCampaign);
 	}
 
 }

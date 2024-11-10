@@ -10,11 +10,9 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.si
  * @param sector         O setor onde a placa está localizada.
  */
 public record BSignpostView(
-
         Long id,
         MaterialView material,
         String boardLocation,
         String sector
-
 ) {
 }

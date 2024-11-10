@@ -19,7 +19,7 @@ public record EmployeeView(
          * Identificador único do usuário associado ao funcionário.
          * Este campo é obrigatório e não pode ser nulo.
          */
-        UserView userView,
+        UserView user,
 
         /**
          * Nome do funcionário.
@@ -37,7 +37,7 @@ public record EmployeeView(
          * Número de telefone do funcionário.
          * Este campo exibe o número de telefone formatado do funcionário.
          */
-        String phonenumber,
+        String phoneNumber,
 
         /**
          * Setor de trabalho do funcionário.

@@ -60,9 +60,8 @@ public class BAgencyBoardController {
     ) {
         Project project = projectService.register(registerAgencyBoard.projectForm());
         Briefing briefing = briefingService.register(registerAgencyBoard.briefingForm(),project);
-        BAgencyBoardDetailedView bAgencyBoardRegisterView = bAgencyBoardService.register(registerAgencyBoard.bAgencyBoardsForm(),briefing);
-        URI uri = uriBuilder.path("/api/v1/agency-boards/{id}").buildAndExpand(bAgencyBoardRegisterView.bAgencyBoardView().id()).toUri();
-        return ResponseEntity.created(uri).body(bAgencyBoardRegisterView);
+        bAgencyBoardService.register(registerAgencyBoard.bAgencyBoardsForm(),briefing);
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
 
 }

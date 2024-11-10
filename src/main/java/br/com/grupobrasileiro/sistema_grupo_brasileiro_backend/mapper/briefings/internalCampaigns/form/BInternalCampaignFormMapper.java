@@ -1,5 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.internalCampaigns.form;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,18 +24,19 @@ public class BInternalCampaignFormMapper implements Mapper<BInternalCampaignsFor
 	@Override
 	public BInternalCampaign map(BInternalCampaignsForm i) {
 		if (i == null) {
-            return null;
+            throw new NullPointerException("BInternalCampaignsForm at Mapper is null");
         }
-		
-		StationeryType stationeryType = stationeryTypeRepository.getReferenceById(i.idStationeryType());
-		OtherItem otherItem = otherItemRepository.getReferenceById(i.idOtherItem());
-        
         return new BInternalCampaign(
-                null,
-                stationeryType,
-                otherItem,
-                null,
-                i.campaignMotto()
+			null,
+			stationeryTypeRepository.findById(i.idStationeryType()).orElseThrow(
+				() -> new EntityNotFoundException("Stationery Type not found with id: " + i.idStationeryType())
+			),
+			otherItemRepository.findById(i.idOtherItem()).orElseThrow(
+				() -> new EntityNotFoundException("Other Item not found with id: " + i.idOtherItem())
+			),
+			null,
+			i.campaignMotto()
+
         );
 	}
 }

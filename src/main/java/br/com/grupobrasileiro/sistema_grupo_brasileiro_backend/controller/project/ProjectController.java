@@ -5,6 +5,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.NewVersionForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.VersionView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
@@ -25,6 +26,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 /**
  * Controlador para gerenciamento de projetos e versões.
@@ -80,8 +83,8 @@ public class ProjectController {
     public ResponseEntity<?> newVersion(
             @Parameter(description = "ID do projeto") @PathVariable Long id,
             @Valid @RequestBody NewVersionForm form) {
-        versionService.create(id, form);
-        return ResponseEntity.ok().build();
+        VersionView view = versionService.create(id, form);
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + id)).body(view);
     }
 
     /**
@@ -99,8 +102,8 @@ public class ProjectController {
     @Transactional
     public ResponseEntity<?> supervisorApprove(
             @Valid @RequestBody ApproveForm form) {
-        versionService.supervisorApprove(form);
-        return ResponseEntity.ok().build();
+        VersionView view = versionService.supervisorApprove(form);
+        return ResponseEntity.ok().body(view);
     }
 
     /**
@@ -118,8 +121,8 @@ public class ProjectController {
     @Transactional
     public ResponseEntity<?> clientApprove(
             @Valid @RequestBody ApproveForm form) {
-        versionService.clientApprove(form);
-        return ResponseEntity.ok().build();
+        VersionView view = versionService.clientApprove(form);
+        return ResponseEntity.ok().body(view);
     }
 
     /**

@@ -29,7 +29,7 @@ public record UserView(
          * Código da função (role) do usuário.
          * Este campo é obrigatório e não pode ser nulo.
          */
-        ProfileView profileView
+        ProfileView profile
 
 ) {
 }

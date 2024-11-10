@@ -21,25 +21,12 @@ public class BHandoutService {
     private BHandoutRepository bHandoutRepository;
 
     @Autowired
-    private HandoutTypeRepository handoutTypeRepository;
-
-    @Autowired
     private BHandoutFormMapper bHandoutFormMapper;
 
-    @Autowired
-    private BHandoutDetailedViewMapper bHandoutDetailedViewMapper;
-
-    public BHandoutDetailedView register(BHandoutForm bHandoutForm, Briefing briefing) {
-        HandoutType handoutType = handoutTypeRepository.getReferenceById(bHandoutForm.idHandoutType());
-
+    public void register(BHandoutForm bHandoutForm, Briefing briefing) {
         BHandout bHandout = bHandoutFormMapper.map(bHandoutForm);
-
-        bHandout.setHandoutType(handoutType);
         bHandout.setBriefing(briefing);
-
-        bHandout = bHandoutRepository.save(bHandout);
-
-        return bHandoutDetailedViewMapper.map(bHandout);
+        bHandoutRepository.save(bHandout);
     }
 }
 

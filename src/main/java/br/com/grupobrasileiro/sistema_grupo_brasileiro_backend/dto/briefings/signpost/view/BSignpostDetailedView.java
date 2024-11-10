@@ -4,12 +4,8 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 
 public record BSignpostDetailedView(
-
-        BSignpostView bSignpostView,
-
-        ProjectView projectView,
-
-        BriefingView briefingView
-
+        BSignpostView signpost,
+        ProjectView project,
+        BriefingView briefing
 ) {
 }

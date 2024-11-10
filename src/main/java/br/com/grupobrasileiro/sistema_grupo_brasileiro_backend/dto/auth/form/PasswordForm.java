@@ -11,7 +11,7 @@ public record PasswordForm(
          * Identificador único do usuário para quem a senha será redefinida.
          */
         @NotNull(message = "The Id user  is required")
-        Long id,
+        Long idUser,
 
         @NotNull(message = "The Current Password is required")
         String currentPassword,

@@ -10,11 +10,9 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.In
  * @param campaignMotto     O lema da campanha.
  */
 public record BInternalCampaignsView(
-
         Long id,
         StationeryTypeView stationeryType,
         OtherItemView otherItem,
         String campaignMotto
-
 ) {
 }

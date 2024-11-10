@@ -1,20 +1,21 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard;
 
-import java.util.Objects;
-
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.City;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Company;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "\"Tb_CompaniesCities\"")
-public class CompanyCity {
-	@Id
+@Table(name = "\"Tb_RoutesCities\"")
+public class RouteCity {
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
@@ -22,29 +23,29 @@ public class CompanyCity {
     private City city;
 
     @ManyToOne
-    @JoinColumn(name = "id_company", nullable = false)
-    private Company company;
+    @JoinColumn(name = "id_route", nullable = false)
+    private Route route;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CompanyCity that)) return false;
+        if (!(o instanceof RouteCity that)) return false;
         return Objects.equals(id, that.id) &&
                 Objects.equals(city, that.city) &&
-                Objects.equals(company, that.company);
+                Objects.equals(route, that.route);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, city, company);
+        return Objects.hash(id, city, route);
     }
 
     @Override
     public String toString() {
-        return "CompanyCity{" +
+        return "RouteCity{" +
                 "id=" + id +
                 ", city=" + (city != null ? city.getId() : "null") +
-                ", company=" + (company != null ? company.getId() : "null") +
+                ", route=" + (route != null ? route.getId() : "null") +
                 '}';
     }
 

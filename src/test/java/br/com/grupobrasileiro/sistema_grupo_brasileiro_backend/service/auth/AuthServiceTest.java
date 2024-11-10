@@ -10,14 +10,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -146,13 +143,13 @@ class AuthServiceTest {
         assertEquals(expectedEmployeeView.id(), resultEmployeeView.id(), "Employee ID should match");
         assertEquals(expectedEmployeeView.name(), resultEmployeeView.name(), "Employee name should match");
         assertEquals(expectedEmployeeView.lastname(), resultEmployeeView.lastname(), "Employee lastname should match");
-        assertEquals(expectedEmployeeView.phonenumber(), resultEmployeeView.phonenumber(), "Employee phone number should match");
+        assertEquals(expectedEmployeeView.phoneNumber(), resultEmployeeView.phoneNumber(), "Employee phone number should match");
         assertEquals(expectedEmployeeView.sector(), resultEmployeeView.sector(), "Employee sector should match");
         assertEquals(expectedEmployeeView.occupation(), resultEmployeeView.occupation(), "Employee occupation should match");
         assertEquals(expectedEmployeeView.agency(), resultEmployeeView.agency(), "Employee agency should match");
         assertEquals(expectedEmployeeView.avatar(), resultEmployeeView.avatar(), "Employee avatar should match");
         
-        UserView resultUserView = resultEmployeeView.userView();
+        UserView resultUserView = resultEmployeeView.user();
         assertNotNull(resultUserView, "UserView should not be null");
         assertEquals(userView.id(), resultUserView.id(), "User ID should match");
         assertEquals(userView.email(), resultUserView.email(), "User email should match");
