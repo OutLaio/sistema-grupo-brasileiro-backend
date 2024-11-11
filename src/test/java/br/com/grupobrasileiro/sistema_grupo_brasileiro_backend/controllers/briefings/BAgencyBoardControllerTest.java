@@ -2,6 +2,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controllers.brie
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -69,50 +70,51 @@ class BAgencyBoardControllerTest {
                 faker.lorem().sentence(),                
                 new HashSet<>(),                        
                 null,                                    
-                1L,                                      
-                null                                     
+                1L,                                       // briefingTypeId
+                null                                      // other fields
             ),
             new BAgencyBoardsForm(null, null, faker.lorem().sentence(), faker.lorem().sentence(), null, null)
-        	    );
+        );
 
-        	    Project mockProject = new Project(); 
-        	    Briefing mockBriefing = new Briefing(); 
-        	    
-        	    // Criar um mock para BriefingType
-        	    BriefingType mockBriefingType = new BriefingType();
-        	    mockBriefingType.setId(1L);
-        	    mockBriefingType.setDescription("Tipo de Briefing Mockado");
-        	    
-        	    // Configurar o mockBriefing com o mockBriefingType
-        	    mockBriefing.setBriefingType(mockBriefingType);
-        	    
-        	    BAgencyBoardDetailedView mockView = new BAgencyBoardDetailedView(
-        	        new BAgencyBoardView(1L, null, null, null, null, faker.address().fullAddress(), faker.lorem().sentence()),
-        	        new ProjectView(mockProject.getId(), mockProject.getTitle(), mockProject.getStatus(), null, null),
-        	        new BriefingView(
-        	            mockBriefing.getId(),
-        	            new BriefingTypeView(mockBriefing.getBriefingType().getId(), mockBriefing.getBriefingType().getDescription()),
-        	            mockBriefing.getStartTime(),
-        	            mockBriefing.getExpectedTime(),
-        	            mockBriefing.getFinishTime(),
-        	            mockBriefing.getDetailedDescription(),
-        	            null, // MeasurementsView
-        	            null, // CompaniesBriefingsView
-        	            mockBriefing.getOtherCompany()
-        	        )
-        	    );
+        Project mockProject = new Project(); 
+        Briefing mockBriefing = new Briefing(); 
+        
+        // Criar um mock para BriefingType
+        BriefingType mockBriefingType = new BriefingType();
+        mockBriefingType.setId(1L);
+        mockBriefingType.setDescription("Tipo de Briefing Mockado");
+        
+        // Configurar o mockBriefing com o mockBriefingType
+        mockBriefing.setBriefingType(mockBriefingType);
+        
+        BAgencyBoardDetailedView mockView = new BAgencyBoardDetailedView(
+            new BAgencyBoardView(1L, null, null, null, null, faker.address().fullAddress(), faker.lorem().sentence()),
+            new ProjectView(mockProject.getId(), mockProject.getTitle(), mockProject.getStatus(), null, null),
+            new BriefingView(
+                mockBriefing.getId(),
+                new BriefingTypeView(mockBriefing.getBriefingType().getId(), mockBriefing.getBriefingType().getDescription()),
+                mockBriefing.getStartTime(),
+                mockBriefing.getExpectedTime(),
+                mockBriefing.getFinishTime(),
+                mockBriefing.getDetailedDescription(),
+                null, // MeasurementsView
+                null, // CompaniesBriefingsView
+                mockBriefing.getOtherCompany(),
+                new HashSet<>() // versions
+            )
+        );
 
-        	    when(projectService.register(any())).thenReturn(mockProject);
-        	    when(briefingService.register(any(), any())).thenReturn(mockBriefing);
-        	    when(bAgencyBoardService.register(any(), any())).thenReturn(mockView);
+        when(projectService.register(any())).thenReturn(mockProject);
+        when(briefingService.register(any(), any())).thenReturn(mockBriefing);
+        doNothing().when(bAgencyBoardService).register(any(), any());
+        
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
 
-        	    UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
+        // Act
+        ResponseEntity<BAgencyBoardDetailedView> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
 
-        	    // Act
-        	    ResponseEntity<BAgencyBoardDetailedView> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
-
-        	    // Assert
-        	    assertEquals(201, response.getStatusCodeValue());
-        	    assertEquals(mockView, response.getBody());
+        // Assert
+        assertEquals(201, response.getStatusCodeValue());
+        assertEquals(mockView, response.getBody());
     }
 }

@@ -1,12 +1,5 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +11,10 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.Emp
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.UserView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 public class EmployeeViewMapperTest {
 
@@ -83,7 +80,6 @@ public class EmployeeViewMapperTest {
         assertEquals(employee.getAvatar(), employeeView.avatar(), "EmployeeView avatar should match");
     }
 
-   
     /**
      * Testa o mapeamento quando campos opcionais são nulos.
      * Verifica se o resultado não lança exceções e mapeia corretamente os campos.
@@ -138,7 +134,6 @@ public class EmployeeViewMapperTest {
         assertEquals(null, employeeView.avatar(), "EmployeeView avatar should be null");
     }
 
-
     /**
      * Testa o mapeamento quando campos opcionais estão vazios.
      * Verifica se o resultado não lança exceções e mapeia corretamente os campos.
@@ -187,7 +182,6 @@ public class EmployeeViewMapperTest {
         assertEquals("", employeeView.sector(), "EmployeeView sector should be empty for empty sector");
         assertEquals("", employeeView.occupation(), "EmployeeView occupation should be empty for empty occupation");
         assertEquals("", employeeView.agency(), "EmployeeView agency should be empty for empty agency");
-        assertNull(employeeView.avatar(), "EmployeeView avatar should be null");
+        assertEquals(null, employeeView.avatar(), "EmployeeView avatar should be null");
     }
-
 }

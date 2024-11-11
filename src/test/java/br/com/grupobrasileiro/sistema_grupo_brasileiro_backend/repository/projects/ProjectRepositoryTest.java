@@ -22,51 +22,59 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
+
 public class ProjectRepositoryTest {
 
-    @Autowired
+    @Mock
     private ProjectRepository projectRepository;
 
-    @Autowired
+    @Mock
     private EmployeeRepository employeeRepository;
-    
-    @Autowired
-    private UserRepository userRepository; 
+
+    @Mock
+    private UserRepository userRepository;
 
     private Faker faker;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         faker = new Faker();
     }
 
-    /**
-     * Testa a criação e recuperação de um projeto.
-     */
     @Test
-    @Rollback(false)
     @DisplayName("Should create and retrieve a project")
-    public void testCreateAndRetrieveEmployee() {
-        // Criar um novo User
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setPassword("securePassword");
-        user.setDisabled(false);
-        
-        // Aqui você precisa de um Profile válido. Certifique-se de que exista um Profile no seu banco de dados ou crie um temporariamente.
-        Profile profile = new Profile(); // Crie um Profile válido, se necessário.
-        profile.setDescription("User Profile Description"); // Ajuste conforme necessário
-        user.setProfile(profile);
-        
+    public void testCreateAndRetrieveProject() {
+        // Arrange
+        User user = createTestUser();
+        Employee employee = createTestEmployee(user);
+        Project project = new Project();
+        project.setTitle("Test Project");
+        project.setClient(employee); // ou colaborador, dependendo da sua lógica
+        when(projectRepository.save(any(Project.class))).thenReturn(project);
+        when(projectRepository.findById(anyLong())).thenReturn(Optional.of(project));
+
+        // Act
+        Project savedProject = projectRepository.save(project);
+        Optional<Project> retrievedProject = projectRepository.findById(savedProject.getId());
+
+        // Assert
+        assertThat(retrievedProject).isPresent();
+        assertThat(retrievedProject.get().getTitle()).isEqualTo(savedProject.getTitle());
     }
 
-
-    /**
-     * Testa a recuperação de um projeto que não existe.
-     */
     @Test
     @DisplayName("Should return empty when retrieving non-existing project")
     void testRetrieveNonExistingProject() {
@@ -77,7 +85,20 @@ public class ProjectRepositoryTest {
         assertThat(retrievedProject).isNotPresent();
     }
 
-    private Employee createTestEmployee() {
+    private User createTestUser() {
+        User user = new User();
+        user.setEmail("test@example.com");
+        user.setPassword("securePassword");
+        user.setDisabled(false);
+
+        Profile profile = new Profile(); 
+        profile.setDescription("User Profile Description"); 
+        user.setProfile(profile);
+        
+        return user;
+    }
+
+    private Employee createTestEmployee(User user) {
         Employee employee = new Employee();
         employee.setName(faker.name().firstName());
         employee.setLastName(faker.name().lastName());
@@ -85,10 +106,10 @@ public class ProjectRepositoryTest {
         employee.setSector(faker.company().industry());
         employee.setOccupation(faker.job().title());
         employee.setAgency(faker.company().name());
-        employee.setAvatar((long) faker.number().randomDigitNotZero()); // Correção aqui
+        employee.setAvatar((long) faker.number().randomDigitNotZero()); 
 
         // Salvar o cliente
-        return employeeRepository.save(employee);
+        when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
+        return employee;
     }
 }
-

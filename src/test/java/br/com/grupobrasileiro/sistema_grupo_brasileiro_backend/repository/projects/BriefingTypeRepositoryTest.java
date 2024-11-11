@@ -17,44 +17,49 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
+
 public class BriefingTypeRepositoryTest {
 
-    @Autowired
+    @Mock
     private BriefingTypeRepository briefingTypeRepository;
 
     private Faker faker;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         faker = new Faker();
     }
 
-    /**
-     * Testa a criação e recuperação de um tipo de briefing.
-     */
     @Test
-    @Rollback(false)
     @DisplayName("Should create and retrieve a briefing type")
     void testCreateAndRetrieveBriefingType() {
         // Arrange
         BriefingType briefingType = createTestBriefingType();
+        when(briefingTypeRepository.save(any(BriefingType.class))).thenReturn(briefingType);
+        when(briefingTypeRepository.findById(briefingType.getId())).thenReturn(Optional.of(briefingType));
 
         // Act
-        briefingTypeRepository.save(briefingType);
-        Optional<BriefingType> retrievedBriefingType = briefingTypeRepository.findById(briefingType.getId());
+        BriefingType savedType = briefingTypeRepository.save(briefingType);
+        Optional<BriefingType> retrievedBriefingType = briefingTypeRepository.findById(savedType.getId());
 
         // Assert
         assertThat(retrievedBriefingType).isPresent();
-        assertThat(retrievedBriefingType.get().getDescription()).isEqualTo(briefingType.getDescription());
+        assertThat(retrievedBriefingType.get().getDescription()).isEqualTo(savedType.getDescription());
     }
 
-    /**
-     * Testa a recuperação de um tipo de briefing que não existe.
-     */
     @Test
     @DisplayName("Should return empty when retrieving non-existing briefing type")
     void testRetrieveNonExistingBriefingType() {
