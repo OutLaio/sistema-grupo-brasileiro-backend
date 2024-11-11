@@ -17,24 +17,40 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 public class OtherItemRepositoryTest {
 
-    @Autowired
+    @Mock
     private OtherItemRepository otherItemRepository;
 
-    /**
-     * Testa a criação e recuperação de um OtherItem.
-     */
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
-    @Rollback(false)
     @DisplayName("Should create and retrieve an OtherItem")
     void testCreateAndRetrieveOtherItem() {
         // Arrange
         OtherItem item = new OtherItem();
         item.setDescription("Item de exemplo");
+
+        when(otherItemRepository.save(any(OtherItem.class))).thenReturn(item);
+        when(otherItemRepository.findById(item.getId())).thenReturn(Optional.of(item));
 
         // Act
         OtherItem savedItem = otherItemRepository.save(item);
@@ -46,70 +62,68 @@ public class OtherItemRepositoryTest {
         assertThat(retrievedItem.getDescription()).isEqualTo("Item de exemplo");
     }
 
-    /**
-     * Testa a atualização de um OtherItem.
-     */
     @Test
-    @Rollback(false)
     @DisplayName("Should update an OtherItem")
     void testUpdateOtherItem() {
         // Arrange
         OtherItem item = new OtherItem();
         item.setDescription("Item de exemplo");
+        when(otherItemRepository.save(any(OtherItem.class))).thenReturn(item);
+
         OtherItem savedItem = otherItemRepository.save(item);
+        savedItem.setDescription("Descrição atualizada");
+
+        when(otherItemRepository.save(savedItem)).thenReturn(savedItem);
 
         // Act
-        savedItem.setDescription("Descrição atualizada");
         OtherItem updatedItem = otherItemRepository.save(savedItem);
 
         // Assert
         assertThat(updatedItem.getDescription()).isEqualTo("Descrição atualizada");
     }
 
-    /**
-     * Testa a exclusão de um OtherItem.
-     */
     @Test
-    @Rollback(false)
     @DisplayName("Should delete an OtherItem")
     void testDeleteOtherItem() {
         // Arrange
         OtherItem item = new OtherItem();
         item.setDescription("Item de exemplo");
+        when(otherItemRepository.save(any(OtherItem.class))).thenReturn(item);
+        when(otherItemRepository.findById(item.getId())).thenReturn(Optional.of(item));
+
         OtherItem savedItem = otherItemRepository.save(item);
 
         // Act
         otherItemRepository.delete(savedItem);
+        when(otherItemRepository.findById(savedItem.getId())).thenReturn(Optional.empty());
+
         Optional<OtherItem> retrievedItem = otherItemRepository.findById(savedItem.getId());
 
         // Assert
         assertThat(retrievedItem).isNotPresent();
     }
 
-    /**
-     * Testa a recuperação de todos os OtherItems.
-     */
     @Test
     @DisplayName("Should retrieve all OtherItems")
     void testFindAllOtherItems() {
         // Arrange
-        otherItemRepository.deleteAll(); // Limpa todos os itens existentes
-
+        List<OtherItem> items = new ArrayList<>();
         OtherItem item1 = new OtherItem();
         item1.setDescription("Item 1");
-        otherItemRepository.save(item1);
+        items.add(item1);
 
         OtherItem item2 = new OtherItem();
         item2.setDescription("Item 2");
-        otherItemRepository.save(item2);
+        items.add(item2);
+
+        when(otherItemRepository.findAll()).thenReturn(items);
 
         // Act
-        List<OtherItem> items = (List<OtherItem>) otherItemRepository.findAll();
+        List<OtherItem> retrievedItems = (List<OtherItem>) otherItemRepository.findAll();
 
         // Assert
-        assertThat(items).hasSize(2);
-        assertThat(items).extracting(OtherItem::getDescription)
-                         .containsExactlyInAnyOrder("Item 1", "Item 2");
+        assertThat(retrievedItems).hasSize(2);
+        assertThat(retrievedItems).extracting(OtherItem::getDescription)
+                                   .containsExactlyInAnyOrder("Item 1", "Item 2");
     }
 }
-

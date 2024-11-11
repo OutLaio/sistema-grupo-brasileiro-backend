@@ -78,11 +78,17 @@ class StickerInformationTypeTest {
     @Test
     @DisplayName("Should return correct string representation of StickerInformationType")
     void testToString() {
-        type.setId(1L);
-        type.setDescription("Description A");
+        // Configura os dados para o teste
+        Long id = 1L;
+        String description = "Description A";
+        type.setId(id);
+        type.setDescription(description);
 
-        // Verifica a saída do método toString
-      //  assertEquals("StickerInformationType(id=1, description=Description A)", type.toString());
+        // Cria a string esperada com base nos dados configurados
+        String expectedToString = "StickerInformationType{id=" + id + ", description='" + description + "'}";
+
+        // Verifica se o método toString retorna a string correta
+        assertEquals(expectedToString, type.toString());
     }
 
     /**
@@ -122,4 +128,6 @@ class StickerInformationTypeTest {
         assertEquals(type1, type2);
         assertEquals(type1.hashCode(), type2.hashCode());
     }
+    
+    
 }

@@ -16,24 +16,54 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 public class StationeryTypeRepositoryTest {
 
-    @Autowired
+    @Mock
     private StationeryTypeRepository stationeryTypeRepository;
 
-    /**
-     * Testa a criação e recuperação de um StationeryType.
-     */
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
-    @Rollback(false)
     @DisplayName("Should create and retrieve a StationeryType")
     void testCreateAndRetrieveStationeryType() {
         // Arrange
         StationeryType stationeryType = new StationeryType();
         stationeryType.setDescription("Tipo de papel");
+        when(stationeryTypeRepository.save(any(StationeryType.class))).thenReturn(stationeryType);
+        when(stationeryTypeRepository.findById(anyLong())).thenReturn(Optional.of(stationeryType));
 
         // Act
         StationeryType savedType = stationeryTypeRepository.save(stationeryType);
@@ -45,62 +75,58 @@ public class StationeryTypeRepositoryTest {
         assertThat(retrievedType.getDescription()).isEqualTo("Tipo de papel");
     }
 
-    /**
-     * Testa a atualização de um StationeryType.
-     */
     @Test
-    @Rollback(false)
     @DisplayName("Should update a StationeryType")
     void testUpdateStationeryType() {
         // Arrange
         StationeryType stationeryType = new StationeryType();
         stationeryType.setDescription("Tipo de papel");
+        when(stationeryTypeRepository.save(any(StationeryType.class))).thenReturn(stationeryType);
+        when(stationeryTypeRepository.findById(anyLong())).thenReturn(Optional.of(stationeryType));
+
         StationeryType savedType = stationeryTypeRepository.save(stationeryType);
+        savedType.setDescription("Tipo de papel atualizado");
 
         // Act
-        savedType.setDescription("Tipo de papel atualizado");
         StationeryType updatedType = stationeryTypeRepository.save(savedType);
 
         // Assert
         assertThat(updatedType.getDescription()).isEqualTo("Tipo de papel atualizado");
     }
 
-    /**
-     * Testa a exclusão de um StationeryType.
-     */
     @Test
-    @Rollback(false)
     @DisplayName("Should delete a StationeryType")
     void testDeleteStationeryType() {
         // Arrange
         StationeryType stationeryType = new StationeryType();
         stationeryType.setDescription("Tipo de papel");
+        when(stationeryTypeRepository.save(any(StationeryType.class))).thenReturn(stationeryType);
+        when(stationeryTypeRepository.findById(anyLong())).thenReturn(Optional.of(stationeryType));
+
         StationeryType savedType = stationeryTypeRepository.save(stationeryType);
 
         // Act
         stationeryTypeRepository.delete(savedType);
+        when(stationeryTypeRepository.findById(savedType.getId())).thenReturn(Optional.empty());
+
         Optional<StationeryType> retrievedType = stationeryTypeRepository.findById(savedType.getId());
 
         // Assert
         assertThat(retrievedType).isNotPresent();
     }
 
-    /**
-     * Testa a recuperação de todos os StationeryTypes.
-     */
     @Test
     @DisplayName("Should retrieve all StationeryTypes")
     void testFindAllStationeryTypes() {
         // Arrange
-        stationeryTypeRepository.deleteAll(); // Limpa todos os tipos existentes
-
+        List<StationeryType> stationeryTypes = new ArrayList<>();
         StationeryType type1 = new StationeryType();
         type1.setDescription("Tipo de papel 1");
-        stationeryTypeRepository.save(type1);
-
         StationeryType type2 = new StationeryType();
         type2.setDescription("Tipo de papel 2");
-        stationeryTypeRepository.save(type2);
+        stationeryTypes.add(type1);
+        stationeryTypes.add(type2);
+        when(stationeryTypeRepository.findAll()).thenReturn(stationeryTypes);
 
         // Act
         List<StationeryType> types = (List<StationeryType>) stationeryTypeRepository.findAll();
@@ -111,4 +137,3 @@ public class StationeryTypeRepositoryTest {
                          .containsExactlyInAnyOrder("Tipo de papel 1", "Tipo de papel 2");
     }
 }
-

@@ -2,6 +2,8 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.HashSet;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -24,27 +26,27 @@ public class RouteTest {
 
     /**
      * Testa o construtor parametrizado da classe Route.
-     * Verifica se o construtor com parâmetros define corretamente os atributos id, bAgencyBoard, companyCity e type.
+     * Verifica se o construtor com parâmetros define corretamente os atributos id, bAgencyBoard, company e type.
      */
     @Test
     @DisplayName("Should correctly set all attributes with parameterized constructor")
     void testParameterizedConstructor() {
         Long id = faker.number().randomNumber();
         BAgencyBoard bAgencyBoard = new BAgencyBoard(); 
-        RouteCity companyCity = new RouteCity();
+        Company company = new Company(); // Corrigido para usar Company em vez de CompanyCity
         String type = faker.lorem().word();
-        Route route = new Route(id, bAgencyBoard, companyCity, type);
+        Route route = new Route(id, bAgencyBoard, new HashSet<>(), company, type); // Ajustado para incluir routeCities
 
         assertThat(route.getId()).isEqualTo(id);
         assertThat(route.getBAgencyBoard()).isEqualTo(bAgencyBoard);
-        assertThat(route.getCompanyCity()).isEqualTo(companyCity);
+        assertThat(route.getCompany()).isEqualTo(company); // Corrigido para usar getCompany
         assertThat(route.getType()).isEqualTo(type);
     }
 
     /**
      * Testa os métodos setters e getters da classe Route.
-     * Verifica se os métodos setId, setBAgencyBoard, setCompanyCity e setType definem corretamente os atributos
-     * e se os métodos getId, getBAgencyBoard, getCompanyCity e getType retornam os valores esperados.
+     * Verifica se os métodos setId, setBAgencyBoard, setCompany e setType definem corretamente os atributos
+     * e se os métodos getId, getBAgencyBoard, getCompany e getType retornam os valores esperados.
      */
     @Test
     @DisplayName("Should correctly set and get all attributes")
@@ -52,32 +54,32 @@ public class RouteTest {
         Route route = new Route();
         Long id = faker.number().randomNumber();
         BAgencyBoard bAgencyBoard = new BAgencyBoard(); 
-        RouteCity companyCity = new RouteCity();
+        Company company = new Company(); // Corrigido para usar Company em vez de CompanyCity
         String type = faker.lorem().word();
         route.setId(id);
         route.setBAgencyBoard(bAgencyBoard);
-        route.setCompanyCity(companyCity);
+        route.setCompany(company); // Corrigido para usar setCompany
         route.setType(type);
 
         assertThat(route.getId()).isEqualTo(id);
         assertThat(route.getBAgencyBoard()).isEqualTo(bAgencyBoard);
-        assertThat(route.getCompanyCity()).isEqualTo(companyCity);
+        assertThat(route.getCompany()).isEqualTo(company); // Corrigido para usar getCompany
         assertThat(route.getType()).isEqualTo(type);
     }
 
     /**
      * Testa os métodos equals e hashCode da classe Route.
-     * Verifica se duas instâncias com os mesmos valores de id, bAgencyBoard e companyCity são iguais e se têm o mesmo hashCode.
+     * Verifica se duas instâncias com os mesmos valores de id, bAgencyBoard e company são iguais e se têm o mesmo hashCode.
      */
     @Test
     @DisplayName("Should be equal and have the same hashCode for equal instances")
     void testEqualsAndHashCode() {
         Long id = faker.number().randomNumber();
         BAgencyBoard bAgencyBoard = new BAgencyBoard(); 
-        RouteCity companyCity = new RouteCity();
+        Company company = new Company(); // Corrigido para usar Company em vez de CompanyCity
         String type = faker.lorem().word();
-        Route route1 = new Route(id, bAgencyBoard, companyCity, type);
-        Route route2 = new Route(id, bAgencyBoard, companyCity, type);
+        Route route1 = new Route(id, bAgencyBoard, new HashSet<>(), company, type);
+        Route route2 = new Route(id, bAgencyBoard, new HashSet<>(), company, type);
 
         assertThat(route1).isEqualTo(route2);
         assertThat(route1.hashCode()).isEqualTo(route2.hashCode());
@@ -92,11 +94,11 @@ public class RouteTest {
     void testToString() {
         Long id = faker.number().randomNumber();
         BAgencyBoard bAgencyBoard = new BAgencyBoard(); 
-        RouteCity companyCity = new RouteCity();
+        Company company = new Company(); // Corrigido para usar Company em vez de CompanyCity
         String type = faker.lorem().word();
-        Route route = new Route(id, bAgencyBoard, companyCity, type);
-        String expectedToString = "Route(id=" + id + ", type=" + type + ", companyCity=" + companyCity + ")";
-      //  assertThat(route.toString()).contains(expectedToString);
+        Route route = new Route(id, bAgencyBoard, new HashSet<>(), company, type);
+        String expectedToString = "Route(id=" + id + ", type=" + type + ", company=" + company + ")"; // Ajustado para incluir company
+        assertThat(route.toString()).contains(expectedToString);
     }
 
     /**
@@ -107,26 +109,26 @@ public class RouteTest {
     @DisplayName("Should consider Routes with the same id and null bAgencyBoard as equal")
     void testEqualsWithNullBAgencyBoard() {
         Long id = faker.number().randomNumber();
-        RouteCity companyCity = new RouteCity();
+        Company company = new Company(); // Corrigido para usar Company em vez de CompanyCity
         String type = faker.lorem().word();
-        Route route1 = new Route(id, null, companyCity, type);
-        Route route2 = new Route(id, null, companyCity, type);
+        Route route1 = new Route(id, null, new HashSet<>(), company, type);
+        Route route2 = new Route(id, null, new HashSet<>(), company, type);
 
-        //assertThat(route1).isEqualTo(route2);
+        assertThat(route1).isEqualTo(route2);
     }
 
     /**
-     * Testa o método toString quando companyCity é nulo.
-     * Verifica se o método toString retorna uma representação correta da instância com companyCity nulo.
+     * Testa o método toString quando company é nulo.
+     * Verifica se o método toString retorna uma representação correta da instância com company nulo.
      */
     @Test
-    @DisplayName("Should handle null companyCity in toString method")
-    void testToStringWithNullCompanyCity() {
+    @DisplayName("Should handle null company in toString method")
+    void testToStringWithNullCompany() {
         Long id = faker.number().randomNumber();
         BAgencyBoard bAgencyBoard = new BAgencyBoard(); 
         String type = faker.lorem().word();
-        Route route = new Route(id, bAgencyBoard, null, type);
-        String expectedToString = "Route(id=" + id + ", type=" + type + ", companyCity=null)";
-       // assertThat(route.toString()).isEqualTo(expectedToString);
+        Route route = new Route(id, bAgencyBoard, new HashSet<>(), null, type);
+        String expectedToString = "Route(id=" + id + ", type=" + type + ", company=null)"; // Ajustado para incluir company
+        assertThat(route.toString()).isEqualTo(expectedToString);
     }
 }
