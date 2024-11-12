@@ -1,106 +1,144 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.dialogbox;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultHandler;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.dialogbox.form.DialogBoxForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.dialogbox.view.DialogBoxView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
-import com.github.javafaker.Faker;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
+@SpringBootTest
+@AutoConfigureMockMvc
+class DialogBoxControllerTest {
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+    @Autowired
+    private MockMvc mockMvc;
 
-public class DialogBoxControllerTest {
-
-    @InjectMocks
-    private DialogBoxController dialogBoxController;
-
-    @Mock
+    @MockBean
     private DialogBoxService dialogBoxService;
 
-    private Faker faker;
+    @MockBean
+    private TokenService tokenService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private DialogBoxForm validDialogBoxForm;
+    private DialogBoxView dialogBoxView;
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        faker = new Faker();
+    public void setup() {
+        validDialogBoxForm = new DialogBoxForm(1L, 1L, "Sample message");
+
+        EmployeeSimpleView employeeSimpleView = new EmployeeSimpleView(1L, "John Doe", 101L);
+        dialogBoxView = new DialogBoxView(1L, employeeSimpleView, LocalDateTime.now(), "Sample dialog message");
     }
 
     @Test
-    public void testCreateMessage() {
-        // Arrange
-        Long idEmployee = faker.number().randomNumber();
-        Long idBriefing = faker.number().randomNumber();
-        String message = faker.lorem().sentence();
+    public void testCreateMessage_Success() throws Exception {
+        when(dialogBoxService.createMessage(any(DialogBoxForm.class))).thenReturn(dialogBoxView);
 
-        // Criação do DialogBoxForm
-        DialogBoxForm dialogBoxForm = new DialogBoxForm(idEmployee, idBriefing, message);
+        mockMvc.perform(post("/api/v1/dialogs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(validDialogBoxForm)))
+                .andExpect(status().isCreated()) 
+                .andExpect(jsonPath("$.dialog").value("Sample dialog message"))
+                .andExpect(jsonPath("$.employee.fullName").value("John Doe"))
+                .andExpect(jsonPath("$.employee.avatar").value(101));
 
-        // Criação do EmployeeSimpleView
-        EmployeeSimpleView employeeSimpleView = new EmployeeSimpleView(
-                idEmployee, // ID do funcionário
-                faker.name().fullName(), // Nome do funcionário
-                faker.number().randomNumber() // Outro campo, se necessário
-        );
-
-        // Criação do DialogBoxView
-        DialogBoxView dialogBoxView = new DialogBoxView(
-                faker.number().randomNumber(), // id
-                employeeSimpleView,             // employee
-                LocalDateTime.now(),            // time
-                message                          // dialog
-        );
-
-        // Simulação do comportamento do serviço
-        when(dialogBoxService.createMessage(dialogBoxForm)).thenReturn(dialogBoxView);
-
-        // Act
-        ResponseEntity<DialogBoxView> response = dialogBoxController.createMessage(dialogBoxForm);
-
-        // Assert
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(dialogBoxView, response.getBody());
+        verify(dialogBoxService, times(1)).createMessage(any(DialogBoxForm.class));
     }
 
     @Test
-    public void testCreateMessage_WhenServiceThrowsException() {
-        // Arrange
-        Long idEmployee = faker.number().randomNumber();
-        Long idBriefing = faker.number().randomNumber();
-        String message = faker.lorem().sentence();
+    public void testCreateMessage_InvalidInput_MissingFields() throws Exception {
+        DialogBoxForm invalidForm = new DialogBoxForm(null, 1L, "");
 
-        // Criação do DialogBoxForm
-        DialogBoxForm dialogBoxForm = new DialogBoxForm(idEmployee, idBriefing, message);
+        mockMvc.perform(post("/api/v1/dialogs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidForm)))
+                .andExpect(status().isUnprocessableEntity())  
+                .andExpect(jsonPath("$.errors").exists());
 
-        // Simulação de erro no serviço
-        when(dialogBoxService.createMessage(dialogBoxForm)).thenThrow(new RuntimeException("Erro ao criar mensagem"));
-
-        // Act
-        ResponseEntity<DialogBoxView> response = dialogBoxController.createMessage(dialogBoxForm);
-
-        // Assert: Verificar se retorna 500 e não é nulo
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNull(response.getBody());
+        verify(dialogBoxService, never()).createMessage(any(DialogBoxForm.class));
     }
 
     @Test
-    public void testCreateMessage_WhenInputIsInvalid() {
-        // Arrange
-        DialogBoxForm invalidForm = new DialogBoxForm(null, null, ""); // Valores nulos ou inválidos
+    public void testCreateMessage_InvalidInput_NullFields() throws Exception {
+        DialogBoxForm invalidForm = new DialogBoxForm(null, null, null);
 
-        // Act
-        ResponseEntity<DialogBoxView> response = dialogBoxController.createMessage(invalidForm);
+        mockMvc.perform(post("/api/v1/dialogs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidForm)))
+                .andDo(MockMvcResultHandlers.print())  
+                .andExpect(status().isUnprocessableEntity())  
+                .andExpect(jsonPath("$.message").exists())  
+                .andExpect(jsonPath("$.errors").isArray());  
+        verify(dialogBoxService, never()).createMessage(any(DialogBoxForm.class));  
+    }
 
-        // Assert: Verificar se retorna 400 (Bad Request) em caso de erro no input
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertNull(response.getBody());
+	@Test
+    public void testGetMessagesForBriefing_Success() throws Exception {
+        Long briefingId = 1L;
+        Set<DialogBoxView> messages = Collections.singleton(dialogBoxView);
+
+        when(dialogBoxService.getMessagesByBriefingId(briefingId)).thenReturn(messages);
+
+        mockMvc.perform(get("/api/v1/dialogs/briefing/{idBriefing}", briefingId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())  
+                .andExpect(jsonPath("$[0].dialog").value("Sample dialog message"))
+                .andExpect(jsonPath("$[0].employee.fullName").value("John Doe"))
+                .andExpect(jsonPath("$[0].employee.avatar").value(101));
+
+        verify(dialogBoxService, times(1)).getMessagesByBriefingId(briefingId);
+    }
+
+    @Test
+    public void testGetMessagesForBriefing_NotFound() throws Exception {
+        Long briefingId = 1L;
+
+        when(dialogBoxService.getMessagesByBriefingId(briefingId)).thenReturn(Collections.emptySet());
+
+        mockMvc.perform(get("/api/v1/dialogs/briefing/{idBriefing}", briefingId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())  
+                .andExpect(jsonPath("$").isEmpty());
+
+        verify(dialogBoxService, times(1)).getMessagesByBriefingId(briefingId);
+    }
+
+    @Test
+    public void testCreateMessage_InternalServerError() throws Exception {
+        when(dialogBoxService.createMessage(any(DialogBoxForm.class))).thenThrow(new RuntimeException("Internal Server Error"));
+
+        mockMvc.perform(post("/api/v1/dialogs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(validDialogBoxForm)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").value("Internal Server Error"));
+
+        verify(dialogBoxService, times(1)).createMessage(any(DialogBoxForm.class));
     }
 }
