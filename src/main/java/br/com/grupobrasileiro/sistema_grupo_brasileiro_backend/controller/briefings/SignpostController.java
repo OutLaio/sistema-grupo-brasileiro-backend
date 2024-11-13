@@ -1,5 +1,17 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
+import java.net.URI;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.RegisterSignpostForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
@@ -17,22 +29,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-
 
 @RestController
 @RequestMapping("/api/v1/signposts")
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Signpost", description = "API for managing signposts")
 public class SignpostController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SignpostController.class);
 
     @Autowired
     private ProjectService projectService;
@@ -55,13 +59,20 @@ public class SignpostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     public ResponseEntity<BSignpostDetailedView> registerSignpost(
-            @Valid @RequestBody RegisterSignpostForm registerSignpost,
+            @Valid @RequestBody RegisterSignpostForm registerSignpostForm,
             UriComponentsBuilder uriBuilder
     ) {
-        Project project = projectService.register(registerSignpost.project());
-        Briefing briefing = briefingService.register(registerSignpost.briefing(),project);
-        signpostService.register(registerSignpost.signpost(),briefing);
+        LOGGER.info("Iniciando o registro de um novo signpost para o projeto: {}", registerSignpostForm.projectForm().title());
+
+        Project project = projectService.register(registerSignpostForm.projectForm());
+        LOGGER.info("Projeto registrado com sucesso: {}", project.getId());
+
+        Briefing briefing = briefingService.register(registerSignpostForm.briefingForm(), project);
+        LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
+
+        signpostService.register(registerSignpostForm.signpostForm(), briefing);
+        LOGGER.info("Signpost registrado com sucesso: {}", signpostRegisterView.bSignpostView().id());
+
         return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
-    
 }

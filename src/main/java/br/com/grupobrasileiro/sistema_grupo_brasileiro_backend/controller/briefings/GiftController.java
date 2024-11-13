@@ -2,6 +2,8 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.brief
 
 import java.net.URI;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,13 +30,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("/api/v1/gifts")
 
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Gift", description = "API for managing gifts")
 public class GiftController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GiftController.class);
 
     @Autowired
     private ProjectService projectService;
@@ -60,10 +63,17 @@ public class GiftController {
             @Valid @RequestBody RegisterGiftForm registerGiftForm,
             UriComponentsBuilder uriBuilder
     ) {
+        LOGGER.info("Iniciando registro de novo gift para o projeto: {}", registerGiftForm.projectForm().title());
+        
         Project project = projectService.register(registerGiftForm.projectForm());
-        Briefing briefing = briefingService.register(registerGiftForm.briefingForm(), project);
-        giftService.register(registerGiftForm.giftForm(), briefing);
-        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
+        LOGGER.info("Projeto registrado com sucesso: {}", project.getId());
 
+        Briefing briefing = briefingService.register(registerGiftForm.briefingForm(), project);
+        LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
+
+        giftService.register(registerGiftForm.giftForm(), briefing);
+        LOGGER.info("Gift registrado com sucesso: {}", giftDetailedView.bGiftView().id());
+
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
 }

@@ -2,6 +2,8 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.brief
 
 import java.net.URI;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +36,8 @@ import jakarta.validation.Valid;
 @Tag(name = "Internal Campaigns", description = "API for managing internal campaigns")
 public class InternalCampaignsController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(InternalCampaignsController.class);
+
     @Autowired
     private ProjectService projectService;
 
@@ -58,10 +62,17 @@ public class InternalCampaignsController {
             @Valid @RequestBody RegisterInternalCampaignsForm registerInternalCampaignsForm,
             UriComponentsBuilder uriBuilder
     ) {
+        LOGGER.info("Iniciando o registro de uma nova campanha interna para o projeto: {}", registerInternalCampaignsForm.projectForm().title());
+
         Project project = projectService.register(registerInternalCampaignsForm.projectForm());
-        Briefing briefing = briefingService.register(registerInternalCampaignsForm.briefingForm(),project);
+        LOGGER.info("Projeto registrado com sucesso: {}", project.getId());
+
+        Briefing briefing = briefingService.register(registerInternalCampaignsForm.briefingForm(), project);
+        LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
+
         internalCampaignsService.register(registerInternalCampaignsForm.internalCampaignsForm(), briefing);
+        LOGGER.info("Campanha interna registrada com sucesso: {}", bInternalCampaignDetailedViewMapper.bInternalCampaignsView().id());
+
         return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
-    
 }

@@ -46,13 +46,23 @@ public class FileController {
     @PostMapping("/uploadFile")
     public UploadFileView uploadFile(@Parameter(description = "Arquivo a ser carregado", required = true)
                                       @RequestParam("file") MultipartFile file) {
-        String fileName = fileStorageService.storeFile(file);
+        logger.info("Recebendo arquivo para upload: {}", file.getOriginalFilename());
+
+        String fileName;
+        try {
+            fileName = fileStorageService.storeFile(file);
+            logger.info("Arquivo '{}' carregado com sucesso.", fileName);
+        } catch (Exception e) {
+            logger.error("Erro ao carregar o arquivo '{}': {}", file.getOriginalFilename(), e.getMessage());
+            throw e;  // ou retorne uma resposta adequada para erro
+        }
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/v1/file/downloadFile/")
                 .path(fileName)
                 .toUriString();
 
+        logger.debug("Arquivo disponível em: {}", fileDownloadUri);
         return new UploadFileView(fileName, fileDownloadUri, file.getContentType(), file.getSize());
     }
 
@@ -66,6 +76,8 @@ public class FileController {
     @PostMapping("/uploadMultipleFiles")
     public List<UploadFileView> uploadMultipleFiles(@Parameter(description = "Arquivos a serem carregados", required = true)
                                                      @RequestParam("files") MultipartFile[] files) {
+        logger.info("Recebendo múltiplos arquivos para upload.");
+
         return Arrays.asList(files)
                 .stream()
                 .map(file -> uploadFile(file))
@@ -82,19 +94,26 @@ public class FileController {
     @GetMapping("/downloadFile/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@Parameter(description = "Nome do arquivo a ser baixado", required = true)
                                                  @PathVariable String fileName, HttpServletRequest request) {
-        Resource resource = fileStorageService.loadFileAsResource(fileName);
+        logger.info("Requisição para download do arquivo: {}", fileName);
+        Resource resource;
+        try {
+            resource = fileStorageService.loadFileAsResource(fileName);
+            logger.debug("Arquivo '{}' carregado para download.", fileName);
+        } catch (Exception e) {
+            logger.error("Erro ao carregar arquivo '{}': {}", fileName, e.getMessage());
+            throw e;  // ou retorne uma resposta adequada para erro
+        }
 
         String contentType = null;
-
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
         } catch (Exception e) {
-            logger.info("Não foi possível determinar o tipo de arquivo!");
+            logger.warn("Não foi possível determinar o tipo de arquivo para '{}'. Usando tipo padrão.", fileName);
         }
 
         if (contentType == null) {
-            logger.info("Não foi possível determinar o tipo de arquivo!");
             contentType = "application/octet-stream";
+            logger.debug("Tipo de arquivo padrão aplicado para '{}'.", fileName);
         }
 
         return ResponseEntity.ok()

@@ -1,5 +1,9 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -7,18 +11,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @ControllerAdvice
 public class ApiExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "400", description = "Non-existent username or invalid password")
@@ -26,6 +27,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorMessage> handleBadCredentialsException(BadCredentialsException ex,
                     HttpServletRequest request) {
+        log.error("Authentication failed: {}", ex.getMessage());
         return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -39,6 +41,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ErrorMessage> handleInvalidTokenException(InvalidTokenException ex,
                     HttpServletRequest request) {
+        log.error("Invalid token: {}", ex.getMessage());
         return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -51,6 +54,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorMessage> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex,
                     HttpServletRequest request) {
+        log.error("Invalid input format: {}", ex.getMessage());
         return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -64,6 +68,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ErrorMessage> handleNullPointerException(NullPointerException ex,
                     HttpServletRequest request) {
+        log.error("Null pointer exception: {}", ex.getMessage(), ex);
         return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -76,7 +81,7 @@ public class ApiExceptionHandler {
     })
     @ExceptionHandler({ Exception.class, RuntimeException.class, Throwable.class })
     public ResponseEntity<ErrorMessage> handleException(Exception ex, HttpServletRequest request) {
-        log.error("Unexpected error: ", ex);
+        log.error("Unexpected error occurred: {}", ex.getMessage(), ex);
         return ResponseEntity
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -90,7 +95,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     private ResponseEntity<ErrorMessage> handleEntityNotFoundException(EntityNotFoundException ex,
                     HttpServletRequest request) {
-        log.error("Api Error - " + ex);
+        log.error("Entity not found: {}", ex.getMessage());
         return ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -103,8 +108,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(EmailUniqueViolationException.class)
     public ResponseEntity<ErrorMessage> handleUniqueViolationException(EmailUniqueViolationException ex,
                     HttpServletRequest request) {
-
-        log.error("Api Error - " + ex);
+        log.error("Email conflict: {}", ex.getMessage());
         return ResponseEntity
                         .status(HttpStatus.CONFLICT)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -117,8 +121,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(UserIsNotActiveException.class)
     public ResponseEntity<ErrorMessage> handleUserIsNotActiveException(UserIsNotActiveException ex,
                     HttpServletRequest request) {
-
-        log.error("Api Error - " + ex);
+        log.error("Inactive user: {}", ex.getMessage());
         return ResponseEntity
                         .status(HttpStatus.FORBIDDEN)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -131,7 +134,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorMessage> handleMethodArgumentNotValidException(HttpServletRequest request,
                     MethodArgumentNotValidException ex, BindingResult result) {
-        log.error("Api Error - " + ex);
+        log.error("Validation error: {}", ex.getMessage());
         return ResponseEntity
                         .status(HttpStatus.UNPROCESSABLE_ENTITY)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -145,8 +148,8 @@ public class ApiExceptionHandler {
     })
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorMessage> handleIllegalArgumentException(HttpServletRequest request,
-            IllegalArgumentException ex, BindingResult result) {
-        log.error("Api Error - " + ex);
+            IllegalArgumentException ex) {
+        log.error("Illegal argument: {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -160,6 +163,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(InvalidRoleException.class)
     public ResponseEntity<ErrorMessage> handleInvalidRoleException(InvalidRoleException ex,
                     HttpServletRequest request) {
+        log.error("Invalid role: {}", ex.getMessage());
         return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -173,6 +177,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorMessage> handleUnauthorizedException(UnauthorizedException ex,
             HttpServletRequest request) {
+        log.error("Unauthorized user: {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -186,7 +191,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ProjectNotFoundException.class)
     public ResponseEntity<ErrorMessage> handleProjectNotFoundException(ProjectNotFoundException ex,
                     HttpServletRequest request) {
-        log.error("Api Error - " + ex);
+        log.error("Project not found: {}", ex.getMessage());
         return ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -199,8 +204,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(CollaboratorAlreadyAssignedException.class)
     public ResponseEntity<ErrorMessage> handleCollaboratorAlreadyAssignedException(CollaboratorAlreadyAssignedException ex,
                     HttpServletRequest request) {
-
-        log.error("Api Error - " + ex);
+        log.error("Collaborator already assigned: {}", ex.getMessage());
         return ResponseEntity
                         .status(HttpStatus.CONFLICT)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -213,8 +217,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(CompanyAlreadyExistsException.class)
     public ResponseEntity<ErrorMessage> handleCompanyAlreadyExistsException(CompanyAlreadyExistsException ex,
                     HttpServletRequest request) {
-
-        log.error("Api Error - " + ex);
+        log.error("Company conflict: {}", ex.getMessage());
         return ResponseEntity
                         .status(HttpStatus.CONFLICT)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -227,7 +230,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(FileStorageException.class)
     public ResponseEntity<ErrorMessage> handleFileStorageException(FileStorageException ex,
                     HttpServletRequest request) {
-        log.error("Api Error - " + ex.getMessage(), ex);
+        log.error("File storage error: {}", ex.getMessage(), ex);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -241,7 +244,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(MyFileNotFoundException.class)
     public ResponseEntity<ErrorMessage> handleMyFileNotFoundException(MyFileNotFoundException ex,
                                                                      HttpServletRequest request) {
-        log.error("Api Error - " + ex.getMessage(), ex);
+        log.error("File not found: {}", ex.getMessage(), ex);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -250,3 +253,4 @@ public class ApiExceptionHandler {
     }
 
 }
+

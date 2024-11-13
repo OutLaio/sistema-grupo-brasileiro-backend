@@ -1,5 +1,22 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.user;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form.EmployeeForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user.EmployeeService;
@@ -11,15 +28,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * Controlador REST para operações relacionadas aos Employees.
@@ -28,6 +36,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/employees")
 @Tag(name = "Employees", description = "Employee-related operations")
 public class EmployeeController {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
 
     @Autowired
     private EmployeeService employeeService;
@@ -53,8 +63,17 @@ public class EmployeeController {
     public ResponseEntity<EmployeeView> updateEmployee(
             @Parameter(description = "ID do Employee a ser atualizado") @PathVariable Long id,
             @Valid @RequestBody EmployeeForm form) {
-        EmployeeView updatedEmployee = employeeService.updateEmployee(id, form);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee);
+
+        logger.info("Requisição para atualizar Employee com ID: {}", id);
+        
+        try {
+            EmployeeView updatedEmployee = employeeService.updateEmployee(id, form);
+            logger.info("Employee com ID: {} atualizado com sucesso.", id);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee);
+        } catch (Exception e) {
+            logger.error("Erro ao atualizar Employee com ID: {}: {}", id, e.getMessage());
+            throw e;  // ou retorne uma resposta adequada
+        }
     }
 
     /**
@@ -79,8 +98,13 @@ public class EmployeeController {
             @Parameter(description = "Tamanho da página") @RequestParam(defaultValue = "10") Integer size,
             @Parameter(description = "Direção da ordenação (ASC ou DESC)") @RequestParam(value = "direction", defaultValue = "ASC") String direction,
             @Parameter(description = "Campo de ordenação") @RequestParam(value = "orderBy", defaultValue = "name") String orderBy) {
+        
+        logger.info("Requisição para listar Employees na página {}, tamanho {}, ordenado por {}.", page, size, orderBy);
+
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.valueOf(direction), orderBy);
         Page<EmployeeView> employeesPage = employeeService.getAllCollaborators(pageRequest);
+        logger.info("Lista de Employees retornada com sucesso.");
+
         return ResponseEntity.ok(employeesPage);
     }
 
@@ -101,7 +125,16 @@ public class EmployeeController {
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeView> getEmployeeById(
             @Parameter(description = "ID do Employee") @PathVariable Long id) {
-        EmployeeView employeeView = employeeService.getEmployeeById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(employeeView);
+        
+        logger.info("Requisição para buscar Employee com ID: {}", id);
+        
+        try {
+            EmployeeView employeeView = employeeService.getEmployeeById(id);
+            logger.info("Employee com ID: {} encontrado com sucesso.", id);
+            return ResponseEntity.status(HttpStatus.OK).body(employeeView);
+        } catch (Exception e) {
+            logger.error("Erro ao buscar Employee com ID: {}: {}", id, e.getMessage());
+            throw e;  // ou retorne uma resposta adequada
+        }
     }
 }
