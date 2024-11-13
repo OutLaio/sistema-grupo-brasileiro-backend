@@ -1,17 +1,5 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
-import java.net.URI;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.RegisterSignpostForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
@@ -29,6 +17,17 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/signposts")
@@ -59,19 +58,19 @@ public class SignpostController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     public ResponseEntity<BSignpostDetailedView> registerSignpost(
-            @Valid @RequestBody RegisterSignpostForm registerSignpostForm,
+            @Valid @RequestBody RegisterSignpostForm registerSignpost,
             UriComponentsBuilder uriBuilder
     ) {
-        LOGGER.info("Iniciando o registro de um novo signpost para o projeto: {}", registerSignpostForm.projectForm().title());
+        LOGGER.info("Iniciando o registro de um novo signpost para o projeto: {}", registerSignpost.project().title());
 
-        Project project = projectService.register(registerSignpostForm.projectForm());
+        Project project = projectService.register(registerSignpost.project());
         LOGGER.info("Projeto registrado com sucesso: {}", project.getId());
 
-        Briefing briefing = briefingService.register(registerSignpostForm.briefingForm(), project);
+        Briefing briefing = briefingService.register(registerSignpost.briefing(), project);
         LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
 
-        signpostService.register(registerSignpostForm.signpostForm(), briefing);
-        LOGGER.info("Signpost registrado com sucesso: {}", signpostRegisterView.bSignpostView().id());
+        signpostService.register(registerSignpost.signpost(), briefing);
+        LOGGER.info("Signpost registrado com sucesso!");
 
         return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }

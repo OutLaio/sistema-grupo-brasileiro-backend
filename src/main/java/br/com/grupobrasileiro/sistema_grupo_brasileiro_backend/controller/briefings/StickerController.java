@@ -1,11 +1,10 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.gifts.form.RegisterGiftForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.gifts.view.BGiftDetailedView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.gifts.BGift;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.sticker.form.RegisterStickerForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.sticker.BSticker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.gift.BGiftService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.sticker.BStickerService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,18 +24,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
 @RestController
-@RequestMapping("/api/v1/gifts")
-
+@RequestMapping("/api/v1/stickers")
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Gift", description = "API for managing gifts")
-public class GiftController {
+@Tag(name = "Stickers", description = "API for managing stickers")
+public class StickerController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GiftController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StickerController.class);
 
     @Autowired
     private ProjectService projectService;
@@ -45,33 +42,32 @@ public class GiftController {
     private BriefingService briefingService;
 
     @Autowired
-    private BGiftService giftService;
+    private BStickerService stickerService;
 
     @PostMapping
     @Transactional
-    @Operation(summary = "Register a new gift", method = "POST")
+    @Operation(summary = "Register a new sticker", method = "POST")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Gift registered successfully",
+            @ApiResponse(responseCode = "201", description = "Sticker registered successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BGift.class))),
+                            schema = @Schema(implementation = BSticker.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    public ResponseEntity<BGiftDetailedView> registerGift(
-            @Valid @RequestBody RegisterGiftForm registerGift,
-            UriComponentsBuilder uriBuilder
+    public ResponseEntity<?> registerSticker(
+            @Valid @RequestBody RegisterStickerForm registerSticker
     ) {
-        LOGGER.info("Iniciando registro de novo gift para o projeto: {}", registerGift.projectForm().title());
-        
-        Project project = projectService.register(registerGift.projectForm());
+        LOGGER.info("Iniciando o registro de um novo sticker para o projeto: {}", registerSticker.project().title());
+
+        Project project = projectService.register(registerSticker.project());
         LOGGER.info("Projeto registrado com sucesso: {}", project.getId());
 
-        Briefing briefing = briefingService.register(registerGift.briefingForm(), project);
+        Briefing briefing = briefingService.register(registerSticker.briefing(), project);
         LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
 
-        giftService.register(registerGift.giftForm(), briefing);
-        LOGGER.info("Gift registrado com sucesso!");
+        stickerService.register(registerSticker.sticker(), briefing);
+        LOGGER.info("Sticker registrado com sucesso!");
 
         return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }

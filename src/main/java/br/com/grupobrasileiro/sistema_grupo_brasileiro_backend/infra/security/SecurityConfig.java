@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/requestReset").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/resetPassword").permitAll()
                         .requestMatchers("/swagger-ui/*", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/data/**").permitAll()
 
                         // Restrição de acesso para Supervisores
                         .requestMatchers(HttpMethod.PUT, "/api/v1/projects/{id}/assignCollaborator").hasRole("SUPERVISOR")

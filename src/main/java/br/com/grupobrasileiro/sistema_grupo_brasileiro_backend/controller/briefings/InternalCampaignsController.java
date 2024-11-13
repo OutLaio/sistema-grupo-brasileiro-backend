@@ -1,17 +1,5 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
-import java.net.URI;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.InternalCampaigns.form.RegisterInternalCampaignsForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.InternalCampaigns.view.BInternalCampaignsDetailsView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.internalcampaign.BInternalCampaign;
@@ -29,6 +17,17 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/internal-campaigns")
@@ -59,19 +58,19 @@ public class InternalCampaignsController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     public ResponseEntity<BInternalCampaignsDetailsView> registerInternalCampaigns(
-            @Valid @RequestBody RegisterInternalCampaignsForm registerInternalCampaignsForm,
+            @Valid @RequestBody RegisterInternalCampaignsForm registerInternalCampaigns,
             UriComponentsBuilder uriBuilder
     ) {
-        LOGGER.info("Iniciando o registro de uma nova campanha interna para o projeto: {}", registerInternalCampaignsForm.projectForm().title());
+        LOGGER.info("Iniciando o registro de uma nova campanha interna para o projeto: {}", registerInternalCampaigns.projectForm().title());
 
-        Project project = projectService.register(registerInternalCampaignsForm.projectForm());
+        Project project = projectService.register(registerInternalCampaigns.projectForm());
         LOGGER.info("Projeto registrado com sucesso: {}", project.getId());
 
-        Briefing briefing = briefingService.register(registerInternalCampaignsForm.briefingForm(), project);
+        Briefing briefing = briefingService.register(registerInternalCampaigns.briefingForm(), project);
         LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
 
-        internalCampaignsService.register(registerInternalCampaignsForm.internalCampaignsForm(), briefing);
-        LOGGER.info("Campanha interna registrada com sucesso: {}", bInternalCampaignDetailedViewMapper.bInternalCampaignsView().id());
+        internalCampaignsService.register(registerInternalCampaigns.internalCampaignsForm(), briefing);
+        LOGGER.info("Campanha interna registrada com sucesso!");
 
         return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }

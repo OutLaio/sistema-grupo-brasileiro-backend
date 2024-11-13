@@ -1,17 +1,5 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
-import java.net.URI;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.printeds.form.RegisterPrintedForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.printeds.view.BPrintedsDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.printeds.BPrinted;
@@ -29,6 +17,17 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/printed")
@@ -59,19 +58,19 @@ public class PrintedController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     public ResponseEntity<BPrintedsDetailedView> registerPrinted(
-            @Valid @RequestBody RegisterPrintedForm registerPrintedForm,
+            @Valid @RequestBody RegisterPrintedForm registerPrinted,
             UriComponentsBuilder uriBuilder
     ) {
-        LOGGER.info("Iniciando o registro de um novo material impresso para o projeto: {}", registerPrintedForm.projectForm().title());
+        LOGGER.info("Iniciando o registro de um novo material impresso para o projeto: {}", registerPrinted.projectForm().title());
 
-        Project project = projectService.register(registerPrintedForm.projectForm());
+        Project project = projectService.register(registerPrinted.projectForm());
         LOGGER.info("Projeto registrado com sucesso: {}", project.getId());
 
-        Briefing briefing = briefingService.register(registerPrintedForm.briefingForm(), project);
+        Briefing briefing = briefingService.register(registerPrinted.briefingForm(), project);
         LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
 
-        printedService.register(registerPrintedForm.printedForm(), briefing);
-        LOGGER.info("Material impresso registrado com sucesso: {}", bPrintedsDetailedView.printedView().id());
+        printedService.register(registerPrinted.printedForm(), briefing);
+        LOGGER.info("Material impresso registrado com sucesso!");
 
         return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
