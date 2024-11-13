@@ -76,8 +76,7 @@ public class UserService {
     public void changePassword(PasswordForm passwordForm) {
         User user = userRepository.findById(passwordForm.idUser())
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
-        String currentPassword = passwordEncoder.encode(passwordForm.currentPassword());
-        if(!user.getPassword().equals(currentPassword)) throw new IncorrectPasswordException("A senha atual está incorreta!");
+        if(!passwordEncoder.matches(passwordForm.currentPassword(), user.getPassword())) throw new IncorrectPasswordException("A senha atual está incorreta!");
         user.setPassword(passwordEncoder.encode(passwordForm.newPassword()));
         userRepository.save(user);
     }
