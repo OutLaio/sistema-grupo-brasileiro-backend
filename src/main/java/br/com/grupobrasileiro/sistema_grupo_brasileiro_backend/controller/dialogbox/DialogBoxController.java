@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @RestController
@@ -58,6 +59,7 @@ public class DialogBoxController {
             @ApiResponse(responseCode = "404", description = "Briefing not found")
     })
     @GetMapping("/briefing/{idBriefing}")
+    @Transactional
     public ResponseEntity<Set<DialogBoxView>> getMessagesForBriefing(
             @Parameter(description = "ID of the briefing to retrieve messages for", required = true)
             @PathVariable Long idBriefing) {

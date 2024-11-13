@@ -71,11 +71,9 @@ public class BAgencyBoardController {
         Briefing briefing = briefingService.register(registerAgencyBoard.briefingForm(), project);
         LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
         
-        BAgencyBoardDetailedView bAgencyBoardRegisterView = bAgencyBoardService.register(registerAgencyBoard.bAgencyBoardsForm(), briefing);
+        bAgencyBoardService.register(registerAgencyBoard.bAgencyBoardsForm(), briefing);
         LOGGER.info("AgencyBoard registrado com sucesso: {}", bAgencyBoardRegisterView.bAgencyBoardView().id());
 
-        URI uri = uriBuilder.path("/api/v1/agency-boards/{id}").buildAndExpand(bAgencyBoardRegisterView.bAgencyBoardView().id()).toUri();
-        return ResponseEntity.created(uri).body(bAgencyBoardRegisterView);
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
-
 }

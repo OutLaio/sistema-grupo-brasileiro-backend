@@ -53,11 +53,32 @@ class BSignpostDetailedViewMapperTest {
 
         BSignpostView bSignpostView = new BSignpostView(1L, new MaterialView(1L, "Material"), "Localização", "Setor");
         BriefingTypeView briefingTypeView = new BriefingTypeView(1L, "Tipo de Briefing");
-        BriefingView briefingView = new BriefingView(1L, briefingTypeView, LocalDate.now(), LocalDate.now().plusDays(7), 
-                                                     LocalDate.now().plusDays(14), "Descrição detalhada", null, null, null);
+        
+        // Atualizando BriefingView para refletir a nova estrutura
+        BriefingView briefingView = new BriefingView(
+            1L, // id
+            briefingTypeView, // briefingType
+            LocalDate.now(), // startTime
+            LocalDate.now().plusDays(7), // expectedTime
+            LocalDate.now().plusDays(14), // finishTime
+            "Descrição detalhada", // detailedDescription
+            null, // measurements
+            null, // companies
+            null, // otherCompanies
+            null  // versions
+        );
+
         EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente", null);
         EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador", null);
-        ProjectView projectView = new ProjectView(1L, "Título do Projeto", "Em andamento", client, collaborator);
+        
+        // Ajustando a criação do ProjectView para usar a nova estrutura
+        ProjectView projectView = new ProjectView(
+            1L, // id
+            "Título do Projeto", // title
+            "Em andamento", // status
+            client, // client
+            collaborator // collaborator
+        );
 
         when(bSignpostViewMapper.map(bSignpost)).thenReturn(bSignpostView);
         when(briefingViewMapper.map(briefing)).thenReturn(briefingView);
@@ -68,19 +89,19 @@ class BSignpostDetailedViewMapperTest {
 
         // Assert
         assertNotNull(resultado, "O resultado não deve ser nulo");
-        assertEquals(bSignpostView, resultado.bSignpostView(), "BSignpostView deve ser igual");
+        assertEquals(bSignpostView, resultado.signpost(), "BSignpostView deve ser igual");
         
         // Verificações detalhadas para projectView
-        assertNotNull(resultado.projectView(), "ProjectView não deve ser nulo");
-        assertEquals(projectView.idProject(), resultado.projectView().idProject(), "ID do ProjectView deve ser igual");
-        assertEquals(projectView.title(), resultado.projectView().title(), "Título do ProjectView deve ser igual");
-        assertEquals(projectView.status(), resultado.projectView().status(), "Status do ProjectView deve ser igual");
-        assertEquals(projectView.client(), resultado.projectView().client(), "Cliente do ProjectView deve ser igual");
-        assertEquals(projectView.collaborator(), resultado.projectView().collaborator(), "Colaborador do ProjectView deve ser igual");
+        assertNotNull(resultado.project(), "ProjectView não deve ser nulo");
+        assertEquals(projectView.id(), resultado.project().id(), "ID do ProjectView deve ser igual");
+        assertEquals(projectView.title(), resultado.project().title(), "Título do ProjectView deve ser igual");
+        assertEquals(projectView.status(), resultado.project().status(), "Status do ProjectView deve ser igual");
+        assertEquals(projectView.client(), resultado.project().client(), "Cliente do ProjectView deve ser igual");
+        assertEquals(projectView.collaborator(), resultado.project().collaborator(), "Colaborador do ProjectView deve ser igual");
         
         // Verificações detalhadas para briefingView
-        assertNotNull(resultado.briefingView(), "BriefingView não deve ser nulo");
-        assertEquals(briefingView, resultado.briefingView(), "BriefingView deve ser igual");
+        assertNotNull(resultado.briefing(), "BriefingView não deve ser nulo");
+        assertEquals(briefingView, resultado.briefing(), "BriefingView deve ser igual");
         
         verify(bSignpostViewMapper).map(bSignpost);
         verify(briefingViewMapper).map(briefing);
@@ -102,9 +123,9 @@ class BSignpostDetailedViewMapperTest {
 
         // Assert
         assertNotNull(resultado, "O resultado não deve ser nulo");
-        assertEquals(bSignpostView, resultado.bSignpostView(), "BSignpostView deve ser igual");
-        assertNull(resultado.projectView(), "ProjectView deve ser nulo");
-        assertNull(resultado.briefingView(), "BriefingView deve ser nulo");
+        assertEquals(bSignpostView, resultado.signpost(), "BSignpostView deve ser igual");
+        assertNull(resultado.project(), "ProjectView deve ser nulo");
+        assertNull(resultado.briefing(), "BriefingView deve ser nulo");
 
         verify(bSignpostViewMapper).map(bSignpost);
         verifyNoInteractions(projectViewMapper);

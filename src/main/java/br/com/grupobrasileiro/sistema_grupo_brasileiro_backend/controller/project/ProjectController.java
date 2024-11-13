@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ApproveForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.NewVersionForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.VersionView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.VersionService;
@@ -28,6 +33,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
+import java.net.URI;
 
 /**
  * Controlador para gerenciamento de projetos e versões.
@@ -90,10 +97,10 @@ public class ProjectController {
             @Parameter(description = "ID do projeto") @PathVariable Long id,
             @Valid @RequestBody NewVersionForm form) {
     	logger.info("Criando nova versão para o projeto com ID: {}", id);
-        versionService.create(id, form);
+        VersionView view = versionService.create(id, form);
         logger.debug("Nova versão criada para o projeto de ID: {}", id);
         
-        return ResponseEntity.ok().build();
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + id)).body(view);
     }
 
     /**
@@ -112,10 +119,10 @@ public class ProjectController {
     public ResponseEntity<?> supervisorApprove(
             @Valid @RequestBody ApproveForm form) {
     	logger.info("Supervisor aprovando versão do projeto");
-        versionService.supervisorApprove(form);
+        VersionView view = versionService.supervisorApprove(form);
         logger.debug("Versão do projeto aprovada pelo supervisor");
         
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(view);
     }
 
     /**
@@ -134,10 +141,10 @@ public class ProjectController {
     public ResponseEntity<?> clientApprove(
             @Valid @RequestBody ApproveForm form) {
     	logger.info("Cliente aprovando versão do projeto");
-        versionService.clientApprove(form);
+        VersionView view = versionService.clientApprove(form);
         logger.debug("Versão do projeto aprovada pelo cliente");
         
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(view);
     }
 
     /**

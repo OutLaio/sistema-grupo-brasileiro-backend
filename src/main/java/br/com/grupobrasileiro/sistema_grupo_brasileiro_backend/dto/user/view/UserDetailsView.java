@@ -22,6 +22,6 @@ public record UserDetailsView(
          * setor de trabalho, ocupação e número de operações (NOP). Estas informações
          * são extraídas do record {@link EmployeeView}.</p>
          */
-        EmployeeView employeeView
+        EmployeeView employee
 ) {
 }

@@ -70,10 +70,9 @@ public class PrintedController {
         Briefing briefing = briefingService.register(registerPrintedForm.briefingForm(), project);
         LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
 
-        BPrintedsDetailedView bPrintedsDetailedView = printedService.register(registerPrintedForm.printedForm(), briefing);
+        printedService.register(registerPrintedForm.printedForm(), briefing);
         LOGGER.info("Material impresso registrado com sucesso: {}", bPrintedsDetailedView.printedView().id());
 
-        URI uri = uriBuilder.path("/api/v1/printed/{id}").buildAndExpand(bPrintedsDetailedView.printedView().id()).toUri();
-        return ResponseEntity.created(uri).body(bPrintedsDetailedView);
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
 }

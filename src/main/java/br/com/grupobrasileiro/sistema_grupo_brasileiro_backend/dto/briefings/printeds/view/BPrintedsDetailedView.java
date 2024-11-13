@@ -4,9 +4,9 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 
 public record BPrintedsDetailedView(
-		PrintedView printedView,
-        ProjectView projectView,
-        BriefingView briefingView
+		PrintedView printed,
+        ProjectView project,
+        BriefingView briefing
 ) {
 
 }

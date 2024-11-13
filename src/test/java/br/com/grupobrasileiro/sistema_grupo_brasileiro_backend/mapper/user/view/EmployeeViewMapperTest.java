@@ -1,12 +1,5 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +11,10 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.Emp
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.UserView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 public class EmployeeViewMapperTest {
 
@@ -73,17 +70,16 @@ public class EmployeeViewMapperTest {
 
         // Assert
         assertEquals(employee.getId(), employeeView.id(), "EmployeeView ID should match");
-        assertEquals(userViewMock, employeeView.userView(), "EmployeeView UserView should match");
+        assertEquals(userViewMock, employeeView.user(), "EmployeeView UserView should match");
         assertEquals(employee.getName(), employeeView.name(), "EmployeeView name should match");
         assertEquals(employee.getLastName(), employeeView.lastname(), "EmployeeView lastname should match");
-        assertEquals(employee.getPhoneNumber(), employeeView.phonenumber(), "EmployeeView phoneNumber should match");
+        assertEquals(employee.getPhoneNumber(), employeeView.phoneNumber(), "EmployeeView phoneNumber should match");
         assertEquals(employee.getSector(), employeeView.sector(), "EmployeeView sector should match");
         assertEquals(employee.getOccupation(), employeeView.occupation(), "EmployeeView occupation should match");
         assertEquals(employee.getAgency(), employeeView.agency(), "EmployeeView agency should match");
         assertEquals(employee.getAvatar(), employeeView.avatar(), "EmployeeView avatar should match");
     }
 
-   
     /**
      * Testa o mapeamento quando campos opcionais são nulos.
      * Verifica se o resultado não lança exceções e mapeia corretamente os campos.
@@ -126,18 +122,17 @@ public class EmployeeViewMapperTest {
         // Assert
         assertNotNull(employeeView, "EmployeeView should not be null");
         assertEquals(2L, employeeView.id(), "EmployeeView ID should match");
-        assertEquals(userViewMock, employeeView.userView(), "EmployeeView UserView should match");
+        assertEquals(userViewMock, employeeView.user(), "EmployeeView UserView should match");
         
         // Usando assertEquals para evitar ambiguidade
         assertEquals(null, employeeView.name(), "EmployeeView name should be null");
         assertEquals(null, employeeView.lastname(), "EmployeeView lastname should be null");
-        assertEquals(null, employeeView.phonenumber(), "EmployeeView phoneNumber should be null");
+        assertEquals(null, employeeView.phoneNumber(), "EmployeeView phoneNumber should be null");
         assertEquals(null, employeeView.sector(), "EmployeeView sector should be null");
         assertEquals(null, employeeView.occupation(), "EmployeeView occupation should be null");
         assertEquals(null, employeeView.agency(), "EmployeeView agency should be null");
         assertEquals(null, employeeView.avatar(), "EmployeeView avatar should be null");
     }
-
 
     /**
      * Testa o mapeamento quando campos opcionais estão vazios.
@@ -180,14 +175,13 @@ public class EmployeeViewMapperTest {
 
         // Assert
         assertEquals(3L, employeeView.id(), "EmployeeView ID should match");
-        assertEquals(userViewMock, employeeView.userView(), "EmployeeView UserView should match");
+        assertEquals(userViewMock, employeeView.user(), "EmployeeView UserView should match");
         assertEquals("", employeeView.name(), "EmployeeView name should be empty for empty name");
         assertEquals("", employeeView.lastname(), "EmployeeView lastname should be empty for empty last name");
-        assertEquals("", employeeView.phonenumber(), "EmployeeView phoneNumber should be empty for empty phone number");
+        assertEquals("", employeeView.phoneNumber(), "EmployeeView phoneNumber should be empty for empty phone number");
         assertEquals("", employeeView.sector(), "EmployeeView sector should be empty for empty sector");
         assertEquals("", employeeView.occupation(), "EmployeeView occupation should be empty for empty occupation");
         assertEquals("", employeeView.agency(), "EmployeeView agency should be empty for empty agency");
-        assertNull(employeeView.avatar(), "EmployeeView avatar should be null");
+        assertEquals(null, employeeView.avatar(), "EmployeeView avatar should be null");
     }
-
 }

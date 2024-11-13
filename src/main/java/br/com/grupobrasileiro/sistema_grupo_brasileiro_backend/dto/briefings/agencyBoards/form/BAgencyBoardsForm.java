@@ -13,6 +13,7 @@ public record BAgencyBoardsForm(
         @JsonAlias({"id_agency_board_type"})
         Long idAgencyBoardType,
 
+        @JsonAlias({"id_board_type"})
         Long idBoardType,
 
         @NotBlank(message = "The board_location cannot be blank")

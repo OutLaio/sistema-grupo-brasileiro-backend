@@ -31,7 +31,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/api/v1/bgifts")
+@RequestMapping("/api/v1/gifts")
+
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Gift", description = "API for managing gifts")
 public class GiftController {
@@ -70,10 +71,9 @@ public class GiftController {
         Briefing briefing = briefingService.register(registerGiftForm.briefingForm(), project);
         LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
 
-        BGiftDetailedView giftDetailedView = giftService.register(registerGiftForm.giftForm(), briefing);
+        giftService.register(registerGiftForm.giftForm(), briefing);
         LOGGER.info("Gift registrado com sucesso: {}", giftDetailedView.bGiftView().id());
 
-        URI uri = uriBuilder.path("/api/v1/bgifts/{id}").buildAndExpand(giftDetailedView.bGiftView().id()).toUri();
-        return ResponseEntity.created(uri).body(giftDetailedView);
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
 }

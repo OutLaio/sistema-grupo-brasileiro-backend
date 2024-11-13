@@ -70,10 +70,9 @@ public class InternalCampaignsController {
         Briefing briefing = briefingService.register(registerInternalCampaignsForm.briefingForm(), project);
         LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
 
-        BInternalCampaignsDetailsView bInternalCampaignDetailedViewMapper = internalCampaignsService.register(registerInternalCampaignsForm.internalCampaignsForm(), briefing);
+        internalCampaignsService.register(registerInternalCampaignsForm.internalCampaignsForm(), briefing);
         LOGGER.info("Campanha interna registrada com sucesso: {}", bInternalCampaignDetailedViewMapper.bInternalCampaignsView().id());
 
-        URI uri = uriBuilder.path("/api/v1/internal-campaigns/{id}").buildAndExpand(bInternalCampaignDetailedViewMapper.bInternalCampaignsView().id()).toUri();
-        return ResponseEntity.created(uri).body(bInternalCampaignDetailedViewMapper);
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
 }

@@ -28,11 +28,8 @@ public class BGiftDetailedViewMapper implements Mapper<BGift, BGiftDetailedView>
 
     @Override
     public BGiftDetailedView map(BGift bGift) {
-
         Briefing briefing = bGift.getBriefing();
-
         Project project = briefing != null ? briefing.getProject() : null;
-
  
         BGiftView bGiftView = bGiftViewMapper.map(bGift);
         ProjectView projectView = project != null ? projectViewMapper.map(project) : null;

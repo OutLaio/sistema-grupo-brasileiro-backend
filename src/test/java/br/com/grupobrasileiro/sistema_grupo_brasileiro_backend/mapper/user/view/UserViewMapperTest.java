@@ -1,10 +1,10 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.user.view;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.profile.view.ProfileView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.annotations.ValidEmail;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.UserView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,10 +13,7 @@ import org.mockito.Mockito;
 
 import com.github.javafaker.Faker;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.profile.view.ProfileView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.UserView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserViewMapperTest {
 
@@ -71,13 +68,13 @@ public class UserViewMapperTest {
         // Assert
         assertEquals(user.getId(), userView.id(), "UserView ID should match");
         assertEquals(user.getEmail(), userView.email(), "UserView email should match");
-        assertEquals(profileView, userView.profileView(), "UserView profileView should match");
+        assertEquals(profileView, userView.profile(), "UserView profile should match");
     }
 
     /**
      * Testa o mapeamento de User para UserView com perfil nulo.
      * Verifica se o mapeamento lida corretamente com um User que tem o perfil nulo,
-     * garantindo que o campo profileView no UserView seja nulo.
+     * garantindo que o campo profile no UserView seja nulo.
      */
     @Test
     @DisplayName("Should map User to UserView with null profile")
@@ -100,7 +97,7 @@ public class UserViewMapperTest {
         assertNotNull(userView, "UserView should not be null when user is mapped");
         assertEquals(user.getId(), userView.id(), "UserView ID should match");
         assertEquals(user.getEmail(), userView.email(), "UserView email should match");
-        assertNull(userView.profileView(), "UserView profileView should be null when User profile is null");
+        assertNull(userView.profile(), "UserView profile should be null when User profile is null");
     }
 
     /**

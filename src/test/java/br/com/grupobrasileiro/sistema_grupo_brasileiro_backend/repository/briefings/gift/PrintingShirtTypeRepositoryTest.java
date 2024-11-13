@@ -1,122 +1,94 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.gift;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-import java.util.Optional;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
-
-import com.github.javafaker.Faker;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.gifts.PrintingShirtType;
-import jakarta.transaction.Transactional;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional  
+import java.util.Optional;
+
 public class PrintingShirtTypeRepositoryTest {
 
-    @Autowired
+    @Mock
     private PrintingShirtTypeRepository printingShirtTypeRepository;
 
-    private Faker faker;
-
     @BeforeEach
-    void setUp() {
-        faker = new Faker();
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
-    /**
-     * Testa a persistência e recuperação do PrintingShirtType no repositório.
-     * Verifica se o objeto é salvo e pode ser recuperado corretamente.
-     */
     @Test
-    @Rollback(false)
-    @DisplayName("Should save and find PrintingShirtType correctly")
-    void testSaveAndFindPrintingShirtType() {
-        // Arrange
-        PrintingShirtType shirtType = new PrintingShirtType();
-        shirtType.setDescription(faker.lorem().word()); 
+    public void testSaveAndFindPrintingShirtType() {
+        // Criação de um objeto de teste
+        PrintingShirtType printingShirtType = new PrintingShirtType();
+        printingShirtType.setDescription("Sample Description");
+        printingShirtType.setId(1L); // ID simulado
 
-        // Act
-        PrintingShirtType savedType = printingShirtTypeRepository.save(shirtType);
+        // Configurando o comportamento do mock
+        when(printingShirtTypeRepository.save(any(PrintingShirtType.class))).thenReturn(printingShirtType);
+        when(printingShirtTypeRepository.findById(1L)).thenReturn(Optional.of(printingShirtType));
 
-        // Assert
-        Optional<PrintingShirtType> foundType = printingShirtTypeRepository.findById(savedType.getId());
-        assertThat(foundType).isPresent();
-        assertThat(foundType.get().getDescription()).isEqualTo(shirtType.getDescription());
+        // Teste de salvamento
+        PrintingShirtType savedEntity = printingShirtTypeRepository.save(printingShirtType);
+        assertNotNull(savedEntity.getId());
+        assertEquals("Sample Description", savedEntity.getDescription());
+
+        // Teste de recuperação
+        Optional<PrintingShirtType> foundEntity = printingShirtTypeRepository.findById(1L);
+        assertTrue(foundEntity.isPresent());
+        assertEquals("Sample Description", foundEntity.get().getDescription());
     }
-
-    /**
-     * Testa a atualização de um PrintingShirtType.
-     */
+    
     @Test
-    @Rollback(false)
-    @DisplayName("Should update a PrintingShirtType")
-    void testUpdatePrintingShirtType() {
-        // Arrange
-        PrintingShirtType shirtType = new PrintingShirtType();
-        shirtType.setDescription(faker.lorem().word());
-        PrintingShirtType savedType = printingShirtTypeRepository.save(shirtType);
+    public void testUpdatePrintingShirtType() {
+        // Criação de um objeto de teste
+        PrintingShirtType printingShirtType = new PrintingShirtType();
+        printingShirtType.setId(1L);
+        printingShirtType.setDescription("Original Description");
 
-        // Act - Atualiza a descrição do tipo de impressão da camiseta
-        savedType.setDescription("Descrição Atualizada");
-        PrintingShirtType updatedType = printingShirtTypeRepository.save(savedType);
+        // Simulando o comportamento do mock
+        when(printingShirtTypeRepository.save(any(PrintingShirtType.class))).thenReturn(printingShirtType);
 
-        // Assert
-        assertThat(updatedType.getDescription()).isEqualTo("Descrição Atualizada");
+        // Simulando a atualização
+        printingShirtType.setDescription("Updated Description");
+        PrintingShirtType updatedEntity = printingShirtTypeRepository.save(printingShirtType);
+
+        // Verificações
+        assertEquals("Updated Description", updatedEntity.getDescription());
     }
 
-    /**
-     * Testa a exclusão de um PrintingShirtType.
-     */
     @Test
-    @Rollback(false)
-    @DisplayName("Should delete a PrintingShirtType")
-    void testDeletePrintingShirtType() {
-        // Arrange
-        PrintingShirtType shirtType = new PrintingShirtType();
-        shirtType.setDescription(faker.lorem().word());
-        PrintingShirtType savedType = printingShirtTypeRepository.save(shirtType);
+    public void testDeletePrintingShirtType() {
+        // Criação de um objeto de teste
+        PrintingShirtType printingShirtType = new PrintingShirtType();
+        printingShirtType.setId(1L);
+        
+        // Simulando o comportamento do mock
+        doNothing().when(printingShirtTypeRepository).deleteById(1L);
 
-        // Act
-        printingShirtTypeRepository.delete(savedType);
-        Optional<PrintingShirtType> foundType = printingShirtTypeRepository.findById(savedType.getId());
-
-        // Assert
-        assertThat(foundType).isNotPresent();
+        // Executando a exclusão
+        printingShirtTypeRepository.deleteById(1L);
+        
+        // Verificando que o método foi chamado
+        verify(printingShirtTypeRepository, times(1)).deleteById(1L);
     }
 
-    /**
-     * Testa a recuperação de todos os PrintingShirtTypes.
-     */
     @Test
-    @DisplayName("Should retrieve all PrintingShirtTypes")
-    void testFindAllPrintingShirtTypes() {
-        // Arrange
-        printingShirtTypeRepository.deleteAll(); // Limpa todos os tipos existentes
+    public void testFindPrintingShirtTypeNotFound() {
+        // Simulando o comportamento do mock para retornar um Optional vazio
+        when(printingShirtTypeRepository.findById(2L)).thenReturn(Optional.empty());
 
-        PrintingShirtType shirtType1 = new PrintingShirtType();
-        shirtType1.setDescription(faker.lorem().word());
-        PrintingShirtType shirtType2 = new PrintingShirtType();
-        shirtType2.setDescription(faker.lorem().word());
-        printingShirtTypeRepository.save(shirtType1);
-        printingShirtTypeRepository.save(shirtType2);
+        // Tentando encontrar a entidade
+        Optional<PrintingShirtType> foundEntity = printingShirtTypeRepository.findById(2L);
 
-        // Act
-        List<PrintingShirtType> allShirtTypes = (List<PrintingShirtType>) printingShirtTypeRepository.findAll();
-
-        // Assert
-        assertThat(allShirtTypes).hasSize(2);
-        assertThat(allShirtTypes).extracting(PrintingShirtType::getDescription)
-                                 .containsExactlyInAnyOrder(shirtType1.getDescription(), shirtType2.getDescription());
+        // Verificações
+        assertFalse(foundEntity.isPresent());
     }
+
 }

@@ -16,23 +16,23 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.integration.conta
 @ActiveProfiles("test-integration")
 class SwaggerIntegrationTest extends AbstractIntegrationTest {
 
- @LocalServerPort
- private int port;
+      @LocalServerPort
+     private int port;
 
- @Test
- @DisplayName("JUnit test for Should Display Swagger UI Page")
- void testShouldDisplaySwaggerUiPage() {
-     var content = given()
-             .basePath("/swagger-ui/index.html")
-             .port(port)
-             .when()
-             .get()
-             .then()
-             .statusCode(200)
-             .extract()
-             .body()
-             .asString();
+     @Test
+     @DisplayName("JUnit test for Should Display Swagger UI Page")
+     void testShouldDisplaySwaggerUiPage() {
+         var content = given()
+                 .basePath("/swagger-ui/index.html")
+                 .port(port)
+                 .when()
+                 .get()
+                 .then()
+                 .statusCode(200)
+                 .extract()
+                 .body()
+                 .asString();
 
-     assertTrue(content.contains("Swagger UI"));
+         assertTrue(content.contains("Swagger UI"));
+     }
  }
-}

@@ -57,8 +57,11 @@ public class BriefingService {
         briefing.setProject(project);
         briefing.setBriefingType(briefingType);
 
-        Measurement measurement = measurementFormMapper.map(briefingForm.measurement());
-        measurement.setBriefing(briefing);
+        Measurement measurement = null;
+        if (briefingForm.measurement() != null) {
+            measurement = measurementFormMapper.map(briefingForm.measurement());
+            measurement.setBriefing(briefing);
+        }
 
         Set<CompaniesBriefing> companies =(briefingForm.companies() != null) ? briefingForm.companies().stream().map(
                 company -> {
@@ -68,7 +71,7 @@ public class BriefingService {
                 }).collect(Collectors.toSet()) : Set.of();
 
         briefingRepository.saveAndFlush(briefing);
-        measurementRepository.save(measurement);
+        if (measurement != null) measurementRepository.save(measurement);
         companiesBriefingRepository.saveAll(companies);
         return briefing;
     }

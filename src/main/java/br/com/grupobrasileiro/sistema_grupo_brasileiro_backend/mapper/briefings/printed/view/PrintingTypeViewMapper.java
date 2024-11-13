@@ -11,7 +11,9 @@ public class PrintingTypeViewMapper implements Mapper<PrintingType, PrintingType
 
 	@Override
 	public PrintingTypeView map(PrintingType i) {
-		return new PrintingTypeView(i.getId(), i.getDescription());
+		return new PrintingTypeView(
+			i.getId(),
+			i.getDescription()
+		);
 	}
-
 }

@@ -1,4 +1,3 @@
-
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -7,7 +6,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,10 +20,11 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.age
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BoardTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CityView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyCityView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.CompanyView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.OtherRouteView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.RouteView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.companiesBriefing.view.CompaniesBriefingsView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.measurements.view.MeasurementsView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
@@ -35,9 +34,11 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.vi
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.AgencyBoardType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BoardType;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.CompanyCity;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.City;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Company;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.OtherRoute;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.Route;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.RouteCity;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 
@@ -59,8 +60,7 @@ class BAgencyBoardDetailedViewMapperTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-    
- 
+
     @Test
     void testMapWithFullyPopulatedBAgencyBoard() {
         // Arrange
@@ -70,32 +70,57 @@ class BAgencyBoardDetailedViewMapperTest {
         bAgencyBoard.setBriefing(briefing);
         briefing.setProject(project);
 
-        CityView cityView = new CityView(1L, "City Name");
-        CompanyView companyView = new CompanyView(1L, "Company Name");
-        CompanyCityView companyCityView = new CompanyCityView(1L, cityView, companyView);
+        // Criar as instâncias das classes necessárias
+        City city = new City(1L, "City Name");
+        Company company = new Company(1L, "Company Name");
+        
+        // Criar as views necessárias
+        CompanyView companyView = new CompanyView(company.getId(), company.getName()); 
+        CityView cityView = new CityView(city.getId(), city.getName()); 
+        
+        // Criar a coleção de CityView
+        Set<CityView> cities = new HashSet<>();
+        cities.add(cityView);
 
-        BAgencyBoardView bAgencyBoardView = new BAgencyBoardView(1L, 
-            new AgencyBoardTypeView(1L, "Type"), 
+        // Ajustar os tipos das classes
+        BAgencyBoardView bAgencyBoardView = new BAgencyBoardView(
+            1L,
+            new AgencyBoardTypeView(1L, "Type"),
             new BoardTypeView(1L, "Board Type"),
-            Set.of(new RouteView(1L, companyCityView, "Route Type")),
-            Set.of(new OtherRouteView(1L, "Company", "City", "Other Route Type")),
-            "Location", 
-            "Observations");
+            new HashSet<RouteView>() {{
+                add(new RouteView(1L, companyView, cities, "Route Type")); 
+            }},
+            new HashSet<OtherRouteView>() {{
+                add(new OtherRouteView(1L, "Company", city.getName(), "Other Route Type")); 
+            }},
+            "Location",
+            "Observations"
+        );
 
+        // Ajustando BriefingView
         BriefingTypeView briefingTypeView = new BriefingTypeView(1L, "Briefing Type");
+        
+        // Criar instâncias de MeasurementsView e CompaniesBriefingsView, se necessário
+        MeasurementsView measurementsView = null; 
+        CompaniesBriefingsView companiesView = null; 
+
         BriefingView briefingView = new BriefingView(
-            1L, 
-            briefingTypeView, 
-            LocalDate.now(), 
-            LocalDate.now().plusDays(30), 
-            null, 
+            1L,
+            briefingTypeView,
+            LocalDate.now(),
+            LocalDate.now().plusDays(30),
+            LocalDate.now().plusDays(60), 
             "Detailed Description",
-            null, null, null
+            measurementsView,
+            companiesView, 
+            null, 
+            new HashSet<>()
         );
 
         ProjectView projectView = new ProjectView(1L, "Project Name", "Status", 
             new EmployeeSimpleView(1L, "Client Name", null),
-            new EmployeeSimpleView(2L, "Collaborator Name", null));
+            new EmployeeSimpleView(2L, "Collaborator Name", null)
+        );
 
         when(bAgencyBoardViewMapper.map(bAgencyBoard)).thenReturn(bAgencyBoardView);
         when(briefingViewMapper.map(briefing)).thenReturn(briefingView);
@@ -106,9 +131,9 @@ class BAgencyBoardDetailedViewMapperTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(bAgencyBoardView, result.bAgencyBoardView());
-        assertEquals(briefingView, result.briefingView());
-        assertEquals(projectView, result.projectView());
+        assertEquals(bAgencyBoardView, result.bAgencyBoard());
+        assertEquals(briefingView, result.briefing());
+        assertEquals(projectView, result.project());
 
         verify(bAgencyBoardViewMapper).map(bAgencyBoard);
         verify(briefingViewMapper).map(briefing);
@@ -134,59 +159,77 @@ class BAgencyBoardDetailedViewMapperTest {
         boardType.setId(1L);
         bAgencyBoard.setBoardType(boardType);
 
-        CompanyCity companyCity = new CompanyCity();
-        companyCity.setId(1L);
+        // Criando instâncias de City e Company
+        City city = new City(1L, "City Name");
+        Company company = new Company(1L, "Company Name");
 
+        // Criar a coleção de RouteCity, se necessário
+        Set<RouteCity> routeCities = new HashSet<>(); 
+
+        // Criar a instância de Route
         Route route = new Route();
         route.setId(1L);
         route.setType("Route Type");
-        route.setCompanyCity(companyCity);
-        route.setBAgencyBoard(bAgencyBoard);  // Definindo o BAgencyBoard na Route
+        route.setCompany(company); 
+        route.setBAgencyBoard(bAgencyBoard); 
+        route.setRouteCities(routeCities); 
 
-        Set<Route> routes = new HashSet<>();
+        HashSet<Route> routes = new HashSet<>();
         routes.add(route);
         bAgencyBoard.setRoutes(routes);
 
         OtherRoute otherRoute = new OtherRoute();
         otherRoute.setId(1L);
-        otherRoute.setCompany("Company");
+        otherRoute.setCompany(company.getName());
         otherRoute.setType("Other Route Type");
-        otherRoute.setBAgencyBoard(bAgencyBoard);  // Definindo o BAgencyBoard no OtherRoute
 
-        Set<OtherRoute> otherRoutes = new HashSet<>();
+        HashSet<OtherRoute> otherRoutes = new HashSet<>();
         otherRoutes.add(otherRoute);
         bAgencyBoard.setOtherRoutes(otherRoutes);
 
         bAgencyBoard.setBoardLocation("Board Location");
         bAgencyBoard.setObservations("Observations");
 
-        CityView cityView = new CityView(1L, "City Name");
-        CompanyView companyView = new CompanyView(1L, "Company Name");
-        CompanyCityView companyCityView = new CompanyCityView(1L, cityView, companyView);
-
         BAgencyBoardView bAgencyBoardView = new BAgencyBoardView(
             1L,
             new AgencyBoardTypeView(1L, "Agency Board Type"),
             new BoardTypeView(1L, "Board Type"),
-            Set.of(new RouteView(1L, companyCityView, "Route Type")),
-            Set.of(new OtherRouteView(1L, "Company", "City", "Other Route Type")),
+            new HashSet<RouteView>() {{
+                // Criando a RouteView
+                Set<CityView> cities = new HashSet<>();
+                cities.add(new CityView(city.getId(), city.getName())); 
+                add(new RouteView(1L, new CompanyView(company.getId(), company.getName()), cities, "Route Type"));
+            }},
+            new HashSet<OtherRouteView>() {{
+                add(new OtherRouteView(1L, company.getName(), city.getName(), "Other Route Type")); 
+            }},
             "Board Location",
             "Observations"
         );
 
+        // Ajustando BriefingView
+        BriefingTypeView briefingTypeView = new BriefingTypeView(1L, "Briefing Type");
+
+        MeasurementsView measurementsView = null; 
+        CompaniesBriefingsView companiesView = null; 
+
         BriefingView briefingView = new BriefingView(
             1L,
-            new BriefingTypeView(1L, "Briefing Type"),
+            briefingTypeView,
             LocalDate.now(),
             LocalDate.now().plusDays(30),
-            null,
+            LocalDate.now().plusDays(60), 
             "Detailed Description",
-            null, null, null
+            measurementsView,
+            companiesView, 
+            null, 
+            new HashSet<>()
         );
 
         ProjectView projectView = new ProjectView(1L, "Project Name", "Status", 
             new EmployeeSimpleView(1L, "Client Name", null),
-            new EmployeeSimpleView(2L, "Collaborator Name", null));
+            new EmployeeSimpleView(2L, "Collaborator Name", null)
+        );
 
         when(bAgencyBoardViewMapper.map(bAgencyBoard)).thenReturn(bAgencyBoardView);
         when(briefingViewMapper.map(briefing)).thenReturn(briefingView);
@@ -197,9 +240,9 @@ class BAgencyBoardDetailedViewMapperTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(bAgencyBoardView, result.bAgencyBoardView());
-        assertEquals(briefingView, result.briefingView());
-        assertEquals(projectView, result.projectView());
+        assertEquals(bAgencyBoardView, result.bAgencyBoard());
+        assertEquals(briefingView, result.briefing());
+        assertEquals(projectView, result.project());
 
         verify(bAgencyBoardViewMapper).map(bAgencyBoard);
         verify(briefingViewMapper).map(briefing);
