@@ -1,5 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.project;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.*;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ApproveForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.NewVersionForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.VersionView;
@@ -235,5 +234,21 @@ public class ProjectController {
         }
         
         return response;
+    }
+
+    @PutMapping("/{id}/alterTitle")
+    public ResponseEntity<?> updateTitle(@PathVariable Long id, @Valid @RequestBody AlterTitleForm form){
+        logger.info("Atualizando título do projeto com ID: {}", id);
+        MessageSuccessView view = projectService.updateTitle(id, form.newTitle());
+        logger.debug("Título do projeto atualizado com sucesso, ID: {}", id);
+        return ResponseEntity.ok().body(view);
+    }
+
+    @PutMapping("/{id}/alterDate")
+    public ResponseEntity<?> updateDate(@PathVariable Long id, @Valid @RequestBody AlterDateForm form){
+        logger.info("Atualizando título do projeto com ID: {}", id);
+        MessageSuccessView view = projectService.updateDate(id, form.newDate());
+        logger.debug("Título do projeto atualizado com sucesso, ID: {}", id);
+        return ResponseEntity.ok().body(view);
     }
 }

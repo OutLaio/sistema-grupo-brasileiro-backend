@@ -4,8 +4,10 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.sticker.view.BStickerDetailedView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AlterTitleForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.ProjectStatusEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
@@ -21,6 +23,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.s
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
@@ -29,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,6 +41,9 @@ public class ProjectService {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
+    private BriefingRepository briefingRepository;
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -167,5 +174,23 @@ public class ProjectService {
             //TODO: Implement the search for the briefing Handouts
         }
         throw new IllegalArgumentException("Error retrieving the briefing: The project briefing type is not valid");
+    }
+
+    public MessageSuccessView updateTitle(Long id, String title) {
+        Project project = projectRepository.findById(id).orElseThrow(
+            () -> new EntityNotFoundException("Project not found with id: " + id)
+        );
+        project.setTitle(title);
+        projectRepository.save(project);
+        return new MessageSuccessView("Título Aterado com Sucesso!");
+    }
+
+    public MessageSuccessView updateDate(Long id, LocalDate date) {
+        Project project = projectRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Project not found with id: " + id)
+        );
+        project.getBriefing().setExpectedTime(date);
+        briefingRepository.save(project.getBriefing());
+        return new MessageSuccessView("Data de Entrega Aterada com Sucesso!");
     }
 }
