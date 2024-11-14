@@ -29,9 +29,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
+/**
+ * Controller for managing Gifts within the system.
+ */
 @RestController
 @RequestMapping("/api/v1/gifts")
-
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Gift", description = "API for managing gifts")
 public class GiftController {
@@ -47,16 +49,32 @@ public class GiftController {
     @Autowired
     private BGiftService giftService;
 
+    /**
+     * Registers a new gift for a project.
+     * 
+     * @param registerGift the data to register a gift
+     * @param uriBuilder builder for creating the location URI
+     * @return a response entity containing the detailed view of the registered gift
+     */
     @PostMapping
     @Transactional
-    @Operation(summary = "Register a new gift", method = "POST")
+    @Operation(
+        summary = "Register a new gift",
+        description = "Registers a new gift for a project. This operation creates a new gift, " +
+                      "registers the associated project and briefing, and returns a detailed view of the gift."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Gift registered successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BGift.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+        @ApiResponse(
+            responseCode = "201", 
+            description = "Gift registered successfully", 
+            content = @Content(
+                mediaType = "application/json", 
+                schema = @Schema(implementation = BGiftDetailedView.class)
+            )
+        ),
+        @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
+        @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+        @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     public ResponseEntity<BGiftDetailedView> registerGift(
             @Valid @RequestBody RegisterGiftForm registerGift,
@@ -75,4 +93,5 @@ public class GiftController {
 
         return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
     }
+    
 }
