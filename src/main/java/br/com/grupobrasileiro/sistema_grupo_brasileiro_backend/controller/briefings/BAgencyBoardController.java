@@ -47,17 +47,33 @@ public class BAgencyBoardController {
     @Autowired
     private BAgencyBoardService bAgencyBoardService;
 
+    /**
+     * Registers a new AgencyBoard for a project.
+     * 
+     * @param registerAgencyBoard the data to register a new agency board
+     * @param uriBuilder builder for creating the location URI
+     * @return a response entity containing the details of the registered agency board
+     */
     @PostMapping
     @Transactional
-    @Operation(summary = "Register a new agencyBoard", method = "POST")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "AgencyBoard registered successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BSignpost.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
+    @Operation(
+    	    summary = "Register a new agencyBoard", 
+    	    description = "Registers a new agencyBoard for a project, creating the associated briefing and project before registering the agency board."
+    	)
+    	@ApiResponses(value = {
+    	    @ApiResponse(
+    	        responseCode = "201",
+    	        description = "AgencyBoard registered successfully",
+    	        content = @Content(
+    	            mediaType = "application/json",
+    	            schema = @Schema(implementation = BAgencyBoardDetailedView.class)
+    	        )
+    	    ),
+    	    @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
+    	    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+    	    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    	})
+
     public ResponseEntity<BAgencyBoardDetailedView> registerSignpost(
             @Valid @RequestBody RegisterAgencyBoard registerAgencyBoard,
             UriComponentsBuilder uriBuilder

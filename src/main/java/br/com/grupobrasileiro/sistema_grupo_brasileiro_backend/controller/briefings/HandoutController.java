@@ -29,6 +29,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
+/**
+ * Controller for managing Handouts within the system.
+ */
 @RestController
 @RequestMapping("/api/v1/handouts")
 @SecurityRequirement(name = "bearer-key")
@@ -46,17 +49,34 @@ public class HandoutController {
     @Autowired
     private BHandoutService bHandoutService;
     
+    
+    /**
+     * Registers a new handout for a project.
+     *
+     * @param registerHandout the data to register a handout
+     * @param uriBuilder builder for creating the location URI
+     * @return a response entity containing the detailed view of the registered handout
+     */
     @PostMapping
     @Transactional
-    @Operation(summary = "Register a new handout", method = "POST")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Handout registered successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BHandout.class))),
+    @Operation(
+            summary = "Register a new handout",
+            description = "Registers a new handout for a project. This operation creates a new handout, " +
+                          "registers the associated project and briefing, and returns a detailed view of the handout."
+        )
+        @ApiResponses(value = {
+            @ApiResponse(
+                responseCode = "201", 
+                description = "Handout registered successfully", 
+                content = @Content(
+                    mediaType = "application/json", 
+                    schema = @Schema(implementation = BHandoutDetailedView.class)
+                )
+            ),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
+        })
     public ResponseEntity<BHandoutDetailedView> registerHandout(
             @Valid @RequestBody RegisterHandoutForm registerHandout,
             UriComponentsBuilder uriBuilder
