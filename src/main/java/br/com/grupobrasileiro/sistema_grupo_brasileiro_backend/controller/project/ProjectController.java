@@ -166,8 +166,8 @@ public class ProjectController {
     	logger.info("Atualizando status de produção para o projeto com ID: {}", id);
         projectService.setHasConfection(id, hasConfection);
         logger.debug("Status de produção atualizado para o projeto de ID: {}", id);
-        
-        return ResponseEntity.ok().build();
+        MessageSuccessView view = new MessageSuccessView("Status Alterado com sucesso");
+        return ResponseEntity.ok().body(view);
     }
 
     /**
