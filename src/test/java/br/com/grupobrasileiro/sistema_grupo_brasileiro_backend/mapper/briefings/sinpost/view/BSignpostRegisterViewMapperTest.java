@@ -85,10 +85,10 @@ public class BSignpostRegisterViewMapperTest {
     }
 
     /**
-     * Testa que o método map retorna um SignpostRegisterView com briefingView e project nulos ao mapear um BSignpost sem briefing.
+     * Testa que o método map retorna um SignpostRegisterView com briefingView e projectForm nulos ao mapear um BSignpost sem briefing.
      */
     @Test
-    @DisplayName("Should return SignpostRegisterView with null briefingView and project when mapping BSignpost without briefing")
+    @DisplayName("Should return SignpostRegisterView with null briefingView and projectForm when mapping BSignpost without briefing")
     void deveRetornarSignpostRegisterViewComBriefingViewENuloQuandoMapearBSignpostSemBriefing() {
         // Configuração do mock
         when(bSignpost.getBriefing()).thenReturn(null);

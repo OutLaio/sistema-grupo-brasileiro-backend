@@ -169,7 +169,7 @@ public class BAgencyBoardRegisterViewMapperTest {
         doAnswer(invocation -> {
             BAgencyBoard input = invocation.getArgument(0);
             BAgencyBoardView mappedBAgencyBoardView = bAgencyBoardViewMapper.map(input);
-            // Since the project is null, we do not call projectViewMapper
+            // Since the projectForm is null, we do not call projectViewMapper
             return new BAgencyBoardDetailedView(mappedBAgencyBoardView, null, null);
         }).when(mapper).map(any(BAgencyBoard.class));
 

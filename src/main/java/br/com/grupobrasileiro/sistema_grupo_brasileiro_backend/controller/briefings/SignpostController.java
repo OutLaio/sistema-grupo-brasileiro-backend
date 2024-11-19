@@ -1,7 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.RegisterSignpostForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/signposts")
@@ -57,21 +58,30 @@ public class SignpostController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    public ResponseEntity<BSignpostDetailedView> registerSignpost(
+    public ResponseEntity<?> registerSignpost(
             @Valid @RequestBody RegisterSignpostForm registerSignpost,
             UriComponentsBuilder uriBuilder
     ) {
-        LOGGER.info("Iniciando o registro de um novo signpost para o projeto: {}", registerSignpost.project().title());
+        String requestId = UUID.randomUUID().toString();
+        LOGGER.info("[{}] Iniciando registro de nova solicitação de placa de sinalização.", requestId);
 
-        Project project = projectService.register(registerSignpost.project());
-        LOGGER.info("Projeto registrado com sucesso: {}", project.getId());
+        LOGGER.debug("[{}] Dados do projeto recebido para registro: título = {}",
+                requestId, registerSignpost.projectForm().title());
 
-        Briefing briefing = briefingService.register(registerSignpost.briefing(), project);
-        LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
+        Project project = projectService.register(registerSignpost.projectForm());
+        LOGGER.info("[{}] Projeto registrado com sucesso. ID do projeto: {}",
+                requestId, project.getId());
 
-        signpostService.register(registerSignpost.signpost(), briefing);
-        LOGGER.info("Signpost registrado com sucesso!");
+        Briefing briefing = briefingService.register(registerSignpost.briefingForm(), project);
+        LOGGER.info("[{}] Briefing registrado com sucesso para o projeto. ID do briefing: {}",
+                requestId, briefing.getId());
 
-        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
+        signpostService.register(registerSignpost.signpostForm(), briefing);
+        LOGGER.info("[{}] Solicitação de placa de sinalização registrada com sucesso para o briefing: {}",
+                requestId, briefing.getId());
+
+        URI location = uriBuilder.path("/api/v1/projects/{id}").buildAndExpand(project.getId()).toUri();
+        LOGGER.info("[{}] Registro de solicitação de placa de sinalização concluído com sucesso.", requestId);
+        return ResponseEntity.created(location).body(new MessageSuccessView("Nova solicitação criada com sucesso!"));
     }
 }

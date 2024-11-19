@@ -127,7 +127,7 @@ public class BriefingTest {
         briefing.setDetailedDescription(detailedDescription);
 
         String expectedToString = "Briefing{" +
-                "id=null, project=null, briefingType=null, startTime=" + startTime + 
+                "id=null, projectForm=null, briefingType=null, startTime=" + startTime +
                 ", expectedTime=" + expectedTime + 
                 ", finishTime=null, detailedDescription=" + detailedDescription +
                 ", otherCompany=null, versions=[], dialogs=[], measurement=null, " +

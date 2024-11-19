@@ -10,7 +10,7 @@ public class CollaboratorAlreadyAssignedExceptionTest {
     @Test
     public void testCollaboratorAlreadyAssignedException() {
         // Defina uma mensagem de erro
-        String errorMessage = "Collaborator is already assigned to the project";
+        String errorMessage = "Collaborator is already assigned to the projectForm";
 
         // Verifique se a exceção é lançada e capture a exceção
         CollaboratorAlreadyAssignedException exception = assertThrows(CollaboratorAlreadyAssignedException.class, () -> {

@@ -4,6 +4,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.Log
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.RecoveryPasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.ResetPasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.view.TokenView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form.UserDetailsForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
@@ -28,6 +29,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 /**
  * Controlador REST para autenticação e registro de usuários.
@@ -70,10 +73,20 @@ public class AuthController {
     })
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserDetailsForm form) {
-        LOGGER.info("Iniciando registro de novo colaborador com email: {}", form.userForm().email());
+        String requestId = UUID.randomUUID().toString();
+        LOGGER.info("[{}] Iniciando registro de novo usuário.", requestId);
+
+        String maskedEmail = maskEmail(form.userForm().email());
+        LOGGER.debug("[{}] Dados recebidos para registro: email mascarado = {}",
+                requestId, maskedEmail);
+
         User user = userService.create(form.userForm());
+        LOGGER.debug("[{}] Usuário criado com sucesso. ID: {}", requestId, user.getId());
+
         EmployeeView employeeView = employeeService.addEmployee(form.employeeForm(), user);
-        LOGGER.info("Colaborador registrado com sucesso: {}", employeeView.id());
+        LOGGER.info("[{}] Usuário registrado com sucesso. ID do usuário: {}",
+                requestId, employeeView.id());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(employeeView);
     }
 
@@ -92,9 +105,16 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginForm form){
-        LOGGER.info("Iniciando solicitação de login para: email={}", form.email());
+        String requestId = UUID.randomUUID().toString();
+        LOGGER.info("[{}] Iniciando solicitação de login.", requestId);
+
+        String maskedEmail = maskEmail(form.email());
+        LOGGER.debug("[{}] Dados recebidos para autenticação: email mascarado = {}",
+                requestId, maskedEmail);
+
         TokenView view = authService.doLogin(form, authenticationManager);
-        LOGGER.info("Autenticação bem-sucedida para: email={}", form.email());
+        LOGGER.info("[{}] Autenticação bem-sucedida. Usuário: {}", requestId, maskedEmail);
+
         return ResponseEntity.ok(view);
     }
 
@@ -110,11 +130,19 @@ public class AuthController {
         @ApiResponse(responseCode = "404", description = "User not found")
     })
     @PostMapping("/requestReset")
-    public ResponseEntity<String> requestReset(@Valid @RequestBody RecoveryPasswordForm form) {
-        LOGGER.info("Solicitação de redefinição de senha para: {}", form.email());
+    public ResponseEntity<?> requestReset(@Valid @RequestBody RecoveryPasswordForm form) {
+        String requestId = UUID.randomUUID().toString();
+        LOGGER.info("[{}] Iniciando solicitação de redefinição de senha.", requestId);
+
+        String maskedEmail = maskEmail(form.email());
+        LOGGER.debug("[{}] Dados recebidos para redefinição de senha: email mascarado = {}",
+                requestId, maskedEmail);
+
         authService.requestRecoveryPassword(form);
-        LOGGER.info("E-mail de redefinição de senha enviado para: {}", form.email());
-        return ResponseEntity.ok("E-mail enviado com sucesso!");
+        LOGGER.info("[{}] E-mail de redefinição de senha enviado com sucesso. Usuário: {}",
+                requestId, maskedEmail);
+
+        return ResponseEntity.ok(new MessageSuccessView("E-mail enviado com sucesso!"));
     }
 
     /**
@@ -129,10 +157,28 @@ public class AuthController {
         @ApiResponse(responseCode = "400", description = "Invalid token or invalid data")
     })
     @PostMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@RequestBody @Valid ResetPasswordForm form) {
-        LOGGER.info("Iniciando operação de redefinição de senha");
+    public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordForm form) {
+        String requestId = UUID.randomUUID().toString();
+        LOGGER.info("[{}] Iniciando operação de redefinição de senha.", requestId);
+
+        LOGGER.debug("[{}] Dados recebidos para redefinição de senha: token = {}",
+                requestId, form.token());
+
         authService.resetPassword(form);
-        LOGGER.info("Senha alterada com sucesso");
-        return ResponseEntity.ok("Senha alterada com sucesso!");
+        LOGGER.info("[{}] Redefinição de senha concluída com sucesso.", requestId);
+
+        return ResponseEntity.ok(new MessageSuccessView("Senha alterada com sucesso!"));
+    }
+
+    /**
+     * Mascarar o email para evitar a exposição completa nos logs.
+     * Exemplo: "email@email.com" -> "e***@e***.com"
+     */
+    private String maskEmail(String email) {
+        int atIndex = email.indexOf('@');
+        if (atIndex <= 1) {
+            return "****" + email.substring(atIndex);
+        }
+        return email.charAt(0) + "***" + email.substring(atIndex - 1);
     }
 }

@@ -63,7 +63,7 @@ public class PrintedControllerTest {
     @DisplayName("Should return 400 for invalid input data")
     void registerPrintedInvalidInput() throws Exception {
         // Arrange: Create an invalid RegisterPrintedForm JSON with null values
-        String json = "{\"project\": null, \"briefing\": null, \"printed\": null}";
+        String json = "{\"projectForm\": null, \"briefing\": null, \"printed\": null}";
 
         // Act & Assert: Perform a POST request and expect a 400 Bad Request response
         mockMvc.perform(post("/api/v1/printed")

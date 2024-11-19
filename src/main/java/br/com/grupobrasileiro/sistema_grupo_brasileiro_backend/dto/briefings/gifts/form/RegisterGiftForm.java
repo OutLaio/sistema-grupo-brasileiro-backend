@@ -16,7 +16,7 @@ public record RegisterGiftForm(
     /**
      * Formulário de projeto associado ao presente.
      * Deve ser fornecido e não pode ser nulo.
-     * O JSON pode utilizar "project" como alias.
+     * O JSON pode utilizar "projectForm" como alias.
      */
     @NotNull(message = "Project form cannot be null.")
     @JsonAlias({"project"})

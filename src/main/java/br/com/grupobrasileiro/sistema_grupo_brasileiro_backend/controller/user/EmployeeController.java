@@ -29,6 +29,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+import java.util.UUID;
+
 /**
  * Controlador REST para operações relacionadas aos Employees.
  */
@@ -64,16 +66,14 @@ public class EmployeeController {
             @Parameter(description = "ID do Employee a ser atualizado") @PathVariable Long id,
             @Valid @RequestBody EmployeeForm form) {
 
-        logger.info("Requisição para atualizar Employee com ID: {}", id);
-        
-        try {
-            EmployeeView updatedEmployee = employeeService.updateEmployee(id, form);
-            logger.info("Employee com ID: {} atualizado com sucesso.", id);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee);
-        } catch (Exception e) {
-            logger.error("Erro ao atualizar Employee com ID: {}: {}", id, e.getMessage());
-            throw e;  // ou retorne uma resposta adequada
-        }
+        String requestId = UUID.randomUUID().toString();
+        logger.info("[{}] Requisição para atualizar Employee com ID: {}", requestId, id);
+
+        logger.debug("[{}] Dados para atualizar Employee com ID: {}, nome = {}, ", requestId, id, form.name());
+
+        EmployeeView updatedEmployee = employeeService.updateEmployee(id, form);
+        logger.info("[{}] Employee com ID: {} atualizado com sucesso.", requestId, id);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee);
     }
 
     /**
@@ -98,12 +98,13 @@ public class EmployeeController {
             @Parameter(description = "Tamanho da página") @RequestParam(defaultValue = "10") Integer size,
             @Parameter(description = "Direção da ordenação (ASC ou DESC)") @RequestParam(value = "direction", defaultValue = "ASC") String direction,
             @Parameter(description = "Campo de ordenação") @RequestParam(value = "orderBy", defaultValue = "name") String orderBy) {
-        
-        logger.info("Requisição para listar Employees na página {}, tamanho {}, ordenado por {}.", page, size, orderBy);
+
+        String requestId = UUID.randomUUID().toString();
+        logger.info("[{}] Requisição para listar Employees na página {}, tamanho {}, ordenado por {}.",requestId, page, size, orderBy);
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.valueOf(direction), orderBy);
         Page<EmployeeView> employeesPage = employeeService.getAllCollaborators(pageRequest);
-        logger.info("Lista de Employees retornada com sucesso.");
+        logger.info("[{}] Lista de Employees retornada com sucesso.", requestId);
 
         return ResponseEntity.ok(employeesPage);
     }
@@ -125,16 +126,12 @@ public class EmployeeController {
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeView> getEmployeeById(
             @Parameter(description = "ID do Employee") @PathVariable Long id) {
+
+        String requestId = UUID.randomUUID().toString();
+        logger.info("[{}] Requisição para buscar Employee com ID: {}", requestId, id);
         
-        logger.info("Requisição para buscar Employee com ID: {}", id);
-        
-        try {
-            EmployeeView employeeView = employeeService.getEmployeeById(id);
-            logger.info("Employee com ID: {} encontrado com sucesso.", id);
-            return ResponseEntity.status(HttpStatus.OK).body(employeeView);
-        } catch (Exception e) {
-            logger.error("Erro ao buscar Employee com ID: {}: {}", id, e.getMessage());
-            throw e;  // ou retorne uma resposta adequada
-        }
+        EmployeeView employeeView = employeeService.getEmployeeById(id);
+        logger.info("[{}] Employee com ID: {} encontrado com sucesso.", requestId, id);
+        return ResponseEntity.status(HttpStatus.OK).body(employeeView);
     }
 }

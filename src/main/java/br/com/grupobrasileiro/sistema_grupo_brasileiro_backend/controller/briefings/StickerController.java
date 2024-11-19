@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.sticker.form.RegisterStickerForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.sticker.BSticker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
@@ -24,8 +25,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/stickers")
@@ -56,19 +59,29 @@ public class StickerController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     public ResponseEntity<?> registerSticker(
-            @Valid @RequestBody RegisterStickerForm registerSticker
+            @Valid @RequestBody RegisterStickerForm registerSticker,
+            UriComponentsBuilder uriBuilder
     ) {
-        LOGGER.info("Iniciando o registro de um novo sticker para o projeto: {}", registerSticker.project().title());
+        String requestId = UUID.randomUUID().toString();
+        LOGGER.info("[{}] Iniciando registro de nova solicitação de adesivo.", requestId);
 
-        Project project = projectService.register(registerSticker.project());
-        LOGGER.info("Projeto registrado com sucesso: {}", project.getId());
+        LOGGER.debug("[{}] Dados do projeto recebido para registro: título = {}",
+                requestId, registerSticker.projectForm().title());
 
-        Briefing briefing = briefingService.register(registerSticker.briefing(), project);
-        LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
+        Project project = projectService.register(registerSticker.projectForm());
+        LOGGER.info("[{}] Projeto registrado com sucesso. ID do projeto: {}",
+                requestId, project.getId());
 
-        stickerService.register(registerSticker.sticker(), briefing);
-        LOGGER.info("Sticker registrado com sucesso!");
+        Briefing briefing = briefingService.register(registerSticker.briefingForm(), project);
+        LOGGER.info("[{}] Briefing registrado com sucesso para o projeto. ID do briefing: {}",
+                requestId, briefing.getId());
 
-        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
+        stickerService.register(registerSticker.stickerForm(), briefing);
+        LOGGER.info("[{}] Solicitação de adesivo registrada com sucesso para o briefing: {}",
+                requestId, briefing.getId());
+
+        URI location = uriBuilder.path("/api/v1/projects/{id}").buildAndExpand(project.getId()).toUri();
+        LOGGER.info("[{}] Registro de solicitação de adesivo concluído com sucesso.", requestId);
+        return ResponseEntity.created(location).body(new MessageSuccessView("Nova solicitação criada com sucesso!"));
     }
 }

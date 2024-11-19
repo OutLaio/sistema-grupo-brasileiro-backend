@@ -171,7 +171,7 @@ public class ApiExceptionHandlerTest {
     @Test
     public void testHandleProjectNotFoundException() {
         ProjectNotFoundException ex = new ProjectNotFoundException("Project not found");
-        when(request.getRequestURI()).thenReturn("/project");
+        when(request.getRequestURI()).thenReturn("/projectForm");
         when(request.getMethod()).thenReturn("GET");
 
         ResponseEntity<ErrorMessage> response = apiExceptionHandler.handleProjectNotFoundException(ex, request);

@@ -1,4 +1,4 @@
-package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.config;
+package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
