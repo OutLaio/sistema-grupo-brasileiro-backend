@@ -1,9 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.gifts.form.RegisterGiftForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.gifts.view.BGiftDetailedView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.gifts.BGift;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.gift.BGiftService;
@@ -52,11 +51,11 @@ public class GiftController {
     private BGiftService giftService;
 
     /**
-     * Registers a new gift for a projectForm.
+     * Registers a new gift for a project.
      * 
      * @param registerGift the data to register a gift
      * @param uriBuilder builder for creating the location URI
-     * @return a response entity containing the detailed view of the registered gift
+     * @return a response entity containing a message success
      */
     @PostMapping
     @Transactional
@@ -71,7 +70,7 @@ public class GiftController {
             description = "Gift registered successfully", 
             content = @Content(
                 mediaType = "application/json", 
-                schema = @Schema(implementation = BGiftDetailedView.class)
+                schema = @Schema(implementation = Response.class)
             )
         ),
         @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
@@ -102,6 +101,6 @@ public class GiftController {
 
         URI location = uriBuilder.path("/api/v1/projects/{id}").buildAndExpand(project.getId()).toUri();
         LOGGER.info("[{}] Registro de solicitação de layout p/ brinde concluído com sucesso.", requestId);
-        return ResponseEntity.created(location).body(new MessageSuccessView("Nova solicitação criada com sucesso!"));
+        return ResponseEntity.created(location).body(new Response<>("Nova solicitação criada com sucesso!"));
     }
 }

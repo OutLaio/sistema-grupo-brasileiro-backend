@@ -32,7 +32,7 @@ public class VersionService {
 
     public VersionView supervisorApprove(Long idProject, ApproveForm form) {
         Project project = projectRepository.findById(idProject).orElseThrow(
-                () -> new EntityNotFoundException("Could not find projectForm " + idProject + " in repository")
+                () -> new EntityNotFoundException("Could not find project " + idProject + " in repository")
         );
 
         Version version = versionRepository.findById(form.idVersion()).orElseThrow(
@@ -55,7 +55,7 @@ public class VersionService {
 
     public VersionView clientApprove(Long idProject, ApproveForm form) {
         Project project = projectRepository.findById(idProject).orElseThrow(
-                () -> new EntityNotFoundException("Could not find projectForm " + idProject + " in repository")
+                () -> new EntityNotFoundException("Could not find project " + idProject + " in repository")
         );
 
         Version version = versionRepository.findById(form.idVersion()).orElseThrow(

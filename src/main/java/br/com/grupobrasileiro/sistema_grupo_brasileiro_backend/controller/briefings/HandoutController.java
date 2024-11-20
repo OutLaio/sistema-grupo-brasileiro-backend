@@ -1,9 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.handout.form.RegisterHandoutForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.handout.view.BHandoutDetailedView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.handouts.BHandout;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.bHandout.BHandoutService;
@@ -53,11 +52,11 @@ public class HandoutController {
     
     
     /**
-     * Registers a new handout for a projectForm.
+     * Registers a new handout for a project.
      *
      * @param registerHandout the data to register a handout
      * @param uriBuilder builder for creating the location URI
-     * @return a response entity containing the detailed view of the registered handout
+     * @return a response entity containing a message success
      */
     @PostMapping
     @Transactional
@@ -72,7 +71,7 @@ public class HandoutController {
                 description = "Handout registered successfully", 
                 content = @Content(
                     mediaType = "application/json", 
-                    schema = @Schema(implementation = BHandoutDetailedView.class)
+                    schema = @Schema(implementation = Response.class)
                 )
             ),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
@@ -103,6 +102,6 @@ public class HandoutController {
 
         URI location = uriBuilder.path("/api/v1/projects/{id}").buildAndExpand(project.getId()).toUri();
         LOGGER.info("[{}] Registro de solicitação de comunicado concluído com sucesso.", requestId);
-        return ResponseEntity.created(location).body(new MessageSuccessView("Nova solicitação criada com sucesso!"));
+        return ResponseEntity.created(location).body(new Response<>("Nova solicitação criada com sucesso!"));
     }
 }

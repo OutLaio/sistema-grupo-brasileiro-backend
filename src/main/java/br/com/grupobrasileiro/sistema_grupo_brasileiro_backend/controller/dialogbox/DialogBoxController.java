@@ -3,6 +3,9 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.dialo
 import java.util.Set;
 import java.util.UUID;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +48,12 @@ public class DialogBoxController {
     @Operation(summary = "Create a new dialog message",
             description = "Creates a new dialog message and persists it in the database.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Message created successfully"),
+            @ApiResponse(responseCode = "201", description = "Message created successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input provided")
     })
     @PostMapping
-    public ResponseEntity<DialogBoxView> createMessage(
+    public ResponseEntity<?> createMessage(
             @Parameter(description = "Details of the message to be created", required = true)
             @Valid @RequestBody DialogBoxForm form) {
         String requestId = UUID.randomUUID().toString();
@@ -61,7 +65,7 @@ public class DialogBoxController {
         logger.info("[{}] Mensagem de diálogo criada com sucesso. ID da mensagem: {}",
                 requestId, dialogBoxView.id());
 
-        return new ResponseEntity<>(dialogBoxView, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new Response<>("Nova mensagem registrada!", dialogBoxView));
     }
 
     /**
@@ -73,12 +77,13 @@ public class DialogBoxController {
     @Operation(summary = "Get messages for a briefing",
             description = "Retrieves all dialog messages associated with a specific briefing.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Messages retrieved successfully"),
+            @ApiResponse(responseCode = "200", description = "Messages retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
             @ApiResponse(responseCode = "404", description = "Briefing not found")
     })
     @GetMapping("/briefing/{idBriefing}")
     @Transactional
-    public ResponseEntity<Set<DialogBoxView>> getMessagesForBriefing(
+    public ResponseEntity<?> getMessagesForBriefing(
             @Parameter(description = "ID of the briefing to retrieve messages for", required = true)
             @PathVariable Long idBriefing) {
         String requestId = UUID.randomUUID().toString();
@@ -86,13 +91,10 @@ public class DialogBoxController {
     	
         Set<DialogBoxView> messages = dialogBoxService.getMessagesByBriefingId(idBriefing);
         if (messages.isEmpty()) {
-            logger.warn("[{}] Nenhuma mensagem encontrada para o briefing com ID: {}",
-                    requestId, idBriefing);
+            logger.warn("[{}] Nenhuma mensagem encontrada para o briefing com ID: {}", requestId, idBriefing);
         } else {
-            logger.info("[{}] {} mensagens encontradas para o briefing com ID: {}",
-                    requestId, messages.size(), idBriefing);
+            logger.info("[{}] {} mensagens encontradas para o briefing com ID: {}", requestId, messages.size(), idBriefing);
         }
-        
-        return ResponseEntity.ok(messages);
+        return ResponseEntity.ok(new Response<>("Mensagens recuperadas com sucesso!", messages));
     }
 }

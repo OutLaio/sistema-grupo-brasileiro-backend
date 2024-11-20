@@ -1,10 +1,9 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.form.RegisterAgencyBoard;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.agencyBoard.BAgencyBoardService;
@@ -50,15 +49,15 @@ public class BAgencyBoardController {
     private BAgencyBoardService bAgencyBoardService;
 
     /**
-     * Registers a new AgencyBoard for a projectForm.
+     * Registers a new AgencyBoard for a project.
      * 
      * @param registerAgencyBoard the data to register a new agency board
      * @param uriBuilder builder for creating the location URI
-     * @return a response entity containing the details of the registered agency board
+     * @return a response entity containing a message success
      */
     @Operation(
     	    summary = "Register a new agencyBoard", 
-    	    description = "Registers a new agencyBoard for a projectForm, creating the associated briefing and projectForm before registering the agency board."
+    	    description = "Registers a new agencyBoard for a project, creating the associated briefing and projectForm before registering the agency board."
     	)
     	@ApiResponses(value = {
     	    @ApiResponse(
@@ -66,7 +65,7 @@ public class BAgencyBoardController {
     	        description = "AgencyBoard registered successfully",
     	        content = @Content(
     	            mediaType = "application/json",
-    	            schema = @Schema(implementation = BAgencyBoardDetailedView.class)
+    	            schema = @Schema(implementation = Response.class)
     	        )
     	    ),
     	    @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
@@ -99,6 +98,6 @@ public class BAgencyBoardController {
 
         URI location = uriBuilder.path("/api/v1/projects/{id}").buildAndExpand(project.getId()).toUri();
         LOGGER.info("[{}] Registro de solicitação de placa de intinerários concluído com sucesso.", requestId);
-        return ResponseEntity.created(location).body(new MessageSuccessView("Nova solicitação criada com sucesso!"));
+        return ResponseEntity.created(location).body(new Response<>("Nova solicitação criada com sucesso!"));
     }
 }

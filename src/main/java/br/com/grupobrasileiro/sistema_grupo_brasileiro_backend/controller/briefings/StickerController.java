@@ -1,7 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.sticker.form.RegisterStickerForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.sticker.BSticker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
@@ -47,13 +47,20 @@ public class StickerController {
     @Autowired
     private BStickerService stickerService;
 
+    /**
+     * Registers a new sticker for a project.
+     *
+     * @param registerSticker the data to register a sticker
+     * @param uriBuilder builder for creating the location URI
+     * @return a response entity containing a message success
+     */
     @PostMapping
     @Transactional
     @Operation(summary = "Register a new sticker", method = "POST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Sticker registered successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BSticker.class))),
+                            schema = @Schema(implementation = Response.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
@@ -82,6 +89,6 @@ public class StickerController {
 
         URI location = uriBuilder.path("/api/v1/projects/{id}").buildAndExpand(project.getId()).toUri();
         LOGGER.info("[{}] Registro de solicitação de adesivo concluído com sucesso.", requestId);
-        return ResponseEntity.created(location).body(new MessageSuccessView("Nova solicitação criada com sucesso!"));
+        return ResponseEntity.created(location).body(new Response<>("Nova solicitação criada com sucesso!"));
     }
 }

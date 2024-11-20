@@ -1,7 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.project;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.*;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -60,10 +60,10 @@ public class ProjectController {
      * @param form os dados do colaborador a ser atribuído
      * @return 200 OK se a operação for bem-sucedida
      */
-    @Operation(summary = "Assign collaborator", description = "Assigns a collaborator to a projectForm.")
+    @Operation(summary = "Assign collaborator", description = "Assigns a collaborator to a project.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Collaborator assigned successfully",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageSuccessView.class))),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "400", description = "Validation error", content = @Content),
         @ApiResponse(responseCode = "404", description = "Project not found", content = @Content)
     })
@@ -79,7 +79,7 @@ public class ProjectController {
         projectService.assignCollaborator(id, form);
         logger.info("[{}] Colaborador atribuído com sucesso ao projeto com ID: {}", requestId, id);
         
-        return ResponseEntity.ok().body(new MessageSuccessView("Colaborador atribuído com sucesso!"));
+        return ResponseEntity.ok().body(new Response<>("Colaborador atribuído com sucesso!"));
     }
 
     /**
@@ -89,10 +89,10 @@ public class ProjectController {
      * @param form os dados da nova versão
      * @return 200 OK se a nova versão for criada com sucesso
      */
-    @Operation(summary = "Create new version", description = "Creates a new version for the projectForm.")
+    @Operation(summary = "Create new version", description = "Creates a new version for the project.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "New version created successfully",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = VersionView.class))),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "400", description = "Validation error", content = @Content),
         @ApiResponse(responseCode = "404", description = "Project not found", content = @Content)
     })
@@ -111,7 +111,7 @@ public class ProjectController {
         logger.info("[{}] Nova versão criada com sucesso para o projeto com ID: {}. ID da versão: {}",
                 requestId, id, view.id());
 
-        return ResponseEntity.created(URI.create("/api/v1/projects/" + id)).body(view);
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + id)).body(new Response<>("Nova versão criada com sucesso!", view));
     }
 
     /**
@@ -121,10 +121,10 @@ public class ProjectController {
      * @param form os dados da aprovação
      * @return 200 OK se a aprovação for bem-sucedida
      */
-    @Operation(summary = "Supervisor Approval", description = "Approves a projectForm version by the supervisor.")
+    @Operation(summary = "Supervisor Approval", description = "Approves a project version by the supervisor.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Approval successful",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = VersionView.class))),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "400", description = "Validation error", content = @Content)
     })
     @PutMapping("{id}/approve/supervisor")
@@ -141,7 +141,7 @@ public class ProjectController {
         VersionView view = versionService.supervisorApprove(id, form);
         logger.debug("Versão do projeto " + (form.approved() ? "aprovada" : "não aprovada") + " pelo supervisor");
         
-        return ResponseEntity.ok().body(view);
+        return ResponseEntity.ok().body(new Response<>("Status de aprovação alterado com sucesso!", view));
     }
 
     /**
@@ -150,10 +150,10 @@ public class ProjectController {
      * @param form os dados da aprovação
      * @return 200 OK se a aprovação for bem-sucedida
      */
-    @Operation(summary = "Client Approval", description = "Client approves a version of a projectForm.")
+    @Operation(summary = "Client Approval", description = "Client approves a version of a project.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Approval successful",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = VersionView.class))),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "400", description = "Validation error", content = @Content)
     })
     @PutMapping("{id}/approve/client")
@@ -170,7 +170,7 @@ public class ProjectController {
         VersionView view = versionService.clientApprove(id, form);
         logger.debug("Versão do projeto " + (form.approved() ? "aprovada" : "não aprovada") + " pelo cliente");
 
-        return ResponseEntity.ok().body(view);
+        return ResponseEntity.ok().body(new Response<>("Status de aprovação alterado com sucesso!", view));
     }
 
     /**
@@ -180,10 +180,10 @@ public class ProjectController {
      * @param hasConfection indica se o projeto está em produção
      * @return 200 OK se a operação for bem-sucedida
      */
-    @Operation(summary = "Set projectForm production", description = "Sets whether or not the projectForm is in production.")
+    @Operation(summary = "Set project production", description = "Sets whether or not the project is in production.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Production status updated successfully",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageSuccessView.class))),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "404", description = "Project not found", content = @Content)
     })
     @PutMapping("/{id}/hasProduction")
@@ -201,8 +201,7 @@ public class ProjectController {
         logger.info("[{}] Status de produção atualizado com sucesso para o projeto com ID: {}.",
                 requestId, id);
 
-        MessageSuccessView view = new MessageSuccessView("Status Alterado com sucesso");
-        return ResponseEntity.ok().body(view);
+        return ResponseEntity.ok().body(new Response<>("Status Alterado com sucesso"));
     }
 
     /**
@@ -214,7 +213,7 @@ public class ProjectController {
     @Operation(summary = "Finalize projectForm", description = "Finalize the projectForm.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Project completed successfully",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageSuccessView.class))),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "404", description = "Project not found", content = @Content)
     })
     @PutMapping("/{id}/finish")
@@ -229,7 +228,7 @@ public class ProjectController {
         projectService.setFinished(id);
         logger.info("[{}] Projeto com ID: {} finalizado com sucesso.", requestId, id);
 
-        return ResponseEntity.ok().body(new MessageSuccessView("Projeto finalizado com sucesso!"));
+        return ResponseEntity.ok().body(new Response<>("Projeto finalizado com sucesso!"));
     }
 
     /**
@@ -241,7 +240,7 @@ public class ProjectController {
     @Operation(summary = "Put projectForm on hold", description = "Puts the projectForm on hold.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Project successfully put on hold",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageSuccessView.class))),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "404", description = "Project not found", content = @Content)
     })
     @PutMapping("/{id}/standby")
@@ -254,7 +253,7 @@ public class ProjectController {
         projectService.setStandby(id);
         logger.info("[{}] Projeto colocado em espera com sucesso. ID do projeto: {}", requestId, id);
         
-        return ResponseEntity.ok().body(new MessageSuccessView("Projeto colocado em espera com sucesso!"));
+        return ResponseEntity.ok().body(new Response<>("Projeto colocado em espera com sucesso!"));
     }
 
     /**
@@ -266,10 +265,7 @@ public class ProjectController {
     @Operation(summary = "Get all projects", description = "Retrieves all projects for the authenticated user.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Projects successfully retrieved",
-                content = @Content(
-                    mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = ProjectView.class))
-                )),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
             @ApiResponse(responseCode = "401", description = "User not authenticated", content = @Content)
     })
     @GetMapping
@@ -283,7 +279,7 @@ public class ProjectController {
         Set<ProjectView> projects = projectService.getAll(user.getId());
 
         logger.info("[{}] Recuperação de projetos concluída com sucesso. Total de projetos encontrados: {}", requestId, projects.size());
-        return ResponseEntity.ok(projects);
+        return ResponseEntity.ok(new Response<>("Recuperação de projetos concluída com sucesso!", projects));
     }
 
     /**
@@ -295,10 +291,7 @@ public class ProjectController {
     @Operation(summary = "Get projectForm by ID", description = "Fetches the details of a projectForm by its ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Project found",
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"id\": 1, \n  \"type\": \"PLACA DE ITINERÁRIOS\", \n  \"details\": { ... } }")
-                    )),
+                    content = @Content(mediaType = "application/json",schema = @Schema(implementation = Response.class))),
             @ApiResponse(responseCode = "404", description = "Project not found", content = @Content)
     })
     @GetMapping("/{id}")
@@ -323,7 +316,7 @@ public class ProjectController {
     @Operation(summary = "Update projectForm title", description = "Updates the title of a projectForm.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Title successfully updated",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageSuccessView.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
             @ApiResponse(responseCode = "400", description = "Validation error", content = @Content),
             @ApiResponse(responseCode = "404", description = "Project not found", content = @Content)
     })
@@ -335,10 +328,10 @@ public class ProjectController {
         logger.info("[{}] Iniciando atualização do título para o projeto. ID do projeto: {}", requestId, id);
         logger.debug("[{}] Novo título recebido: {}", requestId, form.newTitle());
 
-        MessageSuccessView view = projectService.updateTitle(id, form.newTitle());
+        projectService.updateTitle(id, form.newTitle());
 
         logger.info("[{}] Título do projeto atualizado com sucesso. ID do projeto: {}", requestId, id);
-        return ResponseEntity.ok().body(view);
+        return ResponseEntity.ok().body(new Response<>("Título do projeto atualizado com sucesso!"));
     }
 
     /**
@@ -351,7 +344,7 @@ public class ProjectController {
     @Operation(summary = "Update projectForm date", description = "Updates the date of a projectForm.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Date successfully updated",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageSuccessView.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
             @ApiResponse(responseCode = "400", description = "Validation error", content = @Content),
             @ApiResponse(responseCode = "404", description = "Project not found", content = @Content)
     })
@@ -363,10 +356,10 @@ public class ProjectController {
         logger.info("[{}] Iniciando atualização da data para o projeto. ID do projeto: {}", requestId, id);
         logger.debug("[{}] Nova data recebida: {}", requestId, form.newDate());
 
-        MessageSuccessView view = projectService.updateDate(id, form.newDate());
+        projectService.updateDate(id, form.newDate());
 
         logger.info("[{}] Data do projeto atualizada com sucesso. ID do projeto: {}", requestId, id);
-        return ResponseEntity.ok().body(view);
+        return ResponseEntity.ok().body(new Response<>("Data do projeto atualizada com sucesso!"));
 
     }
 }

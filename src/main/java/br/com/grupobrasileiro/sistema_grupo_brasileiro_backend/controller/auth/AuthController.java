@@ -1,10 +1,11 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.auth;
 
+
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.LoginForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.RecoveryPasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.ResetPasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.view.TokenView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form.UserDetailsForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
@@ -18,7 +19,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,12 +60,12 @@ public class AuthController {
      * Endpoint para registrar um novo colaborador.
      *
      * @param form {@link UserDetailsForm} contendo os dados de usuário e funcionário.
-     * @return uma resposta HTTP 201 Created com a visão do colaborador ou um erro apropriado.
+     * @return uma resposta HTTP 201 Created com uma mensagem de sucesso e a view do colaborador ou um erro apropriado.
      */
     @Operation(summary = "Register a new employee", description = "Create a new user and associated collaborator.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "User registered successfully", 
-            content = @Content(schema = @Schema(implementation = EmployeeView.class))),
+        @ApiResponse(responseCode = "201", description = "User registered successfully",
+                content = @Content(schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "400", description = "Invalid validation data", 
             content = @Content),
         @ApiResponse(responseCode = "409", description = "Email already exists", 
@@ -87,7 +87,7 @@ public class AuthController {
         LOGGER.info("[{}] Usuário registrado com sucesso. ID do usuário: {}",
                 requestId, employeeView.id());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(employeeView);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new Response<>("Novo usuário registrado com sucesso!", employeeView));
     }
 
     /**
@@ -99,7 +99,7 @@ public class AuthController {
     @Operation(summary = "Login", description = "Authenticates the user with the provided credentials.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Login successful", 
-            content = @Content(schema = @Schema(implementation = TokenView.class))),
+            content = @Content(schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "401", description = "Invalid credentials", 
             content = @Content)
     })
@@ -115,7 +115,7 @@ public class AuthController {
         TokenView view = authService.doLogin(form, authenticationManager);
         LOGGER.info("[{}] Autenticação bem-sucedida. Usuário: {}", requestId, maskedEmail);
 
-        return ResponseEntity.ok(view);
+        return ResponseEntity.ok().body(new Response<>("Login realizado com sucesso!", view));
     }
 
     /**
@@ -126,7 +126,8 @@ public class AuthController {
      */
     @Operation(summary = "Request password reset", description = "Sends a password reset email.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Reset email sent successfully"),
+        @ApiResponse(responseCode = "200", description = "Reset email sent successfully",
+                content = @Content(schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "404", description = "User not found")
     })
     @PostMapping("/requestReset")
@@ -142,7 +143,7 @@ public class AuthController {
         LOGGER.info("[{}] E-mail de redefinição de senha enviado com sucesso. Usuário: {}",
                 requestId, maskedEmail);
 
-        return ResponseEntity.ok(new MessageSuccessView("E-mail enviado com sucesso!"));
+        return ResponseEntity.ok(new Response<>("E-mail enviado com sucesso!"));
     }
 
     /**
@@ -153,7 +154,8 @@ public class AuthController {
      */
     @Operation(summary = "Reset Password", description = "Updates the user's password based on the provided credentials")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Password changed successfully"),
+        @ApiResponse(responseCode = "200", description = "Password changed successfully",
+                content = @Content(schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "400", description = "Invalid token or invalid data")
     })
     @PostMapping("/resetPassword")
@@ -167,7 +169,7 @@ public class AuthController {
         authService.resetPassword(form);
         LOGGER.info("[{}] Redefinição de senha concluída com sucesso.", requestId);
 
-        return ResponseEntity.ok(new MessageSuccessView("Senha alterada com sucesso!"));
+        return ResponseEntity.ok(new Response<>("Senha alterada com sucesso!"));
     }
 
     /**

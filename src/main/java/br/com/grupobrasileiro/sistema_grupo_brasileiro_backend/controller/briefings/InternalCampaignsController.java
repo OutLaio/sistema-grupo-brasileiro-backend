@@ -1,8 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.InternalCampaigns.form.RegisterInternalCampaignsForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.InternalCampaigns.view.BInternalCampaignsDetailsView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.internalcampaign.BInternalCampaign;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
@@ -48,13 +47,20 @@ public class InternalCampaignsController {
     @Autowired
     private InternalCampaignsService internalCampaignsService;
 
+    /**
+     * Registers a new internal campaign for a project.
+     *
+     * @param registerInternalCampaigns the data to register a internal campaign
+     * @param uriBuilder builder for creating the location URI
+     * @return a response entity containing a message success
+     */
     @PostMapping
     @Transactional
     @Operation(summary = "Register a new internal campaigns", method = "POST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Internal Campaigns registered successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BInternalCampaign.class))),
+                            schema = @Schema(implementation = Response.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
@@ -83,6 +89,6 @@ public class InternalCampaignsController {
 
         URI location = uriBuilder.path("/api/v1/projects/{id}").buildAndExpand(project.getId()).toUri();
         LOGGER.info("[{}] Registro de solicitação de campanha interna concluído com sucesso.", requestId);
-        return ResponseEntity.created(location).body(new MessageSuccessView("Nova solicitação criada com sucesso!"));
+        return ResponseEntity.created(location).body(new Response<>("Nova solicitação criada com sucesso!"));
     }
 }

@@ -1,7 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.user;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.PasswordForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -43,7 +43,7 @@ public class UserController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Password changed successfully"),
         @ApiResponse(responseCode = "400", description = "Validation error in the data provided",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageSuccessView.class))),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "404", description = "User not found", content = @Content)
     })
     @PostMapping("/changePassword")
@@ -54,7 +54,7 @@ public class UserController {
         userService.changePassword(passwordForm);
         logger.info("[{}] Senha alterada com sucesso.", requestId);
 
-        return ResponseEntity.ok(new MessageSuccessView("Senha alterada com sucesso!"));
+        return ResponseEntity.ok().body(new Response<>("Senha alterada com sucesso!"));
     }
 
     /**
@@ -67,7 +67,7 @@ public class UserController {
     @Operation(summary = "Deactivate user", description = "Deactivates a user in the system.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "User successfully deactivated",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageSuccessView.class))),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content)
     })
     @PutMapping("/{id}/deactivate")
@@ -78,6 +78,6 @@ public class UserController {
         userService.deactivateUser(id);
         logger.info("[{}] Usuário desativado com sucesso. ID do usuário: {}", requestId, id);
 
-        return ResponseEntity.ok(new MessageSuccessView("Usuário desativado com sucesso!"));
+        return ResponseEntity.ok().body(new Response<>("Usuário desativado com sucesso!"));
     }
 }

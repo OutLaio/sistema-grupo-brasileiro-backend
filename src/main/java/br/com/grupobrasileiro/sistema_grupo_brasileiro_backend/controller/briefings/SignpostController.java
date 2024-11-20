@@ -1,7 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.RegisterSignpostForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.MessageSuccessView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
@@ -47,13 +47,20 @@ public class SignpostController {
     @Autowired
     private BSignpostService signpostService;
 
+    /**
+     * Registers a new handout for a signpost.
+     *
+     * @param registerSignpost the data to register a signpost
+     * @param uriBuilder builder for creating the location URI
+     * @return a response entity containing a message success
+     */
     @PostMapping
     @Transactional
     @Operation(summary = "Register a new signpost", method = "POST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Signpost registered successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BSignpost.class))),
+                            schema = @Schema(implementation = ResponseEntity.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
@@ -82,6 +89,6 @@ public class SignpostController {
 
         URI location = uriBuilder.path("/api/v1/projects/{id}").buildAndExpand(project.getId()).toUri();
         LOGGER.info("[{}] Registro de solicitação de placa de sinalização concluído com sucesso.", requestId);
-        return ResponseEntity.created(location).body(new MessageSuccessView("Nova solicitação criada com sucesso!"));
+        return ResponseEntity.created(location).body(new Response<>("Nova solicitação criada com sucesso!"));
     }
 }
