@@ -3,6 +3,8 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.uploa
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
@@ -35,6 +37,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @RequestMapping("/api/v1/file")
 public class FileController {
 
+    private static final Logger logger = LoggerFactory.getLogger(FileController.class);
 
     @Autowired
     private FileStorageService fileStorageService;
