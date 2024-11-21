@@ -129,14 +129,19 @@ public class ApiExceptionHandlerTest {
 
     @Test
     public void testHandleIllegalArgumentException() {
+        // Arrange: Create the IllegalArgumentException instance
         IllegalArgumentException ex = new IllegalArgumentException("Illegal argument");
+        
+        // Mock the request to return a specific URI and method
         when(request.getRequestURI()).thenReturn("/illegal");
         when(request.getMethod()).thenReturn("GET");
 
-        ResponseEntity<ErrorMessage> response = apiExceptionHandler.handleIllegalArgumentException(request, ex, null);
+        // Act: Call the exception handler method
+        ResponseEntity<ErrorMessage> response = apiExceptionHandler.handleIllegalArgumentException(request, ex);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Illegal argument", response.getBody().getMessage());
+        // Assert: Check the response status and body
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());  // Verify HTTP status
+        assertEquals("Illegal argument", response.getBody().getMessage());  // Verify the error message
     }
 
     @Test
@@ -166,7 +171,7 @@ public class ApiExceptionHandlerTest {
     @Test
     public void testHandleProjectNotFoundException() {
         ProjectNotFoundException ex = new ProjectNotFoundException("Project not found");
-        when(request.getRequestURI()).thenReturn("/project");
+        when(request.getRequestURI()).thenReturn("/projectForm");
         when(request.getMethod()).thenReturn("GET");
 
         ResponseEntity<ErrorMessage> response = apiExceptionHandler.handleProjectNotFoundException(ex, request);

@@ -13,7 +13,6 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.annotati
  */
 public record UserForm(
 
-
         /**
          * Endereço de e-mail do usuário.
          * Este campo é validado usando a anotação personalizada {@link ValidEmail},
@@ -32,10 +31,13 @@ public record UserForm(
         String password,
 
         /**
-         * Código da função (role) do usuário.
-         * Este campo é obrigatório e não pode ser nulo.
+         * Código do perfil (role) do usuário.
+         * Este campo é opcional e por padrão é 3 (cliente).
          */
         long profile
 
 ) {
+        public UserForm(@ValidEmail String email, @Password String password) {
+            this(email, password,3L);
+        }
 }

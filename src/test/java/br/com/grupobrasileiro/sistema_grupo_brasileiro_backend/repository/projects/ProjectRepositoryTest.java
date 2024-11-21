@@ -55,7 +55,7 @@ public class ProjectRepositoryTest {
     }
 
     @Test
-    @DisplayName("Should create and retrieve a project")
+    @DisplayName("Should create and retrieve a projectForm")
     public void testCreateAndRetrieveProject() {
         // Arrange
         User user = createTestUser();
@@ -76,7 +76,7 @@ public class ProjectRepositoryTest {
     }
 
     @Test
-    @DisplayName("Should return empty when retrieving non-existing project")
+    @DisplayName("Should return empty when retrieving non-existing projectForm")
     void testRetrieveNonExistingProject() {
         // Act
         Optional<Project> retrievedProject = projectRepository.findById(999L); // ID que não existe

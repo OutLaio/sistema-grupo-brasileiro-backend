@@ -94,7 +94,7 @@ class ProjectControllerTest {
     void supervisorApprove_Success() {
         ApproveForm form = new ApproveForm(1L, 2L, true, "Looks good");
         
-        ResponseEntity<?> response = projectController.supervisorApprove(form);
+        ResponseEntity<?> response = projectController.supervisorApprove(, form);
 
         verify(versionService, times(1)).supervisorApprove(eq(form));
         assertEquals(ResponseEntity.ok().build(), response);
@@ -108,7 +108,7 @@ class ProjectControllerTest {
                 .when(versionService).supervisorApprove(any(ApproveForm.class));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            projectController.supervisorApprove(form);
+            projectController.supervisorApprove(, form);
         });
 
         verify(versionService, times(1)).supervisorApprove(eq(form));
@@ -184,7 +184,7 @@ class ProjectControllerTest {
     @DisplayName("Finish Project - Throws Exception")
     void finish_ThrowsException() {
         Long projectId = 1L;
-        doThrow(new RuntimeException("Error finishing project"))
+        doThrow(new RuntimeException("Error finishing projectForm"))
                 .when(projectService).setFinished(any(Long.class));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
@@ -192,7 +192,7 @@ class ProjectControllerTest {
         });
 
         verify(projectService, times(1)).setFinished(eq(projectId));
-        assertEquals("Error finishing project", exception.getMessage());
+        assertEquals("Error finishing projectForm", exception.getMessage());
     }
 
     @Test
@@ -210,7 +210,7 @@ class ProjectControllerTest {
     @DisplayName("Set Project to Standby - Throws Exception")
     void standby_ThrowsException() {
         Long projectId = 1L;
-        doThrow(new RuntimeException("Error setting project to standby"))
+        doThrow(new RuntimeException("Error setting projectForm to standby"))
                 .when(projectService).setStandby(any(Long.class));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
@@ -218,6 +218,6 @@ class ProjectControllerTest {
         });
 
         verify(projectService, times(1)).setStandby(eq(projectId));
-        assertEquals("Error setting project to standby", exception.getMessage());
+        assertEquals("Error setting projectForm to standby", exception.getMessage());
     }
 }

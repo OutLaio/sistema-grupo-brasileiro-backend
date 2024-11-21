@@ -1,5 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.upload;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
@@ -39,20 +42,31 @@ public class FileController {
     @Operation(summary = "Fazer upload de um arquivo",
                description = "Faz o upload de um arquivo e retorna informações sobre ele.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Arquivo carregado com sucesso"),
+        @ApiResponse(responseCode = "200", description = "Arquivo carregado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "400", description = "Requisição inválida"),
         @ApiResponse(responseCode = "500", description = "Erro ao carregar arquivo")
     })
     @PostMapping("/uploadFile")
     public UploadFileView uploadFile(@Parameter(description = "Arquivo a ser carregado", required = true)
                                       @RequestParam("file") MultipartFile file) {
-        String fileName = fileStorageService.storeFile(file);
+        logger.info("Recebendo arquivo para upload: {}", file.getOriginalFilename());
+
+        String fileName;
+        try {
+            fileName = fileStorageService.storeFile(file);
+            logger.info("Arquivo '{}' carregado com sucesso.", fileName);
+        } catch (Exception e) {
+            logger.error("Erro ao carregar o arquivo '{}': {}", file.getOriginalFilename(), e.getMessage());
+            throw e;  // ou retorne uma resposta adequada para erro
+        }
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/v1/file/downloadFile/")
                 .path(fileName)
                 .toUriString();
 
+        logger.debug("Arquivo disponível em: {}", fileDownloadUri);
         return new UploadFileView(fileName, fileDownloadUri, file.getContentType(), file.getSize());
     }
 
@@ -66,9 +80,10 @@ public class FileController {
     @PostMapping("/uploadMultipleFiles")
     public List<UploadFileView> uploadMultipleFiles(@Parameter(description = "Arquivos a serem carregados", required = true)
                                                      @RequestParam("files") MultipartFile[] files) {
-        return Arrays.asList(files)
-                .stream()
-                .map(file -> uploadFile(file))
+        logger.info("Recebendo múltiplos arquivos para upload.");
+
+        return Arrays.stream(files)
+                .map(this::uploadFile)
                 .collect(Collectors.toList());
     }
 
@@ -84,7 +99,6 @@ public class FileController {
         Pair<ByteArrayResource, String> fileData = fileStorageService.loadFileAsResource(fileName);
         ByteArrayResource resource = fileData.getLeft();
         String fileName_ = fileData.getRight();
-
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(fileName_))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")

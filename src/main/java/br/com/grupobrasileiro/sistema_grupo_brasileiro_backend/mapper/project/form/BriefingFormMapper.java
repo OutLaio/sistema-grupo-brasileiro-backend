@@ -25,7 +25,7 @@ public class BriefingFormMapper implements Mapper<BriefingForm, Briefing> {
                 null,
                 null,
                 LocalDate.now(),
-                briefingForm.expectedDate(),
+                null,
                 null,
                 briefingForm.detailedDescription(),
                 briefingForm.otherCompany(),

@@ -1,35 +1,58 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project;
 
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.List;
+
+
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
 
 import com.github.javafaker.Faker;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.ProjectStatusEnum;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.InvalidProfileException;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.BAgencyBoardDetailedViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.view.BSignpostDetailedViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.form.ProjectFormMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view.ProjectViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 
 @DisplayName("ProjectService Unit Tests")
 public class ProjectServiceTest {
@@ -43,6 +66,20 @@ public class ProjectServiceTest {
     @Mock
     private ProjectFormMapper projectFormMapper;
 
+    
+    @Mock
+    private ProjectViewMapper projectViewMapper;
+    
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private BAgencyBoardDetailedViewMapper bAgencyBoardDetailedViewMapper;
+
+    @Mock
+    private BSignpostDetailedViewMapper bSignpostDetailedViewMapper;
+
+    
     @InjectMocks
     private ProjectService projectService;
 
@@ -53,7 +90,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Must register a project successfully")
+    @DisplayName("Must register a projectForm successfully")
     void shouldRegisterProjectSuccessfully() {
         Long clientId = faker.number().randomNumber();
         String title = faker.lorem().word();
@@ -98,7 +135,7 @@ public class ProjectServiceTest {
 
 
     @Test
-    @DisplayName("Should throw exception when client is not found when registering a project")
+    @DisplayName("Should throw exception when client is not found when registering a projectForm")
     void shouldThrowEntityNotFoundExceptionWhenClientNotFound() {
         Long clientId = faker.number().randomNumber();
         String title = faker.lorem().word();
@@ -114,7 +151,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw exception when project not found when assigning collaborator")
+    @DisplayName("Should throw exception when projectForm not found when assigning collaborator")
     void shouldThrowEntityNotFoundExceptionWhenProjectNotFound() {
         Long projectId = 1L;
         Long collaboratorId = 2L;
@@ -147,7 +184,7 @@ public class ProjectServiceTest {
 
 
     @Test
-    @DisplayName("Should throw exception when project not foundo")
+    @DisplayName("Should throw exception when projectForm not foundo")
     void shouldThrowExceptionWhenProjectNotFound() {
         Long projectId = faker.number().randomNumber();
 
@@ -160,7 +197,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Should update the project status to COMPLETED successfully")
+    @DisplayName("Should update the projectForm status to COMPLETED successfully")
     void shouldSetProjectStatusToCompletedSuccessfully() {
         Long projectId = faker.number().randomNumber();
         Project project = new Project();
@@ -199,7 +236,7 @@ public class ProjectServiceTest {
         );
     }
     @Test
-    @DisplayName("Should update project status to IN_PRODUCTION when hasConfection is true")
+    @DisplayName("Should update projectForm status to IN_PRODUCTION when hasConfection is true")
     void shouldSetProjectStatusToInProductionWhenHasConfectionIsTrue() {
         Long projectId = 1L;
         Project project = new Project();
@@ -217,7 +254,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Should update project status to COMPLETED when hasConfection is false")
+    @DisplayName("Should update projectForm status to COMPLETED when hasConfection is false")
     void shouldSetProjectStatusToCompletedWhenHasConfectionIsFalse() {
         Long projectId = 1L;
         Project project = new Project();
@@ -235,7 +272,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Must update project status to COMPLETED upon completion")
+    @DisplayName("Must update projectForm status to COMPLETED upon completion")
     void shouldSetProjectStatusToCompletedWhenFinished() {
         Long projectId = 1L;
         Project project = new Project();
@@ -295,7 +332,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Must assign collaborator and update status to IN_PROGRESS when project is in TO_DO")
+    @DisplayName("Must assign collaborator and update status to IN_PROGRESS when projectForm is in TO_DO")
     void shouldAssignCollaboratorAndUpdateStatus() {
         Long projectId = faker.number().randomNumber();
         Long collaboratorId = faker.number().randomNumber();
@@ -339,7 +376,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Should update project status to COMPLETED when hasConfection is false")
+    @DisplayName("Should update projectForm status to COMPLETED when hasConfection is false")
     void shouldSetProjectStatusToCompleted() {
         Long projectId = faker.number().randomNumber();
         Project project = new Project();
@@ -357,7 +394,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Must update project status to STAND_BY")
+    @DisplayName("Must update projectForm status to STAND_BY")
     void shouldSetProjectStatusToStandBy() {
         Long projectId = faker.number().randomNumber();
         Project project = new Project();
@@ -374,7 +411,7 @@ public class ProjectServiceTest {
     }
     
     @Test
-    @DisplayName("Should update project status to IN_PROGRESS when status is TO_DO and a collaborator is assigned")
+    @DisplayName("Should update projectForm status to IN_PROGRESS when status is TO_DO and a collaborator is assigned")
     void shouldUpdateProjectStatusToInProgressWhenStatusIsToDo() {
         Long projectId = 1L;
         Long collaboratorId = 2L;
@@ -408,6 +445,123 @@ public class ProjectServiceTest {
             () -> "O colaborador deve ser atribuído ao projeto"
         );
     }
+    
+    
+   
 
+    @Test
+    @DisplayName("Should throw exception when projectForm is not found by ID")
+    void shouldThrowEntityNotFoundExceptionWhenProjectNotFoundById() {
+        Long projectId = 1L;
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class,
+            () -> projectService.getById(projectId),
+            "Project not found for id: " + projectId
+        );
+    }
+
+    @Test
+    @DisplayName("Should throw exception when briefing field is null")
+    void shouldThrowNullPointerExceptionWhenBriefingFieldIsNull() {
+        Long projectId = 1L;
+        Project project = new Project();
+        Briefing briefing = new Briefing();
+        BriefingType briefingType = new BriefingType();
+        briefingType.setDescription("PLACA DE ITINERÁRIOS");
+        briefing.setBriefingType(briefingType);
+        project.setBriefing(briefing);
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+
+        assertThrows(NullPointerException.class,
+            () -> projectService.getById(projectId),
+            "Error retrieving the briefing: The field agencyBoard is null"
+        );
+    }
+
+    @Test
+    @DisplayName("Should throw exception when briefing type is not valid")
+    void shouldThrowIllegalArgumentExceptionWhenBriefingTypeIsInvalid() {
+        Long projectId = 1L;
+        Project project = new Project();
+        Briefing briefing = new Briefing();
+        BriefingType briefingType = new BriefingType();
+        briefingType.setDescription("INVALID_TYPE");
+        briefing.setBriefingType(briefingType);
+        project.setBriefing(briefing);
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+
+        assertThrows(IllegalArgumentException.class,
+            () -> projectService.getById(projectId),
+            "Error retrieving the briefing: The projectForm briefing type is not valid"
+        );
+    }
+    @Test
+    @DisplayName("Deve retornar todos os projetos quando o perfil do usuário não for 3")
+    void shouldReturnAllProjectsForNonEmployeeUser() {
+        Long userId = 1L;
+        User user = new User();
+        Profile profile = new Profile();
+        profile.setId(2L); // Perfil que não é '3'
+        user.setProfile(profile);
+
+        Project project1 = new Project();
+        project1.setTitle("Projeto 1");
+        Project project2 = new Project();
+        project2.setTitle("Projeto 2");
+
+        Set<Project> allProjects = new HashSet<>();
+        allProjects.add(project1);
+        allProjects.add(project2);
+
+        List<Project> allProjectsList = new ArrayList<>(allProjects);  
+        
+        // Mocking
+        when(userRepository.getReferenceById(userId)).thenReturn(user);
+        when(projectRepository.findAll()).thenReturn(allProjectsList);  // Agora retornando uma List
+        when(projectViewMapper.map(any(Project.class))).thenReturn(new ProjectView(1L, "Projeto", "TO_DO", null, null));
+
+        // Chamada do método
+        Set<ProjectView> projectViews = projectService.getAll(userId);
+
+        // Verificações
+        assertNotNull(projectViews, "O resultado não pode ser nulo");
+        assertEquals(2, projectViews.size(), "Deveria retornar 2 projetos");
+        verify(userRepository).getReferenceById(userId);
+        verify(projectRepository).findAll();
+    }
+
+    @Test
+    @DisplayName("Deve retornar apenas os projetos do colaborador quando o perfil for 3")
+    void shouldReturnOwnedProjectsForEmployeeUser() {
+        Long userId = 1L;
+        User user = new User();
+        Profile profile = new Profile();
+        profile.setId(3L); // Perfil de colaborador
+        user.setProfile(profile);
+
+        Employee employee = new Employee();
+        Project project1 = new Project();
+        project1.setTitle("Projeto 1");
+        employee.setOwnedProjects(new HashSet<>());
+        employee.getOwnedProjects().add(project1);
+        user.setEmployee(employee);
+
+        // Mocking
+        when(userRepository.getReferenceById(userId)).thenReturn(user);
+        when(projectViewMapper.map(any(Project.class))).thenReturn(new ProjectView(1L, "Projeto 1", "IN_PROGRESS", null, null));
+
+        // Chamada do método
+        Set<ProjectView> projectViews = projectService.getAll(userId);
+
+        // Verificações
+        assertNotNull(projectViews, "O resultado não pode ser nulo");
+        assertEquals(1, projectViews.size(), "Deveria retornar 1 projeto");
+        verify(userRepository).getReferenceById(userId);
+        verify(projectRepository, never()).findAll(); // Verifica que o método findAll não foi chamado
+    }
 }
 

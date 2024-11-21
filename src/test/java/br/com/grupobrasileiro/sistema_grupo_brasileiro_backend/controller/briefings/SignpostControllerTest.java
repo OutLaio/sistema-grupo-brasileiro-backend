@@ -21,7 +21,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.github.javafaker.Faker;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings.SignpostController;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.BSignpostForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.RegisterSignpostForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
@@ -100,8 +99,8 @@ public class SignpostControllerTest {
                 1L, 
                 mockMaterial, 
                 mockBriefing,
-                registerSignpostForm.signpost().boardLocation(), 
-                registerSignpostForm.signpost().sector() 
+                registerSignpostForm.signpostForm().boardLocation(),
+                registerSignpostForm.signpostForm().sector()
         );
 
         MaterialView mockMaterialView = new MaterialView(
@@ -112,8 +111,8 @@ public class SignpostControllerTest {
         BSignpostView mockSignpostView = new BSignpostView(
                 mockSignpost.getId(),          
                 mockMaterialView,               
-                registerSignpostForm.signpost().boardLocation(), 
-                registerSignpostForm.signpost().sector() 
+                registerSignpostForm.signpostForm().boardLocation(),
+                registerSignpostForm.signpostForm().sector()
         );
 
         BriefingView mockBriefingView = new BriefingView(

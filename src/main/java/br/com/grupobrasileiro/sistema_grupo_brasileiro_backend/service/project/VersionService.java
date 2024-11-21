@@ -30,9 +30,9 @@ public class VersionService {
     @Autowired
     private VersionFormMapper versionFormMapper;
 
-    public VersionView supervisorApprove(ApproveForm form) {
-        Project project = projectRepository.findById(form.idProject()).orElseThrow(
-                () -> new EntityNotFoundException("Could not find project " + form.idProject() + " in repository")
+    public VersionView supervisorApprove(Long idProject, ApproveForm form) {
+        Project project = projectRepository.findById(idProject).orElseThrow(
+                () -> new EntityNotFoundException("Could not find project " + idProject + " in repository")
         );
 
         Version version = versionRepository.findById(form.idVersion()).orElseThrow(
@@ -53,9 +53,9 @@ public class VersionService {
         return versionViewMapper.map(version);
     }
 
-    public VersionView clientApprove(ApproveForm form) {
-        Project project = projectRepository.findById(form.idProject()).orElseThrow(
-                () -> new EntityNotFoundException("Could not find project " + form.idProject() + " in repository")
+    public VersionView clientApprove(Long idProject, ApproveForm form) {
+        Project project = projectRepository.findById(idProject).orElseThrow(
+                () -> new EntityNotFoundException("Could not find project " + idProject + " in repository")
         );
 
         Version version = versionRepository.findById(form.idVersion()).orElseThrow(
