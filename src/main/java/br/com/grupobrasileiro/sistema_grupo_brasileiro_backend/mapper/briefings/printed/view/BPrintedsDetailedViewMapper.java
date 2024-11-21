@@ -12,7 +12,9 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.vi
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.printeds.BPrinted;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
+import org.springframework.stereotype.Component;
 
+@Component
 public class BPrintedsDetailedViewMapper implements Mapper<BPrinted, BPrintedsDetailedView> {
 	
 	@Autowired
