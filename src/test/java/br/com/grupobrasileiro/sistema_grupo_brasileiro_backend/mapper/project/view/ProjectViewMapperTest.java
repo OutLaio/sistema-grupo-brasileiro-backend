@@ -41,7 +41,7 @@ class ProjectViewMapperTest {
      * Verifica se ele mapeia um projeto com cliente e colaborador.
      */
     @Test
-    @DisplayName("Should map project successfully")
+    @DisplayName("Should map projectForm successfully")
     void mapProjectSuccessfully() {
         // Arrange
         User clientUser = new User();
@@ -85,7 +85,7 @@ class ProjectViewMapperTest {
      * Verifica se ele mapeia um projeto com cliente nulo.
      */
     @Test
-    @DisplayName("Should map project with null client")
+    @DisplayName("Should map projectForm with null client")
     void mapProjectWithNullClient() {
         // Arrange
         User collaboratorUser = new User();
@@ -119,7 +119,7 @@ class ProjectViewMapperTest {
      * Verifica se ele mapeia um projeto com colaborador nulo.
      */
     @Test
-    @DisplayName("Should map project with null collaborator")
+    @DisplayName("Should map projectForm with null collaborator")
     void mapProjectWithNullCollaborator() {
         // Arrange
         User clientUser = new User();
@@ -153,7 +153,7 @@ class ProjectViewMapperTest {
      * Verifica se ele mapeia um projeto com cliente e colaborador nulos.
      */
     @Test
-    @DisplayName("Should map project with null client and collaborator")
+    @DisplayName("Should map projectForm with null client and collaborator")
     void mapProjectWithNullClientAndCollaborator() {
         // Arrange
         Project project = new Project(null, null, null, "Project Title", "ACTIVE", false, null);
@@ -175,7 +175,7 @@ class ProjectViewMapperTest {
      * Verifica se ele mapeia corretamente um projeto válido.
      */
     @Test
-    @DisplayName("Should map valid project correctly")
+    @DisplayName("Should map valid projectForm correctly")
     void shouldMapValidProject() {
         // Arrange
         Project project = new Project(1L, null, null, "Valid Project", "ACTIVE", false, null);

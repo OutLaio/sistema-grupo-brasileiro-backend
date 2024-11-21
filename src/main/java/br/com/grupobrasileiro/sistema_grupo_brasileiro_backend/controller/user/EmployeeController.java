@@ -1,5 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.user;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+import java.util.UUID;
+
 /**
  * Controlador REST para operações relacionadas aos Employees.
  */
@@ -54,26 +57,24 @@ public class EmployeeController {
     @Operation(summary = "Update Employee", description = "Updates the data of an existing Employee.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Employee updated successfully", content = {
-            @Content(mediaType = "application/json", schema = @Schema(implementation = EmployeeView.class))
+            @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))
         }),
         @ApiResponse(responseCode = "400", description = "Validation error", content = @Content),
         @ApiResponse(responseCode = "404", description = "Employee not found", content = @Content)
     })
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeView> updateEmployee(
+    public ResponseEntity<?> updateEmployee(
             @Parameter(description = "ID do Employee a ser atualizado") @PathVariable Long id,
             @Valid @RequestBody EmployeeForm form) {
 
-        logger.info("Requisição para atualizar Employee com ID: {}", id);
-        
-        try {
-            EmployeeView updatedEmployee = employeeService.updateEmployee(id, form);
-            logger.info("Employee com ID: {} atualizado com sucesso.", id);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedEmployee);
-        } catch (Exception e) {
-            logger.error("Erro ao atualizar Employee com ID: {}: {}", id, e.getMessage());
-            throw e;  // ou retorne uma resposta adequada
-        }
+        String requestId = UUID.randomUUID().toString();
+        logger.info("[{}] Requisição para atualizar Employee com ID: {}", requestId, id);
+
+        logger.debug("[{}] Dados para atualizar Employee com ID: {}, nome = {}, ", requestId, id, form.name());
+
+        EmployeeView updatedEmployee = employeeService.updateEmployee(id, form);
+        logger.info("[{}] Employee com ID: {} atualizado com sucesso.", requestId, id);
+        return ResponseEntity.status(HttpStatus.OK).body(new Response<>("Dados atualizados com sucesso!", updatedEmployee));
     }
 
     /**
@@ -88,24 +89,25 @@ public class EmployeeController {
     @Operation(summary = "List all Employees", description = "List all Employees with pagination.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de Employees", content = {
-            @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class))
+            @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))
         })
     })
     @Cacheable("Collaborators")
     @GetMapping("/allCollaborators")
-    public ResponseEntity<Page<EmployeeView>> getAllCollaborators(
+    public ResponseEntity<?> getAllCollaborators(
             @Parameter(description = "Número da página") @RequestParam(defaultValue = "0") Integer page,
             @Parameter(description = "Tamanho da página") @RequestParam(defaultValue = "10") Integer size,
             @Parameter(description = "Direção da ordenação (ASC ou DESC)") @RequestParam(value = "direction", defaultValue = "ASC") String direction,
             @Parameter(description = "Campo de ordenação") @RequestParam(value = "orderBy", defaultValue = "name") String orderBy) {
-        
-        logger.info("Requisição para listar Employees na página {}, tamanho {}, ordenado por {}.", page, size, orderBy);
+
+        String requestId = UUID.randomUUID().toString();
+        logger.info("[{}] Requisição para listar Employees na página {}, tamanho {}, ordenado por {}.",requestId, page, size, orderBy);
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.valueOf(direction), orderBy);
         Page<EmployeeView> employeesPage = employeeService.getAllCollaborators(pageRequest);
-        logger.info("Lista de Employees retornada com sucesso.");
+        logger.info("[{}] Lista de Employees retornada com sucesso.", requestId);
 
-        return ResponseEntity.ok(employeesPage);
+        return ResponseEntity.ok().body(new Response<>("Lista de colaboradores recuperadas com sucesso!", employeesPage));
     }
 
     /**
@@ -117,24 +119,19 @@ public class EmployeeController {
     @Operation(summary = "Buscar Employee por ID", description = "Busca um Employee pelo seu ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Employee found", content = {
-            @Content(mediaType = "application/json", schema = @Schema(implementation = EmployeeView.class))
+            @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))
         }),
         @ApiResponse(responseCode = "404", description = "Employee not found", content = @Content)
     })
     @Cacheable(value = "idEmployee", key = "#id")
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeView> getEmployeeById(
-            @Parameter(description = "ID do Employee") @PathVariable Long id) {
+    public ResponseEntity<?> getEmployeeById(@Parameter(description = "ID do Employee") @PathVariable Long id) {
+
+        String requestId = UUID.randomUUID().toString();
+        logger.info("[{}] Requisição para buscar Employee com ID: {}", requestId, id);
         
-        logger.info("Requisição para buscar Employee com ID: {}", id);
-        
-        try {
-            EmployeeView employeeView = employeeService.getEmployeeById(id);
-            logger.info("Employee com ID: {} encontrado com sucesso.", id);
-            return ResponseEntity.status(HttpStatus.OK).body(employeeView);
-        } catch (Exception e) {
-            logger.error("Erro ao buscar Employee com ID: {}: {}", id, e.getMessage());
-            throw e;  // ou retorne uma resposta adequada
-        }
+        EmployeeView employeeView = employeeService.getEmployeeById(id);
+        logger.info("[{}] Employee com ID: {} encontrado com sucesso.", requestId, id);
+        return ResponseEntity.status(HttpStatus.OK).body(new Response<>("Dados do usuário recuperados com sucesso!", employeeView));
     }
 }

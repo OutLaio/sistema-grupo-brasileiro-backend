@@ -1,26 +1,41 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project;
 
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.InternalCampaigns.view.BInternalCampaignsDetailsView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.gifts.view.BGiftDetailedView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.handout.view.BHandoutDetailedView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.printeds.view.BPrintedsDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.sticker.view.BStickerDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.ProjectStatusEnum;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.CollaboratorAlreadyAssignedException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.EntityNotFoundException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception.InvalidProfileException;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.agencyBoard.view.BAgencyBoardDetailedViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.gifts.view.BGiftDetailedViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.handout.view.BHandoutDetailedViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.internalCampaigns.view.BInternalCampaignDetailedViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.printed.view.BPrintedsDetailedViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.view.BSignpostDetailedViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.sticker.view.BStickerDetailedViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.form.ProjectFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view.ProjectViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.gifts.BGift;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.handouts.BHandout;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.internalcampaign.BInternalCampaign;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.printeds.BPrinted;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.sticker.BSticker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
@@ -29,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,6 +53,9 @@ public class ProjectService {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
+    private BriefingRepository briefingRepository;
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -55,6 +74,18 @@ public class ProjectService {
 
     @Autowired
     private BStickerDetailedViewMapper bStickerDetailedViewMapper;
+
+    @Autowired
+    private BPrintedsDetailedViewMapper bPrintedsDetailedViewMapper;
+
+    @Autowired
+    private BGiftDetailedViewMapper bGiftDetailedViewMapper;
+
+    @Autowired
+    private BInternalCampaignDetailedViewMapper bInternalCampaignDetailedViewMapper;
+
+    @Autowired
+    private BHandoutDetailedViewMapper bHandoutDetailedViewMapper;
 
     @Autowired
     private UserRepository userRepository;
@@ -80,6 +111,11 @@ public class ProjectService {
 
         if(!employee.getUser().getProfile().getId().equals(2L))
             throw new InvalidProfileException("The employee is not a Collaborator");
+
+        if(project.getCollaborator().equals(employee))
+            throw new CollaboratorAlreadyAssignedException("Collaborator is already assigned to the project");
+
+        project.setCollaborator(employee);
 
         if(project.getStatus().equals(ProjectStatusEnum.TO_DO.toString()))
             project.setStatus(ProjectStatusEnum.IN_PROGRESS.toString());
@@ -140,32 +176,60 @@ public class ProjectService {
             BAgencyBoard bAgencyBoard = project.getBriefing().getAgencyBoard();
             if (bAgencyBoard == null) throw new NullPointerException("Error retrieving the briefing: The field agencyBoard is null");
             BAgencyBoardDetailedView view = bAgencyBoardDetailedViewMapper.map(bAgencyBoard);
-            return ResponseEntity.ok(view);
+            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
         }
         if (briefingType.equals("PLACA DE SINALIZAÇÃO INTERNA")){
             BSignpost bSignpost = project.getBriefing().getSignpost();
             if (bSignpost == null) throw new NullPointerException("Error retrieving the briefing: The field signpost is null");
             BSignpostDetailedView view = bSignpostDetailedViewMapper.map(bSignpost);
-            return ResponseEntity.ok(view);
+            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
         }
         if (briefingType.equals("ADESIVOS")){
             BSticker bSticker = project.getBriefing().getSticker();
             if (bSticker == null) throw new NullPointerException("Error retrieving the briefing: The field sticker is null");
             BStickerDetailedView view = bStickerDetailedViewMapper.map(bSticker);
-            return ResponseEntity.ok(view);
+            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
         }
         if (briefingType.equals("IMPRESSOS")){
-            //TODO: Implement the search for the briefing Printeds
+            BPrinted bPrinted = project.getBriefing().getPrinted();
+            if (bPrinted == null) throw new NullPointerException("Error retrieving the briefing: The field printed is null");
+            BPrintedsDetailedView view = bPrintedsDetailedViewMapper.map(bPrinted);
+            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
         }
         if (briefingType.equals("LAYOUTS PARA BRINDES")){
-            //TODO: Implement the search for the briefing Gifts
+            BGift bGift = project.getBriefing().getGift();
+            if (bGift == null) throw new NullPointerException("Error retrieving the briefing: The field gift is null");
+            BGiftDetailedView view = bGiftDetailedViewMapper.map(bGift);
+            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
         }
         if (briefingType.equals("CAMPANHAS INTERNAS")){
-            //TODO: Implement the search for the briefing Internal Campaigns
+            BInternalCampaign bInternalCampaign = project.getBriefing().getInternalCampaign();
+            if (bInternalCampaign == null) throw new NullPointerException("Error retrieving the briefing: The field internalCampaign is null");
+            BInternalCampaignsDetailsView view = bInternalCampaignDetailedViewMapper.map(bInternalCampaign);
+            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
         }
         if (briefingType.equals("COMUNICADOS")){
-            //TODO: Implement the search for the briefing Handouts
+            BHandout bHandout = project.getBriefing().getHandout();
+            if (bHandout == null) throw new NullPointerException("Error retrieving the briefing: The field handout is null");
+            BHandoutDetailedView view = bHandoutDetailedViewMapper.map(bHandout);
+            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
         }
         throw new IllegalArgumentException("Error retrieving the briefing: The project briefing type is not valid");
+    }
+
+    public void updateTitle(Long id, String title) {
+        Project project = projectRepository.findById(id).orElseThrow(
+            () -> new EntityNotFoundException("Project not found with id: " + id)
+        );
+        project.setTitle(title);
+        projectRepository.save(project);
+    }
+
+    public void updateDate(Long id, LocalDate date) {
+        Project project = projectRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Project not found with id: " + id)
+        );
+        project.getBriefing().setExpectedTime(date);
+        briefingRepository.save(project.getBriefing());
     }
 }

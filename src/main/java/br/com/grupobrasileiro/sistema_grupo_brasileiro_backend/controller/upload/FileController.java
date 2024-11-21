@@ -1,5 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.upload;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
@@ -39,7 +42,8 @@ public class FileController {
     @Operation(summary = "Fazer upload de um arquivo",
                description = "Faz o upload de um arquivo e retorna informações sobre ele.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Arquivo carregado com sucesso"),
+        @ApiResponse(responseCode = "200", description = "Arquivo carregado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
         @ApiResponse(responseCode = "400", description = "Requisição inválida"),
         @ApiResponse(responseCode = "500", description = "Erro ao carregar arquivo")
     })
@@ -78,9 +82,8 @@ public class FileController {
                                                      @RequestParam("files") MultipartFile[] files) {
         logger.info("Recebendo múltiplos arquivos para upload.");
 
-        return Arrays.asList(files)
-                .stream()
-                .map(file -> uploadFile(file))
+        return Arrays.stream(files)
+                .map(this::uploadFile)
                 .collect(Collectors.toList());
     }
 

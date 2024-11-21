@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 public record  RegisterHandout(
 
     @NotNull(message = "Project form cannot be null.")
-    @JsonAlias({"project"})
+    @JsonAlias({"projectForm"})
     ProjectForm projectForm,
 
 

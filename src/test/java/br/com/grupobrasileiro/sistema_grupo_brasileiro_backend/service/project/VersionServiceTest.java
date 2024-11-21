@@ -46,7 +46,7 @@ public class VersionServiceTest {
     }
 
     @Test
-    @DisplayName("Must approve the version by supervisor and update project status to IN_PROGRESS if not approved")
+    @DisplayName("Must approve the version by supervisor and update projectForm status to IN_PROGRESS if not approved")
     void shouldApproveVersionBySupervisorAndUpdateProjectStatusToInProgressIfNotApproved() {
         Long projectId = faker.number().randomNumber();
         Long versionId = faker.number().randomNumber();
@@ -79,7 +79,7 @@ public class VersionServiceTest {
 
 
     @Test
-    @DisplayName("Must approve the version by the client and update the project status to APPROVED if approved")
+    @DisplayName("Must approve the version by the client and update the projectForm status to APPROVED if approved")
     void shouldApproveVersionByClientAndUpdateProjectStatusToApprovedIfApproved() {
         Long projectId = faker.number().randomNumber();
         Long versionId = faker.number().randomNumber();
@@ -105,7 +105,7 @@ public class VersionServiceTest {
     }
 
     @Test
-    @DisplayName("Must create a new version and update the project status to WAITING_APPROVAL if the project status is IN_PROGRESS")
+    @DisplayName("Must create a new version and update the projectForm status to WAITING_APPROVAL if the projectForm status is IN_PROGRESS")
     void shouldCreateNewVersionAndUpdateProjectStatusToWaitingApprovalIfInProgress() {
         Long projectId = faker.number().randomNumber();
         String productLink = faker.internet().url();
@@ -127,7 +127,7 @@ public class VersionServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw exception when project is not found when approving version by supervisor")
+    @DisplayName("Should throw exception when projectForm is not found when approving version by supervisor")
     void shouldThrowExceptionWhenProjectNotFoundForSupervisorApproval() {
         Long projectId = faker.number().randomNumber();
         Long versionId = faker.number().randomNumber();
@@ -162,7 +162,7 @@ public class VersionServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw exception when project is not found when approving version by client")
+    @DisplayName("Should throw exception when projectForm is not found when approving version by client")
     void shouldThrowExceptionWhenProjectNotFoundForClientApproval() {
         Long projectId = faker.number().randomNumber();
         Long versionId = faker.number().randomNumber();
@@ -197,7 +197,7 @@ public class VersionServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw exception when project not found when creating a new version")
+    @DisplayName("Should throw exception when projectForm not found when creating a new version")
     void shouldThrowExceptionWhenProjectNotFoundForNewVersion() {
         Long projectId = faker.number().randomNumber();
         String productLink = faker.internet().url();

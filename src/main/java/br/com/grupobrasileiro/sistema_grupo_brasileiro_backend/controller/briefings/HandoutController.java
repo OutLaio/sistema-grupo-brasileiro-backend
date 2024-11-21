@@ -1,8 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.handout.form.RegisterHandoutForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.handout.view.BHandoutDetailedView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.handouts.BHandout;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.bHandout.BHandoutService;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 /**
  * Controller for managing Handouts within the system.
@@ -55,14 +56,14 @@ public class HandoutController {
      *
      * @param registerHandout the data to register a handout
      * @param uriBuilder builder for creating the location URI
-     * @return a response entity containing the detailed view of the registered handout
+     * @return a response entity containing a message success
      */
     @PostMapping
     @Transactional
     @Operation(
             summary = "Register a new handout",
-            description = "Registers a new handout for a project. This operation creates a new handout, " +
-                          "registers the associated project and briefing, and returns a detailed view of the handout."
+            description = "Registers a new handout for a projectForm. This operation creates a new handout, " +
+                          "registers the associated projectForm and briefing, and returns a detailed view of the handout."
         )
         @ApiResponses(value = {
             @ApiResponse(
@@ -70,28 +71,37 @@ public class HandoutController {
                 description = "Handout registered successfully", 
                 content = @Content(
                     mediaType = "application/json", 
-                    schema = @Schema(implementation = BHandoutDetailedView.class)
+                    schema = @Schema(implementation = Response.class)
                 )
             ),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
         })
-    public ResponseEntity<BHandoutDetailedView> registerHandout(
+    public ResponseEntity<?> registerHandout(
             @Valid @RequestBody RegisterHandoutForm registerHandout,
             UriComponentsBuilder uriBuilder
     ) {
-        LOGGER.info("Iniciando registro de novo handout para o projeto: {}", registerHandout.projectForm().title());
+        String requestId = UUID.randomUUID().toString();
+        LOGGER.info("[{}] Iniciando registro de nova solicitação de comunicado.", requestId);
+
+        LOGGER.debug("[{}] Dados do projeto recebido para registro: título = {}",
+                requestId, registerHandout.projectForm().title());
 
         Project project = projectService.register(registerHandout.projectForm());
-        LOGGER.info("Projeto registrado com sucesso: {}", project.getId());
+        LOGGER.info("[{}] Projeto registrado com sucesso. ID do projeto: {}",
+                requestId, project.getId());
 
         Briefing briefing = briefingService.register(registerHandout.briefingForm(), project);
-        LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
+        LOGGER.info("[{}] Briefing registrado com sucesso para o projeto. ID do briefing: {}",
+                requestId, briefing.getId());
 
         bHandoutService.register(registerHandout.handoutForm(), briefing);
-        LOGGER.info("Handout registrado com sucesso!");
+        LOGGER.info("[{}] Solicitação de comunicado registrada com sucesso para o briefing: {}",
+                requestId, briefing.getId());
 
-        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
+        URI location = uriBuilder.path("/api/v1/projects/{id}").buildAndExpand(project.getId()).toUri();
+        LOGGER.info("[{}] Registro de solicitação de comunicado concluído com sucesso.", requestId);
+        return ResponseEntity.created(location).body(new Response<>("Nova solicitação criada com sucesso!"));
     }
 }

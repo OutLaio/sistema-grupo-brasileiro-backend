@@ -1,8 +1,8 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.gifts.form.RegisterGiftForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.gifts.view.BGiftDetailedView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.gifts.BGift;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.gift.BGiftService;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 /**
  * Controller for managing Gifts within the system.
@@ -54,14 +55,14 @@ public class GiftController {
      * 
      * @param registerGift the data to register a gift
      * @param uriBuilder builder for creating the location URI
-     * @return a response entity containing the detailed view of the registered gift
+     * @return a response entity containing a message success
      */
     @PostMapping
     @Transactional
     @Operation(
         summary = "Register a new gift",
-        description = "Registers a new gift for a project. This operation creates a new gift, " +
-                      "registers the associated project and briefing, and returns a detailed view of the gift."
+        description = "Registers a new gift for a projectForm. This operation creates a new gift, " +
+                      "registers the associated projectForm and briefing, and returns a detailed view of the gift."
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -69,29 +70,37 @@ public class GiftController {
             description = "Gift registered successfully", 
             content = @Content(
                 mediaType = "application/json", 
-                schema = @Schema(implementation = BGiftDetailedView.class)
+                schema = @Schema(implementation = Response.class)
             )
         ),
         @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
         @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
         @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    public ResponseEntity<BGiftDetailedView> registerGift(
+    public ResponseEntity<?> registerGift(
             @Valid @RequestBody RegisterGiftForm registerGift,
             UriComponentsBuilder uriBuilder
     ) {
-        LOGGER.info("Iniciando registro de novo gift para o projeto: {}", registerGift.projectForm().title());
-        
+        String requestId = UUID.randomUUID().toString();
+        LOGGER.info("[{}] Iniciando registro de nova solicitação de layout p/ brinde.", requestId);
+
+        LOGGER.debug("[{}] Dados do projeto recebido para registro: título = {}",
+                requestId, registerGift.projectForm().title());
+
         Project project = projectService.register(registerGift.projectForm());
-        LOGGER.info("Projeto registrado com sucesso: {}", project.getId());
+        LOGGER.info("[{}] Projeto registrado com sucesso. ID do projeto: {}",
+                requestId, project.getId());
 
         Briefing briefing = briefingService.register(registerGift.briefingForm(), project);
-        LOGGER.info("Briefing registrado com sucesso para o projeto: {}", project.getId());
+        LOGGER.info("[{}] Briefing registrado com sucesso para o projeto. ID do briefing: {}",
+                requestId, briefing.getId());
 
         giftService.register(registerGift.giftForm(), briefing);
-        LOGGER.info("Gift registrado com sucesso!");
+        LOGGER.info("[{}] Solicitação de layout p/ brinde registrado com sucesso para o briefing: {}",
+                requestId, briefing.getId());
 
-        return ResponseEntity.created(URI.create("/api/v1/projects/" + project.getId())).body(null);
+        URI location = uriBuilder.path("/api/v1/projects/{id}").buildAndExpand(project.getId()).toUri();
+        LOGGER.info("[{}] Registro de solicitação de layout p/ brinde concluído com sucesso.", requestId);
+        return ResponseEntity.created(location).body(new Response<>("Nova solicitação criada com sucesso!"));
     }
-    
 }
