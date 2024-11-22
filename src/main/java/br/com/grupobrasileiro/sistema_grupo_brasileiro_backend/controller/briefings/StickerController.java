@@ -2,10 +2,12 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.brief
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.sticker.form.RegisterStickerForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.dialogbox.form.DialogBoxForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.sticker.BSticker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.sticker.BStickerService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,6 +49,9 @@ public class StickerController {
     @Autowired
     private BStickerService stickerService;
 
+    @Autowired
+    private DialogBoxService dialogBoxService;
+
     /**
      * Registers a new sticker for a project.
      *
@@ -86,6 +91,8 @@ public class StickerController {
         stickerService.register(registerSticker.stickerForm(), briefing);
         LOGGER.info("[{}] Solicitação de adesivo registrada com sucesso para o briefing: {}",
                 requestId, briefing.getId());
+
+        dialogBoxService.createMessage(new DialogBoxForm(0L, briefing.getId(), "Sua solicitação foi criada com sucesso e está aguardando análise do supervisor. Assim que aprovada, daremos início ao desenvolvimento. Caso precise alterar algum dado informado ou realizar qualquer comunicação sobre o desenvolvimento, por favor, utilize este chat. Todas as atualizações também serão enviadas por aqui. Obrigado!"));
 
         URI location = uriBuilder.path("/api/v1/projects/{id}").buildAndExpand(project.getId()).toUri();
         LOGGER.info("[{}] Registro de solicitação de adesivo concluído com sucesso.", requestId);

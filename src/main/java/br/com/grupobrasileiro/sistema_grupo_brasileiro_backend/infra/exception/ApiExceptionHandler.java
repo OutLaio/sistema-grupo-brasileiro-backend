@@ -2,6 +2,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -85,7 +86,11 @@ public class ApiExceptionHandler {
         String clientIp = request.getRemoteAddr();
         log.error("Erro inesperado ao acessar [{} {}]. IP do cliente: {}. Detalhes: {}", method, endpoint, clientIp, ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
-            .body(new ErrorMessage(request, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()));
+            .body(new ErrorMessage(
+                    request,
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Ocorreu um erro inesperado em nosso sistema. Estamos trabalhando para resolvê-lo. Por favor, tente novamente mais tarde."
+            ));
     }
 
     @ApiResponses(value = {
@@ -187,15 +192,24 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(SShClientException.class)
-    public ResponseEntity<ErrorMessage> handleSShClientException(SShClientException ex,
-        HttpServletRequest request) {
-                log.error("Api Error - " + ex.getMessage(), ex);
-                return ResponseEntity
-                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(new ErrorMessage(request, HttpStatus.INTERNAL_SERVER_ERROR,
-                                        "Internal server error: " + ex.getMessage()));
-            }
+    public ResponseEntity<ErrorMessage> handleSShClientException(SShClientException ex, HttpServletRequest request) {
+        log.error("Api Error - {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
+            .body(new ErrorMessage(request, HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error: " + ex.getMessage()));
+    }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "File not found")
+    })
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorMessage> handleDataIntegrityViolationException(DataIntegrityViolationException ex, HttpServletRequest request) {
+        String endpoint = request.getRequestURI();
+        log.warn("Violação de integridade de dados detectada ao acessar o endpoint '{}'. Mensagem: {}", endpoint, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(
+                        request,
+                        HttpStatus.BAD_REQUEST,
+                        "Não foi possível concluir a operação devido a um conflito nos dados informados. Por favor, revise as informações e tente novamente."
+                ));
+    }
 }
-

@@ -143,7 +143,7 @@ public class AuthController {
         LOGGER.info("[{}] E-mail de redefinição de senha enviado com sucesso. Usuário: {}",
                 requestId, maskedEmail);
 
-        return ResponseEntity.ok(new Response<>("E-mail enviado com sucesso!"));
+        return ResponseEntity.ok(new Response<>("Sua solicitação de recuperação de senha foi enviada com sucesso! Verifique seu e-mail."));
     }
 
     /**

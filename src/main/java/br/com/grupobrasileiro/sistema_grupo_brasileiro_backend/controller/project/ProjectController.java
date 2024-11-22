@@ -1,8 +1,10 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.project;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.dialogbox.form.DialogBoxForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.*;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -50,8 +52,12 @@ public class ProjectController {
 
     @Autowired
     private ProjectService projectService;
+
     @Autowired
     private VersionService versionService;
+
+    @Autowired
+    private DialogBoxService dialogBoxService;
 
     /**
      * Atribui um colaborador a um projeto.
@@ -78,7 +84,9 @@ public class ProjectController {
 
         projectService.assignCollaborator(id, form);
         logger.info("[{}] Colaborador atribuído com sucesso ao projeto com ID: {}", requestId, id);
-        
+
+        dialogBoxService.createMessage(new DialogBoxForm(0L, id, "Um colaborador foi designado para o seu projeto! Ele estará acompanhando a solicitação e qualquer atualização será compartilhada aqui no chat. Fique à vontade para conversar sobre o andamento ou tirar dúvidas diretamente por aqui."));
+
         return ResponseEntity.ok().body(new Response<>("Colaborador atribuído com sucesso!"));
     }
 
@@ -111,7 +119,9 @@ public class ProjectController {
         logger.info("[{}] Nova versão criada com sucesso para o projeto com ID: {}. ID da versão: {}",
                 requestId, id, view.id());
 
-        return ResponseEntity.created(URI.create("/api/v1/projects/" + id)).body(new Response<>("Nova versão criada com sucesso!", view));
+        dialogBoxService.createMessage(new DialogBoxForm(0L, id, "Uma nova versão da arte foi desenvolvida! Ela pode ser visualizada ao lado, na seção 'Artes Desenvolvidas'. Assim que aprovada pelo supervisor, a arte estará disponível para download e aprovação final do solicitante."));
+
+        return ResponseEntity.created(URI.create("/api/v1/projects/" + id)).body(new Response<>("Nova Arte Enviada com Sucesso!", view));
     }
 
     /**

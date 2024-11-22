@@ -9,6 +9,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.han
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.printeds.view.BPrintedsDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.sticker.view.BStickerDetailedView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.dialogbox.form.DialogBoxForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
@@ -39,12 +40,14 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projec
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -90,6 +93,9 @@ public class ProjectService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private DialogBoxService dialogBoxService;
+
 
     public Project register(ProjectForm projectForm) {
         Employee client = employeeRepository.findById(projectForm.idClient())
@@ -128,10 +134,14 @@ public class ProjectService {
         Project project = projectRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Project not found for id: " + id)
         );
+        String message = "O produto solicitado foi encaminhado para confecção! Em breve, você receberá mais informações sobre o andamento. Fique à vontade para entrar em contato caso tenha alguma dúvida.";
         if(hasConfection)
             project.setStatus(ProjectStatusEnum.IN_PRODUCTION.toString());
-        else
+        else{
             project.setStatus(ProjectStatusEnum.COMPLETED.toString());
+            message = "A sua solicitação foi finalizada com sucesso! O processo foi concluído e o chat será encerrado. Se precisar de mais alguma coisa no futuro, não hesite em nos chamar. Obrigado!";
+        }
+        dialogBoxService.createMessage(new DialogBoxForm(0L, id, message));
         projectRepository.save(project);
     }
 
@@ -140,6 +150,7 @@ public class ProjectService {
                 () -> new EntityNotFoundException("Project not found for id: " + id)
         );
         project.setStatus(ProjectStatusEnum.COMPLETED.toString());
+        dialogBoxService.createMessage(new DialogBoxForm(0L, id, "A sua solicitação foi finalizada com sucesso! O processo foi concluído e o chat será encerrado. Se precisar de mais alguma coisa no futuro, não hesite em nos chamar. Obrigado!"));
         projectRepository.save(project);
     }
 
@@ -172,47 +183,56 @@ public class ProjectService {
                 () -> new EntityNotFoundException("Project not found for id: " + id)
         );
         String briefingType = project.getBriefing().getBriefingType().getDescription();
-        if (briefingType.equals("PLACA DE ITINERÁRIOS")){
-            BAgencyBoard bAgencyBoard = project.getBriefing().getAgencyBoard();
-            if (bAgencyBoard == null) throw new NullPointerException("Error retrieving the briefing: The field agencyBoard is null");
-            BAgencyBoardDetailedView view = bAgencyBoardDetailedViewMapper.map(bAgencyBoard);
-            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
-        }
-        if (briefingType.equals("PLACA DE SINALIZAÇÃO INTERNA")){
-            BSignpost bSignpost = project.getBriefing().getSignpost();
-            if (bSignpost == null) throw new NullPointerException("Error retrieving the briefing: The field signpost is null");
-            BSignpostDetailedView view = bSignpostDetailedViewMapper.map(bSignpost);
-            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
-        }
-        if (briefingType.equals("ADESIVOS")){
-            BSticker bSticker = project.getBriefing().getSticker();
-            if (bSticker == null) throw new NullPointerException("Error retrieving the briefing: The field sticker is null");
-            BStickerDetailedView view = bStickerDetailedViewMapper.map(bSticker);
-            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
-        }
-        if (briefingType.equals("IMPRESSOS")){
-            BPrinted bPrinted = project.getBriefing().getPrinted();
-            if (bPrinted == null) throw new NullPointerException("Error retrieving the briefing: The field printed is null");
-            BPrintedsDetailedView view = bPrintedsDetailedViewMapper.map(bPrinted);
-            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
-        }
-        if (briefingType.equals("LAYOUTS PARA BRINDES")){
-            BGift bGift = project.getBriefing().getGift();
-            if (bGift == null) throw new NullPointerException("Error retrieving the briefing: The field gift is null");
-            BGiftDetailedView view = bGiftDetailedViewMapper.map(bGift);
-            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
-        }
-        if (briefingType.equals("CAMPANHAS INTERNAS")){
-            BInternalCampaign bInternalCampaign = project.getBriefing().getInternalCampaign();
-            if (bInternalCampaign == null) throw new NullPointerException("Error retrieving the briefing: The field internalCampaign is null");
-            BInternalCampaignsDetailsView view = bInternalCampaignDetailedViewMapper.map(bInternalCampaign);
-            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
-        }
-        if (briefingType.equals("COMUNICADOS")){
-            BHandout bHandout = project.getBriefing().getHandout();
-            if (bHandout == null) throw new NullPointerException("Error retrieving the briefing: The field handout is null");
-            BHandoutDetailedView view = bHandoutDetailedViewMapper.map(bHandout);
-            return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
+        switch (briefingType) {
+            case "PLACA DE ITINERÁRIOS" -> {
+                BAgencyBoard bAgencyBoard = project.getBriefing().getAgencyBoard();
+                if (bAgencyBoard == null)
+                    throw new NullPointerException("Error retrieving the briefing: The field agencyBoard is null" );
+                BAgencyBoardDetailedView view = bAgencyBoardDetailedViewMapper.map(bAgencyBoard);
+                return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
+            }
+            case "PLACA DE SINALIZAÇÃO INTERNA" -> {
+                BSignpost bSignpost = project.getBriefing().getSignpost();
+                if (bSignpost == null)
+                    throw new NullPointerException("Error retrieving the briefing: The field signpost is null" );
+                BSignpostDetailedView view = bSignpostDetailedViewMapper.map(bSignpost);
+                return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
+            }
+            case "ADESIVOS" -> {
+                BSticker bSticker = project.getBriefing().getSticker();
+                if (bSticker == null)
+                    throw new NullPointerException("Error retrieving the briefing: The field sticker is null" );
+                BStickerDetailedView view = bStickerDetailedViewMapper.map(bSticker);
+                return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
+            }
+            case "IMPRESSOS" -> {
+                BPrinted bPrinted = project.getBriefing().getPrinted();
+                if (bPrinted == null)
+                    throw new NullPointerException("Error retrieving the briefing: The field printed is null" );
+                BPrintedsDetailedView view = bPrintedsDetailedViewMapper.map(bPrinted);
+                return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
+            }
+            case "LAYOUTS PARA BRINDES" -> {
+                BGift bGift = project.getBriefing().getGift();
+                if (bGift == null)
+                    throw new NullPointerException("Error retrieving the briefing: The field gift is null" );
+                BGiftDetailedView view = bGiftDetailedViewMapper.map(bGift);
+                return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
+            }
+            case "CAMPANHAS INTERNAS" -> {
+                BInternalCampaign bInternalCampaign = project.getBriefing().getInternalCampaign();
+                if (bInternalCampaign == null)
+                    throw new NullPointerException("Error retrieving the briefing: The field internalCampaign is null" );
+                BInternalCampaignsDetailsView view = bInternalCampaignDetailedViewMapper.map(bInternalCampaign);
+                return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
+            }
+            case "COMUNICADOS" -> {
+                BHandout bHandout = project.getBriefing().getHandout();
+                if (bHandout == null)
+                    throw new NullPointerException("Error retrieving the briefing: The field handout is null" );
+                BHandoutDetailedView view = bHandoutDetailedViewMapper.map(bHandout);
+                return ResponseEntity.ok().body(new Response<>("Briefing encontrado com sucesso", view));
+            }
         }
         throw new IllegalArgumentException("Error retrieving the briefing: The project briefing type is not valid");
     }
@@ -223,6 +243,7 @@ public class ProjectService {
         );
         project.setTitle(title);
         projectRepository.save(project);
+        dialogBoxService.createMessage(new DialogBoxForm(0L, id, "Informamos que o título do projeto foi alterado para uma melhor identificação da solicitação."));
     }
 
     public void updateDate(Long id, LocalDate date) {
@@ -231,5 +252,6 @@ public class ProjectService {
         );
         project.getBriefing().setExpectedTime(date);
         briefingRepository.save(project.getBriefing());
+        dialogBoxService.createMessage(new DialogBoxForm(0L, id, "Informamos que a data de entrega prevista foi alterada. A nova data é " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "."));
     }
 }

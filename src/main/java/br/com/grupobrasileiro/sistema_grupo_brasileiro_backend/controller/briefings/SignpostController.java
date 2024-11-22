@@ -2,10 +2,12 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.brief
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.form.RegisterSignpostForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.dialogbox.form.DialogBoxForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.signpost.BSignpostService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,6 +49,9 @@ public class SignpostController {
     @Autowired
     private BSignpostService signpostService;
 
+    @Autowired
+    private DialogBoxService dialogBoxService;
+
     /**
      * Registers a new handout for a signpost.
      *
@@ -86,6 +91,8 @@ public class SignpostController {
         signpostService.register(registerSignpost.signpostForm(), briefing);
         LOGGER.info("[{}] Solicitação de placa de sinalização registrada com sucesso para o briefing: {}",
                 requestId, briefing.getId());
+
+        dialogBoxService.createMessage(new DialogBoxForm(0L, briefing.getId(), "Sua solicitação foi criada com sucesso e está aguardando análise do supervisor. Assim que aprovada, daremos início ao desenvolvimento. Caso precise alterar algum dado informado ou realizar qualquer comunicação sobre o desenvolvimento, por favor, utilize este chat. Todas as atualizações também serão enviadas por aqui. Obrigado!"));
 
         URI location = uriBuilder.path("/api/v1/projects/{id}").buildAndExpand(project.getId()).toUri();
         LOGGER.info("[{}] Registro de solicitação de placa de sinalização concluído com sucesso.", requestId);

@@ -51,9 +51,9 @@ public class AuthService implements UserDetailsService {
 
     public TokenView doLogin(LoginForm form, AuthenticationManager authenticationManager) {
         User user = userRepository.findByEmail(form.email()).orElseThrow(
-                () -> new EntityNotFoundException("User not found for email: " + form.email())
+                () -> new EntityNotFoundException("O e-mail informado não está cadastrado. Verifique os dados e tente novamente.")
         );
-        if (user.getDisabled()) throw new UserIsNotActiveException("Acesso negado.");
+        if (user.getDisabled()) throw new UserIsNotActiveException("Sua conta está desativada. Entre em contato com o administrador para mais informações.");
         var usernamePassword = new UsernamePasswordAuthenticationToken(form.email(), form.password());
         var auth = authenticationManager.authenticate(usernamePassword);
         String token = tokenService.generateToken((User) auth.getPrincipal());
