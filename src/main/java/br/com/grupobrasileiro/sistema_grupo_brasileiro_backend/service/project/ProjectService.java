@@ -118,7 +118,7 @@ public class ProjectService {
         if(!employee.getUser().getProfile().getId().equals(2L))
             throw new InvalidProfileException("The employee is not a Collaborator");
 
-        if(project.getCollaborator().equals(employee))
+        if(project.getCollaborator()!= null && project.getCollaborator().equals(employee))
             throw new CollaboratorAlreadyAssignedException("Collaborator is already assigned to the project");
 
         project.setCollaborator(employee);
@@ -253,5 +253,17 @@ public class ProjectService {
         project.getBriefing().setExpectedTime(date);
         briefingRepository.save(project.getBriefing());
         dialogBoxService.createMessage(new DialogBoxForm(0L, id, "Informamos que a data de entrega prevista foi alterada. A nova data é " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "."));
+    }
+
+    public void updateStatus(Long id, ProjectStatusEnum status) {
+        Project project = projectRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Project not found with id: " + id)
+        );
+        project.setStatus(status.toString());
+        projectRepository.save(project);
+        String message = "Informamos que o status da solicitação foi alterado. Se precisar de mais informações ou tiver alguma dúvida, nos avise.";
+        if (status.equals(ProjectStatusEnum.COMPLETED))
+            message = "A sua solicitação foi finalizada com sucesso! O processo foi concluído e o chat será encerrado. Se precisar de mais alguma coisa no futuro, não hesite em nos chamar. Obrigado!";
+        dialogBoxService.createMessage(new DialogBoxForm(0L, id, message));
     }
 }

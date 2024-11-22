@@ -140,7 +140,7 @@ public class ProjectController {
     @PutMapping("{id}/approve/supervisor")
     @Transactional
     public ResponseEntity<?> supervisorApprove(
-            @RequestParam Long id,
+            @PathVariable Long id,
             @Valid @RequestBody ApproveForm form) {
         String requestId = UUID.randomUUID().toString();
         logger.info("[{}] Iniciando aprovação de versão pelo supervisor.", requestId);
@@ -169,7 +169,7 @@ public class ProjectController {
     @PutMapping("{id}/approve/client")
     @Transactional
     public ResponseEntity<?> clientApprove(
-            @RequestParam Long id,
+            @PathVariable Long id,
             @Valid @RequestBody ApproveForm form) {
         String requestId = UUID.randomUUID().toString();
         logger.info("[{}] Iniciando aprovação de versão pelo cliente.", requestId);
@@ -220,7 +220,7 @@ public class ProjectController {
      * @param id o ID do projeto
      * @return 200 OK se o projeto for finalizado com sucesso
      */
-    @Operation(summary = "Finalize projectForm", description = "Finalize the projectForm.")
+    @Operation(summary = "Finalize project", description = "Finalize the project.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Project completed successfully",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
@@ -247,7 +247,7 @@ public class ProjectController {
      * @param id o ID do projeto
      * @return 200 OK se o projeto for colocado em espera com sucesso
      */
-    @Operation(summary = "Put projectForm on hold", description = "Puts the projectForm on hold.")
+    @Operation(summary = "Put project on hold", description = "Puts the project on hold.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Project successfully put on hold",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
@@ -298,7 +298,7 @@ public class ProjectController {
      * @param id o ID do projeto
      * @return 200 OK se o projeto for encontrado, ou 404 se não for encontrado
      */
-    @Operation(summary = "Get projectForm by ID", description = "Fetches the details of a projectForm by its ID.")
+    @Operation(summary = "Get project by ID", description = "Fetches the details of a project by its ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Project found",
                     content = @Content(mediaType = "application/json",schema = @Schema(implementation = Response.class))),
@@ -323,7 +323,7 @@ public class ProjectController {
      * @param form os dados para alteração do título
      * @return 200 OK se o título for atualizado com sucesso
      */
-    @Operation(summary = "Update projectForm title", description = "Updates the title of a projectForm.")
+    @Operation(summary = "Update project title", description = "Updates the title of a project.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Title successfully updated",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
@@ -351,7 +351,7 @@ public class ProjectController {
      * @param form os dados para alteração da data
      * @return 200 OK se a data for atualizada com sucesso
      */
-    @Operation(summary = "Update projectForm date", description = "Updates the date of a projectForm.")
+    @Operation(summary = "Update project date", description = "Updates the date of a project.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Date successfully updated",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
@@ -370,6 +370,35 @@ public class ProjectController {
 
         logger.info("[{}] Data do projeto atualizada com sucesso. ID do projeto: {}", requestId, id);
         return ResponseEntity.ok().body(new Response<>("Data do projeto atualizada com sucesso!"));
+
+    }
+
+    /**
+     * Atualiza o status de um projeto.
+     *
+     * @param id o ID do projeto
+     * @param form os dados para alteração do status
+     * @return 200 OK se o status for atualizado com sucesso
+     */
+    @Operation(summary = "Update project status", description = "Updates the status of a project.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Status successfully updated",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
+            @ApiResponse(responseCode = "400", description = "Validation error", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Project not found", content = @Content)
+    })
+    @PutMapping("/{id}/alterStatus")
+    public ResponseEntity<?> updateStatus(
+            @Parameter(description = "ID do projeto") @PathVariable Long id,
+            @RequestBody @Valid AlterStatusForm form) {
+        String requestId = UUID.randomUUID().toString();
+        logger.info("[{}] Iniciando atualização do status para o projeto. ID do projeto: {}", requestId, id);
+        logger.debug("[{}] Novo status recebido: {}", requestId, form.newStatus());
+
+        projectService.updateStatus(id, form.newStatus());
+
+        logger.info("[{}] Status do projeto atualizado com sucesso. ID do projeto: {}", requestId, id);
+        return ResponseEntity.ok().body(new Response<>("Status do projeto atualizado com sucesso!"));
 
     }
 }
