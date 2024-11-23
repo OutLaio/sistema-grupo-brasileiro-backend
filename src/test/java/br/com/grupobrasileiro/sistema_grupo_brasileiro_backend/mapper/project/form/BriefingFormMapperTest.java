@@ -38,7 +38,6 @@ class BriefingFormMapperTest {
         // Arrange
         LocalDate expectedDate = LocalDate.of(2024, 9, 24);
         BriefingForm briefingForm = new BriefingForm(
-            expectedDate,
             "Test Description",
             Collections.emptySet(),
             "Test Company",
@@ -63,7 +62,6 @@ class BriefingFormMapperTest {
         // Arrange
         LocalDate expectedDate = LocalDate.now();
         BriefingForm briefingForm = new BriefingForm(
-            expectedDate,
             null,
             Collections.emptySet(),
             null,
@@ -87,7 +85,6 @@ class BriefingFormMapperTest {
         // Arrange
         LocalDate expectedDate = LocalDate.of(2024, 12, 31);
         BriefingForm briefingForm = new BriefingForm(
-            expectedDate,
             "Complete Test Description",
             Collections.emptySet(),
             "Another Test Company",
@@ -111,7 +108,6 @@ class BriefingFormMapperTest {
         // Arrange
         LocalDate expectedDate = LocalDate.of(2020, 1, 1);
         BriefingForm briefingForm = new BriefingForm(
-            expectedDate,
             "Past Expected Date Description",
             Collections.emptySet(),
             "Company Past",
@@ -135,7 +131,6 @@ class BriefingFormMapperTest {
         // Arrange
         LocalDate expectedDate = LocalDate.of(3000, 1, 1);
         BriefingForm briefingForm = new BriefingForm(
-            expectedDate,
             "Extreme Future Date Description",
             Collections.emptySet(),
             "Future Company",

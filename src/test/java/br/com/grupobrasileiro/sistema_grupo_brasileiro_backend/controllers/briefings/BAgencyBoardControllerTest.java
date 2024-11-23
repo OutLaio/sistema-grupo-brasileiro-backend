@@ -66,8 +66,7 @@ class BAgencyBoardControllerTest {
         RegisterAgencyBoard registerAgencyBoard = new RegisterAgencyBoard(
             new ProjectForm(faker.number().randomNumber(), faker.company().name(), null), // idClient, title, status
             new BriefingForm(
-                LocalDate.now().plusDays(10),           
-                faker.lorem().sentence(),                
+                faker.lorem().sentence(),
                 new HashSet<>(),                        
                 null,                                    
                 1L,                                       // briefingTypeId
@@ -111,7 +110,7 @@ class BAgencyBoardControllerTest {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
 
         // Act
-        ResponseEntity<BAgencyBoardDetailedView> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
+        ResponseEntity<?> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
 
         // Assert
         assertEquals(201, response.getStatusCodeValue());

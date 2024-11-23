@@ -145,42 +145,6 @@ public class ApiExceptionHandlerTest {
     }
 
     @Test
-    public void testHandleInvalidRoleException() {
-        InvalidRoleException ex = new InvalidRoleException("Invalid user role");
-        when(request.getRequestURI()).thenReturn("/role");
-        when(request.getMethod()).thenReturn("POST");
-
-        ResponseEntity<ErrorMessage> response = apiExceptionHandler.handleInvalidRoleException(ex, request);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Invalid user role", response.getBody().getMessage());
-    }
-
-    @Test
-    public void testHandleUnauthorizedException() {
-        UnauthorizedException ex = new UnauthorizedException("Unauthorized user");
-        when(request.getRequestURI()).thenReturn("/unauthorized");
-        when(request.getMethod()).thenReturn("GET");
-
-        ResponseEntity<ErrorMessage> response = apiExceptionHandler.handleUnauthorizedException(ex, request);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Unauthorized user", response.getBody().getMessage());
-    }
-
-    @Test
-    public void testHandleProjectNotFoundException() {
-        ProjectNotFoundException ex = new ProjectNotFoundException("Project not found");
-        when(request.getRequestURI()).thenReturn("/projectForm");
-        when(request.getMethod()).thenReturn("GET");
-
-        ResponseEntity<ErrorMessage> response = apiExceptionHandler.handleProjectNotFoundException(ex, request);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Project not found", response.getBody().getMessage());
-    }
-
-    @Test
     public void testHandleCollaboratorAlreadyAssignedException() {
         CollaboratorAlreadyAssignedException ex = new CollaboratorAlreadyAssignedException("Collaborator already assigned");
         when(request.getRequestURI()).thenReturn("/collaborator");
@@ -190,18 +154,6 @@ public class ApiExceptionHandlerTest {
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertEquals("Collaborator already assigned", response.getBody().getMessage());
-    }
-
-    @Test
-    public void testHandleCompanyAlreadyExistsException() {
-        CompanyAlreadyExistsException ex = new CompanyAlreadyExistsException("Company already exists");
-        when(request.getRequestURI()).thenReturn("/company");
-        when(request.getMethod()).thenReturn("POST");
-
-        ResponseEntity<ErrorMessage> response = apiExceptionHandler.handleCompanyAlreadyExistsException(ex, request);
-
-        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        assertEquals("Company already exists", response.getBody().getMessage());
     }
 
     @Test

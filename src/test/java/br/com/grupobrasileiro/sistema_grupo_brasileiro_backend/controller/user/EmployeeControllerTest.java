@@ -64,7 +64,7 @@ class EmployeeControllerTest {
 
         when(employeeService.updateEmployee(eq(employeeId), any(EmployeeForm.class))).thenReturn(updatedEmployee);
 
-        ResponseEntity<EmployeeView> response = employeeController.updateEmployee(employeeId, form);
+        ResponseEntity<?> response = employeeController.updateEmployee(employeeId, form);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(updatedEmployee, response.getBody());
@@ -112,7 +112,7 @@ class EmployeeControllerTest {
 
         when(employeeService.getAllCollaborators(any(PageRequest.class))).thenReturn(employeesPage);
 
-        ResponseEntity<Page<EmployeeView>> response = employeeController.getAllCollaborators(0, 10, "ASC", "name");
+        ResponseEntity<?> response = employeeController.getAllCollaborators(0, 10, "ASC", "name");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(employeesPage, response.getBody());
@@ -137,7 +137,7 @@ class EmployeeControllerTest {
 
         when(employeeService.getEmployeeById(eq(employeeId))).thenReturn(employeeView);
 
-        ResponseEntity<EmployeeView> response = employeeController.getEmployeeById(employeeId);
+        ResponseEntity<?> response = employeeController.getEmployeeById(employeeId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(employeeView, response.getBody());

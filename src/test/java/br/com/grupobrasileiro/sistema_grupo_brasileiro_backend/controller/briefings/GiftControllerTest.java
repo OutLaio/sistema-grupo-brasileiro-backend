@@ -86,7 +86,6 @@ class GiftControllerTest {
         );
 
         BriefingForm briefingForm = new BriefingForm(
-            LocalDate.now().plusDays(30),
             faker.lorem().sentence(),
             new HashSet<>(),
             faker.company().name(),

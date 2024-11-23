@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.auth;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.auth.AuthController;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.LoginForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.RecoveryPasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.ResetPasswordForm;
@@ -86,8 +87,8 @@ class AuthControllerTest {
         // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode(), 
             () -> "Should return HTTP 201 CREATED status");
-        assertEquals(mockEmployeeView, response.getBody(),
-            () -> "The response body should be the expected EmployeeView");
+        assertEquals(new Response<>("Novo usuário registrado com sucesso!", mockEmployeeView), response.getBody(),
+            () -> "O retorno deveria ser um Response com a mensagem de sucesso e a view do funcionário");
     }
 
     @Mock
@@ -113,8 +114,8 @@ class AuthControllerTest {
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode(),
             () -> "Deve retornar o status HTTP 200 OK");
-        assertEquals(new TokenView(mockToken, mockEmployeeView), response.getBody(),
-            () -> "O corpo da resposta deve ser um TokenView com o token gerado e a visualização do funcionário");
+        assertEquals(new Response<>("Login realizado com sucesso!" ,new TokenView(mockToken, mockEmployeeView)), response.getBody(),
+            () -> "O corpo da resposta deve ser um Response com a mensagem de sucesso, o token gerado e a visualização do funcionário");
     }
 
     @Test
@@ -124,13 +125,13 @@ void shouldRequestPasswordResetSuccessfully() {
     RecoveryPasswordForm recoveryPasswordForm = new RecoveryPasswordForm(faker.internet().emailAddress());
 
     // Act
-    ResponseEntity<String> response = authController.requestReset(recoveryPasswordForm);
+    ResponseEntity<?> response = authController.requestReset(recoveryPasswordForm);
 
     // Assert
     assertEquals(HttpStatus.OK, response.getStatusCode(),
         () -> "Should return HTTP 200 OK status");
-    assertEquals("E-mail enviado com sucesso!", response.getBody(),
-        () -> "The success message should be 'E-mail enviado com sucesso!'");
+    assertEquals(new Response<>("Sua solicitação de recuperação de senha foi enviada com sucesso! Verifique seu e-mail."), response.getBody(),
+        () -> "O retorno deveria ser um Response com a mensagem 'Sua solicitação de recuperação de senha foi enviada com sucesso! Verifique seu e-mail.'");
 }
 
 
@@ -144,12 +145,12 @@ void shouldRequestPasswordResetSuccessfully() {
         doNothing().when(authService).resetPassword(any());
 
         // Act
-        ResponseEntity<String> response = authController.resetPassword(resetPasswordForm);
+        ResponseEntity<?> response = authController.resetPassword(resetPasswordForm);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode(),
             () -> "Should return HTTP 200 OK status");
-        assertEquals("Senha alterada com sucesso!", response.getBody(),
-            () -> "A mensagem de sucesso deveria ser 'Senha alterada com sucesso!'");
+        assertEquals(new Response<>("Senha alterada com sucesso!"), response.getBody(),
+            () -> "O retorno deveria ser um Response com a mensagem de sucesso 'Senha alterada com sucesso!'");
     }
 }

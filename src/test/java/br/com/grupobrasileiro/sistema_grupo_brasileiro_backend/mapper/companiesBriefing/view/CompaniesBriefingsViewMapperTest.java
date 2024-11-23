@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,6 +31,8 @@ public class CompaniesBriefingsViewMapperTest {
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
+
         // Inicializar os mocks
         company = mock(Company.class); // Mock da empresa
         companiesBriefing = mock(CompaniesBriefing.class); // Mock de CompaniesBriefing

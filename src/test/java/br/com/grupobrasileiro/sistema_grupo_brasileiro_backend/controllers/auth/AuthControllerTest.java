@@ -124,7 +124,7 @@ void shouldRequestPasswordResetSuccessfully() {
     RecoveryPasswordForm recoveryPasswordForm = new RecoveryPasswordForm(faker.internet().emailAddress());
 
     // Act
-    ResponseEntity<String> response = authController.requestReset(recoveryPasswordForm);
+    ResponseEntity<?> response = authController.requestReset(recoveryPasswordForm);
 
     // Assert
     assertEquals(HttpStatus.OK, response.getStatusCode(),
@@ -144,7 +144,7 @@ void shouldRequestPasswordResetSuccessfully() {
         doNothing().when(authService).resetPassword(any());
 
         // Act
-        ResponseEntity<String> response = authController.resetPassword(resetPasswordForm);
+        ResponseEntity<?> response = authController.resetPassword(resetPasswordForm);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode(),

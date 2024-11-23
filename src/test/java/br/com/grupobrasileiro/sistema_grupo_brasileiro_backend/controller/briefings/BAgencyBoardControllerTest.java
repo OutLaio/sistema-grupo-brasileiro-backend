@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.briefings;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.dialogbox.view.DialogBoxView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.BriefingForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.form.BAgencyBoardsForm;
@@ -9,6 +10,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.s
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.agencyBoard.BAgencyBoardService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 import com.github.javafaker.Faker;
@@ -42,6 +44,9 @@ class BAgencyBoardControllerTest {
     @Mock
     private BAgencyBoardService bAgencyBoardService;
 
+    @Mock
+    private DialogBoxService dialogBoxService;
+
     private Faker faker;
 
     @BeforeEach
@@ -56,7 +61,6 @@ class BAgencyBoardControllerTest {
         RegisterAgencyBoard registerAgencyBoard = new RegisterAgencyBoard(
             new ProjectForm(faker.number().randomNumber(), faker.company().name(), null), 
             new BriefingForm(
-                faker.date().future(10, java.util.concurrent.TimeUnit.DAYS).toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate(),
                 faker.lorem().sentence(),
                 new HashSet<>(),
                 null,
@@ -75,10 +79,13 @@ class BAgencyBoardControllerTest {
         when(briefingService.register(any(), any())).thenReturn(mockBriefing);
         doNothing().when(bAgencyBoardService).register(any(), any()); // Usando doNothing para métodos void
 
+        DialogBoxView mockDialogBox = new DialogBoxView(null, null, null, null);
+        when(dialogBoxService.createMessage(any())).thenReturn(mockDialogBox);
+
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
 
         // Act
-        ResponseEntity<BAgencyBoardDetailedView> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
+        ResponseEntity<?> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
 
         // Assert
         assertEquals(201, response.getStatusCodeValue());

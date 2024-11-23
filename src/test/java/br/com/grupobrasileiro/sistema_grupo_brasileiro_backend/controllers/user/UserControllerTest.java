@@ -36,7 +36,7 @@ class UserControllerTest {
     void changePassword_Success() {
         PasswordForm passwordForm = new PasswordForm(1L, "currentPassword", "newPassword");
 
-        ResponseEntity<String> response = userController.changePassword(passwordForm);
+        ResponseEntity<?> response = userController.changePassword(passwordForm);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Password successfully changed!", response.getBody());
@@ -48,7 +48,7 @@ class UserControllerTest {
     void deactivateUser_Success() {
         Long userId = 1L;
 
-        ResponseEntity<Void> response = userController.deactivateUser(userId);
+        ResponseEntity<?> response = userController.deactivateUser(userId);
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(userService, times(1)).deactivateUser(eq(userId));

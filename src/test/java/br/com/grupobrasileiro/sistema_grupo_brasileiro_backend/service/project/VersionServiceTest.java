@@ -4,12 +4,17 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.VersionView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.form.VersionFormMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view.VersionViewMapper;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -36,6 +41,15 @@ public class VersionServiceTest {
     @Mock
     private VersionRepository versionRepository;
 
+    @Mock
+    private VersionFormMapper versionFormMapper;
+
+    @Mock
+    private VersionViewMapper versionViewMapper;
+
+    @Mock
+    private DialogBoxService dialogBoxService;
+
     @InjectMocks
     private VersionService versionService;
 
@@ -58,12 +72,16 @@ public class VersionServiceTest {
         Version version = new Version();
         version.setSupervisorApprove(false); // Não aprovado inicialmente
 
-        ApproveForm form = new ApproveForm(projectId, versionId, false, feedback);
+        ApproveForm form = new ApproveForm(versionId, false, feedback);
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
         when(versionRepository.findById(versionId)).thenReturn(Optional.of(version));
 
-        versionService.supervisorApprove(form);
+        VersionView view = new VersionView(null, null, null, null, null, null);
+        when(versionViewMapper.map(version)).thenReturn(view);
+        when(dialogBoxService.createMessage(any())).thenReturn(null);
+
+        versionService.supervisorApprove(projectId, form);
 
         assertEquals(ProjectStatusEnum.IN_PROGRESS.toString(), project.getStatus(), 
             () -> "O status do projeto deve ser IN_PROGRESS quando a versão não for aprovada pelo supervisor"
@@ -90,12 +108,16 @@ public class VersionServiceTest {
         Version version = new Version();
         version.setClientApprove(true);
 
-        ApproveForm form = new ApproveForm(projectId, versionId, true, null);
+        ApproveForm form = new ApproveForm(versionId, true, null);
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
         when(versionRepository.findById(versionId)).thenReturn(Optional.of(version));
 
-        versionService.clientApprove(form);
+        VersionView view = new VersionView(null, null, null, null, null, null);
+        when(versionViewMapper.map(version)).thenReturn(view);
+        when(dialogBoxService.createMessage(any())).thenReturn(null);
+
+        versionService.clientApprove(projectId, form);
 
         assertEquals(ProjectStatusEnum.APPROVED.toString(), project.getStatus(), 
             () -> "O status do projeto deve ser APPROVED quando a versão for aprovada pelo cliente"
@@ -116,9 +138,13 @@ public class VersionServiceTest {
         project.setBriefing(briefing);
 
         NewVersionForm form = new NewVersionForm(productLink);
+        Version version = new Version();
+        when(version.getNumVersion()).thenReturn(2);
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
         when(versionRepository.countVersionsByBriefingId(briefing.getId())).thenReturn(5L); // Supondo que existam 5 versões
+        when(versionFormMapper.map(form)).thenReturn(version);
+        when(dialogBoxService.createMessage(any())).thenReturn(null);
 
         versionService.create(projectId, form);
 
@@ -132,12 +158,12 @@ public class VersionServiceTest {
         Long projectId = faker.number().randomNumber();
         Long versionId = faker.number().randomNumber();
 
-        ApproveForm form = new ApproveForm(projectId, versionId, true, null);
+        ApproveForm form = new ApproveForm(versionId, true, null);
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, 
-            () -> versionService.supervisorApprove(form), 
+            () -> versionService.supervisorApprove(projectId, form),
             () -> "Deveria lançar EntityNotFoundException quando o projeto não for encontrado"
         );
     }
@@ -150,13 +176,13 @@ public class VersionServiceTest {
 
         Project project = new Project();
 
-        ApproveForm form = new ApproveForm(projectId, versionId, true, null);
+        ApproveForm form = new ApproveForm(versionId, true, null);
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
         when(versionRepository.findById(versionId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, 
-            () -> versionService.supervisorApprove(form), 
+            () -> versionService.supervisorApprove(projectId, form),
             () -> "Deveria lançar EntityNotFoundException quando a versão não for encontrada"
         );
     }
@@ -167,12 +193,12 @@ public class VersionServiceTest {
         Long projectId = faker.number().randomNumber();
         Long versionId = faker.number().randomNumber();
 
-        ApproveForm form = new ApproveForm(projectId, versionId, true, null);
+        ApproveForm form = new ApproveForm(versionId, true, null);
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, 
-            () -> versionService.clientApprove(form), 
+            () -> versionService.clientApprove(projectId, form),
             () -> "Deveria lançar EntityNotFoundException quando o projeto não for encontrado"
         );
     }
@@ -185,13 +211,13 @@ public class VersionServiceTest {
 
         Project project = new Project();
 
-        ApproveForm form = new ApproveForm(projectId, versionId, true, null);
+        ApproveForm form = new ApproveForm(versionId, true, null);
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
         when(versionRepository.findById(versionId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, 
-            () -> versionService.clientApprove(form), 
+            () -> versionService.clientApprove(projectId, form),
             () -> "Deveria lançar EntityNotFoundException quando a versão não for encontrada"
         );
     }

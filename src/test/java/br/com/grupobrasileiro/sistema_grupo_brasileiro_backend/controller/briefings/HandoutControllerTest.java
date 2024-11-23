@@ -99,8 +99,7 @@ public class HandoutControllerTest {
         companies.add(new CompaniesBriefingsForm(1L)); 
 
         BriefingForm briefingForm = new BriefingForm(
-            LocalDate.now(), 
-            "Descrição detalhada do briefing", 
+            "Descrição detalhada do briefing",
             companies, 
             "Outra empresa",
             1L, 

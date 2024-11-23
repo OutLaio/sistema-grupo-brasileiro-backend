@@ -45,17 +45,17 @@ public class VersionService {
         );
 
         version.setSupervisorApprove(form.approved());
-        String message = "A arte foi aprovada pelo supervisor e está agora aguardando a sua aprovação. Por favor, revise a arte na seção 'Artes Desenvolvidas' e informe sua aprovação ou solicite ajustes, se necessário.";
+        String message = "A arte da Versão #" + version.getNumVersion() + " foi aprovada pelo supervisor e está agora aguardando a sua aprovação. Por favor, revise-a na seção 'Artes Desenvolvidas' e informe sua aprovação ou solicite ajustes, se necessário.";
 
         if(!form.approved()){
             version.setFeedback(form.feedback());
             project.setStatus(ProjectStatusEnum.IN_PROGRESS.toString());
             projectRepository.save(project);
-            message = "A arte desenvolvida não foi aprovada pelo supervisor e será retornada para correções. O colaborador será notificado para realizar as alterações necessárias.";
+            message = "A arte da Versão #" + version.getNumVersion() + " desenvolvida não foi aprovada pelo supervisor e será retornada para correções. O colaborador será notificado para realizar as alterações necessárias.";
         } else if (version.getClientApprove() != null && !version.getClientApprove()) {
             project.setStatus(ProjectStatusEnum.APPROVED.toString());
             projectRepository.save(project);
-            message = "O supervisor não aprovou a solicitação de revisão feita pelo solicitante. A arte desenvolvida foi, portanto, aprovada conforme original e seguirá para os próximos passos do processo.";
+            message = "O supervisor não aprovou a solicitação de revisão feita pelo solicitante. A arte da Versão #" + version.getNumVersion() + " desenvolvida foi, portanto, aprovada conforme original e seguirá para os próximos passos do processo.";
         }
         version = versionRepository.save(version);
         dialogBoxService.createMessage(new DialogBoxForm(0L, idProject, message));
@@ -72,7 +72,7 @@ public class VersionService {
         );
         
         version.setClientApprove(form.approved());
-        String message = "A arte foi aprovada com sucesso! Ela seguirá para os próximos passos do processo. Agradecemos pela sua aprovação e ficamos à disposição para qualquer outra necessidade.";
+        String message = "A arte da Versão #" + version.getNumVersion() + " foi aprovada com sucesso! Ela seguirá para os próximos passos do processo. Agradecemos pela sua aprovação e ficamos à disposição para qualquer outra necessidade.";
 
         if (form.approved()) {
             project.setStatus(ProjectStatusEnum.APPROVED.toString());
@@ -80,7 +80,7 @@ public class VersionService {
         }else {
             version.setSupervisorApprove(null);
             version.setFeedback(form.feedback());
-            message = "A arte desenvolvida não foi aprovada. Os ajustes solicitados são os seguintes: " + form.feedback() + ". O supervisor irá analisar a solicitação de revisão e, após a análise, a arte será encaminhada para os próximos passos.";
+            message = "A arte da Versão #" + version.getNumVersion() + " desenvolvida não foi aprovada. Os ajustes solicitados são os seguintes: " + form.feedback() + ". \nO supervisor irá analisar a solicitação de revisão e, após a análise, a arte será encaminhada para os próximos passos.";
         }
 
         version = versionRepository.save(version);
@@ -103,6 +103,9 @@ public class VersionService {
 
         projectRepository.save(project);
         version = versionRepository.save(version);
+
+        dialogBoxService.createMessage(new DialogBoxForm(0L, idProject, "Uma nova versão da arte foi desenvolvida! A arte da Versão #" + version.getNumVersion() + " pode ser visualizada ao lado, na seção 'Artes Desenvolvidas'. Assim que aprovada pelo supervisor, a arte estará disponível para download e aprovação final."));
+
         return versionViewMapper.map(version);
     }
 }

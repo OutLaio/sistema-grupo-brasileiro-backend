@@ -33,6 +33,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.i
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.printeds.BPrinted;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.sticker.BSticker;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
@@ -48,6 +49,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -115,11 +117,15 @@ public class ProjectService {
                 () -> new EntityNotFoundException("Employee not found for id: " + form.idCollaborator())
         );
 
+        String isFirst = " ";
         if(!employee.getUser().getProfile().getId().equals(2L))
             throw new InvalidProfileException("The employee is not a Collaborator");
 
-        if(project.getCollaborator()!= null && project.getCollaborator().equals(employee))
-            throw new CollaboratorAlreadyAssignedException("Collaborator is already assigned to the project");
+        if(project.getCollaborator() != null){
+            isFirst = " novo ";
+            if(project.getCollaborator().equals(employee))
+                throw new CollaboratorAlreadyAssignedException("Collaborator is already assigned to the project");
+        }
 
         project.setCollaborator(employee);
 
@@ -128,17 +134,23 @@ public class ProjectService {
 
         project.setCollaborator(employee);
         projectRepository.save(project);
+
+        String message = "Um" + isFirst +"colaborador foi designado para o seu projeto! " + employee.getFullName() + " estará acompanhando a solicitação e qualquer atualização será compartilhada aqui no chat. Fique à vontade para conversar sobre o andamento ou tirar dúvidas diretamente por aqui.";
+        dialogBoxService.createMessage(new DialogBoxForm(0L, id, message));
     }
 
     public void setHasConfection(Long id, boolean hasConfection) {
         Project project = projectRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Project not found for id: " + id)
         );
-        String message = "O produto solicitado foi encaminhado para confecção! Em breve, você receberá mais informações sobre o andamento. Fique à vontade para entrar em contato caso tenha alguma dúvida.";
+        Briefing briefing = project.getBriefing();
+        String message = "O projeto foi encaminhado para confecção! Em breve, você receberá mais informações sobre o andamento. Fique à vontade para entrar em contato caso tenha alguma dúvida.";
         if(hasConfection)
             project.setStatus(ProjectStatusEnum.IN_PRODUCTION.toString());
         else{
             project.setStatus(ProjectStatusEnum.COMPLETED.toString());
+            briefing.setFinishTime(LocalDate.now());
+            briefingRepository.save(briefing);
             message = "A sua solicitação foi finalizada com sucesso! O processo foi concluído e o chat será encerrado. Se precisar de mais alguma coisa no futuro, não hesite em nos chamar. Obrigado!";
         }
         dialogBoxService.createMessage(new DialogBoxForm(0L, id, message));
@@ -149,8 +161,14 @@ public class ProjectService {
         Project project = projectRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Project not found for id: " + id)
         );
+        Briefing briefing = project.getBriefing();
+
+        briefing.setFinishTime(LocalDate.now());
         project.setStatus(ProjectStatusEnum.COMPLETED.toString());
+
         dialogBoxService.createMessage(new DialogBoxForm(0L, id, "A sua solicitação foi finalizada com sucesso! O processo foi concluído e o chat será encerrado. Se precisar de mais alguma coisa no futuro, não hesite em nos chamar. Obrigado!"));
+
+        briefingRepository.save(briefing);
         projectRepository.save(project);
     }
 
@@ -241,29 +259,38 @@ public class ProjectService {
         Project project = projectRepository.findById(id).orElseThrow(
             () -> new EntityNotFoundException("Project not found with id: " + id)
         );
+        String oldTitle = project.getTitle();
         project.setTitle(title);
         projectRepository.save(project);
-        dialogBoxService.createMessage(new DialogBoxForm(0L, id, "Informamos que o título do projeto foi alterado para uma melhor identificação da solicitação."));
+        dialogBoxService.createMessage(new DialogBoxForm(0L, id, "Informamos que o título do projeto foi alterado de '" + oldTitle + "' para '" + title + "' para uma melhor identificação da solicitação."));
     }
 
     public void updateDate(Long id, LocalDate date) {
         Project project = projectRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Project not found with id: " + id)
         );
+        LocalDate oldDate = project.getBriefing().getExpectedTime();
         project.getBriefing().setExpectedTime(date);
         briefingRepository.save(project.getBriefing());
-        dialogBoxService.createMessage(new DialogBoxForm(0L, id, "Informamos que a data de entrega prevista foi alterada. A nova data é " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "."));
+        dialogBoxService.createMessage(new DialogBoxForm(0L, id, "Informamos que a data de entrega prevista foi alterada de " + oldDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " para " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "."));
     }
 
     public void updateStatus(Long id, ProjectStatusEnum status) {
         Project project = projectRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Project not found with id: " + id)
         );
+
+        ProjectStatusEnum oldStatus = ProjectStatusEnum.valueOf(project.getStatus());
+
         project.setStatus(status.toString());
         projectRepository.save(project);
-        String message = "Informamos que o status da solicitação foi alterado. Se precisar de mais informações ou tiver alguma dúvida, nos avise.";
-        if (status.equals(ProjectStatusEnum.COMPLETED))
-            message = "A sua solicitação foi finalizada com sucesso! O processo foi concluído e o chat será encerrado. Se precisar de mais alguma coisa no futuro, não hesite em nos chamar. Obrigado!";
+
+        String message = "Informamos que o status da solicitação foi alterado de '" + oldStatus.getDescription() + "' para '" + status.getDescription() + "'. Se precisar de mais informações ou tiver alguma dúvida, nos avise.";
+        if (status.equals(ProjectStatusEnum.COMPLETED)) {
+            message = "A sua solicitação foi finalizada! O processo foi concluído e o chat será encerrado. Se precisar de uma nova solicitação no futuro, estaremos à disposição. Obrigado!";
+            project.getBriefing().setFinishTime(LocalDate.now());
+            briefingRepository.save(project.getBriefing());
+        }
         dialogBoxService.createMessage(new DialogBoxForm(0L, id, message));
     }
 }

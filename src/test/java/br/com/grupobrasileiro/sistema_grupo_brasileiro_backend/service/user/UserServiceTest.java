@@ -103,6 +103,7 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(passwordEncoder.encode(passwordForm.currentPassword())).thenReturn("encodedCurrentPassword");
         when(passwordEncoder.encode(passwordForm.newPassword())).thenReturn("encodedNewPassword");
+        when(passwordEncoder.matches(passwordForm.currentPassword(), user.getPassword())).thenReturn(true);
 
         // Act
         userService.changePassword(passwordForm);

@@ -79,7 +79,6 @@ public class PrintedControllerTest {
         // Arrange: Prepare the input data and mocks
         ProjectForm projectForm = new ProjectForm(1L, "Test Project", null);
         BriefingForm briefingForm = new BriefingForm(
-            LocalDate.now(),
             "Test description",
             new HashSet<>(),
             null,
@@ -100,7 +99,7 @@ public class PrintedControllerTest {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
 
         // Act: Call the method under test
-        ResponseEntity<BPrintedsDetailedView> response = printedController.registerPrinted(registerPrintedForm, uriBuilder);
+        ResponseEntity<?> response = printedController.registerPrinted(registerPrintedForm, uriBuilder);
 
         // Assert: Verify the response
         assertEquals(201, response.getStatusCodeValue());

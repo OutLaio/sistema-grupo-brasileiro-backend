@@ -9,12 +9,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -69,7 +71,7 @@ public class FileControllerTest {
         String fileName = "testfile.txt";
         // Simulate a resource from the FileStorageService
         Resource resource = mock(Resource.class);
-        when(fileStorageService.loadFileAsResource(fileName)).thenReturn(resource);
+        when(fileStorageService.loadFileAsResource(fileName)).thenReturn((Pair<ByteArrayResource, String>) resource);
         when(resource.exists()).thenReturn(true);
         when(resource.getFilename()).thenReturn(fileName);
 

@@ -89,6 +89,10 @@ public class Employee {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<DialogBox> dialogs = new HashSet<>();
 
+    public String getFullName() {
+        return name + " " + lastName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -68,7 +68,6 @@ class SignpostControllerTest {
         RegisterSignpostForm registerSignpostForm = new RegisterSignpostForm(
                 new ProjectForm(faker.number().randomNumber(), faker.company().name(), null),
                 new BriefingForm(
-                        LocalDate.now().plusDays(10),
                         faker.lorem().sentence(),
                         new HashSet<>(),
                         faker.company().name(),
@@ -84,7 +83,7 @@ class SignpostControllerTest {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
 
         // Act: Executa o método de registro
-        ResponseEntity<BSignpostDetailedView> response = signpostController.registerSignpost(registerSignpostForm, uriBuilder);
+        ResponseEntity<?> response = signpostController.registerSignpost(registerSignpostForm, uriBuilder);
 
         // Assert: Verifica o status e a localização do recurso
         assertEquals(HttpStatus.CREATED.value(), response.getStatusCodeValue());

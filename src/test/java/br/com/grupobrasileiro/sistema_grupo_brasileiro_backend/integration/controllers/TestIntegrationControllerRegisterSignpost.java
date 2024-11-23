@@ -93,7 +93,6 @@ public class TestIntegrationControllerRegisterSignpost extends AbstractIntegrati
         );
 
         BriefingForm briefingForm = new BriefingForm(
-                LocalDate.now(), 
                 faker.lorem().sentence(),
                 new HashSet<>(),
                 null,

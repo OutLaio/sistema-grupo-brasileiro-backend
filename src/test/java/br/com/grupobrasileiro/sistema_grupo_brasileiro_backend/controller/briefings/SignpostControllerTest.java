@@ -75,7 +75,6 @@ public class SignpostControllerTest {
                         null 
                 ),
                 new BriefingForm(
-                        LocalDate.now().plusDays(10),
                         faker.lorem().sentence(),
                         new HashSet<>(), 
                         faker.company().name(), 
@@ -156,7 +155,7 @@ public class SignpostControllerTest {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
 
         // Act
-        ResponseEntity<BSignpostDetailedView> response = signpostController.registerSignpost(registerSignpostForm, uriBuilder);
+        ResponseEntity<?> response = signpostController.registerSignpost(registerSignpostForm, uriBuilder);
 
         // Assert
         assertEquals(201, response.getStatusCodeValue());

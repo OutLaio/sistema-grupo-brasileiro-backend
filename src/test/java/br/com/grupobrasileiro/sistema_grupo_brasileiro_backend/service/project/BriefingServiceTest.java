@@ -80,7 +80,6 @@ public class BriefingServiceTest {
 
         // Creating a basic BriefingForm
         briefingForm = new BriefingForm(
-            null, // Date placeholder
             "Campaign Description",
             null, // Companies will be null for this test
             "Company XYZ",
@@ -139,7 +138,6 @@ public class BriefingServiceTest {
 
         // Create the form with companies and a measurement
         briefingForm = new BriefingForm(
-            null, // Date placeholder
             "Campaign Description",
             Set.of(new CompaniesBriefingsForm(123L)), // Companies
             "Company XYZ",

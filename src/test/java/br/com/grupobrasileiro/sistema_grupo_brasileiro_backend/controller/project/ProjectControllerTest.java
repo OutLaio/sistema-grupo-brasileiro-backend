@@ -2,6 +2,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.proje
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ApproveForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.NewVersionForm;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.VersionView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.VersionService;
 import org.junit.jupiter.api.DisplayName;
@@ -65,7 +66,10 @@ class ProjectControllerTest {
     void newVersion_Success() {
         Long projectId = 1L;
         NewVersionForm form = new NewVersionForm("v2");
-        
+
+        VersionView versionView = new VersionView(123L, null, null, null, null, null);
+        when(versionService.create(eq(projectId), eq(form))).thenReturn(versionView);
+
         ResponseEntity<?> response = projectController.newVersion(projectId, form);
 
         verify(versionService, times(1)).create(eq(projectId), eq(form));
@@ -91,52 +95,52 @@ class ProjectControllerTest {
     @Test
     @DisplayName("Supervisor Approve - Success")
     void supervisorApprove_Success() {
-        ApproveForm form = new ApproveForm(1L, 2L, true, "Looks good");
+        ApproveForm form = new ApproveForm(2L, true, "Looks good");
         
-        ResponseEntity<?> response = projectController.supervisorApprove(, form);
+        ResponseEntity<?> response = projectController.supervisorApprove(1L, form);
 
-        verify(versionService, times(1)).supervisorApprove(eq(form));
+        verify(versionService, times(1)).supervisorApprove(eq(1L) , eq(form));
         assertEquals(ResponseEntity.ok().build(), response);
     }
 
     @Test
     @DisplayName("Supervisor Approve - Throws Exception")
     void supervisorApprove_ThrowsException() {
-        ApproveForm form = new ApproveForm(1L, 2L, true, "Looks good");
+        ApproveForm form = new ApproveForm(2L, true, "Looks good");
         doThrow(new RuntimeException("Error in supervisor approval"))
-                .when(versionService).supervisorApprove(any(ApproveForm.class));
+                .when(versionService).supervisorApprove(eq(1L), any(ApproveForm.class));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            projectController.supervisorApprove(, form);
+            projectController.supervisorApprove(1L, form);
         });
 
-        verify(versionService, times(1)).supervisorApprove(eq(form));
+        verify(versionService, times(1)).supervisorApprove(eq(1L), eq(form));
         assertEquals("Error in supervisor approval", exception.getMessage());
     }
 
     @Test
     @DisplayName("Client Approve - Success")
     void clientApprove_Success() {
-        ApproveForm form = new ApproveForm(1L, 2L, true, "Looks good");
+        ApproveForm form = new ApproveForm(2L, true, "Looks good");
         
-        ResponseEntity<?> response = projectController.clientApprove(form);
+        ResponseEntity<?> response = projectController.clientApprove(1L, form);
 
-        verify(versionService, times(1)).clientApprove(eq(form));
+        verify(versionService, times(1)).clientApprove(eq(1L), eq(form));
         assertEquals(ResponseEntity.ok().build(), response);
     }
 
     @Test
     @DisplayName("Client Approve - Throws Exception")
     void clientApprove_ThrowsException() {
-        ApproveForm form = new ApproveForm(1L, 2L, true, "Looks good");
+        ApproveForm form = new ApproveForm(2L, true, "Looks good");
         doThrow(new RuntimeException("Error in client approval"))
-                .when(versionService).clientApprove(any(ApproveForm.class));
+                .when(versionService).clientApprove(eq(1L), any(ApproveForm.class));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            projectController.clientApprove(form);
+            projectController.clientApprove(1L, form);
         });
 
-        verify(versionService, times(1)).clientApprove(eq(form));
+        verify(versionService, times(1)).clientApprove(eq(1L), eq(form));
         assertEquals("Error in client approval", exception.getMessage());
     }
 
