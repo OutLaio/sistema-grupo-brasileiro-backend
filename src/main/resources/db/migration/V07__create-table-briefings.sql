@@ -3,7 +3,7 @@ CREATE TABLE "Tb_Briefings" (
     id_project BIGINT NOT NULL,
     id_briefing_type BIGINT NOT NULL,
     start_time DATE NOT NULL,
-    expected_time DATE NOT NULL,
+    expected_time DATE,
     finish_time DATE,
     detailed_description TEXT NOT NULL,
     other_company VARCHAR(255),

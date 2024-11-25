@@ -11,7 +11,7 @@ INSERT INTO "Tb_Cities" (name) VALUES ('ARACAJU, SE');
 INSERT INTO "Tb_Cities" (name) VALUES ('ARACI, BA');
 INSERT INTO "Tb_Cities" (name) VALUES ('ARAMARI, BA');
 INSERT INTO "Tb_Cities" (name) VALUES ('ARAPIRACA, AL');
-INSERT INTO "Tb_Cities" (name) VALUES ('ARRAIAL D\'AJUDA, BA");
+INSERT INTO "Tb_Cities" (name) VALUES ('ARRAIAL D''AJUDA, BA');
 INSERT INTO "Tb_Cities" (name) VALUES ('AURELINO LEAL, BA');
 INSERT INTO "Tb_Cities" (name) VALUES ('BAIXA GRANDE, BA');
 INSERT INTO "Tb_Cities" (name) VALUES ('BARRA DO MENDES, BA');
