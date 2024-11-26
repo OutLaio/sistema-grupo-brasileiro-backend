@@ -24,7 +24,8 @@ public class ProjectViewMapper implements Mapper<Project, ProjectView> {
                 project.getTitle(),
                 project.getStatus(),
                 clientView,
-                collaboratorView
+                collaboratorView,
+                project.getBriefing().getBriefingType().getDescription()
         );
     }
 }

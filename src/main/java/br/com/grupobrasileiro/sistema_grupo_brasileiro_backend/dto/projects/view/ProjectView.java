@@ -7,6 +7,7 @@ public record ProjectView(
         String title,
         String status,
         EmployeeSimpleView client,
-        EmployeeSimpleView collaborator
+        EmployeeSimpleView collaborator,
+        String briefingType
 ) {
 }
