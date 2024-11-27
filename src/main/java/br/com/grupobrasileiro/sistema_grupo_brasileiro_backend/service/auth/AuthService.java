@@ -14,6 +14,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.To
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.email.EmailService;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.extern.java.Log;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,7 @@ public class AuthService implements UserDetailsService {
                 () -> new EntityNotFoundException("User not found for email: " + form.email())
         );
 
-        String token = tokenService.generateToken(user);
+        String token = tokenService.generatePasswordToken(user);
         String resetUrl = "http://localhost:4200/resetPassword?token=" + token;
         String userName = user.getEmployee().getName() + " " + user.getEmployee().getLastName();
 
@@ -103,5 +104,15 @@ public class AuthService implements UserDetailsService {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> new EntityNotFoundException("User not found for email: " + email)
         );
+    }
+
+    public String requestRegister() {
+        String token = tokenService.generateRegisterToken();
+        return "http://localhost:4200/cadastro?token=" + token;
+    }
+
+    public void verifyToken(String token) {
+        if (!tokenService.validateRegisterToken(token))
+            throw new TokenExpiredException("Link expirado ou inválido! Por favor, solicite um novo link de cadastro.", tokenService.expireOn(token));
     }
 }

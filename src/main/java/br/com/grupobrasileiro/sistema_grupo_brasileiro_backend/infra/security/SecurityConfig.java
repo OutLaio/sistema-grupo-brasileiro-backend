@@ -32,6 +32,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/requestReset").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/resetPassword").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/requestRegister").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/verifyToken").permitAll()
                         .requestMatchers("/swagger-ui/*", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/file/downloadFile/{fileName}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/data/**").permitAll()
