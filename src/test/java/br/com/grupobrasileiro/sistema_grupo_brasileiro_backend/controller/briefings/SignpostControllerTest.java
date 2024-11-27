@@ -39,6 +39,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.s
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.signpost.BSignpostService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 
@@ -55,6 +56,10 @@ public class SignpostControllerTest {
 
     @Mock
     private BSignpostService signpostService;
+    
+    @Mock
+    private DialogBoxService dialogBoxService;
+
 
     private Faker faker;
 
@@ -128,16 +133,18 @@ public class SignpostControllerTest {
         );
 
         ProjectView mockProjectView = new ProjectView(
-                mockProject.getId(),
-                faker.company().name(),
-                "TO_DO",
-                new EmployeeSimpleView(
-                    faker.number().randomNumber(), 
-                    faker.name().fullName(), 
-                    faker.number().randomNumber() 
-                ),
-                null // collaborator
-        );
+        	    mockProject.getId(),
+        	    faker.company().name(),
+        	    "TO_DO",
+        	    new EmployeeSimpleView(
+        	        faker.number().randomNumber(),
+        	        faker.name().fullName(),
+        	        faker.number().randomNumber()
+        	    ),
+        	    null,
+        	    "Briefing Simples" 
+        	);
+
 
         BSignpostDetailedView mockView = new BSignpostDetailedView(
                 mockSignpostView, 

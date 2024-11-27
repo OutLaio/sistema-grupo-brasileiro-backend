@@ -7,17 +7,26 @@ import org.junit.jupiter.api.Test;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
 
 public class BPrintedsDetailedViewTest {
 
     @Test
     public void testCreateBPrintedsDetailedView() {
         // Arrange
+        // Criando os objetos necessários para o teste
         PrintedTypeView printedType = new PrintedTypeView(1L, "Tipo de Impressão A");
         PrintingTypeView printingType = new PrintingTypeView(1L, "Tipo de Impressão B");
         PrintedView printed = new PrintedView(1L, printedType, printingType, "Papel A", 2, 10);
         
-        ProjectView project = new ProjectView(1L, "Projeto A", "Em andamento", null, null);
+        // Criando EmployeeSimpleView para os campos client e collaborator do ProjectView
+        EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente Exemplo", 1L);
+        EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador Exemplo", 2L);
+
+        // Criando o ProjectView com client, collaborator e briefingType
+        ProjectView project = new ProjectView(1L, "Projeto A", "Em andamento", client, collaborator, "Tipo de Briefing");
+
+        // Criando o BriefingView
         BriefingView briefing = new BriefingView(1L, null, null, null, null, null, null, null, null, null);
 
         // Act
@@ -40,9 +49,17 @@ public class BPrintedsDetailedViewTest {
         PrintingTypeView printingType2 = new PrintingTypeView(2L, "Tipo de Impressão D");
         PrintedView printed2 = new PrintedView(2L, printedType2, printingType2, "Papel B", 3, 20);
         
-        ProjectView project1 = new ProjectView(1L, "Projeto A", "Em andamento", null, null);
+        // Criando EmployeeSimpleView para os campos client e collaborator do ProjectView
+        EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente Exemplo", 1L);
+        EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador Exemplo", 2L);
+
+        // Criando o ProjectView com client, collaborator e briefingType
+        ProjectView project1 = new ProjectView(1L, "Projeto A", "Em andamento", client, collaborator, "Tipo de Briefing");
+
+        // Criando o BriefingView
         BriefingView briefing1 = new BriefingView(1L, null, null, null, null, null, null, null, null, null);
 
+        // Criando as instâncias de BPrintedsDetailedView
         BPrintedsDetailedView detailedView1 = new BPrintedsDetailedView(printed1, project1, briefing1);
         BPrintedsDetailedView detailedView2 = new BPrintedsDetailedView(printed1, project1, briefing1);
         BPrintedsDetailedView detailedView3 = new BPrintedsDetailedView(printed2, project1, briefing1);

@@ -62,25 +62,50 @@ public class BInternalCampaignDetailedViewMapperTest {
         Briefing briefing = new Briefing();
         Project project = new Project();
 
+        // Associando o briefing e o projeto
         internalCampaign.setBriefing(briefing);
         briefing.setProject(project);
 
-        // Mocking views
+        // Criando mocks para os objetos de visualização
+
+        // Mock para OtherItemView
         OtherItemView otherItemView = new OtherItemView(1L, "Other Item Description");
-        BInternalCampaignsView campaignView = new BInternalCampaignsView(1L, new StationeryTypeView(1L, "Papel"), otherItemView, "Motto");
 
-        // Mocking ProjectView
-        ProjectView projectView = new ProjectView(1L, "Project Title", "Active", 
-                new EmployeeSimpleView(1L, "Client", 1L), new EmployeeSimpleView(2L, "Collaborator", 2L));
+        // Mock para BInternalCampaignsView
+        BInternalCampaignsView campaignView = new BInternalCampaignsView(
+            1L, 
+            new StationeryTypeView(1L, "Papel"), 
+            otherItemView, 
+            "Motto"
+        );
 
-        // Mocking BriefingView
+        // Mock para ProjectView
+        ProjectView projectView = new ProjectView(
+            1L, 
+            "Project Title", 
+            "Active", 
+            new EmployeeSimpleView(1L, "Client", 1L), 
+            new EmployeeSimpleView(2L, "Collaborator", 2L),
+            null // briefingType pode ser nulo
+        );
+
+        // Mock para BriefingView
         Set<CompanyView> companyViews = new HashSet<>();
         CompaniesBriefingsView companiesView = new CompaniesBriefingsView(companyViews);
-        BriefingView briefingView = new BriefingView(1L, new BriefingTypeView(1L, "Tipo A"), 
-                LocalDate.now(), LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), 
-                "Description", new MeasurementsView(new BigDecimal("1.0"), new BigDecimal("2.0")), 
-                companiesView, "Other Companies", Set.of());
+        BriefingView briefingView = new BriefingView(
+            1L, 
+            new BriefingTypeView(1L, "Tipo A"), 
+            LocalDate.now(), 
+            LocalDate.now().plusDays(1), 
+            LocalDate.now().plusDays(2), 
+            "Description", 
+            new MeasurementsView(new BigDecimal("1.0"), new BigDecimal("2.0")), 
+            companiesView, 
+            "Other Companies", 
+            Set.of()
+        );
 
+        // Configurando os mocks para os mappers
         when(bInternalCampaignViewMapper.map(internalCampaign)).thenReturn(campaignView);
         when(projectViewMapper.map(project)).thenReturn(projectView);
         when(briefingViewMapper.map(briefing)).thenReturn(briefingView);
@@ -89,11 +114,12 @@ public class BInternalCampaignDetailedViewMapperTest {
         BInternalCampaignsDetailsView result = mapper.map(internalCampaign);
 
         // Assert
-        assertNotNull(result);
-        assertEquals(campaignView, result.bInternalCampaign());
-        assertEquals(projectView, result.project());
-        assertEquals(briefingView, result.briefing());
+        assertNotNull(result, "Result should not be null");
+        assertEquals(campaignView, result.bInternalCampaign(), "BInternalCampaignsView should match");
+        assertEquals(projectView, result.project(), "ProjectView should match");
+        assertEquals(briefingView, result.briefing(), "BriefingView should match");
     }
+
 
 
     @Test

@@ -500,7 +500,7 @@ public class ProjectServiceTest {
         );
     }
     @Test
-    @DisplayName("Deve retornar todos os projetos quando o perfil do usuário não for 3")
+    @DisplayName("Should return all projects when user profile is not 3")
     void shouldReturnAllProjectsForNonEmployeeUser() {
         Long userId = 1L;
         User user = new User();
@@ -518,11 +518,22 @@ public class ProjectServiceTest {
         allProjects.add(project2);
 
         List<Project> allProjectsList = new ArrayList<>(allProjects);  
-        
+
+        // Criando objetos EmployeeSimpleView para cliente e colaborador
+        EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente", null);
+        EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador", null);
+
         // Mocking
         when(userRepository.getReferenceById(userId)).thenReturn(user);
         when(projectRepository.findAll()).thenReturn(allProjectsList);  // Agora retornando uma List
-        when(projectViewMapper.map(any(Project.class))).thenReturn(new ProjectView(1L, "Projeto", "TO_DO", null, null));
+        when(projectViewMapper.map(any(Project.class))).thenReturn(new ProjectView(
+            1L,                      // id
+            "Projeto",                // title
+            "TO_DO",                  // status
+            client,                   // client
+            collaborator,             // collaborator
+            "Tipo de Briefing"       // briefingType
+        ));
 
         // Chamada do método
         Set<ProjectView> projectViews = projectService.getAll(userId);
@@ -534,8 +545,9 @@ public class ProjectServiceTest {
         verify(projectRepository).findAll();
     }
 
+
     @Test
-    @DisplayName("Deve retornar apenas os projetos do colaborador quando o perfil for 3")
+    @DisplayName("It should only return the collaborator's projects when the profile is 3")
     void shouldReturnOwnedProjectsForEmployeeUser() {
         Long userId = 1L;
         User user = new User();
@@ -546,13 +558,26 @@ public class ProjectServiceTest {
         Employee employee = new Employee();
         Project project1 = new Project();
         project1.setTitle("Projeto 1");
+
+        // Criando objetos EmployeeSimpleView para cliente e colaborador
+        EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente", null);
+        EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador", null);
+
+        // Adicionando o projeto à lista de projetos do colaborador
         employee.setOwnedProjects(new HashSet<>());
         employee.getOwnedProjects().add(project1);
         user.setEmployee(employee);
 
-        // Mocking
+        // Criando o ProjectView mockado com os valores esperados
         when(userRepository.getReferenceById(userId)).thenReturn(user);
-        when(projectViewMapper.map(any(Project.class))).thenReturn(new ProjectView(1L, "Projeto 1", "IN_PROGRESS", null, null));
+        when(projectViewMapper.map(any(Project.class))).thenReturn(new ProjectView(
+            1L,                          // id
+            "Projeto 1",                  // title
+            "IN_PROGRESS",                // status
+            client,                       // client
+            collaborator,                 // collaborator
+            "Tipo de Briefing"           // briefingType
+        ));
 
         // Chamada do método
         Set<ProjectView> projectViews = projectService.getAll(userId);
@@ -564,4 +589,3 @@ public class ProjectServiceTest {
         verify(projectRepository, never()).findAll(); // Verifica que o método findAll não foi chamado
     }
 }
-

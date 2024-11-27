@@ -19,6 +19,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.han
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.handout.form.BHandoutFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.handout.view.BHandoutDetailedViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.handouts.BHandout;
@@ -65,7 +66,16 @@ public class BHandoutServiceTest {
         
         // Criando objetos simulados para BHandoutView e ProjectView
         BHandoutView bHandoutView = new BHandoutView(1L, new HandoutTypeView(1L, "Tipo A"));
-        ProjectView projectView = new ProjectView(1L, "Projeto A", "Em andamento", null, null);
+        
+        // Ajustando a criação de ProjectView com os novos parâmetros
+        ProjectView projectView = new ProjectView(
+            1L, // id
+            "Projeto A", // title
+            "Em andamento", // status
+            new EmployeeSimpleView(2L, "Cliente A", null), // client
+            new EmployeeSimpleView(1L, "Colaborador A", null), // collaborator
+            "Tipo de Briefing" // briefingType
+        );
         
         // Criando um objeto Employee simulado para o colaborador e cliente
         Employee collaborator = new Employee(); // Ajuste conforme a estrutura da classe Employee
@@ -100,18 +110,22 @@ public class BHandoutServiceTest {
         briefing.setOtherCompany("Outra empresa");
 
         // Criando um objeto BHandoutDetailedView com os objetos simulados
-        BHandoutDetailedView bHandoutDetailedView = new BHandoutDetailedView(bHandoutView, projectView, new BriefingView(
-            1L, // id
-            new BriefingTypeView(1L, "Tipo de Briefing"), // briefingType
-            LocalDate.now(), // startTime
-            LocalDate.now().plusDays(7), // expectedTime
-            null, // finishTime
-            "Descrição detalhada do briefing", // detailedDescription
-            null, // measurements
-            null, // companies
-            "Outra empresa", // otherCompanies
-            null // versions
-        ));
+        BHandoutDetailedView bHandoutDetailedView = new BHandoutDetailedView(
+            bHandoutView, 
+            projectView, 
+            new BriefingView(
+                1L, // id
+                new BriefingTypeView(1L, "Tipo de Briefing"), // briefingType
+                LocalDate.now(), // startTime
+                LocalDate.now().plusDays(7), // expectedTime
+                null, // finishTime
+                "Descrição detalhada do briefing", // detailedDescription
+                null, // measurements
+                null, // companies
+                "Outra empresa", // otherCompanies
+                null // versions
+            )
+        );
 
         // Configurando o comportamento dos mocks
         when(handoutTypeRepository.getReferenceById(1L)).thenReturn(handoutType);
@@ -125,8 +139,5 @@ public class BHandoutServiceTest {
         // Verificando se o método save foi chamado
         verify(bHandoutRepository).save(bHandout);
         
-        // Verificando se o handoutType e briefing foram configurados corretamente
-        //assertEquals(handoutType, bHandout.getHandoutType(), "O tipo de handout deve ser o esperado");
-       // assertEquals(briefing, bHandout.getBriefing(), "O briefing deve ser o esperado"); // Mantido para usar briefing
-    }
+           }
 }
