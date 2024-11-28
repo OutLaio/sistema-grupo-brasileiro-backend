@@ -1,5 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controllers.project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.project.ProjectController;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ApproveForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.NewVersionForm;
@@ -232,12 +233,21 @@ class ProjectControllerTest {
     @DisplayName("Set Project to Standby - Success")
     void standby_Success() {
         Long projectId = 1L;
-        
+
+        // Criando a resposta esperada com a mensagem
+        Response expectedResponse = new Response("Projeto colocado em espera com sucesso!", null);
+        ResponseEntity<?> expectedEntity = ResponseEntity.ok(expectedResponse);
+
+        // Executando a ação
         ResponseEntity<?> response = projectController.standby(projectId);
 
+        // Verificando se o método 'setStandby' foi chamado corretamente
         verify(projectService, times(1)).setStandby(eq(projectId));
-        assertEquals(ResponseEntity.ok().build(), response);
+
+        // Verificando se a resposta é igual à esperada (incluindo o corpo)
+        assertEquals(expectedEntity, response);
     }
+
 
     @Test
     @DisplayName("Set Project to Standby - Throws Exception")

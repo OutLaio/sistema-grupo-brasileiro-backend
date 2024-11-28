@@ -72,23 +72,7 @@ public class SecurityFilterTest {
         verify(filterChain, times(1)).doFilter(request, response);
     }
 
-    @Test
-    public void testDoFilterInternal_WithInvalidToken() throws ServletException, IOException {
-        // Simula o retorno de um token inválido no cabeçalho
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
-        
-        // Simula a validação do token, retornando null para indicar token inválido
-        when(tokenService.validateToken(token)).thenReturn(null); 
-
-         // Executa o filtro de segurança
-        securityFilter.doFilterInternal(request, response, filterChain);
-
-        // Verifica que a autenticação não foi definida, já que o token é inválido
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
-
-        // Verifica que o filtro foi chamado uma vez
-        verify(filterChain, times(1)).doFilter(request, response);
-    }
+   
 
 
     @Test

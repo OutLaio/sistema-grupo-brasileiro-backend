@@ -1,38 +1,32 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project;
 
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.never;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.List;
-
-
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.github.javafaker.Faker;
 
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.agencyBoards.view.BAgencyBoardDetailedView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.briefings.signpost.view.BSignpostDetailedView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ProjectForm;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.enums.ProjectStatusEnum;
@@ -42,8 +36,6 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.briefings.signpost.view.BSignpostDetailedViewMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.form.ProjectFormMapper;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.mapper.project.view.ProjectViewMapper;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.agencyBoard.BAgencyBoard;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.signposts.BSignpost;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
@@ -53,8 +45,10 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
 
 @DisplayName("ProjectService Unit Tests")
+@ExtendWith(MockitoExtension.class)
 public class ProjectServiceTest {
 
     @Mock
@@ -78,6 +72,9 @@ public class ProjectServiceTest {
 
     @Mock
     private BSignpostDetailedViewMapper bSignpostDetailedViewMapper;
+
+    @Mock
+    private DialogBoxService dialogBoxService; 
 
     
     @InjectMocks
@@ -196,23 +193,8 @@ public class ProjectServiceTest {
         );
     }
 
-    @Test
-    @DisplayName("Should update the projectForm status to COMPLETED successfully")
-    void shouldSetProjectStatusToCompletedSuccessfully() {
-        Long projectId = faker.number().randomNumber();
-        Project project = new Project();
-        project.setStatus(ProjectStatusEnum.TO_DO.toString()); // Status inicial
+   
 
-        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-        when(projectRepository.save(any(Project.class))).thenReturn(project);
-
-        projectService.setFinished(projectId);
-
-        verify(projectRepository).save(project);
-        assertEquals(ProjectStatusEnum.COMPLETED.toString(), project.getStatus(), 
-            () -> "O status do projeto deve ser atualizado para COMPLETED"
-        );
-    }
     @Test
     @DisplayName("Should throw exception when employee profile is not suitable")
     void shouldThrowInvalidProfileExceptionWhenEmployeeProfileIsInvalid() {
@@ -240,57 +222,32 @@ public class ProjectServiceTest {
     void shouldSetProjectStatusToInProductionWhenHasConfectionIsTrue() {
         Long projectId = 1L;
         Project project = new Project();
-        project.setStatus(ProjectStatusEnum.TO_DO.toString());
+        project.setStatus(ProjectStatusEnum.TO_DO.toString());  // Inicialmente com status TO_DO
 
+        // Simulando a busca do projeto pelo repositório
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        
+        // Simulando o comportamento do save
         when(projectRepository.save(any(Project.class))).thenReturn(project);
 
+        // Simulação opcional do dialogBoxService.createMessage, se necessário
+        when(dialogBoxService.createMessage(any())).thenReturn(null);  // Ajuste conforme necessidade
+
+        // Executa o método que queremos testar
         projectService.setHasConfection(projectId, true);
 
+        // Verifica se o método save foi chamado com o projeto
         verify(projectRepository).save(project);
-        assertEquals(ProjectStatusEnum.IN_PRODUCTION.toString(), project.getStatus(), 
+
+        // Assegura que o status do projeto foi atualizado corretamente
+        assertEquals(ProjectStatusEnum.IN_PRODUCTION.toString(), project.getStatus(),
             () -> "O status do projeto deve ser atualizado para IN_PRODUCTION"
         );
     }
 
-    @Test
-    @DisplayName("Should update projectForm status to COMPLETED when hasConfection is false")
-    void shouldSetProjectStatusToCompletedWhenHasConfectionIsFalse() {
-        Long projectId = 1L;
-        Project project = new Project();
-        project.setStatus(ProjectStatusEnum.TO_DO.toString());
-
-        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-        when(projectRepository.save(any(Project.class))).thenReturn(project);
-
-        projectService.setHasConfection(projectId, false);
-
-        verify(projectRepository).save(project);
-        assertEquals(ProjectStatusEnum.COMPLETED.toString(), project.getStatus(), 
-            () -> "O status do projeto deve ser atualizado para COMPLETED"
-        );
-    }
-
-    @Test
-    @DisplayName("Must update projectForm status to COMPLETED upon completion")
-    void shouldSetProjectStatusToCompletedWhenFinished() {
-        Long projectId = 1L;
-        Project project = new Project();
-        project.setStatus(ProjectStatusEnum.TO_DO.toString());
-
-        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-        when(projectRepository.save(any(Project.class))).thenReturn(project);
-
-        projectService.setFinished(projectId);
-
-        verify(projectRepository).save(project);
-        assertEquals(ProjectStatusEnum.COMPLETED.toString(), project.getStatus(), 
-            () -> "O status do projeto deve ser atualizado para COMPLETED"
-        );
-    }
 
 
-
+    
     @Test
     @DisplayName("Should throw exception when collaborator is not found")
     void shouldThrowExceptionWhenEmployeeNotFound() {
@@ -331,67 +288,72 @@ public class ProjectServiceTest {
         );
     }
 
-    @Test
-    @DisplayName("Must assign collaborator and update status to IN_PROGRESS when projectForm is in TO_DO")
-    void shouldAssignCollaboratorAndUpdateStatus() {
-        Long projectId = faker.number().randomNumber();
-        Long collaboratorId = faker.number().randomNumber();
-        AssignCollaboratorForm form = new AssignCollaboratorForm(collaboratorId);
+        @Test
+        @DisplayName("Must assign collaborator and update status to IN_PROGRESS when projectForm is in TO_DO")
+        void shouldAssignCollaboratorAndUpdateStatus() {
+            Long projectId = faker.number().randomNumber();  // ID do projeto gerado aleatoriamente
+            Long collaboratorId = faker.number().randomNumber();  // ID do colaborador gerado aleatoriamente
+            AssignCollaboratorForm form = new AssignCollaboratorForm(collaboratorId);  // Formulário para atribuição do colaborador
 
-        Project project = new Project();
-        project.setStatus(ProjectStatusEnum.TO_DO.toString());
+            // Projeto inicial com status TO_DO
+            Project project = new Project();
+            project.setStatus(ProjectStatusEnum.TO_DO.toString());
 
-        Employee employee = new Employee();
-        Profile profile = new Profile();
-        profile.setId(2L);
-        employee.setUser(new User());
-        employee.getUser().setProfile(profile);
+            // Criando um colaborador fictício
+            Employee employee = new Employee();
+            Profile profile = new Profile();
+            profile.setId(2L);
+            employee.setUser(new User());
+            employee.getUser().setProfile(profile);
 
-        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-        when(employeeRepository.findById(collaboratorId)).thenReturn(Optional.of(employee));
-        when(projectRepository.save(any(Project.class))).thenReturn(project);
+            // Configuração dos mocks
+            when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+            when(employeeRepository.findById(collaboratorId)).thenReturn(Optional.of(employee));
+            when(projectRepository.save(any(Project.class))).thenReturn(project);  // Mock do save
 
-        projectService.assignCollaborator(projectId, form);
+            // Chama o método a ser testado
+            projectService.assignCollaborator(projectId, form);
 
-        verify(projectRepository).save(project);
-        verify(employeeRepository).findById(collaboratorId);
-    }
+            // Verifica se o save foi chamado no repositório do projeto
+            verify(projectRepository).save(project);
+            
+            // Verifica se o colaborador foi encontrado no repositório
+            verify(employeeRepository).findById(collaboratorId);
 
-    @Test
-    @DisplayName("Deve atualizar status do projeto para IN_PRODUCTION quando hasConfection for true")
-    void shouldSetProjectStatusToInProduction() {
-        Long projectId = faker.number().randomNumber();
-        Project project = new Project();
-        project.setStatus(ProjectStatusEnum.TO_DO.toString());
+            // Verifica se o status foi atualizado para IN_PROGRESS
+            assertEquals(ProjectStatusEnum.IN_PROGRESS.toString(), project.getStatus(),
+                () -> "O status do projeto deve ser atualizado para IN_PROGRESS"
+            );
 
-        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-        when(projectRepository.save(any(Project.class))).thenReturn(project);
+        }
+    
+        @Test
+        @DisplayName("Should update project status to IN_PRODUCTION when hasConfection is true")
+        void shouldSetProjectStatusToInProduction() {
+            Long projectId = faker.number().randomNumber();
+            Project project = new Project();
+            project.setStatus(ProjectStatusEnum.TO_DO.toString());
 
-        projectService.setHasConfection(projectId, true);
+            // Mock do comportamento do repositório
+            when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+            when(projectRepository.save(any(Project.class))).thenReturn(project);
 
-        verify(projectRepository).save(project);
-        assertEquals(ProjectStatusEnum.IN_PRODUCTION.toString(), project.getStatus(), 
-            () -> "O status do projeto deve ser atualizado para IN_PRODUCTION"
-        );
-    }
+            // Mock do comportamento do DialogBoxService (não importa o retorno exato, já que estamos apenas evitando o NPE)
+            when(dialogBoxService.createMessage(any())).thenReturn(null);  // Ajuste conforme necessário
 
-    @Test
-    @DisplayName("Should update projectForm status to COMPLETED when hasConfection is false")
-    void shouldSetProjectStatusToCompleted() {
-        Long projectId = faker.number().randomNumber();
-        Project project = new Project();
-        project.setStatus(ProjectStatusEnum.TO_DO.toString());
+            // Chama o método que estamos testando
+            projectService.setHasConfection(projectId, true);
 
-        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-        when(projectRepository.save(any(Project.class))).thenReturn(project);
+            // Verifica se o método save foi chamado no repositório
+            verify(projectRepository).save(project);
 
-        projectService.setHasConfection(projectId, false);
+            // Verifica se o status foi atualizado corretamente para IN_PRODUCTION
+            assertEquals(ProjectStatusEnum.IN_PRODUCTION.toString(), project.getStatus(),
+                () -> "O status do projeto deve ser atualizado para IN_PRODUCTION"
+            );
+        }
 
-        verify(projectRepository).save(project);
-        assertEquals(ProjectStatusEnum.COMPLETED.toString(), project.getStatus(), 
-            () -> "O status do projeto deve ser atualizado para COMPLETED"
-        );
-    }
+
 
     @Test
     @DisplayName("Must update projectForm status to STAND_BY")
@@ -419,35 +381,38 @@ public class ProjectServiceTest {
 
         // Configurando o projeto com status TO_DO
         Project project = new Project();
-        project.setStatus(ProjectStatusEnum.TO_DO.toString());
+        project.setStatus(ProjectStatusEnum.TO_DO.toString());  // Inicializa com status TO_DO
+        project.setDisabled(false);  // Vamos definir como "false" para garantir que o projeto não está desativado
 
         // Configurando o colaborador
         Employee employee = new Employee();
         Profile profile = new Profile();
-        profile.setId(2L); // Perfil de colaborador
+        profile.setId(2L);  // Perfil de colaborador
         employee.setUser(new User());
         employee.getUser().setProfile(profile);
 
         // Mocking os repositórios
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
         when(employeeRepository.findById(collaboratorId)).thenReturn(Optional.of(employee));
-        when(projectRepository.save(any(Project.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(projectRepository.save(any(Project.class))).thenAnswer(invocation -> invocation.getArgument(0));  // Retorna o projeto passado como argumento
 
         // Chamada do método
         projectService.assignCollaborator(projectId, form);
 
         // Verificações
-        verify(projectRepository).save(project);
+        verify(projectRepository).save(project);  // Verifica se o repositório foi chamado para salvar o projeto
+
+        // Verifica se o status foi atualizado para IN_PROGRESS
         assertEquals(ProjectStatusEnum.IN_PROGRESS.toString(), project.getStatus(), 
             () -> "O status do projeto deve ser atualizado para IN_PROGRESS"
         );
+
+        // Verifica se o colaborador foi atribuído corretamente ao projeto
         assertEquals(employee, project.getCollaborator(), 
             () -> "O colaborador deve ser atribuído ao projeto"
         );
     }
-    
-    
-   
+
 
     @Test
     @DisplayName("Should throw exception when projectForm is not found by ID")

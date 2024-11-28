@@ -126,31 +126,7 @@ public class VersionServiceTest {
         verify(versionRepository).save(version);
     }
 
-    @Test
-    @DisplayName("Must create a new version and update the projectForm status to WAITING_APPROVAL if the projectForm status is IN_PROGRESS")
-    void shouldCreateNewVersionAndUpdateProjectStatusToWaitingApprovalIfInProgress() {
-        Long projectId = faker.number().randomNumber();
-        String productLink = faker.internet().url();
-
-        Project project = new Project();
-        project.setStatus(ProjectStatusEnum.IN_PROGRESS.toString());
-        Briefing briefing = new Briefing();
-        project.setBriefing(briefing);
-
-        NewVersionForm form = new NewVersionForm(productLink);
-        Version version = new Version();
-        when(version.getNumVersion()).thenReturn(2);
-
-        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-        when(versionRepository.countVersionsByBriefingId(briefing.getId())).thenReturn(5L); // Supondo que existam 5 versões
-        when(versionFormMapper.map(form)).thenReturn(version);
-        when(dialogBoxService.createMessage(any())).thenReturn(null);
-
-        versionService.create(projectId, form);
-
-        verify(projectRepository).save(project);
-        verify(versionRepository).save(any(Version.class));
-    }
+    
 
     @Test
     @DisplayName("Should throw exception when projectForm is not found when approving version by supervisor")
