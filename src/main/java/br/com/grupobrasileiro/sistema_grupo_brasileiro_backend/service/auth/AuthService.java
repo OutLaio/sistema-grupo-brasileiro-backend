@@ -71,7 +71,7 @@ public class AuthService implements UserDetailsService {
         );
 
         String token = tokenService.generatePasswordToken(user);
-        String resetUrl = "http://localhost:4200/resetPassword?token=" + token;
+        String resetUrl = "http://localhost:4200/redefinir-senha?token=" + token;
         String userName = user.getEmployee().getName() + " " + user.getEmployee().getLastName();
 
         Context context = new Context();
@@ -85,9 +85,9 @@ public class AuthService implements UserDetailsService {
     }
 
     public void resetPassword(ResetPasswordForm form) {
-        String emailFromToken = tokenService.validateToken(form.token());
+        String emailFromToken = tokenService.validatePasswordToken(form.token());
         if (emailFromToken == null) {
-            throw new InvalidTokenException("Token inválido ou expirado");
+            throw new InvalidTokenException("Link expirado ou inválido! Por favor, solicite um novo link de recuperação.");
         }
 
         User user = userRepository.findByEmail(emailFromToken).orElseThrow(
@@ -112,7 +112,7 @@ public class AuthService implements UserDetailsService {
     }
 
     public void verifyToken(String token) {
-        if (!tokenService.validateRegisterToken(token))
-            throw new TokenExpiredException("Link expirado ou inválido! Por favor, solicite um novo link de cadastro.", tokenService.expireOn(token));
+        if (tokenService.validateRegisterToken(token) == null)
+            throw new TokenExpiredException("Link expirado ou inválido! Por favor, solicite um novo link.", tokenService.expireOn(token));
     }
 }

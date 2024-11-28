@@ -44,7 +44,7 @@ public class TokenService {
 	}
 
 	private Instant generateExpirationDate() {
-		return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+		return LocalDateTime.now().plusHours(10).toInstant(ZoneOffset.of("-03:00"));
 	}
 
 	public String validateToken(String token) {
@@ -89,10 +89,10 @@ public class TokenService {
 		}
 	}
 
-	public Boolean validateRegisterToken(String token) {
+	public String validateRegisterToken(String token) {
 		try {
 			if (isTokenRevoked(token)) {
-				return false;
+				return null;
 			}
 
 			Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -100,7 +100,7 @@ public class TokenService {
 					.withIssuer("register-auth-api")
 					.build()
 					.verify(token)
-					.getToken().equals(token);
+					.getToken();
 		} catch (JWTVerificationException exception) {
 			return null;
 		}
@@ -132,6 +132,23 @@ public class TokenService {
 					.sign(algorithm);
 		} catch (JWTCreationException exception) {
 			throw new RuntimeException("Error while authenticating");
+		}
+	}
+
+	public String validatePasswordToken(String token) {
+		try {
+			if (isTokenRevoked(token)) {
+				return null;
+			}
+
+			Algorithm algorithm = Algorithm.HMAC256(secret);
+			return JWT.require(algorithm)
+					.withIssuer("register-auth-api")
+					.build()
+					.verify(token)
+					.getSubject();
+		} catch (JWTVerificationException exception) {
+			return null;
 		}
 	}
 }

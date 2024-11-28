@@ -1,5 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.exception;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -210,6 +211,21 @@ public class ApiExceptionHandler {
                         request,
                         HttpStatus.BAD_REQUEST,
                         "Não foi possível concluir a operação devido a um conflito nos dados informados. Por favor, revise as informações e tente novamente."
+                ));
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "File not found")
+    })
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ErrorMessage> handleTokenExpiredException(TokenExpiredException ex, HttpServletRequest request) {
+        String endpoint = request.getRequestURI();
+        log.warn("Token expirado ou inválido no endpoint '{}'.", endpoint);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(
+                        request,
+                        HttpStatus.BAD_REQUEST,
+                        ex.getMessage()
                 ));
     }
 }

@@ -8,12 +8,10 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.Res
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.view.TokenView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form.UserDetailsForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeView;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.infra.security.TokenService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.auth.AuthService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user.EmployeeService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user.UserService;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -51,9 +49,6 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
-
-    @Autowired
-    private TokenService tokenService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -196,7 +191,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Register client request successfully",
                     content = @Content(schema = @Schema(implementation = Response.class)))
     })
-    @PostMapping("/requestRegister")
+    @GetMapping("/requestRegister")
     public ResponseEntity<?> requestRegister() {
         String requestId = UUID.randomUUID().toString();
         LOGGER.info("[{}] Iniciando solicitação de geração de link para cadastro de cliente.", requestId);
@@ -219,7 +214,7 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = Response.class))),
             @ApiResponse(responseCode = "400", description = "Invalid client request link")
     })
-    @PostMapping("/verifyToken")
+    @GetMapping("/verifyToken")
     public ResponseEntity<?> verifyRequestRegister(@RequestParam String token) {
         String requestId = UUID.randomUUID().toString();
         LOGGER.info("[{}] Iniciando verificação de link para cadastro de cliente. Token: {}", requestId, token);
@@ -227,7 +222,7 @@ public class AuthController {
         authService.verifyToken(token);
         LOGGER.info("[{}] Link de registro de cliente verificado com sucesso!", requestId);
 
-        return ResponseEntity.ok(new Response<>("Link de cadastro de cliente verificado com sucesso!"));
+        return ResponseEntity.ok(new Response<>("Link verificado com sucesso!"));
     }
 
 }
