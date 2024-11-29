@@ -25,10 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -183,4 +180,49 @@ public class AuthController {
         }
         return email.charAt(0) + "***" + email.substring(atIndex - 1);
     }
+
+    /**
+     * Endpoint para gerar um link de cadastro de cliente.
+     *
+     * @return mensagem de confirmação de link gerado com o link gerado.
+     */
+    @Operation(summary = "Request register client", description = "Sends link for register client.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Register client request successfully",
+                    content = @Content(schema = @Schema(implementation = Response.class)))
+    })
+    @GetMapping("/requestRegister")
+    public ResponseEntity<?> requestRegister() {
+        String requestId = UUID.randomUUID().toString();
+        LOGGER.info("[{}] Iniciando solicitação de geração de link para cadastro de cliente.", requestId);
+
+        String link = authService.requestRegister();
+        LOGGER.info("[{}] Link de registro de cliente gerado com sucesso! Link: [{}]",
+                requestId, link);
+
+        return ResponseEntity.ok(new Response<>("Link de cadastro de cliente gerado com sucesso!", link));
+    }
+
+    /**
+     * Endpoint para verificar um link de cadastro de cliente.
+     *
+     * @return mensagem de confirmação de link verificado.
+     */
+    @Operation(summary = "Verify register client link", description = "Verify link for register client.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Register client request verified",
+                    content = @Content(schema = @Schema(implementation = Response.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid client request link")
+    })
+    @GetMapping("/verifyToken")
+    public ResponseEntity<?> verifyRequestRegister(@RequestParam String token) {
+        String requestId = UUID.randomUUID().toString();
+        LOGGER.info("[{}] Iniciando verificação de link para cadastro de cliente. Token: {}", requestId, token);
+
+        authService.verifyToken(token);
+        LOGGER.info("[{}] Link de registro de cliente verificado com sucesso!", requestId);
+
+        return ResponseEntity.ok(new Response<>("Link verificado com sucesso!"));
+    }
+
 }

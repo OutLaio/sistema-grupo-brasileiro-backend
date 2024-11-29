@@ -44,7 +44,7 @@ public class TokenService {
 	}
 
 	private Instant generateExpirationDate() {
-		return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+		return LocalDateTime.now().plusHours(10).toInstant(ZoneOffset.of("-03:00"));
 	}
 
 	public String validateToken(String token) {
@@ -72,5 +72,83 @@ public class TokenService {
 
 	private boolean isTokenRevoked(String token) {
 		return revokedTokenRepository.existsByToken(token);
+	}
+
+	public String generateRegisterToken() {
+		try {
+			Algorithm algorithm = Algorithm.HMAC256(secret);
+
+			Instant expire = LocalDateTime.now().plusHours(24).toInstant(ZoneOffset.of("-03:00"));
+
+            return JWT.create()
+                    .withIssuer("register-auth-api")
+                    .withExpiresAt(expire)
+                    .sign(algorithm);
+		} catch (JWTCreationException exception) {
+			throw new RuntimeException("Error while authenticating");
+		}
+	}
+
+	public String validateRegisterToken(String token) {
+		try {
+			if (isTokenRevoked(token)) {
+				return null;
+			}
+
+			Algorithm algorithm = Algorithm.HMAC256(secret);
+			return JWT.require(algorithm)
+					.withIssuer("register-auth-api")
+					.build()
+					.verify(token)
+					.getToken();
+		} catch (JWTVerificationException exception) {
+			return null;
+		}
+	}
+
+	public Instant expireOn(String token) {
+		try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            return JWT.require(algorithm)
+                    .withIssuer("register-auth-api")
+                    .build()
+					.verify(token)
+					.getExpiresAtAsInstant();
+        } catch (JWTVerificationException exception) {
+            return null;
+        }
+	}
+
+	public String generatePasswordToken(User user) {
+		try {
+			Algorithm algorithm = Algorithm.HMAC256(secret);
+
+			Instant expire = LocalDateTime.now().plusMinutes(15).toInstant(ZoneOffset.of("-03:00"));
+
+			return JWT.create()
+					.withIssuer("register-auth-api")
+					.withSubject(user.getEmail())
+					.withExpiresAt(expire)
+					.sign(algorithm);
+		} catch (JWTCreationException exception) {
+			throw new RuntimeException("Error while authenticating");
+		}
+	}
+
+	public String validatePasswordToken(String token) {
+		try {
+			if (isTokenRevoked(token)) {
+				return null;
+			}
+
+			Algorithm algorithm = Algorithm.HMAC256(secret);
+			return JWT.require(algorithm)
+					.withIssuer("register-auth-api")
+					.build()
+					.verify(token)
+					.getSubject();
+		} catch (JWTVerificationException exception) {
+			return null;
+		}
 	}
 }

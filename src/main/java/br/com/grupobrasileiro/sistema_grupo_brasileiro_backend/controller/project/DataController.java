@@ -1,5 +1,6 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.project;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.DataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,7 +38,7 @@ public class DataController {
     })
     @GetMapping("/profiles")
     public ResponseEntity<?> getProfiles() {
-        return ResponseEntity.ok().body(dataService.getProfiles());
+        return ResponseEntity.ok().body(new Response<>("Perfis recuperados com sucesso!", dataService.getProfiles()));
     }
 
     /**
@@ -51,7 +52,7 @@ public class DataController {
     })
     @GetMapping("/briefing-types")
     public ResponseEntity<?> getBriefingTypes() {
-        return ResponseEntity.ok().body(dataService.getBriefingTypes());
+        return ResponseEntity.ok().body(new Response<>("Tipos de Briefing recuperados com sucesso!", dataService.getBriefingTypes()));
     }
 
     /**
@@ -65,7 +66,7 @@ public class DataController {
     })
     @GetMapping("/printed-types")
     public ResponseEntity<?> getPrintedTypes() {
-        return ResponseEntity.ok().body(dataService.getPrintedTypes());
+        return ResponseEntity.ok().body(new Response<>("Tipos de Impessos recuperados com sucesso!", dataService.getPrintedTypes()));
     }
 
     /**
@@ -79,7 +80,7 @@ public class DataController {
     })
     @GetMapping("/printing-types")
     public ResponseEntity<?> getPrintingTypes() {
-        return ResponseEntity.ok().body(dataService.getPrintingTypes());
+        return ResponseEntity.ok().body(new Response<>("Tipos de Impressão recuperados com sucesso!", dataService.getPrintingTypes()));
     }
 
     /**
@@ -93,7 +94,7 @@ public class DataController {
     })
     @GetMapping("/printing-shirt-types")
     public ResponseEntity<?> getPrintingShirtTypes() {
-        return ResponseEntity.ok().body(dataService.getPrintingShirtTypes());
+        return ResponseEntity.ok().body(new Response<>("Tipos de Impressão de Camisa recuperados com sucesso!", dataService.getPrintingShirtTypes()));
     }
 
     /**
@@ -107,7 +108,7 @@ public class DataController {
     })
     @GetMapping("/stamps")
     public ResponseEntity<?> getStamps() {
-        return ResponseEntity.ok().body(dataService.getStamps());
+        return ResponseEntity.ok().body(new Response<>("Estampas recuperadas com sucesso!", dataService.getStamps()));
     }
 
     /**
@@ -121,7 +122,7 @@ public class DataController {
     })
     @GetMapping("/calendar-types")
     public ResponseEntity<?> getCalendarTypes() {
-        return ResponseEntity.ok().body(dataService.getCalendarTypes());
+        return ResponseEntity.ok().body(new Response<>("Tipos de Calendário recuperados com sucesso!", dataService.getCalendarTypes()));
     }
 
     /**
@@ -135,7 +136,7 @@ public class DataController {
     })
     @GetMapping("/gift-types")
     public ResponseEntity<?> getGiftTypes() {
-        return ResponseEntity.ok().body(dataService.getGiftTypes());
+        return ResponseEntity.ok().body(new Response<>("Tipos de Brindes recuperados com sucesso!", dataService.getGiftTypes()));
     }
 
     /**
@@ -149,7 +150,7 @@ public class DataController {
     })
     @GetMapping("/agency-board-types")
     public ResponseEntity<?> getAgencyBoardTypes() {
-        return ResponseEntity.ok().body(dataService.getAgencyBoardTypes());
+        return ResponseEntity.ok().body(new Response<>("Tipos de Placa de Intinerário recuperados com sucesso!", dataService.getAgencyBoardTypes()));
     }
 
     /**
@@ -163,7 +164,7 @@ public class DataController {
     })
     @GetMapping("/board-types")
     public ResponseEntity<?> getBoardTypes() {
-        return ResponseEntity.ok().body(dataService.getBoardTypes());
+        return ResponseEntity.ok().body(new Response<>("Tipos de Placa recuperados com sucesso!", dataService.getBoardTypes()));
     }
 
     /**
@@ -177,7 +178,7 @@ public class DataController {
     })
     @GetMapping("/cities")
     public ResponseEntity<?> getCities() {
-        return ResponseEntity.ok().body(dataService.getCities());
+        return ResponseEntity.ok().body(new Response<>("Cidades recuperadas com sucesso!", dataService.getCities()));
     }
 
     /**
@@ -191,7 +192,7 @@ public class DataController {
     })
     @GetMapping("/companies")
     public ResponseEntity<?> getCompanies() {
-        return ResponseEntity.ok().body(dataService.getCompanies());
+        return ResponseEntity.ok().body(new Response<>("Companias recuperadas com sucesso!", dataService.getCompanies()));
     }
 
     /**
@@ -205,7 +206,7 @@ public class DataController {
     })
     @GetMapping("/sticker-types")
     public ResponseEntity<?> getStickerTypes() {
-        return ResponseEntity.ok().body(dataService.getStickerTypes());
+        return ResponseEntity.ok().body(new Response<>("Tipos de Adesivo recuperados com sucesso!", dataService.getStickerTypes()));
     }
 
     /**
@@ -219,7 +220,7 @@ public class DataController {
     })
     @GetMapping("/sticker-information-types")
     public ResponseEntity<?> getStickerInformationTypes() {
-        return ResponseEntity.ok().body(dataService.getStickerInformationTypes());
+        return ResponseEntity.ok().body(new Response<>("Tipos de Informação de Adesivo recuperados com sucesso!", dataService.getStickerInformationTypes()));
     }
 
     /**
@@ -233,7 +234,7 @@ public class DataController {
     })
     @GetMapping("/materials")
     public ResponseEntity<?> getMaterials() {
-        return ResponseEntity.ok().body(dataService.getMaterials());
+        return ResponseEntity.ok().body(new Response<>("Materiais recuperados com sucesso!", dataService.getMaterials()));
     }
 
     /**
@@ -247,7 +248,7 @@ public class DataController {
     })
     @GetMapping("/handout-types")
     public ResponseEntity<?> getHandoutTypes() {
-        return ResponseEntity.ok().body(dataService.getHandoutTypes());
+        return ResponseEntity.ok().body(new Response<>("Tipos de Comunicados recuperados com sucesso!", dataService.getHandoutTypes()));
     }
 
     /**
@@ -261,7 +262,7 @@ public class DataController {
     })
     @GetMapping("/stationery-types")
     public ResponseEntity<?> getStationeryTypes() {
-        return ResponseEntity.ok().body(dataService.getStationeryTypes());
+        return ResponseEntity.ok().body(new Response<>("Tipos de Papelaria recuperados com sucesso!", dataService.getStationeryTypes()));
     }
 
     /**
@@ -275,6 +276,6 @@ public class DataController {
     })
     @GetMapping("/other-items")
     public ResponseEntity<?> getOtherItems() {
-        return ResponseEntity.ok().body(dataService.getOtherItems());
+        return ResponseEntity.ok().body(new Response<>("Outros Itens recuperados com sucesso!", dataService.getOtherItems()));
     }
 }

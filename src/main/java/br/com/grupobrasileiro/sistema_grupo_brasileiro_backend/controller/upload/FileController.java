@@ -8,17 +8,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.HttpHeaders;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.core.io.ByteArrayResource;
@@ -51,8 +48,7 @@ public class FileController {
         @ApiResponse(responseCode = "500", description = "Erro ao carregar arquivo")
     })
     @PostMapping("/uploadFile")
-    public UploadFileView uploadFile(@Parameter(description = "Arquivo a ser carregado", required = true)
-                                      @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Response<UploadFileView>> uploadFile(@RequestBody MultipartFile file) {
         logger.info("Recebendo arquivo para upload: {}", file.getOriginalFilename());
 
         String fileName;
@@ -70,7 +66,7 @@ public class FileController {
                 .toUriString();
 
         logger.debug("Arquivo disponível em: {}", fileDownloadUri);
-        return new UploadFileView(fileName, fileDownloadUri, file.getContentType(), file.getSize());
+        return ResponseEntity.ok().body(new Response<>("Arquivo salvo com sucesso!", new UploadFileView(fileName, fileDownloadUri, file.getContentType(), file.getSize())));
     }
 
     @Operation(summary = "Fazer upload de múltiplos arquivos",
@@ -81,13 +77,13 @@ public class FileController {
         @ApiResponse(responseCode = "500", description = "Erro ao carregar arquivos")
     })
     @PostMapping("/uploadMultipleFiles")
-    public List<UploadFileView> uploadMultipleFiles(@Parameter(description = "Arquivos a serem carregados", required = true)
+    public ResponseEntity<Response<Set<UploadFileView>>> uploadMultipleFiles(@Parameter(description = "Arquivos a serem carregados", required = true)
                                                      @RequestParam("files") MultipartFile[] files) {
         logger.info("Recebendo múltiplos arquivos para upload.");
 
-        return Arrays.stream(files)
-                .map(this::uploadFile)
-                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(new Response<>("Arquivos salvos com sucesso!", Arrays.stream(files)
+                .map( file -> Objects.requireNonNull(uploadFile(file).getBody()).getData())
+                .collect(Collectors.toSet())));
     }
 
     @Operation(summary = "Baixar um arquivo",

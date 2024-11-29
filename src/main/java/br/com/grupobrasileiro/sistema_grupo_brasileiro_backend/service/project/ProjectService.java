@@ -272,7 +272,10 @@ public class ProjectService {
         LocalDate oldDate = project.getBriefing().getExpectedTime();
         project.getBriefing().setExpectedTime(date);
         briefingRepository.save(project.getBriefing());
-        dialogBoxService.createMessage(new DialogBoxForm(0L, id, "Informamos que a data de entrega prevista foi alterada de " + oldDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " para " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "."));
+        String message = "Informamos que a data de entrega prevista foi definida para " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ".";
+        if (oldDate != null)
+            message = "Informamos que a data de entrega prevista foi alterada de " + oldDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " para " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ".";
+        dialogBoxService.createMessage(new DialogBoxForm(0L, id, message));
     }
 
     public void updateStatus(Long id, ProjectStatusEnum status) {

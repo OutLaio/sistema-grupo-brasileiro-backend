@@ -17,6 +17,8 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 public class VersionService {
 
@@ -36,10 +38,6 @@ public class VersionService {
     private DialogBoxService dialogBoxService;
 
     public VersionView supervisorApprove(Long idProject, ApproveForm form) {
-        Project project = projectRepository.findById(idProject).orElseThrow(
-                () -> new EntityNotFoundException("Could not find project " + idProject + " in repository")
-        );
-
         Version version = versionRepository.findById(form.idVersion()).orElseThrow(
                 () -> new EntityNotFoundException("Could not find version " + form.idVersion() + " in repository")
         );
@@ -49,24 +47,18 @@ public class VersionService {
 
         if(!form.approved()){
             version.setFeedback(form.feedback());
-            project.setStatus(ProjectStatusEnum.IN_PROGRESS.toString());
-            projectRepository.save(project);
             message = "A arte da Versão #" + version.getNumVersion() + " desenvolvida não foi aprovada pelo supervisor e será retornada para correções. O colaborador será notificado para realizar as alterações necessárias.";
         } else if (version.getClientApprove() != null && !version.getClientApprove()) {
-            project.setStatus(ProjectStatusEnum.APPROVED.toString());
-            projectRepository.save(project);
             message = "O supervisor não aprovou a solicitação de revisão feita pelo solicitante. A arte da Versão #" + version.getNumVersion() + " desenvolvida foi, portanto, aprovada conforme original e seguirá para os próximos passos do processo.";
         }
         version = versionRepository.save(version);
         dialogBoxService.createMessage(new DialogBoxForm(0L, idProject, message));
+
+        syncStatus(idProject);
         return versionViewMapper.map(version);
     }
 
     public VersionView clientApprove(Long idProject, ApproveForm form) {
-        Project project = projectRepository.findById(idProject).orElseThrow(
-                () -> new EntityNotFoundException("Could not find project " + idProject + " in repository")
-        );
-
         Version version = versionRepository.findById(form.idVersion()).orElseThrow(
                 () -> new EntityNotFoundException("Could not find version " + form.idVersion() + " in repository")
         );
@@ -74,17 +66,16 @@ public class VersionService {
         version.setClientApprove(form.approved());
         String message = "A arte da Versão #" + version.getNumVersion() + " foi aprovada com sucesso! Ela seguirá para os próximos passos do processo. Agradecemos pela sua aprovação e ficamos à disposição para qualquer outra necessidade.";
 
-        if (form.approved()) {
-            project.setStatus(ProjectStatusEnum.APPROVED.toString());
-            projectRepository.save(project);
-        }else {
+        if (!form.approved()) {
             version.setSupervisorApprove(null);
             version.setFeedback(form.feedback());
-            message = "A arte da Versão #" + version.getNumVersion() + " desenvolvida não foi aprovada. Os ajustes solicitados são os seguintes: " + form.feedback() + ". \nO supervisor irá analisar a solicitação de revisão e, após a análise, a arte será encaminhada para os próximos passos.";
+            message = "A arte da Versão #" + version.getNumVersion() + " desenvolvida não foi aprovada pelo solicitante. Os ajustes solicitados são os seguintes: " + form.feedback() + ". \nO supervisor irá analisar a solicitação de revisão e, após a análise, a arte será encaminhada para os próximos passos.";
         }
 
         version = versionRepository.save(version);
         dialogBoxService.createMessage(new DialogBoxForm(0L, idProject, message));
+
+        syncStatus(idProject);
         return versionViewMapper.map(version);
     }
 
@@ -107,5 +98,23 @@ public class VersionService {
         dialogBoxService.createMessage(new DialogBoxForm(0L, idProject, "Uma nova versão da arte foi desenvolvida! A arte da Versão #" + version.getNumVersion() + " pode ser visualizada ao lado, na seção 'Artes Desenvolvidas'. Assim que aprovada pelo supervisor, a arte estará disponível para download e aprovação final."));
 
         return versionViewMapper.map(version);
+    }
+
+
+    private void syncStatus(Long idProject) {
+        Project project = projectRepository.findById(idProject).orElseThrow(
+                () -> new EntityNotFoundException("Could not find project " + idProject + " in repository")
+        );
+        Set<Version> versions = project.getBriefing().getVersions();
+        Boolean hasPendingSupervisor = versions.stream().anyMatch(v -> v.getSupervisorApprove() == null);
+        Boolean hasPendingClient = versions.stream().anyMatch(v -> v.getSupervisorApprove() != null && v.getSupervisorApprove() && v.getClientApprove() == null);
+
+        if (hasPendingSupervisor || hasPendingClient)
+            project.setStatus(ProjectStatusEnum.WAITING_APPROVAL.toString());
+        else if (versions.stream().anyMatch(v -> v.getSupervisorApprove() && v.getClientApprove() != null))
+            project.setStatus(ProjectStatusEnum.APPROVED.toString());
+        else
+            project.setStatus(ProjectStatusEnum.IN_PROGRESS.toString());
+        projectRepository.save(project);
     }
 }
