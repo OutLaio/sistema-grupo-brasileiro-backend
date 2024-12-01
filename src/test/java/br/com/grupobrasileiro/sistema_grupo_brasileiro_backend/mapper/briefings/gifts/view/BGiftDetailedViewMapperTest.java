@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -47,7 +49,7 @@ public class BGiftDetailedViewMapperTest {
 
         // Atualizando a criação de BGiftView, ProjectView e BriefingView para usar os novos registros
         BGiftView bGiftView = new BGiftView(null, null, null, null, null, null, null, null);
-        ProjectView projectView = new ProjectView(null, null, null, null, null);
+        ProjectView projectView = new ProjectView(null, null, null, null, null, null, null);
         // Criando BriefingView com a nova estrutura
         BriefingView briefingView = new BriefingView(
             null, // id

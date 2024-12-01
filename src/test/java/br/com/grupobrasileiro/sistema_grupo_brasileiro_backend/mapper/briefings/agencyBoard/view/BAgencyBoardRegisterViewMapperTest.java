@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -213,7 +214,9 @@ public class BAgencyBoardRegisterViewMapperTest {
             "Projeto Teste", 
             "Em Andamento",
             new EmployeeSimpleView(1L, "Cliente Teste", 101L),
-            new EmployeeSimpleView(2L, "Colaborador Teste", 102L)
+            new EmployeeSimpleView(2L, "Colaborador Teste", 102L),
+            null,
+            LocalDate.now()
         );
 
         // Mock behavior setup

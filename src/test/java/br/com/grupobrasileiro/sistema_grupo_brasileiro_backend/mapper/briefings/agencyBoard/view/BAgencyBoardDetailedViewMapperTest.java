@@ -119,7 +119,9 @@ class BAgencyBoardDetailedViewMapperTest {
 
         ProjectView projectView = new ProjectView(1L, "Project Name", "Status", 
             new EmployeeSimpleView(1L, "Client Name", null),
-            new EmployeeSimpleView(2L, "Collaborator Name", null)
+            new EmployeeSimpleView(2L, "Collaborator Name", null),
+            null,
+            LocalDate.now()
         );
 
         when(bAgencyBoardViewMapper.map(bAgencyBoard)).thenReturn(bAgencyBoardView);
@@ -228,7 +230,9 @@ class BAgencyBoardDetailedViewMapperTest {
 
         ProjectView projectView = new ProjectView(1L, "Project Name", "Status", 
             new EmployeeSimpleView(1L, "Client Name", null),
-            new EmployeeSimpleView(2L, "Collaborator Name", null)
+            new EmployeeSimpleView(2L, "Collaborator Name", null),
+            null,
+            LocalDate.now()
         );
 
         when(bAgencyBoardViewMapper.map(bAgencyBoard)).thenReturn(bAgencyBoardView);

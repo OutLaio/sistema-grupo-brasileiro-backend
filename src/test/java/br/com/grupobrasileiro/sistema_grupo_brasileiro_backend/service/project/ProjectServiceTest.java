@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.never;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
@@ -522,7 +523,7 @@ public class ProjectServiceTest {
         // Mocking
         when(userRepository.getReferenceById(userId)).thenReturn(user);
         when(projectRepository.findAll()).thenReturn(allProjectsList);  // Agora retornando uma List
-        when(projectViewMapper.map(any(Project.class))).thenReturn(new ProjectView(1L, "Projeto", "TO_DO", null, null));
+        when(projectViewMapper.map(any(Project.class))).thenReturn(new ProjectView(1L, "Projeto", "TO_DO", null, null, null, LocalDate.now()));
 
         // Chamada do método
         Set<ProjectView> projectViews = projectService.getAll(userId);
@@ -552,7 +553,7 @@ public class ProjectServiceTest {
 
         // Mocking
         when(userRepository.getReferenceById(userId)).thenReturn(user);
-        when(projectViewMapper.map(any(Project.class))).thenReturn(new ProjectView(1L, "Projeto 1", "IN_PROGRESS", null, null));
+        when(projectViewMapper.map(any(Project.class))).thenReturn(new ProjectView(1L, "Projeto 1", "IN_PROGRESS", null, null, null, LocalDate.now()));
 
         // Chamada do método
         Set<ProjectView> projectViews = projectService.getAll(userId);

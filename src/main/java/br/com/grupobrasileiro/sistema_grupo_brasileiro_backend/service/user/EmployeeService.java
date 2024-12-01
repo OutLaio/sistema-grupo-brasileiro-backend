@@ -90,6 +90,20 @@ public class EmployeeService {
     }
 
     /**
+     * Lista todos os colaboradores com suporte à paginação.
+     *
+     * <p>Este método retorna uma página de colaboradores no formato {@link EmployeeView}.
+     * A paginação é controlada pelo objeto {@link Pageable}, que define o número de itens por página e o número da página atual.</p>
+     *
+     * @param pageable o objeto que define as propriedades da página (tamanho e número)
+     * @return uma página de {@link EmployeeView} representando os colaboradores
+     */
+    public Page<EmployeeView> getAllCollaborators(Pageable pageable) {
+        return employeeRepository.findAllCollaborators(pageable)
+            .map(employeeViewMapper::map);
+    }
+
+    /**
      * Lista todos os empregados com suporte à paginação.
      *
      * <p>Este método retorna uma página de empregados no formato {@link EmployeeView}.
@@ -98,8 +112,7 @@ public class EmployeeService {
      * @param pageable o objeto que define as propriedades da página (tamanho e número)
      * @return uma página de {@link EmployeeView} representando os empregados
      */
-    public Page<EmployeeView> getAllCollaborators(Pageable pageable) {
-        return employeeRepository.findAllCollaborators(pageable)
-            .map(employeeViewMapper::map);
+    public Page<EmployeeView> getAllEmployees(Pageable pageable) {
+        return employeeRepository.findAllEmployees(pageable).map(employeeViewMapper::map);
     }
 }

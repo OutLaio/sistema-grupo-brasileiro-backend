@@ -83,7 +83,9 @@ class BSignpostServiceTest {
             faker.lorem().word(),
             faker.lorem().word(),
             null, // Ajuste conforme necessário
-            null  // Ajuste conforme necessário
+            null,  // Ajuste conforme necessário
+            null,
+            LocalDate.now()
         );
 
         // Criando um objeto BriefingView com todos os campos necessários

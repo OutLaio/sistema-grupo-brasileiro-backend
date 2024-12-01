@@ -77,7 +77,9 @@ class BSignpostDetailedViewMapperTest {
             "Título do Projeto", // title
             "Em andamento", // status
             client, // client
-            collaborator // collaborator
+            collaborator, // collaborator
+            null,
+            LocalDate.now()
         );
 
         when(bSignpostViewMapper.map(bSignpost)).thenReturn(bSignpostView);

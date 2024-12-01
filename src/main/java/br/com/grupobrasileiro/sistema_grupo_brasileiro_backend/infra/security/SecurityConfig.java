@@ -40,9 +40,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/projects/{id}/assignCollaborator").hasRole("SUPERVISOR")
                         .requestMatchers(HttpMethod.GET, "/api/v1/employees/allCollaborators").hasRole("SUPERVISOR")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/employees/approve/supervisor").hasRole("SUPERVISOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/employees/{id}/hasProduction").hasRole("SUPERVISOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/employees/{id}/finish").hasRole("SUPERVISOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/employees/{id}/standby").hasRole("SUPERVISOR")
 
                         // Restrição de acesso para Colaboradores
 

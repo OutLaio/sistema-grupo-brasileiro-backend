@@ -88,7 +88,7 @@ class BAgencyBoardControllerTest {
         
         BAgencyBoardDetailedView mockView = new BAgencyBoardDetailedView(
             new BAgencyBoardView(1L, null, null, null, null, faker.address().fullAddress(), faker.lorem().sentence()),
-            new ProjectView(mockProject.getId(), mockProject.getTitle(), mockProject.getStatus(), null, null),
+            new ProjectView(mockProject.getId(), mockProject.getTitle(), mockProject.getStatus(), null, null, null, LocalDate.now()),
             new BriefingView(
                 mockBriefing.getId(),
                 new BriefingTypeView(mockBriefing.getBriefingType().getId(), mockBriefing.getBriefingType().getDescription()),

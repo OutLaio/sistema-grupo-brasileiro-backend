@@ -37,7 +37,7 @@ public class BInternalCampaignsDetailsViewTest {
         EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente Exemplo", 1L);
         EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador Exemplo", 2L);
         
-        ProjectView project = new ProjectView(projectId, projectTitle, projectStatus, client, collaborator);
+        ProjectView project = new ProjectView(projectId, projectTitle, projectStatus, client, collaborator, null, LocalDate.now());
         
         Long briefingId = 1L;
         LocalDate startTime = LocalDate.now();
@@ -75,7 +75,7 @@ public class BInternalCampaignsDetailsViewTest {
         EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente Exemplo", 1L);
         EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador Exemplo", 2L);
         
-        ProjectView project1 = new ProjectView(projectId, projectTitle, projectStatus, client, collaborator);
+        ProjectView project1 = new ProjectView(projectId, projectTitle, projectStatus, client, collaborator, null, LocalDate.now());
         
         Long briefingId = 1L;
         LocalDate startTime = LocalDate.now();

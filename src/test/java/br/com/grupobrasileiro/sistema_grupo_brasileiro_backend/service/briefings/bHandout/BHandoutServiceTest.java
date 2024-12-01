@@ -65,7 +65,7 @@ public class BHandoutServiceTest {
         
         // Criando objetos simulados para BHandoutView e ProjectView
         BHandoutView bHandoutView = new BHandoutView(1L, new HandoutTypeView(1L, "Tipo A"));
-        ProjectView projectView = new ProjectView(1L, "Projeto A", "Em andamento", null, null);
+        ProjectView projectView = new ProjectView(1L, "Projeto A", "Em andamento", null, null, null, LocalDate.now());
         
         // Criando um objeto Employee simulado para o colaborador e cliente
         Employee collaborator = new Employee(); // Ajuste conforme a estrutura da classe Employee

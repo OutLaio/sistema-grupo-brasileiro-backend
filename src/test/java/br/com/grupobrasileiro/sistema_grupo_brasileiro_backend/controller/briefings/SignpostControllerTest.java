@@ -134,9 +134,11 @@ public class SignpostControllerTest {
                 new EmployeeSimpleView(
                     faker.number().randomNumber(), 
                     faker.name().fullName(), 
-                    faker.number().randomNumber() 
+                    faker.number().randomNumber()
                 ),
-                null // collaborator
+                null, // collaborator
+                null,
+                LocalDate.now()
         );
 
         BSignpostDetailedView mockView = new BSignpostDetailedView(

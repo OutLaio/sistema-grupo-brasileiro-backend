@@ -18,4 +18,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
         WHERE p.id = 2
         """)
     Page<Employee> findAllCollaborators(Pageable pageable);
+
+    @Query("""
+        SELECT e FROM Employee e
+        WHERE e.id > 0
+        """)
+    Page<Employee> findAllEmployees(Pageable pageable);
 }

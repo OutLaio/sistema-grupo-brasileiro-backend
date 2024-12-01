@@ -71,7 +71,7 @@ public class BInternalCampaignDetailedViewMapperTest {
 
         // Mocking ProjectView
         ProjectView projectView = new ProjectView(1L, "Project Title", "Active", 
-                new EmployeeSimpleView(1L, "Client", 1L), new EmployeeSimpleView(2L, "Collaborator", 2L));
+                new EmployeeSimpleView(1L, "Client", 1L), new EmployeeSimpleView(2L, "Collaborator", 2L), null, LocalDate.now());
 
         // Mocking BriefingView
         Set<CompanyView> companyViews = new HashSet<>();

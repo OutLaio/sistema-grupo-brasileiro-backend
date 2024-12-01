@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 
+import java.time.LocalDate;
+
 public class BPrintedsDetailedViewTest {
 
     @Test
@@ -17,7 +19,7 @@ public class BPrintedsDetailedViewTest {
         PrintingTypeView printingType = new PrintingTypeView(1L, "Tipo de Impressão B");
         PrintedView printed = new PrintedView(1L, printedType, printingType, "Papel A", 2, 10);
         
-        ProjectView project = new ProjectView(1L, "Projeto A", "Em andamento", null, null);
+        ProjectView project = new ProjectView(1L, "Projeto A", "Em andamento", null, null, null, LocalDate.now());
         BriefingView briefing = new BriefingView(1L, null, null, null, null, null, null, null, null, null);
 
         // Act
@@ -40,7 +42,7 @@ public class BPrintedsDetailedViewTest {
         PrintingTypeView printingType2 = new PrintingTypeView(2L, "Tipo de Impressão D");
         PrintedView printed2 = new PrintedView(2L, printedType2, printingType2, "Papel B", 3, 20);
         
-        ProjectView project1 = new ProjectView(1L, "Projeto A", "Em andamento", null, null);
+        ProjectView project1 = new ProjectView(1L, "Projeto A", "Em andamento", null, null, null, LocalDate.now());
         BriefingView briefing1 = new BriefingView(1L, null, null, null, null, null, null, null, null, null);
 
         BPrintedsDetailedView detailedView1 = new BPrintedsDetailedView(printed1, project1, briefing1);
