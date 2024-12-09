@@ -208,12 +208,14 @@ public class BAgencyBoardRegisterViewMapperTest {
                 null
         );
 
+        // Creating ProjectView with the correct parameter order
         ProjectView projectView = new ProjectView(
-            1L, 
-            "Projeto Teste", 
-            "Em Andamento",
-            new EmployeeSimpleView(1L, "Cliente Teste", 101L),
-            new EmployeeSimpleView(2L, "Colaborador Teste", 102L)
+                1L, // id
+                "Projeto Teste", // title
+                "Em Andamento", // status
+                new EmployeeSimpleView(1L, "Cliente Teste", 101L), // client
+                new EmployeeSimpleView(2L, "Colaborador Teste", 102L), // collaborator
+                "Tipo de Briefing" // briefingType
         );
 
         // Mock behavior setup

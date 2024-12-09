@@ -41,30 +41,36 @@ public class BPrintedsDetailedViewMapperTest {
     @Test
     public void testMap() {
         // Arrange
+        // Criando mocks dos objetos
         BPrinted bPrinted = mock(BPrinted.class);
         Briefing briefing = mock(Briefing.class);
         Project project = mock(Project.class);
 
+        // Definindo o comportamento dos mocks
         when(bPrinted.getBriefing()).thenReturn(briefing);
         when(briefing.getProject()).thenReturn(project);
 
+        // Criando as views mockadas para o teste
         PrintedView printedView = new PrintedView(1L, null, null, "Paper Type", 2, 10);
-        ProjectView projectView = new ProjectView(1L, "Project Title", "Active", null, null);
+        ProjectView projectView = new ProjectView(1L, "Project Title", "Active", null, null, null);
         BriefingView briefingView = new BriefingView(1L, null, null, null, null, null, null, null, null, null);
 
-        // Configura os mocks para retornar os valores esperados
+        // Configurando o comportamento dos mappers
         when(bPrintedsViewMapper.map(bPrinted)).thenReturn(printedView);
         when(projectViewMapper.map(project)).thenReturn(projectView);
         when(briefingViewMapper.map(briefing)).thenReturn(briefingView);
 
         // Act
+        // Mapeando o objeto BPrinted para BPrintedsDetailedView
         BPrintedsDetailedView result = mapper.map(bPrinted);
 
         // Assert
-        assertEquals(printedView, result.printed());
-        assertEquals(projectView, result.project());
-        assertEquals(briefingView, result.briefing());
+        // Verificando se as views estão sendo corretamente associadas
+        assertEquals(printedView, result.printed(), "The printed view should match the expected one");
+        assertEquals(projectView, result.project(), "The project view should match the expected one");
+        assertEquals(briefingView, result.briefing(), "The briefing view should match the expected one");
     }
+
 
     @Test
     public void testMapWithNullBriefing() {

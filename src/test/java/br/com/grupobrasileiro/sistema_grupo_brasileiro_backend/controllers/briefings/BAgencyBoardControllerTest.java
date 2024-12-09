@@ -5,8 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -30,10 +28,12 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingTypeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.BriefingView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.agencyBoard.BAgencyBoardService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 
@@ -51,6 +51,9 @@ class BAgencyBoardControllerTest {
     @Mock
     private BAgencyBoardService bAgencyBoardService;
 
+    @Mock
+    private DialogBoxService dialogBoxService;
+
     private Faker faker;
 
     @BeforeEach
@@ -58,37 +61,54 @@ class BAgencyBoardControllerTest {
         MockitoAnnotations.openMocks(this);
         faker = new Faker();
     }
-
+   
     @Test
     @DisplayName("Should register a new agency board successfully")
     void registerAgencyBoardSuccessfully() {
         // Arrange
         RegisterAgencyBoard registerAgencyBoard = new RegisterAgencyBoard(
-            new ProjectForm(faker.number().randomNumber(), faker.company().name(), null), // idClient, title, status
+            new ProjectForm(faker.number().randomNumber(), faker.company().name(), null),
             new BriefingForm(
                 faker.lorem().sentence(),
-                new HashSet<>(),                        
-                null,                                    
-                1L,                                       // briefingTypeId
-                null                                      // other fields
+                new HashSet<>(),
+                null,
+                1L,
+                null
             ),
             new BAgencyBoardsForm(null, null, faker.lorem().sentence(), faker.lorem().sentence(), null, null)
         );
 
-        Project mockProject = new Project(); 
-        Briefing mockBriefing = new Briefing(); 
-        
-        // Criar um mock para BriefingType
+        Project mockProject = new Project();
+        mockProject.setId(1L);
+        mockProject.setTitle(faker.company().name());
+        mockProject.setStatus("TO_DO");
+
+        EmployeeSimpleView mockClient = new EmployeeSimpleView(1L, faker.name().fullName(), 123L);
+        EmployeeSimpleView mockCollaborator = new EmployeeSimpleView(2L, faker.name().fullName(), 456L);
+
+        Briefing mockBriefing = new Briefing();
+        mockBriefing.setId(1L);
+        mockBriefing.setStartTime(null);  
+        mockBriefing.setExpectedTime(null);  
+        mockBriefing.setFinishTime(null);  
+        mockBriefing.setDetailedDescription(faker.lorem().sentence());
+
         BriefingType mockBriefingType = new BriefingType();
         mockBriefingType.setId(1L);
         mockBriefingType.setDescription("Tipo de Briefing Mockado");
-        
-        // Configurar o mockBriefing com o mockBriefingType
+
         mockBriefing.setBriefingType(mockBriefingType);
-        
+
         BAgencyBoardDetailedView mockView = new BAgencyBoardDetailedView(
             new BAgencyBoardView(1L, null, null, null, null, faker.address().fullAddress(), faker.lorem().sentence()),
-            new ProjectView(mockProject.getId(), mockProject.getTitle(), mockProject.getStatus(), null, null),
+            new ProjectView(
+                mockProject.getId(),
+                mockProject.getTitle(),
+                mockProject.getStatus(),
+                mockClient,
+                mockCollaborator,
+                "Briefing Type Example"
+            ),
             new BriefingView(
                 mockBriefing.getId(),
                 new BriefingTypeView(mockBriefing.getBriefingType().getId(), mockBriefing.getBriefingType().getDescription()),
@@ -96,23 +116,21 @@ class BAgencyBoardControllerTest {
                 mockBriefing.getExpectedTime(),
                 mockBriefing.getFinishTime(),
                 mockBriefing.getDetailedDescription(),
-                null, // MeasurementsView
-                null, // CompaniesBriefingsView
+                null,
+                null,
                 mockBriefing.getOtherCompany(),
-                new HashSet<>() // versions
+                new HashSet<>()
             )
         );
 
         when(projectService.register(any())).thenReturn(mockProject);
         when(briefingService.register(any(), any())).thenReturn(mockBriefing);
         doNothing().when(bAgencyBoardService).register(any(), any());
-        
+
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
 
-        // Act
         ResponseEntity<?> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
 
-        // Assert
         assertEquals(201, response.getStatusCodeValue());
         assertEquals(mockView, response.getBody());
     }
