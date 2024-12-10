@@ -58,7 +58,7 @@ class BStickerDetailedViewTest {
 
         String briefingType = faker.commerce().productName();
 
-        ProjectView projectView = new ProjectView(projectId, projectTitle, projectStatus, client, collaborator, briefingType);
+        ProjectView projectView = new ProjectView(projectId, projectTitle, projectStatus, client, collaborator, briefingType, LocalDate.now());
 
         // Gerando dados falsos para o BriefingView
         Long briefingId = faker.number().randomNumber();
@@ -144,7 +144,7 @@ class BStickerDetailedViewTest {
 
         String briefingType = faker.commerce().productName();
         
-        ProjectView projectView = new ProjectView(projectId, projectTitle, projectStatus, client, collaborator, briefingType);
+        ProjectView projectView = new ProjectView(projectId, projectTitle, projectStatus, client, collaborator, briefingType, LocalDate.now());
 
         // Gerando dados falsos para o BriefingView
         Long briefingId = faker.number().randomNumber();

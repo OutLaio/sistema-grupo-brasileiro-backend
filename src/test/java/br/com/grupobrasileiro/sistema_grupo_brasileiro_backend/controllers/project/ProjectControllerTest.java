@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
+import java.net.URI;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,7 +46,7 @@ class ProjectControllerTest {
         ResponseEntity<?> response = projectController.assignCollaborator(projectId, form);
 
         verify(projectService, times(1)).assignCollaborator(eq(projectId), eq(form));
-        assertEquals(ResponseEntity.ok().build(), response);
+        assertEquals(ResponseEntity.ok().body(new Response<>("Colaborador atribuído com sucesso!")), response);
     }
 
     @Test
@@ -86,7 +88,7 @@ class ProjectControllerTest {
         verify(versionService, times(1)).create(eq(projectId), eq(form));
 
         // Verificar se a resposta está correta
-        assertEquals(ResponseEntity.ok().build(), response);
+        assertEquals(ResponseEntity.created(URI.create("/api/v1/projects/" + projectId)).body(new Response<>("Nova Arte Enviada com Sucesso!", versionView)), response);
     }
 
 
@@ -111,11 +113,14 @@ class ProjectControllerTest {
     void supervisorApprove_Success() {
         ApproveForm form = new ApproveForm(2L, true, "Looks good");
 
+        VersionView view = new VersionView(2L, null, null, null, true, null);
+
+        when(versionService.supervisorApprove(eq(1L), eq(form))).thenReturn(view);
+
         ResponseEntity<?> response = projectController.supervisorApprove(1L, form);
 
-        // Corrigir uso do matcher eq() no projectId também
         verify(versionService, times(1)).supervisorApprove(eq(1L), eq(form));
-        assertEquals(ResponseEntity.ok().build(), response);
+        assertEquals(ResponseEntity.ok().body(new Response<>("Status de aprovação alterado com sucesso!", view)), response);
     }
 
 
@@ -143,11 +148,15 @@ class ProjectControllerTest {
     void clientApprove_Success() {
         ApproveForm form = new ApproveForm(2L, true, "Looks good");
 
+        VersionView view = new VersionView(2L, null, null, true, null, null);
+
+        when(versionService.clientApprove(eq(1L), eq(form))).thenReturn(view);
+
         ResponseEntity<?> response = projectController.clientApprove(1L, form);
 
         // Use matchers consistentes em ambos os argumentos
         verify(versionService, times(1)).clientApprove(eq(1L), eq(form));
-        assertEquals(ResponseEntity.ok().build(), response);
+        assertEquals(ResponseEntity.ok().body(new Response<>("Status de aprovação alterado com sucesso!", view)), response);
     }
 
 
@@ -183,7 +192,7 @@ class ProjectControllerTest {
 
         // Verifica se o método foi chamado corretamente
         verify(projectService, times(1)).setHasConfection(eq(projectId), eq(hasConfection));
-        assertEquals(ResponseEntity.ok().build(), response);
+        assertEquals(ResponseEntity.ok().body(new Response<>("Status Alterado com sucesso")), response);
     }
 
 
@@ -211,7 +220,7 @@ class ProjectControllerTest {
         ResponseEntity<?> response = projectController.finish(projectId);
 
         verify(projectService, times(1)).setFinished(eq(projectId));
-        assertEquals(ResponseEntity.ok().build(), response);
+        assertEquals(ResponseEntity.ok().body(new Response<>("Projeto finalizado com sucesso!")), response);
     }
 
     @Test

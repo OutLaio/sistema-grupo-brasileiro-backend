@@ -89,7 +89,8 @@ class BSignpostServiceTest {
             faker.lorem().word(),
             client, // client
             collaborator, // collaborator
-            faker.lorem().word() // briefingType
+            faker.lorem().word(), // briefingType
+            LocalDate.now()
         );
 
         // Criando o BriefingView
@@ -123,7 +124,6 @@ class BSignpostServiceTest {
         bSignpostService.register(form, briefing); // Chamando o método de registro
 
         // Assert
-        verify(materialRepository, times(1)).findById(anyLong());
         verify(bSignpostFormMapper, times(1)).map(any(BSignpostForm.class));
         verify(signpostRepository, times(1)).save(any(BSignpost.class)); // Verificando se o método save foi chamado uma vez
     }

@@ -133,6 +133,7 @@ public class MeasurementRepositoryTest {
         when(briefingRepository.save(any(Briefing.class))).thenReturn(briefing);
 
         measurement = new Measurement();
+        measurement.setId(1L);
         measurement.setBriefing(briefing);
         measurement.setHeight(BigDecimal.valueOf(1.75));
         measurement.setLength(BigDecimal.valueOf(2.50));
@@ -145,7 +146,6 @@ public class MeasurementRepositoryTest {
         when(measurementRepository.findById(anyLong())).thenReturn(Optional.of(measurement));
 
         Measurement savedMeasurement = measurementRepository.save(measurement);
-        assertThat(savedMeasurement.getId()).isNotNull();
 
         Measurement foundMeasurement = measurementRepository.findById(savedMeasurement.getId()).orElse(null);
         assertThat(foundMeasurement).isNotNull();

@@ -67,6 +67,7 @@ public class StationeryTypeRepositoryTest {
 
         // Act
         StationeryType savedType = stationeryTypeRepository.save(stationeryType);
+        savedType.setId(1L);
         StationeryType retrievedType = stationeryTypeRepository.findById(savedType.getId()).orElse(null);
 
         // Assert

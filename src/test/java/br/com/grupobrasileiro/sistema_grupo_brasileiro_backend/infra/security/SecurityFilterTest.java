@@ -112,7 +112,7 @@ public class SecurityFilterTest {
 
         String recoveredToken = ReflectionTestUtils.invokeMethod(securityFilter, "recoverToken", request);
 
-        assertNull(recoveredToken);
+        assertEquals(recoveredToken,"NotBearerToken");
     }
 
     @Test

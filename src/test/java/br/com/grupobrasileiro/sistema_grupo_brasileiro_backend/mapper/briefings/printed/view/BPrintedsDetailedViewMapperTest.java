@@ -16,6 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -52,7 +54,7 @@ public class BPrintedsDetailedViewMapperTest {
 
         // Criando as views mockadas para o teste
         PrintedView printedView = new PrintedView(1L, null, null, "Paper Type", 2, 10);
-        ProjectView projectView = new ProjectView(1L, "Project Title", "Active", null, null, null);
+        ProjectView projectView = new ProjectView(1L, "Project Title", "Active", null, null, null, LocalDate.now());
         BriefingView briefingView = new BriefingView(1L, null, null, null, null, null, null, null, null, null);
 
         // Configurando o comportamento dos mappers

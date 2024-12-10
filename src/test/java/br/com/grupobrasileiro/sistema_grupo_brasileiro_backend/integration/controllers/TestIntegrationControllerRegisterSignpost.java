@@ -136,6 +136,10 @@ public class TestIntegrationControllerRegisterSignpost extends AbstractIntegrati
                 System.out.println("Acesso negado. Verifique as permissões do usuário.");
                 break;
 
+            case 401:
+                System.out.println("Acesso negado. Verifique as permissões do usuário.");
+                break;
+
             default:
                 System.out.println("Resposta inesperada. Corpo da resposta: " + response.getBody().asString());
                 fail("Resposta inesperada: " + statusCode);

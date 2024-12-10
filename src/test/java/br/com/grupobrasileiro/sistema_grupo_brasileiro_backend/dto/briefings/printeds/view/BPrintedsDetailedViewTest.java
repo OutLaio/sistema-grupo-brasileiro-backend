@@ -9,6 +9,8 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.ProjectView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeSimpleView;
 
+import java.time.LocalDate;
+
 public class BPrintedsDetailedViewTest {
 
     @Test
@@ -24,7 +26,7 @@ public class BPrintedsDetailedViewTest {
         EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador Exemplo", 2L);
 
         // Criando o ProjectView com client, collaborator e briefingType
-        ProjectView project = new ProjectView(1L, "Projeto A", "Em andamento", client, collaborator, "Tipo de Briefing");
+        ProjectView project = new ProjectView(1L, "Projeto A", "Em andamento", client, collaborator, "Tipo de Briefing", LocalDate.now());
 
         // Criando o BriefingView
         BriefingView briefing = new BriefingView(1L, null, null, null, null, null, null, null, null, null);
@@ -54,7 +56,7 @@ public class BPrintedsDetailedViewTest {
         EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador Exemplo", 2L);
 
         // Criando o ProjectView com client, collaborator e briefingType
-        ProjectView project1 = new ProjectView(1L, "Projeto A", "Em andamento", client, collaborator, "Tipo de Briefing");
+        ProjectView project1 = new ProjectView(1L, "Projeto A", "Em andamento", client, collaborator, "Tipo de Briefing", LocalDate.now());
 
         // Criando o BriefingView
         BriefingView briefing1 = new BriefingView(1L, null, null, null, null, null, null, null, null, null);

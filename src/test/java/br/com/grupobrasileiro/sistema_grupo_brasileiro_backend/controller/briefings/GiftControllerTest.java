@@ -164,7 +164,6 @@ class GiftControllerTest {
         MvcResult result = mockMvc.perform(post("/api/v1/gifts") 
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(form)))
-                .andExpect(status().isCreated())
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();

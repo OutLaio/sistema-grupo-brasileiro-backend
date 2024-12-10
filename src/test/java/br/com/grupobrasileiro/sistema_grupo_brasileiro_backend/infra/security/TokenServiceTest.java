@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -132,15 +133,17 @@ public class TokenServiceTest {
 
     @Test
     public void testGenerateExpirationDate() {
-        // Usa reflection para chamar o método privado generateExpirationDate
+        Instant now = Instant.now();
         Instant expirationDate = ReflectionTestUtils.invokeMethod(tokenService, "generateExpirationDate");
 
         assertNotNull(expirationDate);
 
-        Instant expectedExpiration = LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
-        assertTrue(expirationDate.isAfter(Instant.now()));
-        assertTrue(expirationDate.isBefore(expectedExpiration.plusSeconds(10))); // margem de erro de 10s
+        Instant expectedExpiration = now.plus(10, ChronoUnit.HOURS);
+
+        assertTrue(expirationDate.isAfter(now), "A data de expiração deveria ser após o momento atual");
+        assertTrue(expirationDate.isBefore(expectedExpiration.plus(10, ChronoUnit.SECONDS)), "A data de expiração não pode ultrapassar 10 horas");
     }
+
 
     @Test
     public void testIsTokenRevoked() {

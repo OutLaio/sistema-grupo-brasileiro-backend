@@ -124,7 +124,8 @@ class BAgencyBoardDetailedViewMapperTest {
             "Status", // status
             new EmployeeSimpleView(1L, "Client Name", null), // client
             new EmployeeSimpleView(2L, "Collaborator Name", null), // collaborator
-            "Briefing Type" // briefingType
+            "Briefing Type",
+            LocalDate.now()
         );
 
         when(bAgencyBoardViewMapper.map(bAgencyBoard)).thenReturn(bAgencyBoardView);
@@ -238,7 +239,8 @@ class BAgencyBoardDetailedViewMapperTest {
             "Status", // status
             new EmployeeSimpleView(1L, "Client Name", null), // client
             new EmployeeSimpleView(2L, "Collaborator Name", null), // collaborator
-            "Briefing Type" // briefingType
+            "Briefing Type",
+            LocalDate.now()
         );
 
         when(bAgencyBoardViewMapper.map(bAgencyBoard)).thenReturn(bAgencyBoardView);

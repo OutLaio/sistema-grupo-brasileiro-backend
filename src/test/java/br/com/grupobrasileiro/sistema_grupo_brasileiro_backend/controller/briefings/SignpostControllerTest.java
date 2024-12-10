@@ -10,6 +10,7 @@ import java.math.BigDecimal; // Importação necessária
 import java.time.LocalDate;
 import java.util.HashSet;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -142,7 +143,8 @@ public class SignpostControllerTest {
         	        faker.number().randomNumber()
         	    ),
         	    null,
-        	    "Briefing Simples" 
+        	    "Briefing Simples",
+                LocalDate.now()
         	);
 
 
@@ -166,7 +168,7 @@ public class SignpostControllerTest {
 
         // Assert
         assertEquals(201, response.getStatusCodeValue());
-        assertEquals(null, response.getBody()); 
+        assertEquals(new Response<>("Nova solicitação criada com sucesso!"), response.getBody());
 
         // Verifique se o cabeçalho Location está presente
         assertNotNull(response.getHeaders().getLocation());

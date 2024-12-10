@@ -86,7 +86,8 @@ public class BInternalCampaignDetailedViewMapperTest {
             "Active", 
             new EmployeeSimpleView(1L, "Client", 1L), 
             new EmployeeSimpleView(2L, "Collaborator", 2L),
-            null // briefingType pode ser nulo
+            null,
+            LocalDate.now()
         );
 
         // Mock para BriefingView

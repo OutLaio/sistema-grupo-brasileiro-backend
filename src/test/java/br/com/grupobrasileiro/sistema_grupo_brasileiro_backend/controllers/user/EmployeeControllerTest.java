@@ -3,6 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controllers.user
 
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.user.EmployeeController;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.form.EmployeeForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.user.view.EmployeeView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user.EmployeeService;
@@ -67,7 +68,7 @@ class EmployeeControllerTest {
         ResponseEntity<?> response = employeeController.updateEmployee(employeeId, form);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(updatedEmployee, response.getBody());
+        assertEquals(new Response<>("Dados atualizados com sucesso!", updatedEmployee), response.getBody());
         verify(employeeService, times(1)).updateEmployee(eq(employeeId), eq(form));
     }
 
@@ -115,7 +116,7 @@ class EmployeeControllerTest {
         ResponseEntity<?> response = employeeController.getAllCollaborators(0, 10, "ASC", "name");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(employeesPage, response.getBody());
+        assertEquals(new Response<>("Lista de colaboradores recuperadas com sucesso!", employeesPage), response.getBody());
         verify(employeeService, times(1)).getAllCollaborators(eq(pageRequest));
     }
 
@@ -140,7 +141,7 @@ class EmployeeControllerTest {
         ResponseEntity<?> response = employeeController.getEmployeeById(employeeId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(employeeView, response.getBody());
+        assertEquals(new Response<>("Dados do usuário recuperados com sucesso!", employeeView), response.getBody());
         verify(employeeService, times(1)).getEmployeeById(eq(employeeId));
     }
 

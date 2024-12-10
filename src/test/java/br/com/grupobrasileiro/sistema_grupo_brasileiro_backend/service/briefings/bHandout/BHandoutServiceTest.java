@@ -74,7 +74,8 @@ public class BHandoutServiceTest {
             "Em andamento", // status
             new EmployeeSimpleView(2L, "Cliente A", null), // client
             new EmployeeSimpleView(1L, "Colaborador A", null), // collaborator
-            "Tipo de Briefing" // briefingType
+            "Tipo de Briefing",
+            LocalDate.now()
         );
         
         // Criando um objeto Employee simulado para o colaborador e cliente

@@ -40,7 +40,7 @@ public class BInternalCampaignsDetailsViewTest {
 	    EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador Exemplo", 2L);
 
 	    // Criando o objeto ProjectView
-	    ProjectView project = new ProjectView(projectId, projectTitle, projectStatus, client, collaborator, "Tipo de Briefing");
+	    ProjectView project = new ProjectView(projectId, projectTitle, projectStatus, client, collaborator, "Tipo de Briefing", LocalDate.now());
 
 	    // Criando os dados de Briefing
 	    Long briefingId = 1L;
@@ -84,7 +84,7 @@ public class BInternalCampaignsDetailsViewTest {
 	    EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador Exemplo", 2L);
 
 	    // Criando o objeto ProjectView
-	    ProjectView project1 = new ProjectView(projectId, projectTitle, projectStatus, client, collaborator, "Tipo de Briefing");
+	    ProjectView project1 = new ProjectView(projectId, projectTitle, projectStatus, client, collaborator, "Tipo de Briefing", LocalDate.now());
 
 	    // Dados do Briefing
 	    Long briefingId = 1L;

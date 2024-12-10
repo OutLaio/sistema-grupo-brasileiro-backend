@@ -97,7 +97,13 @@ public class RouteTest {
         Company company = new Company(); // Corrigido para usar Company em vez de CompanyCity
         String type = faker.lorem().word();
         Route route = new Route(id, bAgencyBoard, new HashSet<>(), company, type);
-        String expectedToString = "Route(id=" + id + ", type=" + type + ", company=" + company + ")"; // Ajustado para incluir company
+        String expectedToString = "Route{" +
+                "id=" + id +
+                ", bAgencyBoard=" + bAgencyBoard +
+                ", routeCities=" + new HashSet<>() +
+                ", company=" + company +
+                ", type='" + type + '\'' +
+                '}';
         assertThat(route.toString()).contains(expectedToString);
     }
 
@@ -128,7 +134,13 @@ public class RouteTest {
         BAgencyBoard bAgencyBoard = new BAgencyBoard(); 
         String type = faker.lorem().word();
         Route route = new Route(id, bAgencyBoard, new HashSet<>(), null, type);
-        String expectedToString = "Route(id=" + id + ", type=" + type + ", company=null)"; // Ajustado para incluir company
+        String expectedToString = "Route{" +
+                "id=" + id +
+                ", bAgencyBoard=" + bAgencyBoard +
+                ", routeCities=" + new HashSet<>() +
+                ", company=" + null +
+                ", type='" + type + '\'' +
+                '}';
         assertThat(route.toString()).isEqualTo(expectedToString);
     }
 }

@@ -112,7 +112,7 @@ public class ApiExceptionHandlerTest {
 
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
         // Verifique se a mensagem correta é retornada (ajuste conforme necessário)
-        assertEquals(ex.getMessage(), response.getBody().getMessage());
+        assertEquals("Falha na validação: ", response.getBody().getMessage());
     }
 
     @Test
@@ -124,7 +124,7 @@ public class ApiExceptionHandlerTest {
         ResponseEntity<ErrorMessage> response = apiExceptionHandler.handleException(ex, request);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Unexpected error", response.getBody().getMessage());
+        assertEquals("Ocorreu um erro inesperado em nosso sistema. Estamos trabalhando para resolvê-lo. Por favor, tente novamente mais tarde.", response.getBody().getMessage());
     }
 
     @Test

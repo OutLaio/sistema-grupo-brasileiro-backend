@@ -71,7 +71,7 @@ class FileStorageServiceTest {
         when(sshClient.newSFTPClient()).thenReturn(sftpClient);
         doThrow(new IOException("SFTP Error")).when(sftpClient).put(any(InMemorySourceFile.class), anyString());
 
-        assertThrows(SShClientException.class, () -> fileStorageService.storeFile(mock(MultipartFile.class)));
+        assertThrows(FileStorageException.class, () -> fileStorageService.storeFile(mock(MultipartFile.class)));
     }
 
     

@@ -81,7 +81,8 @@ class BSignpostDetailedViewMapperTest {
             "Em andamento", // status
             client, // client
             collaborator, // collaborator
-            "Tipo A" // briefingType, você pode substituir o valor do tipo de briefing conforme necessário
+            "Tipo A", // briefingType, você pode substituir o valor do tipo de briefing conforme necessário
+            LocalDate.now()
         );
 
         // Configurando o comportamento dos mocks

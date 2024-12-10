@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -215,7 +216,8 @@ public class BAgencyBoardRegisterViewMapperTest {
                 "Em Andamento", // status
                 new EmployeeSimpleView(1L, "Cliente Teste", 101L), // client
                 new EmployeeSimpleView(2L, "Colaborador Teste", 102L), // collaborator
-                "Tipo de Briefing" // briefingType
+                "Tipo de Briefing",
+                LocalDate.now()
         );
 
         // Mock behavior setup

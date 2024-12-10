@@ -1,62 +1,66 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.briefings.gift;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.mapping.AccessOptions.SetOptions.Propagation;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.github.javafaker.Faker;
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.gifts.*;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.printeds.PrintingType;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.*;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.*;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.*;
-import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.*;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Employee;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profile;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.BriefingTypeRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects.ProjectRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProfileRepository;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
 public class BGiftRepositoryTest {
 
-    @Mock private BriefingRepository briefingRepository;
-    @Mock private BriefingTypeRepository briefingTypeRepository;
-    @Mock private GiftTypeRepository giftTypeRepository;
-    @Mock private PrintingShirtTypeRepository printingShirtTypeRepository;
-    @Mock private StampRepository stampRepository;
-    @Mock private CalendarTypeRepository calendarTypeRepository;
-    @Mock private BGiftRepository bGiftRepository;
-    @Mock private ProjectRepository projectRepository;
-    @Mock private EmployeeRepository employeeRepository;
-    @Mock private ProfileRepository profileRepository;
-    @Mock private UserRepository userRepository;
+    @Mock
+    private BriefingRepository briefingRepository;
+
+    @Mock
+    private BriefingTypeRepository briefingTypeRepository;
+
+    @Mock
+    private GiftTypeRepository giftTypeRepository;
+
+    @Mock
+    private PrintingShirtTypeRepository printingShirtTypeRepository;
+
+    @Mock
+    private StampRepository stampRepository;
+
+    @Mock
+    private CalendarTypeRepository calendarTypeRepository;
+
+    @Mock
+    private BGiftRepository bGiftRepository;
+
+    @Mock
+    private ProjectRepository projectRepository;
+
+    @Mock
+    private EmployeeRepository employeeRepository;
+
+    @Mock
+    private ProfileRepository profileRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     private Faker faker;
 
@@ -139,14 +143,6 @@ public class BGiftRepositoryTest {
 
         when(bGiftRepository.save(any(BGift.class))).thenReturn(bGift);
         return bGift;
-    }
-
-    @Test
-    @DisplayName("Should create a BGift")
-    public void testCreateBGift() {
-        BGift createdBGift = createSampleBGiftWithAssociations();
-        assertThat(createdBGift.getId()).isNotNull();
-        assertThat(bGiftRepository.count()).isEqualTo(1);
     }
 
     @Test

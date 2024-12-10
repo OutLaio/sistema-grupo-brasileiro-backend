@@ -9,6 +9,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -474,15 +475,10 @@ public class ProjectServiceTest {
         user.setProfile(profile);
 
         Project project1 = new Project();
-        project1.setTitle("Projeto 1");
-        Project project2 = new Project();
-        project2.setTitle("Projeto 2");
+        project1.setTitle("Projeto");
 
         Set<Project> allProjects = new HashSet<>();
         allProjects.add(project1);
-        allProjects.add(project2);
-
-        List<Project> allProjectsList = new ArrayList<>(allProjects);  
 
         // Criando objetos EmployeeSimpleView para cliente e colaborador
         EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente", null);
@@ -490,22 +486,23 @@ public class ProjectServiceTest {
 
         // Mocking
         when(userRepository.getReferenceById(userId)).thenReturn(user);
-        when(projectRepository.findAll()).thenReturn(allProjectsList);  // Agora retornando uma List
+        when(projectRepository.findAll()).thenReturn(allProjects.stream().toList());
         when(projectViewMapper.map(any(Project.class))).thenReturn(new ProjectView(
-            1L,                      // id
-            "Projeto",                // title
+            faker.number().randomNumber(),                      // id
+            faker.lorem().sentence(),                // title
             "TO_DO",                  // status
             client,                   // client
             collaborator,             // collaborator
-            "Tipo de Briefing"       // briefingType
+            "Tipo de Briefing",       // briefingType
+            LocalDate.now()
         ));
 
         // Chamada do método
-        Set<ProjectView> projectViews = projectService.getAll(userId);
+        List<ProjectView> projectViews = projectService.getAll(userId).stream().toList();
 
         // Verificações
         assertNotNull(projectViews, "O resultado não pode ser nulo");
-        assertEquals(2, projectViews.size(), "Deveria retornar 2 projetos");
+        assertEquals(1, projectViews.size(), "Deveria retornar 1 projeto");
         verify(userRepository).getReferenceById(userId);
         verify(projectRepository).findAll();
     }
@@ -541,7 +538,8 @@ public class ProjectServiceTest {
             "IN_PROGRESS",                // status
             client,                       // client
             collaborator,                 // collaborator
-            "Tipo de Briefing"           // briefingType
+            "Tipo de Briefing",           // briefingType
+            LocalDate.now()
         ));
 
         // Chamada do método

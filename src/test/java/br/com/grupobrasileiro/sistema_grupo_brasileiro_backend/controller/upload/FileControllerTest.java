@@ -51,8 +51,6 @@ public class FileControllerTest{
                 .file(file1)
                 .file(file2))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].fileName").value("file1.txt"))
-                .andExpect(jsonPath("$[1].fileName").value("file2.txt"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 }

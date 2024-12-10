@@ -42,19 +42,4 @@ class StickerInformationTypeViewTest {
         assertNull(stickerInformationTypeView.id());
         assertNull(stickerInformationTypeView.description());
     }
-
-    @Test
-    void testStickerInformationTypeViewImmutability() {
-        // Criando a instância do DTO
-        Long id = faker.number().randomNumber();
-        String description = faker.lorem().sentence();
-        StickerInformationTypeView stickerInformationTypeView = new StickerInformationTypeView(id, description);
-
-        // Verificando que o objeto é imutável, ou seja, não pode alterar os valores após a criação
-        assertThrows(UnsupportedOperationException.class, () -> {
-            // Tentando alterar um campo do record (o que deve ser impossível)
-            stickerInformationTypeView.id();
-            stickerInformationTypeView.description();
-        });
-    }
 }

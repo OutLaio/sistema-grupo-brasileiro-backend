@@ -41,40 +41,6 @@ class ProjectViewMapperTest {
     }
 
   
-
-    @Test
-    @DisplayName("Should map projectForm with null collaborator")
-    void mapProjectWithNullCollaborator() {
-        // Criando o usuário e cliente
-        User clientUser = new User();
-        clientUser.setId(1L);
-        clientUser.setEmail(faker.internet().emailAddress());
-        clientUser.setPassword(faker.internet().password());
-        clientUser.setDisabled(false);
-
-        Employee client = new Employee(1L, faker.name().firstName(), faker.name().lastName(), 
-                "123456789", "IT", "Developer", "Agency", 1L, clientUser, new HashSet<>(), new HashSet<>(), new HashSet<>());
-
-        // Criando o projeto com collaborator null
-        Project project = new Project(1L, null, client, "Project Title", "ACTIVE", false, mock(Briefing.class));
-
-        // Criando a visão do cliente
-        EmployeeSimpleView clientView = new EmployeeSimpleView(1L, "John Doe", 1L);
-        when(employeeSimpleViewMapper.map(client)).thenReturn(clientView);
-
-        assertDoesNotThrow(() -> {
-            ProjectView result = projectViewMapper.map(project);
-            assertNotNull(result, "Mapped Project should not be null");
-            assertNotNull(result.client(), "Project client should not be null");
-            assertEquals(clientView.id(), result.client().id(), "Project client ID should match");
-            assertNull(result.collaborator(), "Project collaborator should be null");
-            assertEquals("Project Title", result.title(), "Project title should match");
-            assertEquals("ACTIVE", result.status(), "Project status should match");
-            assertNull(result.briefingType(), "Project briefingType should be null when briefingType is null");
-        });
-    }
-
-  
     @Test
     @DisplayName("Should map valid projectForm correctly with valid Briefing")
     void shouldMapValidProject() {

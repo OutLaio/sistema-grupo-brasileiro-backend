@@ -5,8 +5,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.net.URI;
+import java.time.LocalDate;
 import java.util.HashSet;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -107,7 +110,8 @@ class BAgencyBoardControllerTest {
                 mockProject.getStatus(),
                 mockClient,
                 mockCollaborator,
-                "Briefing Type Example"
+                "Briefing Type Example",
+                LocalDate.now()
             ),
             new BriefingView(
                 mockBriefing.getId(),
@@ -132,6 +136,6 @@ class BAgencyBoardControllerTest {
         ResponseEntity<?> response = bAgencyBoardController.registerSignpost(registerAgencyBoard, uriBuilder);
 
         assertEquals(201, response.getStatusCodeValue());
-        assertEquals(mockView, response.getBody());
+        assertEquals(new Response<>("Nova solicitação criada com sucesso!"), response.getBody());
     }
 }

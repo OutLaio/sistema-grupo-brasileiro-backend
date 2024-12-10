@@ -112,7 +112,7 @@ public class PrintedControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"projectForm\": {\"id\":1, \"name\":\"Test Project\"}, \"briefing\": {\"description\":\"Test description\"}, \"printed\": {\"id\":1, \"size\":\"A4\", \"quantity\":2}}"))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/v1/projects/1"));  // Verifique apenas o caminho relativo
+                .andExpect(header().string("Location", "http://localhost/api/v1/projects/1"));  // Verifique apenas o caminho relativo
     }
 
 }

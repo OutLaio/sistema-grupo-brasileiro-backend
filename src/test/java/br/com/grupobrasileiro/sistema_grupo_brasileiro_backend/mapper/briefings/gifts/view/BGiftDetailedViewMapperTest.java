@@ -57,7 +57,8 @@ public class BGiftDetailedViewMapperTest {
             null, // status
             null, // client
             null, // collaborator
-            null  // briefingType
+            null,  // briefingType
+            null // finishTime
         );
 
         // Criando o BriefingView com a nova estrutura

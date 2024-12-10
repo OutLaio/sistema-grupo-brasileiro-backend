@@ -119,7 +119,7 @@ public class HandoutControllerTest {
 
         EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente Exemplo", null);
         EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador Exemplo", null);
-        ProjectView projectView = new ProjectView(1L, "Projeto Exemplo", "TO_DO", client, collaborator, "Briefing Simples");
+        ProjectView projectView = new ProjectView(1L, "Projeto Exemplo", "TO_DO", client, collaborator, "Briefing Simples", LocalDate.now());
 
         
 
