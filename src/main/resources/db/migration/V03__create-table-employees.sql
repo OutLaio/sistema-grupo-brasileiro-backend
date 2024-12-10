@@ -7,6 +7,7 @@ CREATE TABLE "Tb_Employees" (
     sector VARCHAR(255) NOT NULL,
     occupation VARCHAR(255) NOT NULL,
     agency VARCHAR(255) NOT NULL,
+    registration_number VARCHAR(20) NOT NULL,
     avatar INT NOT NULL,
     CONSTRAINT fk_user FOREIGN KEY (id_user) REFERENCES "Tb_Users" (id)
 );

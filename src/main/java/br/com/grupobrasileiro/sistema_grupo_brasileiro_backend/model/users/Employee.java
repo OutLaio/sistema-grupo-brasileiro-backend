@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Representa um empregado do sistema.
+ * Representa um funcionário do sistema.
  */
 @Data
 @AllArgsConstructor
@@ -20,7 +20,7 @@ import java.util.Set;
 public class Employee {
 
     /**
-     * O identificador único do empregado.
+     * O identificador único do funcionário.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,49 +28,56 @@ public class Employee {
     private Long id;
 
     /**
-     * O nome do empregado.
+     * O nome do funcionário.
      * Este campo não pode ser nulo.
      */
     @Column(nullable = false)
     private String name;
 
     /**
-     * O sobrenome do empregado.
+     * O sobrenome do funcionário.
      * Este campo não pode ser nulo.
      */
     @Column(name = "lastname", nullable = false)
     private String lastName;
 
     /**
-     * O número de telefone do empregado.
+     * O número de telefone do funcionário.
      * Este campo não pode ser nulo.
      */
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
     /**
-     * O setor em que o empregado trabalha.
+     * O setor em que o funcionário trabalha.
      * Este campo não pode ser nulo.
      */
     @Column(nullable = false)
     private String sector;
 
     /**
-     * A ocupação do empregado.
+     * A ocupação do funcionário.
      * Este campo não pode ser nulo.
      */
     @Column(nullable = false)
     private String occupation;
 
     /**
-     * A agência onde o empregado trabalha.
+     * A agência onde o funcionário trabalha.
      * Este campo não pode ser nulo.
      */
     @Column(nullable = false)
     private String agency;
+    
+    /**
+     * O número de matrícula do funcionário.
+     * Este campo não pode ser nulo.
+     */
+    @Column(name = "registration_number", nullable = false)
+    private String registrationNumber;
 
     /**
-     * A indicação do avatar do empregado.
+     * A indicação do avatar do funcionário.
      * Este campo não pode ser nulo.
      */
     @Column(nullable = false)
@@ -105,12 +112,13 @@ public class Employee {
                 Objects.equals(sector, employee.sector) &&
                 Objects.equals(occupation, employee.occupation) &&
                 Objects.equals(agency, employee.agency) &&
+                Objects.equals(registrationNumber, employee.registrationNumber) &&
                 Objects.equals(avatar, employee.avatar);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, lastName, phoneNumber, sector, occupation, agency, avatar);
+        return Objects.hash(id, name, lastName, phoneNumber, sector, occupation, agency, registrationNumber, avatar);
     }
 
     @Override
@@ -123,6 +131,7 @@ public class Employee {
                 ", sector='" + sector + '\'' +
                 ", occupation='" + occupation + '\'' +
                 ", agency='" + agency + '\'' +
+                ", registrationNumber='" + registrationNumber + '\'' +
                 ", avatar=" + avatar +
                 '}';
     }
