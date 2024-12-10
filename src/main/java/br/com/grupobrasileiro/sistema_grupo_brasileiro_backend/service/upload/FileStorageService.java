@@ -27,13 +27,13 @@ public class FileStorageService {
     // Configurações do servidor EC2 remoto
     @Value("${sftpHost}")
     private String sftpHost;
-    
+
     @Value("${sftpPort}")
     private int sftpPort;
-    
+
     @Value("${sftpUser}")
-    private String sftpUser; 
-    
+    private String sftpUser;
+
     @Value("${sftpPrivateKey}")
     private String sftpPrivateKey;
 
@@ -55,7 +55,7 @@ public class FileStorageService {
 
             return null;
         } catch (Exception e) {
-            throw new FileStorageException("Erro ao armazenar o arquivo " + fileName);
+            throw new FileStorageException("Erro ao armazenar o arquivo " + fileName + ". Motivo: " + e.getMessage());
         }
     }
 
@@ -63,8 +63,8 @@ public class FileStorageService {
         SSHClient sshClient = new SSHClient();
         sshClient.addHostKeyVerifier(new PromiscuousVerifier());
         sshClient.connect(sftpHost, sftpPort);
-        String privateKey = System.getProperty("user.dir") + File.separator + sftpPrivateKey;
-        sshClient.authPublickey(sftpUser, privateKey);
+        String privateKeyPath = sftpPrivateKey;
+        sshClient.authPublickey(sftpUser, sshClient.loadKeys(privateKeyPath));
         return sshClient;
     }
 
@@ -89,19 +89,19 @@ public class FileStorageService {
                         return fileInputStream;
                     }
                 }, sftpRemoteDir + "/" + remoteFileName);
-                sshClient.disconnect(); 
+                sshClient.disconnect();
                 return true;
             }
         } catch (IOException e) {
-            throw new SShClientException("Erro ao conectar ou fazer upload para o servidor SFTP: {}");
+            throw new SShClientException("Erro ao conectar ou fazer upload para o servidor SFTP: " + e.getMessage());
         }
     }
 
     public Pair<ByteArrayResource, String> loadFileAsResource(String fileName) {
         try (SSHClient sshClient = connectToSFTPServer()) {
             try (SFTPClient sftpClient = sshClient.newSFTPClient();
-                RemoteFile remoteFile = sftpClient.open(sftpRemoteDir + "/" + fileName);
-                InputStream inputStream = remoteFile.new RemoteFileInputStream(0)) {
+                 RemoteFile remoteFile = sftpClient.open(sftpRemoteDir + "/" + fileName);
+                 InputStream inputStream = remoteFile.new RemoteFileInputStream(0)) {
 
                 byte[] fileContent = inputStream.readAllBytes();
                 String mimeType = Files.probeContentType(Paths.get(fileName));
@@ -109,7 +109,7 @@ public class FileStorageService {
                 return Pair.of(new ByteArrayResource(fileContent), mimeType != null ? mimeType : "application/octet-stream");
             }
         } catch (IOException e) {
-            throw new MyFileNotFoundException("Erro ao carregar o arquivo: " + fileName);
+            throw new MyFileNotFoundException("Erro ao carregar o arquivo: " + fileName + ". Motivo: " + e.getMessage());
         }
     }
 

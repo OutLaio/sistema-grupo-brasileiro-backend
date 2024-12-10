@@ -121,8 +121,6 @@ public class HandoutControllerTest {
         EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador Exemplo", null);
         ProjectView projectView = new ProjectView(1L, "Projeto Exemplo", "TO_DO", client, collaborator, "Briefing Simples", LocalDate.now());
 
-        
-
         BriefingTypeView briefingTypeView = new BriefingTypeView(1L, "Tipo de Briefing");
         MeasurementsView measurementsView = new MeasurementsView(BigDecimal.valueOf(1.75), BigDecimal.valueOf(2.0));
         Set<CompanyView> companyViews = new HashSet<>();

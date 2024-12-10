@@ -147,7 +147,6 @@ public class SignpostControllerTest {
                 LocalDate.now()
         	);
 
-
         BSignpostDetailedView mockView = new BSignpostDetailedView(
                 mockSignpostView, 
                 mockProjectView, 

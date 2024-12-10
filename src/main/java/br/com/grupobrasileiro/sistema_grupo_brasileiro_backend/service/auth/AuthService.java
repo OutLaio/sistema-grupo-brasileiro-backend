@@ -46,7 +46,7 @@ public class AuthService implements UserDetailsService {
 
     @Autowired
     private EmployeeViewMapper employeeViewMapper;
-    
+
     @Autowired
     private TemplateEngine templateEngine;
 
@@ -71,7 +71,7 @@ public class AuthService implements UserDetailsService {
         );
 
         String token = tokenService.generatePasswordToken(user);
-        String resetUrl = "http://localhost:4200/redefinir-senha?token=" + token;
+        String resetUrl = "http://54.200.23.253:4000/redefinir-senha?token=" + token;
         String userName = user.getEmployee().getName() + " " + user.getEmployee().getLastName();
 
         Context context = new Context();
@@ -108,7 +108,7 @@ public class AuthService implements UserDetailsService {
 
     public String requestRegister() {
         String token = tokenService.generateRegisterToken();
-        return "http://localhost:4200/cadastro?token=" + token;
+        return "http://54.200.23.253:4000/cadastro?token=" + token;
     }
 
     public void verifyToken(String token) {

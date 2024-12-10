@@ -78,7 +78,7 @@ public class EmployeeController {
     }
 
     /**
-     * Endpoint para listar todos os Employees com paginação.
+     * Endpoint para listar todos os Collaborators com paginação.
      * 
      * @param page o número da página (padrão 0).
      * @param size o tamanho da página (padrão 10).
@@ -86,7 +86,7 @@ public class EmployeeController {
      * @param orderBy o campo para ordenar (padrão "name").
      * @return Página de EmployeeView com status 200 OK.
      */
-    @Operation(summary = "List all Employees", description = "List all Employees with pagination.")
+    @Operation(summary = "List all Collaborators", description = "List all Collaboratos with pagination.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de Employees", content = {
             @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))
@@ -101,13 +101,46 @@ public class EmployeeController {
             @Parameter(description = "Campo de ordenação") @RequestParam(value = "orderBy", defaultValue = "name") String orderBy) {
 
         String requestId = UUID.randomUUID().toString();
-        logger.info("[{}] Requisição para listar Employees na página {}, tamanho {}, ordenado por {}.",requestId, page, size, orderBy);
+        logger.info("[{}] Requisição para listar Colaboradores na página {}, tamanho {}, ordenado por {}.",requestId, page, size, orderBy);
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.valueOf(direction), orderBy);
         Page<EmployeeView> employeesPage = employeeService.getAllCollaborators(pageRequest);
-        logger.info("[{}] Lista de Employees retornada com sucesso.", requestId);
+        logger.info("[{}] Lista de Colaboradores retornada com sucesso.", requestId);
 
         return ResponseEntity.ok().body(new Response<>("Lista de colaboradores recuperadas com sucesso!", employeesPage));
+    }
+
+    /**
+     * Endpoint para listar todos os Employees com paginação.
+     *
+     * @param page o número da página (padrão 0).
+     * @param size o tamanho da página (padrão 10).
+     * @param direction a direção da ordenação (ASC ou DESC, padrão ASC).
+     * @param orderBy o campo para ordenar (padrão "name").
+     * @return Página de EmployeeView com status 200 OK.
+     */
+    @Operation(summary = "List all Employees", description = "List all Employees with pagination.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de Employees", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))
+            })
+    })
+    @Cacheable("Employees")
+    @GetMapping("/allEmployees")
+    public ResponseEntity<?> getAllEmployees(
+            @Parameter(description = "Número da página") @RequestParam(defaultValue = "0") Integer page,
+            @Parameter(description = "Tamanho da página") @RequestParam(defaultValue = "10") Integer size,
+            @Parameter(description = "Direção da ordenação (ASC ou DESC)") @RequestParam(value = "direction", defaultValue = "ASC") String direction,
+            @Parameter(description = "Campo de ordenação") @RequestParam(value = "orderBy", defaultValue = "name") String orderBy) {
+
+        String requestId = UUID.randomUUID().toString();
+        logger.info("[{}] Requisição para listar Employees na página {}, tamanho {}, ordenado por {}.",requestId, page, size, orderBy);
+
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.valueOf(direction), orderBy);
+        Page<EmployeeView> employeesPage = employeeService.getAllEmployees(pageRequest);
+        logger.info("[{}] Lista de Employees retornada com sucesso.", requestId);
+
+        return ResponseEntity.ok().body(new Response<>("Lista de clientes recuperadas com sucesso!", employeesPage));
     }
 
     /**
