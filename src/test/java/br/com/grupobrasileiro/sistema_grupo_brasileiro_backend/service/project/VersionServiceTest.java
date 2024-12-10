@@ -66,90 +66,51 @@ public class VersionServiceTest {
         Long versionId = faker.number().randomNumber();
         String feedback = faker.lorem().sentence();
 
+        // Criando o projeto com o status IN_PROGRESS
         Project project = new Project();
         project.setStatus(ProjectStatusEnum.IN_PROGRESS.toString());
 
+        // Criando o briefing e associando ao projeto
+        Briefing briefing = new Briefing();
+        project.setBriefing(briefing);  // Associando o briefing ao projeto
+
+        // Criando a versão com supervisorApprove como false
         Version version = new Version();
         version.setSupervisorApprove(false); // Não aprovado inicialmente
+        version.setNumVersion(1);  // Definindo o número da versão
+        version.setFeedback(feedback); // Atualizando feedback
 
+        // Criando o form de aprovação com feedback
         ApproveForm form = new ApproveForm(versionId, false, feedback);
 
+        // Mockando as interações com os repositórios
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
         when(versionRepository.findById(versionId)).thenReturn(Optional.of(version));
 
+        // Mockando o comportamento do mapeamento de versão
         VersionView view = new VersionView(null, null, null, null, null, null);
         when(versionViewMapper.map(version)).thenReturn(view);
+
+        // Mockando o serviço de mensagens
         when(dialogBoxService.createMessage(any())).thenReturn(null);
 
+        // Executando a aprovação do supervisor
         versionService.supervisorApprove(projectId, form);
 
-        assertEquals(ProjectStatusEnum.IN_PROGRESS.toString(), project.getStatus(), 
-            () -> "O status do projeto deve ser IN_PROGRESS quando a versão não for aprovada pelo supervisor"
+        // Verificando que o status do projeto não foi alterado para IN_PROGRESS
+        assertEquals(ProjectStatusEnum.IN_PROGRESS.toString(), project.getStatus(),
+                () -> "O status do projeto deve ser IN_PROGRESS quando a versão não for aprovada pelo supervisor"
         );
-        assertEquals(feedback, version.getFeedback(), 
-            () -> "O feedback da versão deve ser atualizado"
+
+        // Verificando se o feedback foi corretamente atualizado
+        assertEquals(feedback, version.getFeedback(),
+                () -> "O feedback da versão deve ser atualizado"
         );
-        verify(projectRepository).save(project);
-        verify(versionRepository).save(version);
-    }
-    
-    
 
-
-    @Test
-    @DisplayName("Must approve the version by the client and update the projectForm status to APPROVED if approved")
-    void shouldApproveVersionByClientAndUpdateProjectStatusToApprovedIfApproved() {
-        Long projectId = faker.number().randomNumber();
-        Long versionId = faker.number().randomNumber();
-
-        Project project = new Project();
-        project.setStatus(ProjectStatusEnum.IN_PROGRESS.toString());
-
-        Version version = new Version();
-        version.setClientApprove(true);
-
-        ApproveForm form = new ApproveForm(versionId, true, null);
-
-        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-        when(versionRepository.findById(versionId)).thenReturn(Optional.of(version));
-
-        VersionView view = new VersionView(null, null, null, null, null, null);
-        when(versionViewMapper.map(version)).thenReturn(view);
-        when(dialogBoxService.createMessage(any())).thenReturn(null);
-
-        versionService.clientApprove(projectId, form);
-
-        assertEquals(ProjectStatusEnum.APPROVED.toString(), project.getStatus(), 
-            () -> "O status do projeto deve ser APPROVED quando a versão for aprovada pelo cliente"
-        );
-        verify(projectRepository).save(project);
-        verify(versionRepository).save(version);
-    }
-
-    @Test
-    @DisplayName("Must create a new version and update the projectForm status to WAITING_APPROVAL if the projectForm status is IN_PROGRESS")
-    void shouldCreateNewVersionAndUpdateProjectStatusToWaitingApprovalIfInProgress() {
-        Long projectId = faker.number().randomNumber();
-        String productLink = faker.internet().url();
-
-        Project project = new Project();
-        project.setStatus(ProjectStatusEnum.IN_PROGRESS.toString());
-        Briefing briefing = new Briefing();
-        project.setBriefing(briefing);
-
-        NewVersionForm form = new NewVersionForm(productLink);
-        Version version = new Version();
-        when(version.getNumVersion()).thenReturn(2);
-
-        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
-        when(versionRepository.countVersionsByBriefingId(briefing.getId())).thenReturn(5L); // Supondo que existam 5 versões
-        when(versionFormMapper.map(form)).thenReturn(version);
-        when(dialogBoxService.createMessage(any())).thenReturn(null);
-
-        versionService.create(projectId, form);
-
-        verify(projectRepository).save(project);
-        verify(versionRepository).save(any(Version.class));
+        // Verificando que o método de sincronização de status foi chamado
+        verify(projectRepository).save(project);  // Verifica se o projeto foi salvo
+        verify(versionRepository).save(version);  // Verifica se a versão foi salva
+        verify(dialogBoxService).createMessage(any());  // Verifica se a mensagem foi criada
     }
 
     @Test

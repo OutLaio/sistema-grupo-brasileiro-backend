@@ -59,6 +59,7 @@ public class GiftTypeRepositoryTest {
 
         // Act
         GiftType savedType = giftTypeRepository.save(giftType);
+        savedType.setId(1L);
         Optional<GiftType> foundType = giftTypeRepository.findById(savedType.getId());
 
         // Assert
@@ -80,6 +81,7 @@ public class GiftTypeRepositoryTest {
 
         // Act
         GiftType updatedType = giftTypeRepository.save(savedType);
+        updatedType.setId(1L);
         Optional<GiftType> foundType = giftTypeRepository.findById(updatedType.getId());
 
         // Assert

@@ -41,8 +41,8 @@ public class BPrintedsFormMapperTest {
         // Arrange
         PrintedForm form = new PrintedForm(1L, 2L, "A4", 2, 20);
         // Simular o comportamento dos repositórios
-        when(printedTypeRepository.findById(1L)).thenReturn(Optional.of(new PrintedType()));
-        when(printingTypeRepository.findById(2L)).thenReturn(Optional.of(new PrintingType()));
+        when(printedTypeRepository.findById(1L)).thenReturn(Optional.of(new PrintedType(1L, null)));
+        when(printingTypeRepository.findById(2L)).thenReturn(Optional.of(new PrintingType(2L, null)));
 
         // Act
         BPrinted result = bPrintedsFormMapper.map(form);

@@ -1,6 +1,9 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 import com.github.javafaker.Faker;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
@@ -9,23 +12,6 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.Profi
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.users.User;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.EmployeeRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
-import jakarta.transaction.Transactional;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,19 +41,21 @@ public class ProjectRepositoryTest {
     }
 
     @Test
-    @DisplayName("Should create and retrieve a projectForm")
-    public void testCreateAndRetrieveProject() {
+    @DisplayName("Should create and retrieve a project")
+    void testCreateAndRetrieveProject() {
         // Arrange
         User user = createTestUser();
         Employee employee = createTestEmployee(user);
         Project project = new Project();
         project.setTitle("Test Project");
-        project.setClient(employee); // ou colaborador, dependendo da sua lógica
+        project.setClient(employee); // Associando o projeto a um cliente (employee)
+
         when(projectRepository.save(any(Project.class))).thenReturn(project);
         when(projectRepository.findById(anyLong())).thenReturn(Optional.of(project));
 
         // Act
         Project savedProject = projectRepository.save(project);
+        savedProject.setId(1L);
         Optional<Project> retrievedProject = projectRepository.findById(savedProject.getId());
 
         // Assert
@@ -76,29 +64,33 @@ public class ProjectRepositoryTest {
     }
 
     @Test
-    @DisplayName("Should return empty when retrieving non-existing projectForm")
+    @DisplayName("Should return empty when retrieving non-existing project")
     void testRetrieveNonExistingProject() {
         // Act
-        Optional<Project> retrievedProject = projectRepository.findById(999L); // ID que não existe
+        Optional<Project> retrievedProject = projectRepository.findById(999L); // ID não existente
 
         // Assert
         assertThat(retrievedProject).isNotPresent();
     }
 
     private User createTestUser() {
+        // Criando um usuário de teste
         User user = new User();
         user.setEmail("test@example.com");
         user.setPassword("securePassword");
         user.setDisabled(false);
 
-        Profile profile = new Profile(); 
-        profile.setDescription("User Profile Description"); 
+        // Criando perfil de teste
+        Profile profile = new Profile();
+        profile.setDescription("User Profile Description");
         user.setProfile(profile);
-        
+
+        // Retorna o usuário configurado
         return user;
     }
 
     private Employee createTestEmployee(User user) {
+        // Criando um empregado de teste
         Employee employee = new Employee();
         employee.setName(faker.name().firstName());
         employee.setLastName(faker.name().lastName());
@@ -106,9 +98,10 @@ public class ProjectRepositoryTest {
         employee.setSector(faker.company().industry());
         employee.setOccupation(faker.job().title());
         employee.setAgency(faker.company().name());
-        employee.setAvatar((long) faker.number().randomDigitNotZero()); 
+        employee.setAvatar((long) faker.number().randomDigitNotZero());
+        employee.setUser(user);  // Associando o usuário ao empregado
 
-        // Salvar o cliente
+        // Salvando o empregado e retornando
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
         return employee;
     }

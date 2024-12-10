@@ -1,6 +1,7 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controllers.auth;
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.auth.AuthController;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.LoginForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.RecoveryPasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.ResetPasswordForm;
@@ -86,7 +87,7 @@ class AuthControllerTest {
         // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode(), 
             () -> "Should return HTTP 201 CREATED status");
-        assertEquals(mockEmployeeView, response.getBody(),
+        assertEquals(new Response<>("Novo usuário registrado com sucesso!", mockEmployeeView), response.getBody(),
             () -> "The response body should be the expected EmployeeView");
     }
 
@@ -113,7 +114,7 @@ class AuthControllerTest {
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode(),
             () -> "Deve retornar o status HTTP 200 OK");
-        assertEquals(new TokenView(mockToken, mockEmployeeView), response.getBody(),
+        assertEquals(new Response<>("Login realizado com sucesso!", new TokenView(mockToken, mockEmployeeView)), response.getBody(),
             () -> "O corpo da resposta deve ser um TokenView com o token gerado e a visualização do funcionário");
     }
 
@@ -129,7 +130,7 @@ void shouldRequestPasswordResetSuccessfully() {
     // Assert
     assertEquals(HttpStatus.OK, response.getStatusCode(),
         () -> "Should return HTTP 200 OK status");
-    assertEquals("E-mail enviado com sucesso!", response.getBody(),
+    assertEquals(new Response<>("Sua solicitação de recuperação de senha foi enviada com sucesso! Verifique seu e-mail."), response.getBody(),
         () -> "The success message should be 'E-mail enviado com sucesso!'");
 }
 
@@ -149,7 +150,7 @@ void shouldRequestPasswordResetSuccessfully() {
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode(),
             () -> "Should return HTTP 200 OK status");
-        assertEquals("Senha alterada com sucesso!", response.getBody(),
+        assertEquals(new Response<>("Senha alterada com sucesso!"), response.getBody(),
             () -> "A mensagem de sucesso deveria ser 'Senha alterada com sucesso!'");
     }
 }

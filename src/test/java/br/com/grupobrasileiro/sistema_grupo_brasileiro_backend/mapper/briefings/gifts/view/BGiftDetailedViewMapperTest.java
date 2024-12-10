@@ -37,20 +37,33 @@ public class BGiftDetailedViewMapperTest {
         MockitoAnnotations.openMocks(this);
     }
 
- // ... código existente ...
     @Test
     public void testMap() {
+        // Criando as instâncias necessárias
         BGift bGift = new BGift();
         Briefing briefing = new Briefing();
         Project project = new Project();
         
+        // Associando os objetos entre si
         bGift.setBriefing(briefing);
         briefing.setProject(project);
 
-        // Atualizando a criação de BGiftView, ProjectView e BriefingView para usar os novos registros
+        // Atualizando a criação de BGiftView, ProjectView e BriefingView
         BGiftView bGiftView = new BGiftView(null, null, null, null, null, null, null, null);
-        ProjectView projectView = new ProjectView(null, null, null, null, null, null, null);
-        // Criando BriefingView com a nova estrutura
+        
+        // Como o construtor do ProjectView não possui briefingType, e outros parâmetros são obrigatórios
+        // Vamos passar valores nulos ou valores padrões para os campos obrigatórios
+        ProjectView projectView = new ProjectView(
+            null, // id
+            null, // title
+            null, // status
+            null, // client
+            null, // collaborator
+            null,  // briefingType
+            null // finishTime
+        );
+
+        // Criando o BriefingView com a nova estrutura
         BriefingView briefingView = new BriefingView(
             null, // id
             null, // briefingType
@@ -64,6 +77,7 @@ public class BGiftDetailedViewMapperTest {
             null  // versions
         );
 
+        // Configurando os mocks para mapear os objetos
         when(bGiftViewMapper.map(bGift)).thenReturn(bGiftView);
         when(projectViewMapper.map(project)).thenReturn(projectView);
         when(briefingViewMapper.map(briefing)).thenReturn(briefingView);
@@ -71,6 +85,7 @@ public class BGiftDetailedViewMapperTest {
         // Mapeando BGift para BGiftDetailedView
         BGiftDetailedView result = bGiftDetailedViewMapper.map(bGift);
 
+        // Verificando se os objetos mapeados são iguais aos esperados
         assertEquals(bGiftView, result.bGift(), "O BGiftView deve ser igual ao esperado");
         assertEquals(projectView, result.project(), "O ProjectView deve ser igual ao esperado");
         assertEquals(briefingView, result.briefing(), "O BriefingView deve ser igual ao esperado");

@@ -117,10 +117,14 @@ class BAgencyBoardDetailedViewMapperTest {
             new HashSet<>()
         );
 
-        ProjectView projectView = new ProjectView(1L, "Project Name", "Status", 
-            new EmployeeSimpleView(1L, "Client Name", null),
-            new EmployeeSimpleView(2L, "Collaborator Name", null),
-            null,
+        // Ajustando a criação do ProjectView com os parâmetros na ordem correta
+        ProjectView projectView = new ProjectView(
+            1L, // id
+            "Project Name", // title
+            "Status", // status
+            new EmployeeSimpleView(1L, "Client Name", null), // client
+            new EmployeeSimpleView(2L, "Collaborator Name", null), // collaborator
+            "Briefing Type",
             LocalDate.now()
         );
 
@@ -228,10 +232,14 @@ class BAgencyBoardDetailedViewMapperTest {
             new HashSet<>()
         );
 
-        ProjectView projectView = new ProjectView(1L, "Project Name", "Status", 
-            new EmployeeSimpleView(1L, "Client Name", null),
-            new EmployeeSimpleView(2L, "Collaborator Name", null),
-            null,
+        // Ajustando a criação do ProjectView com os parâmetros na ordem correta
+        ProjectView projectView = new ProjectView(
+            1L, // id
+            "Project Name", // title
+            "Status", // status
+            new EmployeeSimpleView(1L, "Client Name", null), // client
+            new EmployeeSimpleView(2L, "Collaborator Name", null), // collaborator
+            "Briefing Type",
             LocalDate.now()
         );
 

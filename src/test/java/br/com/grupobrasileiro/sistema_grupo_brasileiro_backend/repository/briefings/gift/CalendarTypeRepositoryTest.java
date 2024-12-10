@@ -63,13 +63,14 @@ public class CalendarTypeRepositoryTest {
     @DisplayName("Should save and find CalendarType correctly")
     void testSaveAndFindCalendarType() {
         CalendarType calendarType = new CalendarType();
+        calendarType.setId(1L);
         calendarType.setDescription(faker.lorem().sentence());
 
         when(calendarTypeRepository.save(any(CalendarType.class))).thenReturn(calendarType);
-        when(calendarTypeRepository.findById(anyLong())).thenReturn(Optional.of(calendarType));
+        when(calendarTypeRepository.findById(1L)).thenReturn(Optional.of(calendarType));
 
         CalendarType savedType = calendarTypeRepository.save(calendarType);
-        Optional<CalendarType> foundType = calendarTypeRepository.findById(savedType.getId());
+        Optional<CalendarType> foundType = calendarTypeRepository.findById(1L);
 
         assertThat(foundType).isPresent();
         assertThat(foundType.get().getDescription()).isEqualTo(calendarType.getDescription());

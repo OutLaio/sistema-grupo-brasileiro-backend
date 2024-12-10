@@ -45,16 +45,18 @@ class BSignpostDetailedViewMapperTest {
     @Test
     void testMapComBSignpostCompleto() {
         // Arrange
+        // Criando os objetos necessários
         BSignpost bSignpost = new BSignpost();
         Briefing briefing = new Briefing();
         Project project = new Project();
         briefing.setProject(project);
         bSignpost.setBriefing(briefing);
 
+        // Criando as views mockadas para o teste
         BSignpostView bSignpostView = new BSignpostView(1L, new MaterialView(1L, "Material"), "Localização", "Setor");
         BriefingTypeView briefingTypeView = new BriefingTypeView(1L, "Tipo de Briefing");
-        
-        // Atualizando BriefingView para refletir a nova estrutura
+
+        // Criando BriefingView com a nova estrutura
         BriefingView briefingView = new BriefingView(
             1L, // id
             briefingTypeView, // briefingType
@@ -68,47 +70,55 @@ class BSignpostDetailedViewMapperTest {
             null  // versions
         );
 
+        // Criando views de clientes e colaboradores
         EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente", null);
         EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador", null);
-        
-        // Ajustando a criação do ProjectView para usar a nova estrutura
+
+        // Criando o ProjectView com base na estrutura que não pode ser alterada
         ProjectView projectView = new ProjectView(
             1L, // id
             "Título do Projeto", // title
             "Em andamento", // status
             client, // client
             collaborator, // collaborator
-            null,
+            "Tipo A", // briefingType, você pode substituir o valor do tipo de briefing conforme necessário
             LocalDate.now()
         );
 
+        // Configurando o comportamento dos mocks
         when(bSignpostViewMapper.map(bSignpost)).thenReturn(bSignpostView);
         when(briefingViewMapper.map(briefing)).thenReturn(briefingView);
         when(projectViewMapper.map(project)).thenReturn(projectView);
 
         // Act
+        // Mapeando BSignpost para BSignpostDetailedView
         BSignpostDetailedView resultado = bSignpostDetailedViewMapper.map(bSignpost);
 
         // Assert
+        // Verificando o resultado
         assertNotNull(resultado, "O resultado não deve ser nulo");
         assertEquals(bSignpostView, resultado.signpost(), "BSignpostView deve ser igual");
-        
-        // Verificações detalhadas para projectView
+
+        // Verificando detalhadamente o ProjectView
         assertNotNull(resultado.project(), "ProjectView não deve ser nulo");
         assertEquals(projectView.id(), resultado.project().id(), "ID do ProjectView deve ser igual");
         assertEquals(projectView.title(), resultado.project().title(), "Título do ProjectView deve ser igual");
         assertEquals(projectView.status(), resultado.project().status(), "Status do ProjectView deve ser igual");
         assertEquals(projectView.client(), resultado.project().client(), "Cliente do ProjectView deve ser igual");
         assertEquals(projectView.collaborator(), resultado.project().collaborator(), "Colaborador do ProjectView deve ser igual");
-        
-        // Verificações detalhadas para briefingView
+        assertEquals(projectView.briefingType(), resultado.project().briefingType(), "BriefingType do ProjectView deve ser igual");
+
+        // Verificando detalhadamente o BriefingView
         assertNotNull(resultado.briefing(), "BriefingView não deve ser nulo");
         assertEquals(briefingView, resultado.briefing(), "BriefingView deve ser igual");
-        
+
+        // Verificando se os mappers foram chamados corretamente
         verify(bSignpostViewMapper).map(bSignpost);
         verify(briefingViewMapper).map(briefing);
         verify(projectViewMapper).map(project);
     }
+
+
     
     @Test
     void testMapComBSignpostSemBriefing() {

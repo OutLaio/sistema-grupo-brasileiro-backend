@@ -14,6 +14,9 @@ public class DialogBoxViewMapper implements Mapper<DialogBox, DialogBoxView> {
 
     @Override
     public DialogBoxView map(DialogBox i) {
+        if (i.getEmployee() == null) {
+            throw new NullPointerException("DialogBox employee is null");
+        }
         String fullName = i.getEmployee().getName() + " " + i.getEmployee().getLastName();
         return new DialogBoxView(
                 i.getId(),

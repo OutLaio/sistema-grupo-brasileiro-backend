@@ -1,16 +1,20 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.project;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.ApproveForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.AssignCollaboratorForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form.NewVersionForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.view.VersionView;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.VersionService;
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
+
+import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -42,7 +46,7 @@ class ProjectControllerTest {
         ResponseEntity<?> response = projectController.assignCollaborator(projectId, form);
 
         verify(projectService, times(1)).assignCollaborator(eq(projectId), eq(form));
-        assertEquals(ResponseEntity.ok().build(), response);
+        assertEquals(ResponseEntity.ok().body(new Response<>("Colaborador atribuído com sucesso!")), response);
     }
 
     @Test
@@ -71,9 +75,11 @@ class ProjectControllerTest {
         when(versionService.create(eq(projectId), eq(form))).thenReturn(versionView);
 
         ResponseEntity<?> response = projectController.newVersion(projectId, form);
-
         verify(versionService, times(1)).create(eq(projectId), eq(form));
-        assertEquals(ResponseEntity.ok().build(), response);
+
+        URI expectedUri = URI.create("/api/v1/projects/" + projectId);
+        assertEquals(ResponseEntity.created(expectedUri)
+                .body(new Response<>("Nova Arte Enviada com Sucesso!", versionView)), response);
     }
 
     @Test
@@ -96,11 +102,14 @@ class ProjectControllerTest {
     @DisplayName("Supervisor Approve - Success")
     void supervisorApprove_Success() {
         ApproveForm form = new ApproveForm(2L, true, "Looks good");
-        
+
+        VersionView view = new VersionView(2L, null, null, null, true, null); // Crie uma instância de VersionView com os valores necessários para o teste
+        when(versionService.supervisorApprove(eq(1L), eq(form))).thenReturn(view);
+
         ResponseEntity<?> response = projectController.supervisorApprove(1L, form);
 
-        verify(versionService, times(1)).supervisorApprove(eq(1L) , eq(form));
-        assertEquals(ResponseEntity.ok().build(), response);
+        verify(versionService, times(1)).supervisorApprove(eq(1L), eq(form));
+        assertEquals(ResponseEntity.ok().body(new Response<>("Status de aprovação alterado com sucesso!", view)), response);
     }
 
     @Test
@@ -122,11 +131,14 @@ class ProjectControllerTest {
     @DisplayName("Client Approve - Success")
     void clientApprove_Success() {
         ApproveForm form = new ApproveForm(2L, true, "Looks good");
-        
+
+        VersionView view = new VersionView(2L, null, null, true, null, null); // Crie uma instância de VersionView com os valores necessários para o teste
+        when(versionService.clientApprove(eq(1L), eq(form))).thenReturn(view);
+
         ResponseEntity<?> response = projectController.clientApprove(1L, form);
 
         verify(versionService, times(1)).clientApprove(eq(1L), eq(form));
-        assertEquals(ResponseEntity.ok().build(), response);
+        assertEquals(ResponseEntity.ok().body(new Response<>("Status de aprovação alterado com sucesso!", view)), response);
     }
 
     @Test
@@ -153,7 +165,7 @@ class ProjectControllerTest {
         ResponseEntity<?> response = projectController.hasProduction(projectId, hasConfection);
 
         verify(projectService, times(1)).setHasConfection(eq(projectId), eq(hasConfection));
-        assertEquals(ResponseEntity.ok().build(), response);
+        assertEquals(ResponseEntity.ok().body(new Response<>("Status Alterado com sucesso")), response);
     }
 
     @Test
@@ -180,7 +192,7 @@ class ProjectControllerTest {
         ResponseEntity<?> response = projectController.finish(projectId);
 
         verify(projectService, times(1)).setFinished(eq(projectId));
-        assertEquals(ResponseEntity.ok().build(), response);
+        assertEquals(ResponseEntity.ok().body(new Response<>("Projeto finalizado com sucesso!")), response);
     }
 
     @Test
@@ -206,7 +218,7 @@ class ProjectControllerTest {
         ResponseEntity<?> response = projectController.standby(projectId);
 
         verify(projectService, times(1)).setStandby(eq(projectId));
-        assertEquals(ResponseEntity.ok().build(), response);
+        assertEquals(ResponseEntity.ok().body(new Response<>("Projeto colocado em espera com sucesso!")), response);
     }
 
     @Test

@@ -83,7 +83,7 @@ public class DialogBoxController {
     })
     @GetMapping("/briefing/{idBriefing}")
     @Transactional
-    public ResponseEntity<?> getMessagesForBriefing(
+    public ResponseEntity<Response<?>> getMessagesForBriefing(
             @Parameter(description = "ID of the briefing to retrieve messages for", required = true)
             @PathVariable Long idBriefing) {
         String requestId = UUID.randomUUID().toString();

@@ -51,22 +51,32 @@ public class RouteCityRepositoryTest {
     /**
      * Testa a persistência e recuperação de um RouteCity.
      */
-    @Test
-    void testSaveAndFindRouteCity() {
-        // Configurar o comportamento do mock
-        when(routeCityRepository.save(any(RouteCity.class))).thenReturn(routeCity);
-        when(routeCityRepository.findById(any(Long.class))).thenReturn(Optional.of(routeCity));
+        @Test
+        void testSaveAndFindRouteCity() {
+            // Mock do objeto RouteCity (pode ser substituído por um objeto real se necessário)
+            RouteCity routeCity = new RouteCity();
+            routeCity.setId(1L); // Defina o ID para simular um objeto salvo.
 
-        // Salvar o objeto no repositório
-        RouteCity savedRouteCity = routeCityRepository.save(routeCity);
+            // Configurar o comportamento do mock usando lenient para evitar erros de stubbing
+            lenient().when(routeCityRepository.save(any(RouteCity.class))).thenReturn(routeCity);
+            lenient().when(routeCityRepository.findById(1L)).thenReturn(Optional.of(routeCity));
 
-        // Recuperar o objeto pelo ID
-        Optional<RouteCity> foundRouteCity = routeCityRepository.findById(savedRouteCity.getId());
+            // Salvar o objeto no repositório
+            RouteCity savedRouteCity = routeCityRepository.save(routeCity);
 
-        // Verificar se o objeto encontrado é o mesmo que o salvo
-        //assertThat(foundRouteCity).isPresent();
-        //assertThat(foundRouteCity.get()).isEqualTo(savedRouteCity);
-    }
+            // Recuperar o objeto pelo ID
+            Optional<RouteCity> foundRouteCity = routeCityRepository.findById(savedRouteCity.getId());
+
+            // Verificar se o objeto encontrado é o mesmo que o salvo
+            assertThat(foundRouteCity).isPresent(); // Confirma que o Optional não está vazio.
+            assertThat(foundRouteCity.get()).isEqualTo(savedRouteCity); // Compara os objetos.
+
+            // Verificar se os métodos foram chamados (opcional)
+            verify(routeCityRepository).save(any(RouteCity.class));
+            verify(routeCityRepository).findById(1L);
+        }
+  
+
 
     /**
      * Testa a busca de um RouteCity inexistente pelo ID.

@@ -2,20 +2,18 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controllers.brie
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
-import java.time.LocalDate;
 import java.util.HashSet;
 
-import org.springframework.http.HttpStatus; 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -30,6 +28,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.projects.form
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.signpost.BSignpostService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 
@@ -46,6 +45,9 @@ class SignpostControllerTest {
 
     @Mock
     private BSignpostService signpostService;
+    
+    @Mock
+    private DialogBoxService dialogBoxService;
 
     private Faker faker;
 

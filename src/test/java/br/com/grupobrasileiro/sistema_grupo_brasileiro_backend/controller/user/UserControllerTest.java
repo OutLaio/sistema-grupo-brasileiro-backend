@@ -3,6 +3,7 @@ package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.user;
 
 
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.controller.user.UserController;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.auth.form.PasswordForm;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.user.UserService;
 
@@ -39,7 +40,7 @@ class UserControllerTest {
         ResponseEntity<?> response = userController.changePassword(passwordForm);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Password successfully changed!", response.getBody());
+        assertEquals(new Response<>("Senha alterada com sucesso!"), response.getBody());
         verify(userService, times(1)).changePassword(eq(passwordForm));
     }
 
@@ -50,7 +51,8 @@ class UserControllerTest {
 
         ResponseEntity<?> response = userController.deactivateUser(userId);
 
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(new Response<>("Usuário desativado com sucesso!"), response.getBody());
         verify(userService, times(1)).deactivateUser(eq(userId));
     }
 

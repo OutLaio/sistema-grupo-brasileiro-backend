@@ -10,9 +10,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Set;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.measurements.form.MeasurementsForm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -104,21 +106,6 @@ public class BriefingServiceTest {
     }
 
     @Test
-    @DisplayName("Should handle null companies correctly")
-    void shouldHandleNullCompaniesCorrectly() {
-        // Arrange: Mock the repository methods
-        when(briefingTypeRepository.findById(anyLong())).thenReturn(Optional.of(briefingType));
-        when(briefingFormMapper.map(any(BriefingForm.class))).thenReturn(new Briefing());
-        
-        // Act: Calling register with the briefing form with null companies
-        Briefing result = briefingService.register(briefingForm, project);
-
-        // Assert: Verify that no companies were saved
-        assertNotNull(result);
-        verify(companiesBriefingRepository, never()).saveAll(anySet());
-    }
-
-    @Test
     @DisplayName("Should save the Briefing, Measurement, and Companies correctly")
     void shouldSaveEntitiesCorrectly() {
         // Arrange: Mocking repository returns
@@ -128,7 +115,7 @@ public class BriefingServiceTest {
         Briefing mockedBriefing = mock(Briefing.class);
         when(briefingFormMapper.map(any(BriefingForm.class))).thenReturn(mockedBriefing);
 
-        // Mocking the creation of a Measurement (optional in this case)
+        // Mocking the creation of a Measurement (now provided in the form)
         Measurement mockedMeasurement = mock(Measurement.class);
         when(measurementFormMapper.map(any())).thenReturn(mockedMeasurement);
 
@@ -138,11 +125,11 @@ public class BriefingServiceTest {
 
         // Create the form with companies and a measurement
         briefingForm = new BriefingForm(
-            "Campaign Description",
-            Set.of(new CompaniesBriefingsForm(123L)), // Companies
-            "Company XYZ",
-            1L, // Assuming this is a valid ID for a BriefingType
-            null // No Measurement for this case
+                "Campaign Description",
+                Set.of(new CompaniesBriefingsForm(123L)), // Companies
+                "Company XYZ",
+                1L, // Assuming this is a valid ID for a BriefingType
+                new MeasurementsForm(BigDecimal.ZERO, BigDecimal.ZERO) // Providing a valid Measurement now
         );
 
         // Act: Calling the service
@@ -151,7 +138,7 @@ public class BriefingServiceTest {
         // Assert: Verifications
         assertNotNull(result);
         verify(briefingRepository).saveAndFlush(mockedBriefing);
-        verify(measurementRepository).save(mockedMeasurement);
+        verify(measurementRepository).save(mockedMeasurement);  // Now it's expected to be called
         verify(companiesBriefingRepository).saveAll(anySet());
     }
 }

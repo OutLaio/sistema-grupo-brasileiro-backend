@@ -10,6 +10,7 @@ import java.math.BigDecimal; // Importação necessária
 import java.time.LocalDate;
 import java.util.HashSet;
 
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.dto.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.briefings.s
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.signpost.BSignpostService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 
@@ -55,6 +57,10 @@ public class SignpostControllerTest {
 
     @Mock
     private BSignpostService signpostService;
+    
+    @Mock
+    private DialogBoxService dialogBoxService;
+
 
     private Faker faker;
 
@@ -128,18 +134,18 @@ public class SignpostControllerTest {
         );
 
         ProjectView mockProjectView = new ProjectView(
-                mockProject.getId(),
-                faker.company().name(),
-                "TO_DO",
-                new EmployeeSimpleView(
-                    faker.number().randomNumber(), 
-                    faker.name().fullName(), 
-                    faker.number().randomNumber()
-                ),
-                null, // collaborator
-                null,
+        	    mockProject.getId(),
+        	    faker.company().name(),
+        	    "TO_DO",
+        	    new EmployeeSimpleView(
+        	        faker.number().randomNumber(),
+        	        faker.name().fullName(),
+        	        faker.number().randomNumber()
+        	    ),
+        	    null,
+        	    "Briefing Simples",
                 LocalDate.now()
-        );
+        	);
 
         BSignpostDetailedView mockView = new BSignpostDetailedView(
                 mockSignpostView, 
@@ -161,7 +167,7 @@ public class SignpostControllerTest {
 
         // Assert
         assertEquals(201, response.getStatusCodeValue());
-        assertEquals(null, response.getBody()); 
+        assertEquals(new Response<>("Nova solicitação criada com sucesso!"), response.getBody());
 
         // Verifique se o cabeçalho Location está presente
         assertNotNull(response.getHeaders().getLocation());

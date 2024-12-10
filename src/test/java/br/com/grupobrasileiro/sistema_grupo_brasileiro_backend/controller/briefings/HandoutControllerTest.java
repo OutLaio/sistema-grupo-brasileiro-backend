@@ -53,6 +53,7 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Br
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.briefings.bHandout.BHandoutService;
+import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.dialogbox.DialogBoxService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.BriefingService;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.service.project.ProjectService;
 
@@ -78,6 +79,9 @@ public class HandoutControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private DialogBoxService dialogBoxService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -115,7 +119,7 @@ public class HandoutControllerTest {
 
         EmployeeSimpleView client = new EmployeeSimpleView(1L, "Cliente Exemplo", null);
         EmployeeSimpleView collaborator = new EmployeeSimpleView(2L, "Colaborador Exemplo", null);
-        ProjectView projectView = new ProjectView(1L, "Projeto Exemplo", "TO_DO", client, collaborator, null, LocalDate.now());
+        ProjectView projectView = new ProjectView(1L, "Projeto Exemplo", "TO_DO", client, collaborator, "Briefing Simples", LocalDate.now());
 
         BriefingTypeView briefingTypeView = new BriefingTypeView(1L, "Tipo de Briefing");
         MeasurementsView measurementsView = new MeasurementsView(BigDecimal.valueOf(1.75), BigDecimal.valueOf(2.0));

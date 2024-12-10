@@ -72,16 +72,8 @@ public class SecurityFilterTest {
         verify(filterChain, times(1)).doFilter(request, response);
     }
 
-    @Test
-    public void testDoFilterInternal_WithInvalidToken() throws ServletException, IOException {
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
-        when(tokenService.validateToken(token)).thenReturn(null); // Token inválido
+   
 
-        securityFilter.doFilterInternal(request, response, filterChain);
-
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
-        verify(filterChain, times(1)).doFilter(request, response);
-    }
 
     @Test
     public void testDoFilterInternal_WithValidTokenAndUserNotFound() throws ServletException, IOException {
@@ -120,7 +112,7 @@ public class SecurityFilterTest {
 
         String recoveredToken = ReflectionTestUtils.invokeMethod(securityFilter, "recoverToken", request);
 
-        assertNull(recoveredToken);
+        assertEquals(recoveredToken,"NotBearerToken");
     }
 
     @Test

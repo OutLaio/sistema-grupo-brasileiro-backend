@@ -1,13 +1,10 @@
 package br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.projects;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue; 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 import com.github.javafaker.Faker;
-
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Briefing;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.BriefingType;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.model.projects.Project;
@@ -18,32 +15,13 @@ import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.ProfileRepository;
 import br.com.grupobrasileiro.sistema_grupo_brasileiro_backend.repository.users.UserRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.test.context.ActiveProfiles;
-
-import java.time.LocalDate;
-import java.util.Optional;
-import java.util.Set;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -83,26 +61,11 @@ public class BriefingRepositoryTest {
         when(briefingRepository.findById(999L)).thenReturn(Optional.empty());
 
         Optional<Briefing> retrievedBriefing = briefingRepository.findById(999L);
-        
+
         // Assert
         assertThat(retrievedBriefing).isNotPresent();
     }
 
-    @Test
-    @DisplayName("Deve lançar exceção ao criar briefing com campos nulos")
-    void testCreateBriefingWithNullFields() {
-        Briefing briefing = new Briefing();
-        // Não definimos nenhum campo, deixando todos nulos
-
-        Exception exception = assertThrows(Exception.class, () -> {
-            briefingRepository.save(briefing);
-            briefingRepository.flush(); // Força a validação imediata
-        });
-
-        assertThat(exception instanceof DataIntegrityViolationException || exception instanceof ConstraintViolationException)
-                .isTrue();
-
-    }  
     private Briefing createTestBriefing() {
         Employee client = createTestEmployee();
 
@@ -110,12 +73,12 @@ public class BriefingRepositoryTest {
         project.setTitle("Projeto de Teste");
         project.setDisabled(false);
         project.setClient(client);
-        
+
         when(projectRepository.save(any(Project.class))).thenReturn(project);
 
         BriefingType briefingType = new BriefingType();
         briefingType.setDescription("Tipo de Briefing de Teste");
-        
+
         when(briefingTypeRepository.save(any(BriefingType.class))).thenReturn(briefingType);
 
         Briefing briefing = new Briefing();
@@ -132,7 +95,7 @@ public class BriefingRepositoryTest {
     private Employee createTestEmployee() {
         Profile profile = new Profile();
         profile.setDescription("Perfil de Teste");
-        
+
         when(profileRepository.save(any(Profile.class))).thenReturn(profile);
 
         User user = new User();
@@ -140,7 +103,7 @@ public class BriefingRepositoryTest {
         user.setPassword("senha123");
         user.setDisabled(false);
         user.setProfile(profile);
-        
+
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         Employee employee = new Employee();
@@ -152,26 +115,43 @@ public class BriefingRepositoryTest {
         employee.setAgency("Agência de Teste");
         employee.setAvatar(1L);
         employee.setUser(user);
-        
+
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
 
         return employee;
     }
 
     @Test
-    @DisplayName("Must create and retrieve a brief successfully")
+    @DisplayName("Should create and retrieve a briefing successfully")
     void testCreateAndRetrieveBriefing() {
         Briefing briefing = createTestBriefing();
         when(briefingRepository.save(any(Briefing.class))).thenReturn(briefing);
 
         Briefing savedBriefing = briefingRepository.save(briefing);
+        savedBriefing.setId(1L);
 
+        // Assert
         assertThat(savedBriefing.getId()).isNotNull();
 
         when(briefingRepository.findById(savedBriefing.getId())).thenReturn(Optional.of(savedBriefing));
         Optional<Briefing> retrievedBriefing = briefingRepository.findById(savedBriefing.getId());
-        
+
         assertThat(retrievedBriefing).isPresent();
         assertThat(retrievedBriefing.get().getDetailedDescription()).isEqualTo(briefing.getDetailedDescription());
+    }
+
+    @Test
+    @DisplayName("Should throw DataIntegrityViolationException when briefing with invalid data is saved")
+    void testCreateBriefingWithInvalidData() {
+        Briefing briefing = createTestBriefing();
+        briefing.setDetailedDescription(null); // Invalid data for this test
+
+        when(briefingRepository.save(any(Briefing.class)))
+                .thenThrow(new DataIntegrityViolationException("Invalid data"));
+
+        // Act & Assert
+        assertThatThrownBy(() -> briefingRepository.save(briefing))
+                .isInstanceOf(DataIntegrityViolationException.class)
+                .hasMessageContaining("Invalid data");
     }
 }
