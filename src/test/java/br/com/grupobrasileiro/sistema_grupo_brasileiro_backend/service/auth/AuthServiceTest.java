@@ -229,6 +229,6 @@ class AuthServiceTest {
     }
 
     private EmployeeView mockEmployeeView(User user) {
-        return new EmployeeView(1L, null, "John", "Doe", "1234567890", "IT", "Developer", "Main Branch", 1L);
+        return new EmployeeView(1L, null, "John", "Doe", "1234567890", "IT", "Developer", "Main Branch","123456", 1L);
     }
 }

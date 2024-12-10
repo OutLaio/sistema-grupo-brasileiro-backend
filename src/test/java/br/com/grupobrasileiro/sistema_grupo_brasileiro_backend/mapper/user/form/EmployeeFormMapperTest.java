@@ -35,6 +35,7 @@ class EmployeeFormMapperTest {
                 "IT",
                 "Developer",
                 "Agency",
+                "123456",     // registrationNumber
                 1L
         );
 
@@ -62,6 +63,7 @@ class EmployeeFormMapperTest {
     void handleNullValuesInEmployeeForm() {
         // Arrange
         EmployeeForm employeeForm = new EmployeeForm(
+                null,
                 null,
                 null,
                 null,
@@ -101,6 +103,7 @@ class EmployeeFormMapperTest {
                 null,  // Setor nulo
                 "Designer",
                 null,  // Agência nula
+                "123456",     // registrationNumber
                 null   // Avatar nulo
         );
 
@@ -132,6 +135,7 @@ class EmployeeFormMapperTest {
                 "Sales",
                 "Sales Representative",
                 "Branch Office",
+                "123456",     // registrationNumber
                 3L
         );
 

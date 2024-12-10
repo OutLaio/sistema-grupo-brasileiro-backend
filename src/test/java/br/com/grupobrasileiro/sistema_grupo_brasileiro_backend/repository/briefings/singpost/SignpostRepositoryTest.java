@@ -85,6 +85,7 @@ class SignpostRepositoryTest {
         employee.setSector("Setor de Teste");
         employee.setOccupation("Ocupação de Teste");
         employee.setAgency("Agência de Teste");
+        employee.setRegistrationNumber("123456");
         employee.setAvatar(1L);
         employee.setUser(user);
         employee = employeeRepository.save(employee);

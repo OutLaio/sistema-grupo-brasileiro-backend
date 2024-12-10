@@ -63,7 +63,7 @@ class AuthControllerTest {
                 faker.name().firstName(),
                 faker.name().lastName(),
                 faker.phoneNumber().phoneNumber(),
-                null, null, null, null
+                null, null, null, null, null
             ),
             new UserForm(
                 faker.internet().emailAddress(),
@@ -75,7 +75,7 @@ class AuthControllerTest {
         User mockUser = new User(); // Mocking User object
         EmployeeView mockEmployeeView = new EmployeeView(
             faker.number().randomNumber(), null, faker.name().fullName(),
-            faker.company().name(), null, null, null, null, null
+            faker.company().name(), null, null, null, null, null, null
         );
 
         when(userService.create(any())).thenReturn(mockUser);
@@ -102,7 +102,7 @@ class AuthControllerTest {
         String mockToken = faker.internet().uuid();
         EmployeeView mockEmployeeView = new EmployeeView(
             faker.number().randomNumber(), null, faker.name().fullName(),
-            faker.company().name(), null, null, null, null, null
+            faker.company().name(), null, null, null, null, null, null
         );
         
         when(authService.doLogin(any(LoginForm.class), any(AuthenticationManager.class)))

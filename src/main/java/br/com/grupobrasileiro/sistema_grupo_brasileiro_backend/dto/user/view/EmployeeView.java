@@ -53,9 +53,15 @@ public record EmployeeView(
 
         /**
          * Nucleo Operacional de Origem / Agencia do funcionario.
-         * Este campo exibe o número de operações associadas ao funcionário.
+         * Este campo exibe o núcleo operacional de origem ou agência associada ao funcionário.
          */
         String agency,
+
+        /**
+         * Número de matrícula do funcionario.
+         * Este campo exibe o número de matrícula do funcionário.
+         */
+        String registrationNumber,
 
         Long avatar
 ) {

@@ -18,6 +18,7 @@ public class EmployeeFormMapper implements Mapper<EmployeeForm, Employee> {
             i.sector(),
             i.occupation(),
             i.agency(),
+            i.registrationNumber(),
             i.avatar(),
             null,
             null,

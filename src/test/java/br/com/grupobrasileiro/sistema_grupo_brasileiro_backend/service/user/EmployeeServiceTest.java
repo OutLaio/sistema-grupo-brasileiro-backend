@@ -77,6 +77,7 @@ class EmployeeServiceTest {
             faker.company().industry(),     // Setor
             faker.job().title(),            // Ocupação
             faker.company().name(),         // Agência
+            faker.number().digits(6),
             faker.number().randomNumber()   // Avatar
         );
 
@@ -152,10 +153,10 @@ class EmployeeServiceTest {
         Pageable pageable = Pageable.unpaged();
 
         Employee employee1 = new Employee(1L, faker.name().firstName(), faker.name().lastName(), faker.phoneNumber().phoneNumber(), 
-                faker.company().industry(), faker.job().title(), faker.company().name(), faker.number().randomNumber(), new User(), null, null, null);
+                faker.company().industry(), faker.job().title(), faker.company().name(), faker.number().digits(6), faker.number().randomNumber(), new User(), null, null, null);
         
         Employee employee2 = new Employee(2L, faker.name().firstName(), faker.name().lastName(), faker.phoneNumber().phoneNumber(), 
-                faker.company().industry(), faker.job().title(), faker.company().name(), faker.number().randomNumber(), new User(), null, null, null);
+                faker.company().industry(), faker.job().title(), faker.company().name(), faker.number().digits(6), faker.number().randomNumber(), new User(), null, null, null);
 
         List<Employee> employees = List.of(employee1, employee2);
         Page<Employee> employeePage = new PageImpl<>(employees);

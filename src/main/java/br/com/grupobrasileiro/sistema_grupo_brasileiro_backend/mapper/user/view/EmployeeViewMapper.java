@@ -36,6 +36,7 @@ public class EmployeeViewMapper implements Mapper<Employee, EmployeeView> {
             employee.getSector(),
             employee.getOccupation(),
             employee.getAgency(),
+            employee.getRegistrationNumber(),
             employee.getAvatar()
         );
     }

@@ -56,6 +56,7 @@ public class EmployeeViewMapperTest {
             "IT", // sector
             "Developer", // occupation
             "Main Agency", // agency
+            "123456",     // registrationNumber
             1L, // avatar
             user, // User
             null, // ownedProjects
@@ -107,6 +108,7 @@ public class EmployeeViewMapperTest {
             null, // sector (nulo)
             null, // occupation (nulo)
             null, // agency (nulo)
+            null,
             null, // avatar (nulo)
             user, // User
             null, // ownedProjects
@@ -161,6 +163,7 @@ public class EmployeeViewMapperTest {
             "", // sector (vazio)
             "", // occupation (vazio)
             "", // agency (vazio)
+            "", // registrationNumber
             null, // avatar (nulo)
             user, // User
             null, // ownedProjects

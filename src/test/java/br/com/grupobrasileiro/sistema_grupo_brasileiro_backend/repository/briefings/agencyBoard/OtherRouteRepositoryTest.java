@@ -180,6 +180,7 @@ public class OtherRouteRepositoryTest {
         employee.setOccupation(occupation);
         employee.setAgency(agency);
         employee.setAvatar(avatar);
+        employee.setRegistrationNumber("123456");
         employee.setUser(user);
         return employeeRepository.save(employee);
     }

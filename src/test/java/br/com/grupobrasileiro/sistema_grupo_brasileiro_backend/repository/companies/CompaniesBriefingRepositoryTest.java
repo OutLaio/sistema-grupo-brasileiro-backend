@@ -83,6 +83,7 @@ public class CompaniesBriefingRepositoryTest {
         client.setSector("IT");
         client.setOccupation("Developer");
         client.setAgency("Agency 1");
+        client.setRegistrationNumber("123456");
         client.setAvatar(1L);
         client.setUser(clientUser);
         client = employeeRepository.save(client);

@@ -71,6 +71,7 @@ public class RouteRepositoryTest {
 	        client.setSector("Test Sector");
 	        client.setOccupation("Test Occupation");
 	        client.setAgency("Test Agency");
+			client.setRegistrationNumber("123456");
 	        client.setAvatar(1L);
 	        client.setUser(user);
 	        testEntityManager.persist(client);

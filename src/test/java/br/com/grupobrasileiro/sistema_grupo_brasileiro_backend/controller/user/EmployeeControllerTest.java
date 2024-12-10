@@ -49,6 +49,7 @@ class EmployeeControllerTest {
                 "IT",         // sector
                 "Developer",  // occupation
                 "Main Agency",// agency
+                "123456",     // registrationNumber
                 1L            // avatar
         );
         EmployeeView updatedEmployee = new EmployeeView(
@@ -60,6 +61,7 @@ class EmployeeControllerTest {
                 "IT",          // sector
                 "Developer",   // occupation
                 "Main Agency", // agency
+                "123456",      // registrationNumber
                 1L             // avatar
         );
 
@@ -83,6 +85,7 @@ class EmployeeControllerTest {
                 "IT",
                 "Developer",
                 "Main Agency",
+                "123456",
                 1L
         );
         doThrow(new RuntimeException("Error updating employee")).when(employeeService).updateEmployee(any(Long.class), any(EmployeeForm.class));
@@ -108,6 +111,7 @@ class EmployeeControllerTest {
                 "IT",          // sector
                 "Developer",   // occupation
                 "Main Agency", // agency
+                "123456",     // registrationNumber
                 1L             // avatar
         )));
 
@@ -133,6 +137,7 @@ class EmployeeControllerTest {
                 "IT",          // sector
                 "Developer",   // occupation
                 "Main Agency", // agency
+                "123456",     // registrationNumber
                 1L             // avatar
         );
 

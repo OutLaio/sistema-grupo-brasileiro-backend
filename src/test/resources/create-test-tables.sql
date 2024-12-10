@@ -188,6 +188,7 @@ CREATE TABLE "Tb_Employees" (
     occupation VARCHAR(255) NOT NULL,
     phone_number VARCHAR(255) NOT NULL,
     sector VARCHAR(255) NOT NULL,
+    registration_number VARCHAR(20) NOT NULL,
     id_user INTEGER NOT NULL,
     FOREIGN KEY (id_user) REFERENCES "Tb_Users" (id)
 );

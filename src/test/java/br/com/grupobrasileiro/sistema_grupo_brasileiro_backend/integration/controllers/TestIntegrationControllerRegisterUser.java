@@ -51,6 +51,7 @@ public class TestIntegrationControllerRegisterUser {
                 "Sales",
                 "Manager",
                 "SP-Agency",
+                "123456",     // registrationNumber
                 1L
         );
 

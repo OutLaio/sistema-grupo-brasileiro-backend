@@ -33,6 +33,7 @@ public class EmployeeTest {
         employee.setSector(faker.company().industry());
         employee.setOccupation(faker.job().title());
         employee.setAgency(faker.company().name());
+        employee.setRegistrationNumber("123456");
         employee.setAvatar(faker.number().randomNumber());
         employee.setUser(user);
 
@@ -91,6 +92,7 @@ public class EmployeeTest {
         employee1.setSector("Legislative Office");
         employee1.setOccupation("Advertising Orchestrator");
         employee1.setAgency("Stroman, Koch and Terry");
+        employee1.setRegistrationNumber("123456");
         employee1.setAvatar(628586L);
         employee1.setUser(new User());
 
@@ -102,6 +104,7 @@ public class EmployeeTest {
         employee2.setSector("Legislative Office");
         employee2.setOccupation("Advertising Orchestrator");
         employee2.setAgency("Stroman, Koch and Terry");
+        employee2.setRegistrationNumber("123456");
         employee2.setAvatar(628586L);
         employee2.setUser(new User());
 
@@ -118,6 +121,7 @@ public class EmployeeTest {
         employee3.setSector("Legislative Office");
         employee3.setOccupation("Advertising Orchestrator");
         employee3.setAgency("Stroman, Koch and Terry");
+        employee3.setRegistrationNumber("123456");
         employee3.setAvatar(628586L);
         employee3.setUser(new User());
 
@@ -143,10 +147,11 @@ public class EmployeeTest {
         employee.setSector("Entertainment");
         employee.setOccupation("Hospitality Orchestrator");
         employee.setAgency("Littel, Bartolletti and Macejkovic");
+        employee.setRegistrationNumber("123456");
         employee.setAvatar(883762062L);
         employee.setUser(new User());
 
-        String expectedToString = "Employee{id=123, name='Marquis', lastName='Willms', phoneNumber='876.979.4516 x852', sector='Entertainment', occupation='Hospitality Orchestrator', agency='Littel, Bartolletti and Macejkovic', avatar=883762062}";
+        String expectedToString = "Employee{id=123, name='Marquis', lastName='Willms', phoneNumber='876.979.4516 x852', sector='Entertainment', occupation='Hospitality Orchestrator', agency='Littel, Bartolletti and Macejkovic', registrationNumber='123456', avatar=883762062}";
         
         assertThat(employee.toString()).isEqualTo(expectedToString);
     }

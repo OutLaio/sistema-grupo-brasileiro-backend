@@ -116,6 +116,7 @@ public class VersionRepositoryTest {
         client.setSector("Setor Teste");
         client.setOccupation("Ocupação Teste");
         client.setAgency("Agência Teste");
+        client.setRegistrationNumber("123456");
         client.setAvatar(1L);
         client.setUser(user);
         return employeeRepository.save(client);

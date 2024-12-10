@@ -53,7 +53,7 @@ public class UserDetailsViewMapperTest {
         user.setEmployee(employee);
 
         // Criando um EmployeeView correspondente
-        EmployeeView employeeView = new EmployeeView(1L, null, "John", "Doe", "123456789", "IT", "Developer", "Main Agency", 1L);
+        EmployeeView employeeView = new EmployeeView(1L, null, "John", "Doe", "123456789", "IT", "Developer", "Main Agency", "123456", 1L);
         when(employeeViewMapper.map(employee)).thenReturn(employeeView);
 
         // Act

@@ -55,6 +55,14 @@ public record EmployeeForm(
         String agency,
 
         /**
+         * Número de matrícula do usuário.
+         * Este campo é obrigatório e não pode estar em branco.
+         */
+        @NotBlank(message = "The employee agency cannot be blank")
+        @JsonAlias({"registration_number"})
+        String registrationNumber,
+
+        /**
          * Indicação do avatar do usuário.
          * Este campo é obrigatório.
          */
