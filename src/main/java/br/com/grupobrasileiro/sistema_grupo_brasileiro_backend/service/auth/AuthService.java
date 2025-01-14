@@ -18,6 +18,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.extern.java.Log;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -50,6 +51,9 @@ public class AuthService implements UserDetailsService {
     @Autowired
     private TemplateEngine templateEngine;
 
+    @Value("${client.url}")
+    private String clientUrl;
+
     public TokenView doLogin(LoginForm form, AuthenticationManager authenticationManager) {
         User user = userRepository.findByEmail(form.email()).orElseThrow(
                 () -> new EntityNotFoundException("O e-mail informado não está cadastrado. Verifique os dados e tente novamente.")
@@ -71,8 +75,7 @@ public class AuthService implements UserDetailsService {
         );
 
         String token = tokenService.generatePasswordToken(user);
-//        String resetUrl = "http://54.200.23.253:4000/redefinir-senha?token=" + token;
-        String resetUrl = "http://localhost:4200/redefinir-senha?token=" + token;
+        String resetUrl = clientUrl + "/redefinir-senha?token=" + token;
         String userName = user.getEmployee().getName() + " " + user.getEmployee().getLastName();
 
         Context context = new Context();
@@ -81,7 +84,7 @@ public class AuthService implements UserDetailsService {
 
         String body = templateEngine.process("request-password", context);
 
-        PasswordRequest sendEmailForm = new PasswordRequest("no-reply@everdev.com", form.email(), "Password Reset", body);
+        PasswordRequest sendEmailForm = new PasswordRequest("sgsm.noreply@gmail.com", form.email(), "Password Reset", body);
         emailService.send(sendEmailForm);
     }
 
@@ -109,8 +112,7 @@ public class AuthService implements UserDetailsService {
 
     public String requestRegister() {
         String token = tokenService.generateRegisterToken();
-//        return "http://54.200.23.253:4000/cadastro?token=" + token;
-        return "http://localhost:4200/cadastro?token=" + token;
+        return clientUrl + "/cadastro?token=" + token;
     }
 
     public void verifyToken(String token) {

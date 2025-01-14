@@ -173,7 +173,7 @@ class AuthServiceTest {
         verify(emailService).send(emailCaptor.capture());
         PasswordRequest capturedEmail = emailCaptor.getValue();
 
-        assertEquals("no-reply@everdev.com", capturedEmail.emailFrom());
+        assertEquals("sgsm.noreply@gmail.com", capturedEmail.emailFrom());
         assertEquals(email, capturedEmail.emailTo());
         assertEquals("Password Reset", capturedEmail.subject());
         assertEquals("Email body content", capturedEmail.text());
